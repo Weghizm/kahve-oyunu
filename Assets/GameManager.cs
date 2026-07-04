@@ -125,6 +125,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text offerPanelText;
     private TMP_Text customerButtonText;
     private TMP_Text vipBadgeText;
+    private TMP_Text passiveIncomePanelText;
     private GameObject offlinePanel;
     private GameObject dailyRewardPanel;
     private GameObject chestPanel;
@@ -136,6 +137,7 @@ public class GameManager : MonoBehaviour
     private GameObject coffeePanel;
     private GameObject machinePanel;
     private GameObject baristaPanel;
+    private GameObject passiveIncomePanel;
     private GameObject offerButtonObject;
     private GameObject offerPanel;
     private GameObject customerButtonObject;
@@ -557,6 +559,7 @@ public class GameManager : MonoBehaviour
         if (coffeePanel != null) coffeePanel.SetActive(false);
         if (machinePanel != null) machinePanel.SetActive(false);
         if (baristaPanel != null) baristaPanel.SetActive(false);
+        if (passiveIncomePanel != null) passiveIncomePanel.SetActive(false);
         if (customerButtonObject != null) customerButtonObject.SetActive(false);
         if (vipBadgeObject != null) vipBadgeObject.SetActive(false);
         UpdateUI();
@@ -676,6 +679,26 @@ public class GameManager : MonoBehaviour
         if (baristaPanel != null)
         {
             baristaPanel.SetActive(false);
+        }
+    }
+
+    public void OpenPassiveIncomePanel()
+    {
+        if (passiveIncomePanel == null)
+        {
+            return;
+        }
+
+        passiveIncomePanel.SetActive(true);
+        passiveIncomePanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void ClosePassiveIncomePanel()
+    {
+        if (passiveIncomePanel != null)
+        {
+            passiveIncomePanel.SetActive(false);
         }
     }
 
@@ -822,6 +845,37 @@ public class GameManager : MonoBehaviour
         return baristaUpgradeLevel + seniorBaristaLevel + masterBaristaLevel;
     }
 
+    private string GetPassiveIncomeBreakdownText()
+    {
+        float basicMachineIncome = machineUpgradeLevel * BasicMachineIncomeGain;
+        float espressoMachineIncome = espressoMachineLevel * EspressoMachineIncomeGain;
+        float premiumMachineIncome = premiumMachineLevel * PremiumMachineIncomeGain;
+        float juniorBaristaIncome = baristaUpgradeLevel * JuniorBaristaIncomeGain;
+        float seniorBaristaIncome = seniorBaristaLevel * SeniorBaristaIncomeGain;
+        float masterBaristaIncome = masterBaristaLevel * MasterBaristaIncomeGain;
+        float machineTotal = basicMachineIncome + espressoMachineIncome + premiumMachineIncome;
+        float baristaTotal = juniorBaristaIncome + seniorBaristaIncome + masterBaristaIncome;
+        float baseTotal = machineTotal + baristaTotal;
+        float boostedTotal = baseTotal * incomeMultiplier;
+
+        string text = "Kahve Makineleri: " + machineTotal.ToString("0.#") + "/sn"
+            + "\n- Basit Makine: " + basicMachineIncome.ToString("0.#") + "/sn"
+            + "\n- Espresso Makinesi: " + espressoMachineIncome.ToString("0.#") + "/sn"
+            + "\n- Premium Makine: " + premiumMachineIncome.ToString("0.#") + "/sn"
+            + "\n\nBaristalar: " + baristaTotal.ToString("0.#") + "/sn"
+            + "\n- Barista: " + juniorBaristaIncome.ToString("0.#") + "/sn"
+            + "\n- Usta Barista: " + seniorBaristaIncome.ToString("0.#") + "/sn"
+            + "\n- Sef Barista: " + masterBaristaIncome.ToString("0.#") + "/sn"
+            + "\n\nToplam: " + baseTotal.ToString("0.#") + "/sn";
+
+        if (incomeMultiplier > 1f)
+        {
+            text += "\n2x aktif toplam: " + boostedTotal.ToString("0.#") + "/sn";
+        }
+
+        return text;
+    }
+
     public void BuyCoffeeUpgrade()
     {
         if (coffeeUpgradeLevel >= UpgradeMaxLevel || coins < coffeeUpgradeCost) return;
@@ -964,8 +1018,9 @@ public class GameManager : MonoBehaviour
         roomUnlockButtonText = CreateButton(gameFrame, "RoomUnlockButton", "", new Vector2(0, -382), new Vector2(380, 46), UnlockCurrentRoom, new Color(0.22f, 0.48f, 0.40f), 19);
 
         coinText = CreateText(gameFrame, "CoinText", "Coin: 0", new Vector2(0, 500), new Vector2(520, 56), 36);
-        tapPowerText = CreateText(gameFrame, "TapPowerText", "Kahve Degeri: 1", new Vector2(0, 456), new Vector2(460, 38), 22);
+        tapPowerText = CreateText(gameFrame, "TapPowerText", "Kahve Ucreti: 1", new Vector2(0, 456), new Vector2(460, 38), 22);
         autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Pasif Gelir: 0", new Vector2(0, 418), new Vector2(460, 38), 22);
+        MakeTextClickable(autoIncomeText, OpenPassiveIncomePanel);
         activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
         customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
         customerStatsText.gameObject.SetActive(false);
@@ -984,6 +1039,7 @@ public class GameManager : MonoBehaviour
         CreateCoffeePanel(canvas.transform);
         CreateMachinePanel(canvas.transform);
         CreateBaristaPanel(canvas.transform);
+        CreatePassiveIncomePanel(canvas.transform);
         CreateTimedOfferButton(gameFrame);
         CreateTimedOfferPanel(canvas.transform);
         CreateCustomerButton(gameFrame);
@@ -2170,6 +2226,34 @@ public class GameManager : MonoBehaviour
         baristaPanel.SetActive(false);
     }
 
+    private void CreatePassiveIncomePanel(Transform parent)
+    {
+        passiveIncomePanel = new GameObject("PassiveIncomePanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        passiveIncomePanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = passiveIncomePanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 35);
+        panelRect.sizeDelta = new Vector2(760, 520);
+
+        Image panelImage = passiveIncomePanel.GetComponent<Image>();
+        panelImage.color = new Color(0.94f, 0.97f, 1f, 0.98f);
+
+        TMP_Text title = CreateText(passiveIncomePanel.transform, "PassiveIncomeTitle", "Pasif Gelir Detayi", new Vector2(0, 205), new Vector2(700, 60), 38);
+        title.color = Color.black;
+
+        passiveIncomePanelText = CreateText(passiveIncomePanel.transform, "PassiveIncomeText", "", new Vector2(0, 20), new Vector2(680, 300), 27);
+        passiveIncomePanelText.color = Color.black;
+        passiveIncomePanelText.alignment = TextAlignmentOptions.TopLeft;
+        passiveIncomePanelText.enableWordWrapping = true;
+
+        CreateButton(passiveIncomePanel.transform, "PassiveIncomeCloseButton", "Kapat", new Vector2(0, -220), new Vector2(280, 72), ClosePassiveIncomePanel, new Color(0.20f, 0.20f, 0.20f), 28);
+
+        passiveIncomePanel.transform.SetAsLastSibling();
+        passiveIncomePanel.SetActive(false);
+    }
+
     private void CreateTimedOfferButton(Transform parent)
     {
         offerButtonText = CreateButton(parent, "TimedOfferButton", "2x\n60", new Vector2(350, 245), new Vector2(104, 104), OpenTimedOfferPanel, new Color(0.18f, 0.38f, 0.82f), 22);
@@ -2469,6 +2553,20 @@ public class GameManager : MonoBehaviour
         return tmp;
     }
 
+    private void MakeTextClickable(TMP_Text text, UnityEngine.Events.UnityAction action)
+    {
+        if (text == null)
+        {
+            return;
+        }
+
+        Image image = text.gameObject.AddComponent<Image>();
+        image.color = new Color(1f, 1f, 1f, 0.01f);
+
+        Button button = text.gameObject.AddComponent<Button>();
+        button.onClick.AddListener(action);
+    }
+
     private TMP_Text CreateButton(Transform parent, string objectName, string label, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action, Color color, float fontSize)
     {
         GameObject buttonObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
@@ -2497,10 +2595,13 @@ public class GameManager : MonoBehaviour
             coinText.text = "Coin: " + Mathf.FloorToInt(coins);
 
         if (tapPowerText != null)
-            tapPowerText.text = "Kahve Degeri: " + GetCurrentTapPower();
+            tapPowerText.text = "Kahve Ucreti: " + GetCurrentTapPower();
 
         if (autoIncomeText != null)
             autoIncomeText.text = "Pasif Gelir: " + (coinsPerSecond * incomeMultiplier).ToString("0.#");
+
+        if (passiveIncomePanelText != null)
+            passiveIncomePanelText.text = GetPassiveIncomeBreakdownText();
 
         if (activeBoostText != null)
         {
@@ -2612,6 +2713,7 @@ public class GameManager : MonoBehaviour
                 || (coffeePanel != null && coffeePanel.activeSelf)
                 || (machinePanel != null && machinePanel.activeSelf)
                 || (baristaPanel != null && baristaPanel.activeSelf)
+                || (passiveIncomePanel != null && passiveIncomePanel.activeSelf)
                 || (dailyRewardPanel != null && dailyRewardPanel.activeSelf)
                 || (chestPanel != null && chestPanel.activeSelf)
                 || (decorPanel != null && decorPanel.activeSelf)
@@ -2710,6 +2812,9 @@ public class GameManager : MonoBehaviour
 
         if (chestRewardPanel != null && chestRewardPanel.activeSelf && lastOfflineCoins <= 0)
             chestRewardPanel.transform.SetAsLastSibling();
+
+        if (passiveIncomePanel != null && passiveIncomePanel.activeSelf && lastOfflineCoins <= 0)
+            passiveIncomePanel.transform.SetAsLastSibling();
 
         if (decorPanelText != null)
             decorPanelText.text = "Boya Kutusu: " + paintPieces + " | Tahta: " + woodPieces;
