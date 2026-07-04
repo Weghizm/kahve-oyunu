@@ -1317,34 +1317,45 @@ public class GameManager : MonoBehaviour
 
     private string GetPaintInventorySummary()
     {
-        string summary = "";
-        int shown = 0;
+        string commonPaint = GetPaintInventoryLine(ItemRarity.Common, "Siradan");
+        string rarePaint = GetPaintInventoryLine(ItemRarity.Rare, "Nadir");
+        string luxuryPaint = GetPaintInventoryLine(ItemRarity.Luxury, "Luks");
+
+        if (string.IsNullOrEmpty(commonPaint) && string.IsNullOrEmpty(rarePaint) && string.IsNullOrEmpty(luxuryPaint))
+        {
+            return "\nRenkli Boya Kutusu: 0";
+        }
+
+        return commonPaint + rarePaint + luxuryPaint;
+    }
+
+    private string GetPaintInventoryLine(ItemRarity rarity, string label)
+    {
+        string line = "";
 
         for (int i = 0; i < itemDatabase.Count; i++)
         {
             ItemData item = itemDatabase[i];
             int count = GetInventoryItemCount(item.Id);
-            if (count <= 0 || !item.Id.StartsWith("paint_can_", StringComparison.Ordinal))
+            if (count <= 0 || item.Rarity != rarity || !item.Id.StartsWith("paint_can_", StringComparison.Ordinal))
             {
                 continue;
             }
 
-            if (shown >= 4)
+            if (line.Length > 0)
             {
-                summary += "\n+ diger boya kutulari";
-                break;
+                line += ", ";
             }
 
-            summary += "\n" + GetItemDisplayNameWithRarity(item) + ": " + count;
-            shown++;
+            line += GetCompactItemDisplayNameWithRarity(item) + " x" + count;
         }
 
-        if (shown == 0)
+        if (string.IsNullOrEmpty(line))
         {
-            return "\nRenkli Boya Kutusu: 0";
+            return "";
         }
 
-        return summary;
+        return "\n" + label + ": " + line;
     }
 
     public void OpenChest()
@@ -1488,6 +1499,31 @@ public class GameManager : MonoBehaviour
         return item.DisplayName;
     }
 
+    private string GetCompactItemDisplayNameWithRarity(ItemData item)
+    {
+        if (item == null)
+        {
+            return "";
+        }
+
+        string displayName = item.DisplayName
+            .Replace(" Boya Kutusu", "")
+            .Replace(" Boyasi", "")
+            .Replace(" Efekt", "");
+
+        if (item.Rarity == ItemRarity.Rare)
+        {
+            return displayName + "(N)";
+        }
+
+        if (item.Rarity == ItemRarity.Luxury)
+        {
+            return displayName + "(L)";
+        }
+
+        return displayName;
+    }
+
     private string GetChestTierName(ChestTier tier)
     {
         if (tier == ChestTier.Rare)
@@ -1527,21 +1563,26 @@ public class GameManager : MonoBehaviour
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
         panelRect.anchoredPosition = new Vector2(0, 25);
-        panelRect.sizeDelta = new Vector2(900, 560);
+        panelRect.sizeDelta = new Vector2(980, 620);
 
         Image panelImage = chestPanel.GetComponent<Image>();
         panelImage.color = new Color(0.98f, 0.91f, 0.78f, 0.98f);
 
-        TMP_Text title = CreateText(chestPanel.transform, "ChestPanelTitle", "Sandiklar", new Vector2(0, 225), new Vector2(820, 70), 44);
+        TMP_Text title = CreateText(chestPanel.transform, "ChestPanelTitle", "Sandiklar", new Vector2(0, 260), new Vector2(900, 64), 40);
         title.color = Color.black;
 
-        chestPanelText = CreateText(chestPanel.transform, "ChestPanelText", "", new Vector2(0, 45), new Vector2(800, 275), 22);
+        chestPanelText = CreateText(chestPanel.transform, "ChestPanelText", "", new Vector2(0, 55), new Vector2(900, 350), 19);
         chestPanelText.color = Color.black;
+        chestPanelText.alignment = TextAlignmentOptions.TopLeft;
+        chestPanelText.enableWordWrapping = true;
+        chestPanelText.enableAutoSizing = true;
+        chestPanelText.fontSizeMin = 13;
+        chestPanelText.fontSizeMax = 19;
 
-        chestOpenButtonText = CreateButton(chestPanel.transform, "ChestOpenButton", "Siradan", new Vector2(-305, -200), new Vector2(180, 78), OpenChest, new Color(0.64f, 0.36f, 0.16f), 24);
-        rareChestOpenButtonText = CreateButton(chestPanel.transform, "RareChestOpenButton", "Nadir", new Vector2(-105, -200), new Vector2(180, 78), OpenRareChest, new Color(0.30f, 0.42f, 0.68f), 24);
-        luxuryChestOpenButtonText = CreateButton(chestPanel.transform, "LuxuryChestOpenButton", "Luks", new Vector2(95, -200), new Vector2(180, 78), OpenLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 24);
-        CreateButton(chestPanel.transform, "ChestCloseButton", "Kapat", new Vector2(310, -200), new Vector2(180, 78), CloseChestPanel, new Color(0.20f, 0.20f, 0.20f), 24);
+        chestOpenButtonText = CreateButton(chestPanel.transform, "ChestOpenButton", "Siradan", new Vector2(-330, -250), new Vector2(190, 72), OpenChest, new Color(0.64f, 0.36f, 0.16f), 23);
+        rareChestOpenButtonText = CreateButton(chestPanel.transform, "RareChestOpenButton", "Nadir", new Vector2(-110, -250), new Vector2(190, 72), OpenRareChest, new Color(0.30f, 0.42f, 0.68f), 23);
+        luxuryChestOpenButtonText = CreateButton(chestPanel.transform, "LuxuryChestOpenButton", "Luks", new Vector2(110, -250), new Vector2(190, 72), OpenLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 23);
+        CreateButton(chestPanel.transform, "ChestCloseButton", "Kapat", new Vector2(330, -250), new Vector2(190, 72), CloseChestPanel, new Color(0.20f, 0.20f, 0.20f), 23);
 
         chestPanel.transform.SetAsLastSibling();
         chestPanel.SetActive(false);
