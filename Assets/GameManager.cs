@@ -2079,7 +2079,7 @@ public class GameManager : MonoBehaviour
         CreateSceneLabel(parent, "MachineLabel", "MAKINE", new Vector2(40, 116), new Vector2(112, 36), 14);
         CreateSceneLabel(parent, "MenuLabel", "MENU", new Vector2(-340, 172), new Vector2(110, 35), 19);
         CreateSceneLabel(parent, "CustomerSpotLabel", "MUSTERI\nALANI", new Vector2(180, -252), new Vector2(165, 62), 16);
-        roomLockOverlay = CreateSceneBox(parent, "RoomLockOverlay", new Vector2(0, -120), new Vector2(1110, 590), new Color(0.05f, 0.06f, 0.07f, 0.32f));
+        roomLockOverlay = CreateSceneBox(parent, "RoomLockOverlay", new Vector2(0, -120), new Vector2(1110, 590), new Color(0.05f, 0.06f, 0.07f, 0.92f));
 
         roomShadow.raycastTarget = false;
         backWallTopTrim.raycastTarget = false;
@@ -2793,7 +2793,31 @@ public class GameManager : MonoBehaviour
         SetSceneImageActive(vipRugVisual, currentRoomIndex == 2);
         SetSceneImageActive(vipCounterVisual, currentRoomIndex == 2);
         SetSceneImageActive(vipPlantVisual, currentRoomIndex == 2);
-        SetSceneImageActive(roomLockOverlay, !unlocked);
+
+        if (roomLockOverlay != null)
+        {
+            roomLockOverlay.gameObject.SetActive(!unlocked);
+            roomLockOverlay.color = GetLockedRoomOverlayColor();
+            if (!unlocked)
+            {
+                roomLockOverlay.transform.SetAsLastSibling();
+            }
+        }
+    }
+
+    private Color GetLockedRoomOverlayColor()
+    {
+        if (currentRoomIndex == 1)
+        {
+            return new Color(0.10f, 0.15f, 0.18f, 0.94f);
+        }
+
+        if (currentRoomIndex == 2)
+        {
+            return new Color(0.13f, 0.09f, 0.16f, 0.94f);
+        }
+
+        return new Color(0.05f, 0.06f, 0.07f, 0.94f);
     }
 
     private void SetSceneImageActive(Image image, bool active)
