@@ -1189,7 +1189,7 @@ public class GameManager : MonoBehaviour
         else if (roll < 95)
         {
             paintPieces += 1;
-            lastChestRewardText = "Sandiktan 1 Boya Parcasi cikti.";
+            lastChestRewardText = "Sandiktan 1 Boya Kutusu cikti.";
         }
         else
         {
@@ -1522,8 +1522,8 @@ public class GameManager : MonoBehaviour
     {
         if (dailyChestRewardClaimed || dailyChestsOpened < 1) return;
 
-        paintPieces += 1;
-        dailyChestRewardClaimed = true;
+            paintPieces += 1;
+            dailyChestRewardClaimed = true;
         UpdateUI();
         SaveGame();
     }
@@ -2152,7 +2152,7 @@ public class GameManager : MonoBehaviour
         {
             chestPanelText.text = "Sandik: " + chests
                 + "\nGem: " + gems
-                + "\nBoya Parcasi: " + paintPieces
+                + "\nBoya Kutusu: " + paintPieces
                 + "\nTahta: " + woodPieces
                 + "\n\nSon odul: " + lastChestRewardText;
         }
@@ -2169,11 +2169,11 @@ public class GameManager : MonoBehaviour
             chestPanel.transform.SetAsLastSibling();
 
         if (decorPanelText != null)
-            decorPanelText.text = "Boya Parcasi: " + paintPieces + " | Tahta: " + woodPieces;
+            decorPanelText.text = "Boya Kutusu: " + paintPieces + " | Tahta: " + woodPieces;
 
-        UpdateDecorButton(pinkWallButtonText, pinkWallUnlocked, selectedWallStyle == 1, paintPieces >= DecorUnlockCost, "Pembe Duvar", DecorUnlockCost + " Boya Parcasi");
-        UpdateDecorButton(mintWallButtonText, mintWallUnlocked, selectedWallStyle == 2, paintPieces >= DecorUnlockCost, "Mint Duvar", DecorUnlockCost + " Boya Parcasi");
-        UpdateDecorButton(creamFloorButtonText, creamFloorUnlocked, selectedFloorStyle == 1, paintPieces >= 2, "Krem Zemin", "2 Boya Parcasi");
+        UpdateDecorButton(pinkWallButtonText, pinkWallUnlocked, selectedWallStyle == 1, paintPieces >= DecorUnlockCost, "Pembe Duvar", DecorUnlockCost + " Boya Kutusu");
+        UpdateDecorButton(mintWallButtonText, mintWallUnlocked, selectedWallStyle == 2, paintPieces >= DecorUnlockCost, "Mint Duvar", DecorUnlockCost + " Boya Kutusu");
+        UpdateDecorButton(creamFloorButtonText, creamFloorUnlocked, selectedFloorStyle == 1, paintPieces >= 2, "Krem Zemin", "2 Boya Kutusu");
         UpdateDecorButton(roseTableButtonText, roseTableUnlocked, selectedTableStyle == 1, woodPieces >= 5, "Rose Masa", "5 Tahta");
 
         if (decorPanel != null && decorPanel.activeSelf && lastOfflineCoins <= 0)
@@ -2187,7 +2187,7 @@ public class GameManager : MonoBehaviour
 
         UpdateDailyTaskButton(dailyTaskCoffeeButtonText, dailyCoffeeRewardClaimed, dailyCoffeeSold >= 20, "20 kahve sat", dailyCoffeeSold, 20, "Odul: 1 Gem");
         UpdateDailyTaskButton(dailyTaskCustomerButtonText, dailyCustomerRewardClaimed, dailyCustomerSales >= 5, "5 musteriye satis yap", dailyCustomerSales, 5, "Odul: 1 Sandik");
-        UpdateDailyTaskButton(dailyTaskChestButtonText, dailyChestRewardClaimed, dailyChestsOpened >= 1, "1 sandik ac", dailyChestsOpened, 1, "Odul: 1 Boya Parcasi");
+        UpdateDailyTaskButton(dailyTaskChestButtonText, dailyChestRewardClaimed, dailyChestsOpened >= 1, "1 sandik ac", dailyChestsOpened, 1, "Odul: 1 Boya Kutusu");
 
         if (dailyTasksPanel != null && dailyTasksPanel.activeSelf && lastOfflineCoins <= 0)
             dailyTasksPanel.transform.SetAsLastSibling();

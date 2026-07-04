@@ -75,6 +75,21 @@ Ornek:
 
 Market, sandik, craft, kombin ve sahip olunan esya sistemi bu ItemId kodlariyla calismali.
 
+### Craft Malzemeleri
+
+`Boya Parcasi` ismi kullanilmayacak. Bunun yerine oyuncuya gorunen isim `Boya Kutusu` olacak.
+
+Ileride renkli boya kutulari ayri item olarak tanimlanacak:
+
+- `paint_can_pink_001` = Pembe Boya Kutusu
+- `paint_can_red_001` = Kirmizi Boya Kutusu
+- `paint_can_blue_001` = Mavi Boya Kutusu
+- `paint_can_black_001` = Siyah Boya Kutusu
+- `paint_can_white_001` = Beyaz Boya Kutusu
+- `paint_can_gold_001` = Altin Boya Kutusu
+
+Duvar, zemin ve tezgah kaplamalari bu renkli boya kutulariyla craft edilebilir.
+
 ### VIP
 
 VIP sistemi olabilir.
@@ -92,4 +107,3 @@ VIP sistemi olabilir.
 6. Sandik sistemini ItemId ile odul verecek hale getir.
 7. Tema secim sistemi ekle.
 8. Market icinde ilk kombin setlerini prototip olarak goster.
-
