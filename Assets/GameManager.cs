@@ -1335,7 +1335,7 @@ public class GameManager : MonoBehaviour
                 break;
             }
 
-            summary += "\n" + item.DisplayName + ": " + count;
+            summary += "\n" + GetItemDisplayNameWithRarity(item) + ": " + count;
             shown++;
         }
 
@@ -1465,7 +1465,27 @@ public class GameManager : MonoBehaviour
         }
 
         AddInventoryItem(itemId, 1);
-        lastChestRewardText = chestName + " odulu: 1 " + item.DisplayName + ".";
+        lastChestRewardText = chestName + " odulu: 1 " + GetItemDisplayNameWithRarity(item) + ".";
+    }
+
+    private string GetItemDisplayNameWithRarity(ItemData item)
+    {
+        if (item == null)
+        {
+            return "";
+        }
+
+        if (item.Rarity == ItemRarity.Rare)
+        {
+            return item.DisplayName + " (N)";
+        }
+
+        if (item.Rarity == ItemRarity.Luxury)
+        {
+            return item.DisplayName + " (L)";
+        }
+
+        return item.DisplayName;
     }
 
     private string GetChestTierName(ChestTier tier)
