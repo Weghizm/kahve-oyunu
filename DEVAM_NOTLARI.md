@@ -118,7 +118,7 @@ Test ve UI okunabilirligi icin boya kutularinin isminde nadirlik ibaresi gorunme
 - Nadir boyalar: `(N)` ibaresi kullanilabilir.
 - Ozel boyalar: `(O)` ibaresi kullanilabilir.
 
-Bu sayede test asamasinda sandiktan cikan boyanin siradan, nadir veya luks oldugu hemen anlasilir.
+Bu sayede test asamasinda sandiktan cikan boyanin siradan, nadir veya ozel oldugu hemen anlasilir.
 
 ### VIP
 

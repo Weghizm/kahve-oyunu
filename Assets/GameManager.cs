@@ -466,7 +466,7 @@ public class GameManager : MonoBehaviour
     public void AddTestLuxuryChest()
     {
         luxuryChests++;
-        lastChestRewardText = "Test luks sandigi eklendi.";
+        lastChestRewardText = "Test ozel sandigi eklendi.";
         UpdateUI();
         SaveGame();
     }
@@ -1317,21 +1317,15 @@ public class GameManager : MonoBehaviour
 
     private string GetPaintInventorySummary()
     {
-        string commonPaint = GetPaintInventoryLine(ItemRarity.Common, "Siradan");
-        string rarePaint = GetPaintInventoryLine(ItemRarity.Rare, "Nadir");
-        string luxuryPaint = GetPaintInventoryLine(ItemRarity.Luxury, "Luks");
-
-        if (string.IsNullOrEmpty(commonPaint) && string.IsNullOrEmpty(rarePaint) && string.IsNullOrEmpty(luxuryPaint))
-        {
-            return "\nRenkli Boya Kutusu: 0";
-        }
-
-        return commonPaint + rarePaint + luxuryPaint;
+        return GetPaintInventoryLine(ItemRarity.Common, "Siradan Boya Kutulari")
+            + GetPaintInventoryLine(ItemRarity.Rare, "Nadir Boya Kutulari")
+            + GetPaintInventoryLine(ItemRarity.Luxury, "Ozel Boya Kutulari");
     }
 
     private string GetPaintInventoryLine(ItemRarity rarity, string label)
     {
         string line = "";
+        int total = 0;
 
         for (int i = 0; i < itemDatabase.Count; i++)
         {
@@ -1341,6 +1335,8 @@ public class GameManager : MonoBehaviour
             {
                 continue;
             }
+
+            total += count;
 
             if (line.Length > 0)
             {
@@ -1352,10 +1348,10 @@ public class GameManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(line))
         {
-            return "";
+            return "\n" + label + ": 0";
         }
 
-        return "\n" + label + ": " + line;
+        return "\n" + label + ": " + total + " | " + line;
     }
 
     public void OpenChest()
@@ -1450,17 +1446,17 @@ public class GameManager : MonoBehaviour
         if (roll < 25)
         {
             gems += 5;
-            lastChestRewardText = "Luks Sandiktan 5 Gem cikti.";
+            lastChestRewardText = "Ozel Sandiktan 5 Gem cikti.";
         }
         else if (roll < 45)
         {
             woodPieces += 3;
             gems += 2;
-            lastChestRewardText = "Luks Sandiktan 3 Tahta + 2 Gem cikti.";
+            lastChestRewardText = "Ozel Sandiktan 3 Tahta + 2 Gem cikti.";
         }
         else
         {
-            AddRandomPaintCanReward(ItemRarity.Luxury, "Luks Sandik");
+            AddRandomPaintCanReward(ItemRarity.Luxury, "Ozel Sandik");
         }
     }
 
@@ -1493,7 +1489,7 @@ public class GameManager : MonoBehaviour
 
         if (item.Rarity == ItemRarity.Luxury)
         {
-            return item.DisplayName + " (L)";
+            return item.DisplayName + " (O)";
         }
 
         return item.DisplayName;
@@ -1518,7 +1514,7 @@ public class GameManager : MonoBehaviour
 
         if (item.Rarity == ItemRarity.Luxury)
         {
-            return displayName + "(L)";
+            return displayName + "(O)";
         }
 
         return displayName;
@@ -1533,7 +1529,7 @@ public class GameManager : MonoBehaviour
 
         if (tier == ChestTier.Luxury)
         {
-            return "Luks Sandik";
+            return "Ozel Sandik";
         }
 
         return "Siradan Sandik";
@@ -1581,7 +1577,7 @@ public class GameManager : MonoBehaviour
 
         chestOpenButtonText = CreateButton(chestPanel.transform, "ChestOpenButton", "Siradan", new Vector2(-330, -250), new Vector2(190, 72), OpenChest, new Color(0.64f, 0.36f, 0.16f), 23);
         rareChestOpenButtonText = CreateButton(chestPanel.transform, "RareChestOpenButton", "Nadir", new Vector2(-110, -250), new Vector2(190, 72), OpenRareChest, new Color(0.30f, 0.42f, 0.68f), 23);
-        luxuryChestOpenButtonText = CreateButton(chestPanel.transform, "LuxuryChestOpenButton", "Luks", new Vector2(110, -250), new Vector2(190, 72), OpenLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 23);
+        luxuryChestOpenButtonText = CreateButton(chestPanel.transform, "LuxuryChestOpenButton", "Ozel", new Vector2(110, -250), new Vector2(190, 72), OpenLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 23);
         CreateButton(chestPanel.transform, "ChestCloseButton", "Kapat", new Vector2(330, -250), new Vector2(190, 72), CloseChestPanel, new Color(0.20f, 0.20f, 0.20f), 23);
 
         chestPanel.transform.SetAsLastSibling();
@@ -1785,7 +1781,7 @@ public class GameManager : MonoBehaviour
         CreateButton(contentObject.transform, "TestXpButton", "TEST +100 XP", new Vector2(0, 215), new Vector2(440, 70), AddTestXp, new Color(0.18f, 0.42f, 0.72f), 25);
         CreateButton(contentObject.transform, "TestChestButton", "TEST +1 Siradan Sandik", new Vector2(0, 130), new Vector2(440, 70), AddTestChest, new Color(0.64f, 0.36f, 0.16f), 25);
         CreateButton(contentObject.transform, "TestRareChestButton", "TEST +1 Nadir Sandik", new Vector2(0, 45), new Vector2(440, 70), AddTestRareChest, new Color(0.30f, 0.42f, 0.68f), 25);
-        CreateButton(contentObject.transform, "TestLuxuryChestButton", "TEST +1 Luks Sandik", new Vector2(0, -40), new Vector2(440, 70), AddTestLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 25);
+        CreateButton(contentObject.transform, "TestLuxuryChestButton", "TEST +1 Ozel Sandik", new Vector2(0, -40), new Vector2(440, 70), AddTestLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 25);
         CreateButton(contentObject.transform, "ResetButton", "RESET", new Vector2(0, -125), new Vector2(440, 70), ResetSave, new Color(0.20f, 0.20f, 0.20f), 25);
         TMP_Text futureText = CreateText(contentObject.transform, "FutureTestText", "Yeni testler buraya eklenecek", new Vector2(0, -210), new Vector2(440, 70), 22);
         futureText.color = Color.black;
@@ -2532,12 +2528,9 @@ public class GameManager : MonoBehaviour
         {
             chestPanelText.text = "Siradan Sandik: " + chests
                 + "\nNadir Sandik: " + rareChests
-                + "\nLuks Sandik: " + luxuryChests
-                + "\nGem: " + gems
-                + "\nGenel Boya Kutusu: " + paintPieces
+                + "\nOzel Sandik: " + luxuryChests
                 + "\nTahta: " + woodPieces
-                + GetPaintInventorySummary()
-                + "\n\nSon odul: " + lastChestRewardText;
+                + GetPaintInventorySummary();
         }
 
         if (chestOpenButtonText != null)
@@ -2559,7 +2552,7 @@ public class GameManager : MonoBehaviour
         if (luxuryChestOpenButtonText != null)
         {
             Button luxuryButton = luxuryChestOpenButtonText.GetComponentInParent<Button>();
-            luxuryChestOpenButtonText.text = luxuryChests > 0 ? "Luks\nAc" : "Luks\nYok";
+            luxuryChestOpenButtonText.text = luxuryChests > 0 ? "Ozel\nAc" : "Ozel\nYok";
             if (luxuryButton != null)
                 luxuryButton.interactable = luxuryChests > 0;
         }
