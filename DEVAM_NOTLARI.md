@@ -121,11 +121,12 @@ VIP sistemi olabilir.
 
 ## Sonraki Is Sirasi
 
-1. Sahne perspektifini My Cafe benzeri izometrik oda olarak netlestir.
-2. `Satis / Musteri / Kacan` yazisini kaldir veya daha iyi yere tasi.
-3. Market butonu ve market penceresi ekle.
-4. `ItemDatabase` altyapisini kur.
-5. Ilk dekor itemlerini ItemId ile tanimla.
-6. Sandik sistemini ItemId ile odul verecek hale getir.
-7. Tema secim sistemi ekle.
-8. Market icinde ilk kombin setlerini prototip olarak goster.
+1. Sandiklar ekranini duzelt: gem logu/son gem odulu kalabaligini kaldir, siradan boya sayaci/ozeti net gorunsun.
+2. Sahne perspektifini My Cafe benzeri izometrik oda olarak netlestir.
+3. `Satis / Musteri / Kacan` yazisini kaldir veya daha iyi yere tasi.
+4. Market butonu ve market penceresi ekle.
+5. `ItemDatabase` altyapisini kur.
+6. Ilk dekor itemlerini ItemId ile tanimla.
+7. Sandik sistemini ItemId ile odul verecek hale getir.
+8. Tema secim sistemi ekle.
+9. Market icinde ilk kombin setlerini prototip olarak goster.
