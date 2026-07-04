@@ -964,8 +964,8 @@ public class GameManager : MonoBehaviour
         roomUnlockButtonText = CreateButton(gameFrame, "RoomUnlockButton", "", new Vector2(0, -382), new Vector2(380, 46), UnlockCurrentRoom, new Color(0.22f, 0.48f, 0.40f), 19);
 
         coinText = CreateText(gameFrame, "CoinText", "Coin: 0", new Vector2(0, 500), new Vector2(520, 56), 36);
-        tapPowerText = CreateText(gameFrame, "TapPowerText", "Tiklama Gucu: 1", new Vector2(0, 456), new Vector2(460, 38), 22);
-        autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Saniyelik Gelir: 0", new Vector2(0, 418), new Vector2(460, 38), 22);
+        tapPowerText = CreateText(gameFrame, "TapPowerText", "Kahve Degeri: 1", new Vector2(0, 456), new Vector2(460, 38), 22);
+        autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Pasif Gelir: 0", new Vector2(0, 418), new Vector2(460, 38), 22);
         activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
         customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
         customerStatsText.gameObject.SetActive(false);
@@ -2497,10 +2497,10 @@ public class GameManager : MonoBehaviour
             coinText.text = "Coin: " + Mathf.FloorToInt(coins);
 
         if (tapPowerText != null)
-            tapPowerText.text = "Tiklama Gucu: " + GetCurrentTapPower();
+            tapPowerText.text = "Kahve Degeri: " + GetCurrentTapPower();
 
         if (autoIncomeText != null)
-            autoIncomeText.text = "Saniyelik Gelir: " + (coinsPerSecond * incomeMultiplier).ToString("0.#");
+            autoIncomeText.text = "Pasif Gelir: " + (coinsPerSecond * incomeMultiplier).ToString("0.#");
 
         if (activeBoostText != null)
         {
