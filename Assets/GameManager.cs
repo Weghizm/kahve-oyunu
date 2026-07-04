@@ -1,0 +1,3130 @@
+﻿using System;
+using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+public class GameManager : MonoBehaviour
+{
+    private const float OfferCooldownSeconds = 600f;
+    private const float OfferVisibleSeconds = 60f;
+    private const float RewardBoostSeconds = 300f;
+    private const float MaxBoostSeconds = 1800f;
+    private const float CustomerSpawnSeconds = 8f;
+    private const float CustomerVisibleSeconds = 12f;
+    private const int UpgradeMaxLevel = 30;
+    private const int NextTierRequiredLevel = 20;
+    private const float UpgradeCostGrowth = 1.25f;
+    private const int PremiumTierUnlockLevel = 5;
+    private const int SignatureTierUnlockLevel = 10;
+    private const int SeniorBaristaUnlockLevel = 6;
+    private const int MasterBaristaUnlockLevel = 12;
+
+    private const int BasicCoffeeTapGain = 1;
+    private const int PremiumCoffeeTapGain = 5;
+    private const int SignatureCoffeeTapGain = 20;
+    private const float BasicMachineIncomeGain = 1.5f;
+    private const float EspressoMachineIncomeGain = 8f;
+    private const float PremiumMachineIncomeGain = 35f;
+    private const float JuniorBaristaIncomeGain = 5f;
+    private const float SeniorBaristaIncomeGain = 20f;
+    private const float MasterBaristaIncomeGain = 80f;
+
+    private const int NormalCustomerCoinMultiplier = 2;
+    private const int RushCustomerCoinMultiplier = 4;
+    private const int VipCustomerCoinMultiplier = 10;
+    private const int NormalCustomerXpReward = 1;
+    private const int RushCustomerXpReward = 1;
+    private const int VipCustomerXpReward = 3;
+    private const double DailyRewardCooldownHours = 24;
+    private const int DailyRewardCycleDays = 7;
+    private const int DecorUnlockCost = 3;
+    private const double DailyTasksResetHours = 24;
+    private const int RoomCount = 3;
+    private const int ProductionRoomUnlockCost = 5000;
+    private const int VipRoomUnlockCost = 25000;
+
+    private TMP_Text coinText;
+    private TMP_Text tapPowerText;
+    private TMP_Text autoIncomeText;
+    private TMP_Text activeBoostText;
+    private TMP_Text customerStatsText;
+    private TMP_Text gemText;
+    private TMP_Text chestText;
+    private TMP_Text xpText;
+    private TMP_Text roomNameText;
+    private TMP_Text roomUnlockButtonText;
+    private TMP_Text taskPanelText;
+    private TMP_Text taskRewardButtonText;
+    private TMP_Text dailyTasksPanelText;
+    private TMP_Text dailyTaskCoffeeButtonText;
+    private TMP_Text dailyTaskCustomerButtonText;
+    private TMP_Text dailyTaskChestButtonText;
+    private TMP_Text dailyRewardPanelText;
+    private TMP_Text dailyRewardButtonText;
+    private TMP_Text chestPanelText;
+    private TMP_Text chestOpenButtonText;
+    private TMP_Text decorPanelText;
+    private TMP_Text pinkWallButtonText;
+    private TMP_Text mintWallButtonText;
+    private TMP_Text creamFloorButtonText;
+    private TMP_Text roseTableButtonText;
+    private TMP_Text basicCoffeeButtonText;
+    private TMP_Text premiumCoffeeButtonText;
+    private TMP_Text signatureCoffeeButtonText;
+    private TMP_Text basicMachineButtonText;
+    private TMP_Text espressoMachineButtonText;
+    private TMP_Text premiumMachineButtonText;
+    private TMP_Text juniorBaristaButtonText;
+    private TMP_Text seniorBaristaButtonText;
+    private TMP_Text masterBaristaButtonText;
+    private Image taskNotifyDot;
+    private Image dailyTasksNotifyDot;
+    private TMP_Text offlineText;
+    private TMP_Text adBoostButtonText;
+    private TMP_Text offerButtonText;
+    private TMP_Text offerPanelText;
+    private TMP_Text customerButtonText;
+    private TMP_Text vipBadgeText;
+    private GameObject offlinePanel;
+    private GameObject dailyRewardPanel;
+    private GameObject chestPanel;
+    private GameObject decorPanel;
+    private GameObject testPanel;
+    private GameObject dailyTasksPanel;
+    private GameObject taskPanel;
+    private GameObject coffeePanel;
+    private GameObject machinePanel;
+    private GameObject baristaPanel;
+    private GameObject offerButtonObject;
+    private GameObject offerPanel;
+    private GameObject customerButtonObject;
+    private GameObject vipBadgeObject;
+    private TMP_Text coffeeUpgradeButtonText;
+    private TMP_Text machineUpgradeButtonText;
+    private TMP_Text baristaUpgradeButtonText;
+    private Button coffeeUpgradeButton;
+    private Button machineUpgradeButton;
+    private Button baristaUpgradeButton;
+    private Image backgroundTapImage;
+    private Image leftWallImage;
+    private Image rightWallImage;
+    private Image floorPreviewImage;
+    private Image tablePreviewImage;
+    private Image backWallTopTrim;
+    private Image leftCornerLine;
+    private Image rightCornerLine;
+    private Image floorBackEdge;
+    private Image floorCenterLine;
+    private Image floorLeftPerspectiveLine;
+    private Image floorRightPerspectiveLine;
+    private Image roomAccentStrip;
+    private IsoQuadGraphic isoFloorGraphic;
+    private IsoQuadGraphic isoBackWallGraphic;
+    private IsoQuadGraphic isoLeftWallGraphic;
+    private IsoQuadGraphic isoRightWallGraphic;
+    private IsoQuadGraphic isoFloorShadowGraphic;
+    private Image productionMachineVisual;
+    private Image productionConveyorVisual;
+    private Image vipCounterVisual;
+    private Image vipRugVisual;
+    private Image vipPlantVisual;
+    private Image roomLockOverlay;
+
+    private float coins = 0;
+    private int coinsPerClick = 1;
+    private float coinsPerSecond = 0;
+
+    private int coffeeUpgradeLevel = 0;
+    private int coffeeUpgradeCost = 25;
+    private int premiumCoffeeLevel = 0;
+    private int premiumCoffeeCost = 750;
+    private int signatureCoffeeLevel = 0;
+    private int signatureCoffeeCost = 5000;
+
+    private int machineUpgradeLevel = 0;
+    private int machineUpgradeCost = 100;
+    private int espressoMachineLevel = 0;
+    private int espressoMachineCost = 1000;
+    private int premiumMachineLevel = 0;
+    private int premiumMachineCost = 10000;
+
+    private int baristaUpgradeLevel = 0;
+    private int baristaUpgradeCost = 250;
+    private int seniorBaristaLevel = 0;
+    private int seniorBaristaCost = 2500;
+    private int masterBaristaLevel = 0;
+    private int masterBaristaCost = 20000;
+
+    private float saveTimer = 0;
+    private float bonusTimer = 0;
+    private float incomeMultiplier = 1;
+    private float offerCooldownTimer = 10f;
+    private float offerVisibleTimer = 0;
+    private float customerSpawnTimer = 5f;
+    private float customerVisibleTimer = 0;
+    private string currentCustomerName = "Musteri";
+    private int currentCustomerCoinMultiplier = 2;
+    private int currentCustomerXpReward = 1;
+    private Color currentCustomerColor = new Color(0.18f, 0.58f, 0.32f);
+    private int lastOfflineCoins = 0;
+
+    private int gems = 0;
+    private int chests = 0;
+    private int paintPieces = 0;
+    private int woodPieces = 0;
+    private string lastChestRewardText = "Henuz sandik acilmadi.";
+    private bool pinkWallUnlocked = false;
+    private bool mintWallUnlocked = false;
+    private bool creamFloorUnlocked = false;
+    private bool roseTableUnlocked = false;
+    private int selectedWallStyle = 0;
+    private int selectedFloorStyle = 0;
+    private int selectedTableStyle = 0;
+    private int xp = 0;
+    private int playerLevel = 1;
+    private int dailyRewardDay = 0;
+    private string lastDailyRewardUtc = "";
+    private int totalCoffeeSold = 0;
+    private int customerSales = 0;
+    private int dailyCoffeeSold = 0;
+    private int dailyCustomerSales = 0;
+    private int dailyChestsOpened = 0;
+    private bool dailyCoffeeRewardClaimed = false;
+    private bool dailyCustomerRewardClaimed = false;
+    private bool dailyChestRewardClaimed = false;
+    private string lastDailyTasksUtc = "";
+    private int vipCustomerSales = 0;
+    private int missedCustomers = 0;
+    private bool firstTaskRewardClaimed = false;
+    private bool secondTaskRewardClaimed = false;
+    private bool thirdTaskRewardClaimed = false;
+    private bool fourthTaskRewardClaimed = false;
+    private bool fifthTaskRewardClaimed = false;
+    private int seenTaskId = 0;
+    private int currentRoomIndex = 0;
+    private bool productionRoomUnlocked = false;
+    private bool vipRoomUnlocked = false;
+
+    private void Start()
+    {
+        ForceLandscapeMode();
+        LoadGame();
+        RefreshDailyTasksIfNeeded();
+        ApplyOfflineEarnings();
+        BuildUI();
+        UpdateUI();
+        ShowDailyRewardIfAvailable();
+    }
+
+    private void ForceLandscapeMode()
+    {
+        Screen.autorotateToPortrait = false;
+        Screen.autorotateToPortraitUpsideDown = false;
+        Screen.autorotateToLandscapeLeft = true;
+        Screen.autorotateToLandscapeRight = true;
+        Screen.orientation = ScreenOrientation.LandscapeLeft;
+        Screen.fullScreen = true;
+    }
+
+    private void Update()
+    {
+        UpdateBoostTimer();
+        UpdateOfferTimers();
+        UpdateCustomerTimers();
+        RefreshDailyTasksIfNeeded();
+
+        if (coinsPerSecond > 0)
+        {
+            coins += coinsPerSecond * incomeMultiplier * Time.deltaTime;
+        }
+
+        UpdateUI();
+
+        saveTimer += Time.deltaTime;
+        if (saveTimer >= 5f)
+        {
+            saveTimer = 0;
+            SaveGame();
+        }
+    }
+
+    private void UpdateBoostTimer()
+    {
+        if (bonusTimer <= 0)
+        {
+            bonusTimer = 0;
+            incomeMultiplier = 1;
+            return;
+        }
+
+        bonusTimer -= Time.deltaTime;
+        if (bonusTimer <= 0)
+        {
+            bonusTimer = 0;
+            incomeMultiplier = 1;
+        }
+    }
+
+
+    private void UpdateOfferTimers()
+    {
+        if (offerVisibleTimer > 0)
+        {
+            offerVisibleTimer -= Time.deltaTime;
+            if (offerVisibleTimer <= 0)
+            {
+                offerVisibleTimer = 0;
+                offerCooldownTimer = OfferCooldownSeconds;
+                if (offerPanel != null)
+                {
+                    offerPanel.SetActive(false);
+                }
+            }
+            return;
+        }
+
+        offerCooldownTimer -= Time.deltaTime;
+        if (offerCooldownTimer <= 0)
+        {
+            offerVisibleTimer = OfferVisibleSeconds;
+            offerCooldownTimer = 0;
+        }
+    }
+
+    private void UpdateCustomerTimers()
+    {
+        if (customerVisibleTimer > 0)
+        {
+            customerVisibleTimer -= Time.deltaTime;
+            if (customerVisibleTimer <= 0)
+            {
+                customerVisibleTimer = 0;
+                customerSpawnTimer = CustomerSpawnSeconds;
+                missedCustomers++;
+                SaveGame();
+            }
+            return;
+        }
+
+        customerSpawnTimer -= Time.deltaTime;
+        if (customerSpawnTimer <= 0)
+        {
+            SpawnCustomer();
+        }
+    }
+
+    private void SpawnCustomer()
+    {
+        int roll = UnityEngine.Random.Range(0, 100);
+
+        if (roll < 10)
+        {
+            currentCustomerName = "VIP Musteri";
+            currentCustomerCoinMultiplier = VipCustomerCoinMultiplier;
+            currentCustomerXpReward = VipCustomerXpReward;
+            currentCustomerColor = new Color(0.78f, 0.50f, 0.08f);
+            customerVisibleTimer = 8f;
+        }
+        else if (roll < 30)
+        {
+            currentCustomerName = "Aceleci Musteri";
+            currentCustomerCoinMultiplier = RushCustomerCoinMultiplier;
+            currentCustomerXpReward = RushCustomerXpReward;
+            currentCustomerColor = new Color(0.82f, 0.28f, 0.18f);
+            customerVisibleTimer = 6f;
+        }
+        else
+        {
+            currentCustomerName = "Musteri";
+            currentCustomerCoinMultiplier = NormalCustomerCoinMultiplier;
+            currentCustomerXpReward = NormalCustomerXpReward;
+            currentCustomerColor = new Color(0.18f, 0.58f, 0.32f);
+            customerVisibleTimer = CustomerVisibleSeconds;
+        }
+
+        customerSpawnTimer = 0;
+    }
+
+    public void SellCoffee()
+    {
+        SellCoffeeFromScene();
+    }
+
+    public void SellCoffeeFromEmptySpace()
+    {
+        SellCoffeeFromScene();
+    }
+
+    private void SellCoffeeFromScene()
+    {
+        coins += GetCurrentTapPower();
+        totalCoffeeSold++;
+        dailyCoffeeSold++;
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void SellCoffeeToCustomer()
+    {
+        bool soldToVip = currentCustomerName == "VIP Musteri";
+        coins += GetCurrentCustomerCoinReward();
+        totalCoffeeSold++;
+        customerSales++;
+        dailyCoffeeSold++;
+        dailyCustomerSales++;
+        if (soldToVip)
+        {
+            vipCustomerSales++;
+        }
+        AddXp(currentCustomerXpReward);
+        customerVisibleTimer = 0;
+        customerSpawnTimer = CustomerSpawnSeconds;
+        if (customerButtonObject != null)
+        {
+            customerButtonObject.SetActive(false);
+        }
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void AddTestCoins()
+    {
+        coins += 10000;
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void AddTestXp()
+    {
+        AddXp(100);
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void AddTestChest()
+    {
+        chests++;
+        lastChestRewardText = "Test sandigi eklendi.";
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void ResetSave()
+    {
+        PlayerPrefs.DeleteAll();
+        lastOfflineCoins = 0;
+        coins = 0;
+        coinsPerClick = 1;
+        coinsPerSecond = 0;
+        coffeeUpgradeLevel = 0;
+        coffeeUpgradeCost = 25;
+        premiumCoffeeLevel = 0;
+        premiumCoffeeCost = 750;
+        signatureCoffeeLevel = 0;
+        signatureCoffeeCost = 5000;
+        machineUpgradeLevel = 0;
+        machineUpgradeCost = 100;
+        espressoMachineLevel = 0;
+        espressoMachineCost = 1000;
+        premiumMachineLevel = 0;
+        premiumMachineCost = 10000;
+        baristaUpgradeLevel = 0;
+        baristaUpgradeCost = 250;
+        seniorBaristaLevel = 0;
+        seniorBaristaCost = 2500;
+        masterBaristaLevel = 0;
+        masterBaristaCost = 20000;
+        gems = 0;
+        chests = 0;
+        paintPieces = 0;
+        woodPieces = 0;
+        lastChestRewardText = "Henuz sandik acilmadi.";
+        pinkWallUnlocked = false;
+        mintWallUnlocked = false;
+        creamFloorUnlocked = false;
+        roseTableUnlocked = false;
+        selectedWallStyle = 0;
+        selectedFloorStyle = 0;
+        selectedTableStyle = 0;
+        currentRoomIndex = 0;
+        productionRoomUnlocked = false;
+        vipRoomUnlocked = false;
+        xp = 0;
+        playerLevel = 1;
+        dailyRewardDay = 0;
+        lastDailyRewardUtc = "";
+        totalCoffeeSold = 0;
+        customerSales = 0;
+        dailyCoffeeSold = 0;
+        dailyCustomerSales = 0;
+        dailyChestsOpened = 0;
+        dailyCoffeeRewardClaimed = false;
+        dailyCustomerRewardClaimed = false;
+        dailyChestRewardClaimed = false;
+        lastDailyTasksUtc = DateTime.UtcNow.Ticks.ToString();
+        vipCustomerSales = 0;
+        missedCustomers = 0;
+        firstTaskRewardClaimed = false;
+        secondTaskRewardClaimed = false;
+        thirdTaskRewardClaimed = false;
+        fourthTaskRewardClaimed = false;
+        fifthTaskRewardClaimed = false;
+        seenTaskId = 0;
+        bonusTimer = 0;
+        incomeMultiplier = 1;
+        offerCooldownTimer = 10f;
+        offerVisibleTimer = 0;
+        customerSpawnTimer = 5f;
+        customerVisibleTimer = 0;
+        if (offlinePanel != null) offlinePanel.SetActive(false);
+        if (dailyRewardPanel != null) dailyRewardPanel.SetActive(false);
+        if (chestPanel != null) chestPanel.SetActive(false);
+        if (decorPanel != null) decorPanel.SetActive(false);
+        if (testPanel != null) testPanel.SetActive(false);
+        if (dailyTasksPanel != null) dailyTasksPanel.SetActive(false);
+        if (offerPanel != null) offerPanel.SetActive(false);
+        if (coffeePanel != null) coffeePanel.SetActive(false);
+        if (machinePanel != null) machinePanel.SetActive(false);
+        if (baristaPanel != null) baristaPanel.SetActive(false);
+        if (customerButtonObject != null) customerButtonObject.SetActive(false);
+        if (vipBadgeObject != null) vipBadgeObject.SetActive(false);
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void WatchAdForBoost()
+    {
+        bonusTimer = Mathf.Min(MaxBoostSeconds, bonusTimer + RewardBoostSeconds);
+        incomeMultiplier = bonusTimer > 0 ? 2f : 1f;
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void OpenTimedOfferPanel()
+    {
+        if (offerVisibleTimer <= 0 || offerPanel == null)
+        {
+            return;
+        }
+
+        offerPanel.SetActive(true);
+        offerPanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void WatchTimedOfferAd()
+    {
+        WatchAdForBoost();
+        offerVisibleTimer = 0;
+        offerCooldownTimer = OfferCooldownSeconds;
+
+        if (offerPanel != null)
+        {
+            offerPanel.SetActive(false);
+        }
+
+        UpdateUI();
+        SaveGame();
+    }
+    public void OpenTaskPanel()
+    {
+        if (taskPanel == null)
+        {
+            return;
+        }
+
+        seenTaskId = GetCurrentTaskId();
+        taskPanel.SetActive(true);
+        taskPanel.transform.SetAsLastSibling();
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void CloseTaskPanel()
+    {
+        if (taskPanel != null)
+        {
+            taskPanel.SetActive(false);
+        }
+    }
+
+    public void OpenCoffeePanel()
+    {
+        if (coffeePanel == null)
+        {
+            return;
+        }
+
+        coffeePanel.SetActive(true);
+        coffeePanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void CloseCoffeePanel()
+    {
+        if (coffeePanel != null)
+        {
+            coffeePanel.SetActive(false);
+        }
+    }
+
+    public void OpenMachinePanel()
+    {
+        if (machinePanel == null)
+        {
+            return;
+        }
+
+        machinePanel.SetActive(true);
+        machinePanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void CloseMachinePanel()
+    {
+        if (machinePanel != null)
+        {
+            machinePanel.SetActive(false);
+        }
+    }
+
+    public void OpenBaristaPanel()
+    {
+        if (baristaPanel == null)
+        {
+            return;
+        }
+
+        baristaPanel.SetActive(true);
+        baristaPanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void CloseBaristaPanel()
+    {
+        if (baristaPanel != null)
+        {
+            baristaPanel.SetActive(false);
+        }
+    }
+
+    public void PreviousRoom()
+    {
+        currentRoomIndex--;
+        if (currentRoomIndex < 0)
+        {
+            currentRoomIndex = RoomCount - 1;
+        }
+
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void NextRoom()
+    {
+        currentRoomIndex++;
+        if (currentRoomIndex >= RoomCount)
+        {
+            currentRoomIndex = 0;
+        }
+
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void UnlockCurrentRoom()
+    {
+        if (IsCurrentRoomUnlocked())
+        {
+            return;
+        }
+
+        int cost = GetCurrentRoomUnlockCost();
+        if (coins < cost)
+        {
+            return;
+        }
+
+        coins -= cost;
+        if (currentRoomIndex == 1)
+        {
+            productionRoomUnlocked = true;
+        }
+        else if (currentRoomIndex == 2)
+        {
+            vipRoomUnlocked = true;
+        }
+
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void ClaimTaskReward()
+    {
+        if (!firstTaskRewardClaimed && totalCoffeeSold >= 10)
+        {
+            firstTaskRewardClaimed = true;
+            gems += 1;
+            AddXp(25);
+            seenTaskId = GetCurrentTaskId();
+            UpdateUI();
+            SaveGame();
+            return;
+        }
+
+        if (playerLevel >= 2 && !secondTaskRewardClaimed && GetTotalMachineLevel() >= 1)
+        {
+            secondTaskRewardClaimed = true;
+            gems += 2;
+            AddXp(50);
+            seenTaskId = GetCurrentTaskId();
+            UpdateUI();
+            SaveGame();
+            return;
+        }
+
+        if (playerLevel >= 3 && !thirdTaskRewardClaimed && customerSales >= 5)
+        {
+            thirdTaskRewardClaimed = true;
+            gems += 2;
+            AddXp(75);
+            seenTaskId = GetCurrentTaskId();
+            UpdateUI();
+            SaveGame();
+            return;
+        }
+
+        if (playerLevel >= 4 && !fourthTaskRewardClaimed && GetTotalBaristaLevel() >= 1)
+        {
+            fourthTaskRewardClaimed = true;
+            gems += 3;
+            AddXp(100);
+            seenTaskId = GetCurrentTaskId();
+            UpdateUI();
+            SaveGame();
+            return;
+        }
+
+        if (playerLevel >= 5 && !fifthTaskRewardClaimed && vipCustomerSales >= 3)
+        {
+            fifthTaskRewardClaimed = true;
+            gems += 5;
+            AddXp(150);
+            seenTaskId = GetCurrentTaskId();
+            UpdateUI();
+            SaveGame();
+        }
+    }
+
+    private void AddXp(int amount)
+    {
+        xp += amount;
+        while (xp >= GetXpNeededForNextLevel())
+        {
+            xp -= GetXpNeededForNextLevel();
+            playerLevel++;
+        }
+    }
+
+    private int GetXpNeededForNextLevel()
+    {
+        return 100 + ((playerLevel - 1) * 50);
+    }
+
+    private int GetCurrentCustomerCoinReward()
+    {
+        return GetCurrentTapPower() * currentCustomerCoinMultiplier;
+    }
+
+    private int GetCurrentTapPower()
+    {
+        return Mathf.FloorToInt(coinsPerClick * incomeMultiplier);
+    }
+
+    private int GetTotalMachineLevel()
+    {
+        return machineUpgradeLevel + espressoMachineLevel + premiumMachineLevel;
+    }
+
+    private int GetTotalBaristaLevel()
+    {
+        return baristaUpgradeLevel + seniorBaristaLevel + masterBaristaLevel;
+    }
+
+    public void BuyCoffeeUpgrade()
+    {
+        if (coffeeUpgradeLevel >= UpgradeMaxLevel || coins < coffeeUpgradeCost) return;
+
+        coins -= coffeeUpgradeCost;
+        coffeeUpgradeLevel++;
+        coinsPerClick += BasicCoffeeTapGain;
+        coffeeUpgradeCost = Mathf.CeilToInt(coffeeUpgradeCost * UpgradeCostGrowth);
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void BuyPremiumCoffee()
+    {
+        if (premiumCoffeeLevel >= UpgradeMaxLevel || playerLevel < PremiumTierUnlockLevel || coffeeUpgradeLevel < NextTierRequiredLevel || coins < premiumCoffeeCost) return;
+
+        coins -= premiumCoffeeCost;
+        premiumCoffeeLevel++;
+        coinsPerClick += PremiumCoffeeTapGain;
+        premiumCoffeeCost = Mathf.CeilToInt(premiumCoffeeCost * UpgradeCostGrowth);
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void BuySignatureCoffee()
+    {
+        if (signatureCoffeeLevel >= UpgradeMaxLevel || playerLevel < SignatureTierUnlockLevel || premiumCoffeeLevel < NextTierRequiredLevel || coins < signatureCoffeeCost) return;
+
+        coins -= signatureCoffeeCost;
+        signatureCoffeeLevel++;
+        coinsPerClick += SignatureCoffeeTapGain;
+        signatureCoffeeCost = Mathf.CeilToInt(signatureCoffeeCost * UpgradeCostGrowth);
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void BuyMachineUpgrade()
+    {
+        if (machineUpgradeLevel >= UpgradeMaxLevel || coins < machineUpgradeCost) return;
+
+        coins -= machineUpgradeCost;
+        machineUpgradeLevel++;
+        coinsPerSecond += BasicMachineIncomeGain;
+        machineUpgradeCost = Mathf.CeilToInt(machineUpgradeCost * UpgradeCostGrowth);
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void BuyEspressoMachine()
+    {
+        if (espressoMachineLevel >= UpgradeMaxLevel || playerLevel < PremiumTierUnlockLevel || machineUpgradeLevel < NextTierRequiredLevel || coins < espressoMachineCost) return;
+
+        coins -= espressoMachineCost;
+        espressoMachineLevel++;
+        coinsPerSecond += EspressoMachineIncomeGain;
+        espressoMachineCost = Mathf.CeilToInt(espressoMachineCost * UpgradeCostGrowth);
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void BuyPremiumMachine()
+    {
+        if (premiumMachineLevel >= UpgradeMaxLevel || playerLevel < SignatureTierUnlockLevel || espressoMachineLevel < NextTierRequiredLevel || coins < premiumMachineCost) return;
+
+        coins -= premiumMachineCost;
+        premiumMachineLevel++;
+        coinsPerSecond += PremiumMachineIncomeGain;
+        premiumMachineCost = Mathf.CeilToInt(premiumMachineCost * UpgradeCostGrowth);
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void BuyBaristaUpgrade()
+    {
+        if (baristaUpgradeLevel >= UpgradeMaxLevel || coins < baristaUpgradeCost) return;
+
+        coins -= baristaUpgradeCost;
+        baristaUpgradeLevel++;
+        coinsPerSecond += JuniorBaristaIncomeGain;
+        baristaUpgradeCost = Mathf.CeilToInt(baristaUpgradeCost * UpgradeCostGrowth);
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void BuySeniorBarista()
+    {
+        if (seniorBaristaLevel >= UpgradeMaxLevel || playerLevel < SeniorBaristaUnlockLevel || baristaUpgradeLevel < NextTierRequiredLevel || coins < seniorBaristaCost) return;
+
+        coins -= seniorBaristaCost;
+        seniorBaristaLevel++;
+        coinsPerSecond += SeniorBaristaIncomeGain;
+        seniorBaristaCost = Mathf.CeilToInt(seniorBaristaCost * UpgradeCostGrowth);
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void BuyMasterBarista()
+    {
+        if (masterBaristaLevel >= UpgradeMaxLevel || playerLevel < MasterBaristaUnlockLevel || seniorBaristaLevel < NextTierRequiredLevel || coins < masterBaristaCost) return;
+
+        coins -= masterBaristaCost;
+        masterBaristaLevel++;
+        coinsPerSecond += MasterBaristaIncomeGain;
+        masterBaristaCost = Mathf.CeilToInt(masterBaristaCost * UpgradeCostGrowth);
+        UpdateUI();
+        SaveGame();
+    }
+
+    private void BuildUI()
+    {
+        Canvas canvas = FindObjectOfType<Canvas>();
+        if (canvas == null)
+        {
+            GameObject canvasObject = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            canvas = canvasObject.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        }
+        else
+        {
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        }
+
+        ConfigureCanvasForLandscape(canvas);
+        ClearCanvasChildren(canvas.transform);
+
+        if (FindObjectOfType<EventSystem>() == null)
+        {
+            new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+        }
+
+        RectTransform gameFrame = CreateSafeGameFrame(canvas.transform);
+
+        CreateCafeScene(gameFrame);
+        CreateBackgroundTapArea(gameFrame);
+
+        roomNameText = CreateText(gameFrame, "RoomNameText", "", new Vector2(0, -330), new Vector2(520, 42), 24);
+        roomNameText.gameObject.SetActive(false);
+        CreateButton(gameFrame, "PreviousRoomButton", "<", new Vector2(-735, -105), new Vector2(58, 86), PreviousRoom, new Color(0.25f, 0.32f, 0.38f), 30);
+        CreateButton(gameFrame, "NextRoomButton", ">", new Vector2(735, -105), new Vector2(58, 86), NextRoom, new Color(0.25f, 0.32f, 0.38f), 30);
+        roomUnlockButtonText = CreateButton(gameFrame, "RoomUnlockButton", "", new Vector2(0, -382), new Vector2(380, 46), UnlockCurrentRoom, new Color(0.22f, 0.48f, 0.40f), 19);
+
+        coinText = CreateText(gameFrame, "CoinText", "Coin: 0", new Vector2(0, 500), new Vector2(520, 56), 36);
+        tapPowerText = CreateText(gameFrame, "TapPowerText", "Tiklama Gucu: 1", new Vector2(0, 456), new Vector2(460, 38), 22);
+        autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Saniyelik Gelir: 0", new Vector2(0, 418), new Vector2(460, 38), 22);
+        activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
+        customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -522), new Vector2(620, 34), 18);
+        gemText = CreateText(gameFrame, "GemText", "Gem: 0", new Vector2(-760, 500), new Vector2(260, 46), 26);
+        chestText = CreateText(gameFrame, "ChestText", "Sandik: 0", new Vector2(-760, 456), new Vector2(260, 38), 20);
+        xpText = CreateText(gameFrame, "XpText", "Lv.1 XP: 0/100", new Vector2(650, 500), new Vector2(430, 46), 24);
+
+        CreateOfflinePanel(canvas.transform);
+        CreateDailyRewardPanel(canvas.transform);
+        CreateChestPanel(canvas.transform);
+        CreateDecorPanel(canvas.transform);
+        CreateTestPanel(canvas.transform);
+        CreateDailyTasksPanel(canvas.transform);
+        CreateTaskPanel(canvas.transform);
+        CreateCoffeePanel(canvas.transform);
+        CreateMachinePanel(canvas.transform);
+        CreateBaristaPanel(canvas.transform);
+        CreateTimedOfferButton(gameFrame);
+        CreateTimedOfferPanel(canvas.transform);
+        CreateCustomerButton(gameFrame);
+
+        CreateButton(gameFrame, "SellCoffeeButton", "SAT", new Vector2(0, -482), new Vector2(124, 56), SellCoffee, new Color(0.43f, 0.24f, 0.14f), 23);
+        adBoostButtonText = CreateButton(gameFrame, "AdBoostButton", "2x", new Vector2(850, 250), new Vector2(78, 78), WatchAdForBoost, new Color(0.18f, 0.38f, 0.82f), 20);
+        CreateButton(gameFrame, "OpenTestPanelButton", "T", new Vector2(850, -420), new Vector2(70, 64), OpenTestPanel, new Color(0.20f, 0.20f, 0.20f), 22);
+        TMP_Text tasksButtonText = CreateButton(gameFrame, "TasksButton", "G", new Vector2(-890, 285), new Vector2(74, 70), OpenTaskPanel, new Color(0.36f, 0.24f, 0.62f), 24);
+        taskNotifyDot = CreateNotifyDot(tasksButtonText.transform.parent, new Vector2(30, 28));
+        TMP_Text dailyTasksButtonText = CreateButton(gameFrame, "DailyTasksButton", "D", new Vector2(-890, 195), new Vector2(74, 70), OpenDailyTasksPanel, new Color(0.28f, 0.45f, 0.78f), 24);
+        dailyTasksNotifyDot = CreateNotifyDot(dailyTasksButtonText.transform.parent, new Vector2(30, 28));
+        CreateButton(gameFrame, "DailyRewardButton", "O", new Vector2(-890, 105), new Vector2(74, 70), OpenDailyRewardPanel, new Color(0.84f, 0.38f, 0.22f), 24);
+        CreateButton(gameFrame, "ChestsButton", "S", new Vector2(-890, 15), new Vector2(74, 70), OpenChestPanel, new Color(0.64f, 0.36f, 0.16f), 24);
+        CreateButton(gameFrame, "DecorButton", "Dek", new Vector2(-890, -75), new Vector2(74, 70), OpenDecorPanel, new Color(0.72f, 0.30f, 0.50f), 19);
+
+        coffeeUpgradeButtonText = CreateButton(gameFrame, "CoffeeUpgradeButton", "Kah", new Vector2(-150, -482), new Vector2(104, 56), OpenCoffeePanel, new Color(0.86f, 0.56f, 0.20f), 19);
+        coffeeUpgradeButton = coffeeUpgradeButtonText.GetComponentInParent<Button>();
+
+        machineUpgradeButtonText = CreateButton(gameFrame, "MachineUpgradeButton", "Mak", new Vector2(-275, -482), new Vector2(104, 56), OpenMachinePanel, new Color(0.20f, 0.55f, 0.48f), 19);
+        machineUpgradeButton = machineUpgradeButtonText.GetComponentInParent<Button>();
+
+        baristaUpgradeButtonText = CreateButton(gameFrame, "BaristaUpgradeButton", "Bar", new Vector2(150, -482), new Vector2(104, 56), OpenBaristaPanel, new Color(0.54f, 0.32f, 0.72f), 19);
+        baristaUpgradeButton = baristaUpgradeButtonText.GetComponentInParent<Button>();
+    }
+
+    private RectTransform CreateSafeGameFrame(Transform canvasTransform)
+    {
+        GameObject safeAreaObject = new GameObject("SafeGameArea", typeof(RectTransform));
+        safeAreaObject.transform.SetParent(canvasTransform, false);
+
+        RectTransform safeAreaRect = safeAreaObject.GetComponent<RectTransform>();
+        ApplySafeAreaAnchors(safeAreaRect);
+
+        GameObject frameObject = new GameObject("GameFrame16x9", typeof(RectTransform), typeof(AspectRatioFitter));
+        frameObject.transform.SetParent(safeAreaObject.transform, false);
+
+        RectTransform frameRect = frameObject.GetComponent<RectTransform>();
+        frameRect.anchorMin = new Vector2(0.5f, 0.5f);
+        frameRect.anchorMax = new Vector2(0.5f, 0.5f);
+        frameRect.pivot = new Vector2(0.5f, 0.5f);
+        frameRect.anchoredPosition = Vector2.zero;
+        frameRect.sizeDelta = new Vector2(1920, 1080);
+
+        AspectRatioFitter fitter = frameObject.GetComponent<AspectRatioFitter>();
+        fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+        fitter.aspectRatio = 16f / 9f;
+
+        return frameRect;
+    }
+
+    private void ApplySafeAreaAnchors(RectTransform rect)
+    {
+        if (Screen.width <= 0 || Screen.height <= 0)
+        {
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            return;
+        }
+
+        Rect safeArea = Screen.safeArea;
+        Vector2 anchorMin = safeArea.position;
+        Vector2 anchorMax = safeArea.position + safeArea.size;
+        anchorMin.x /= Screen.width;
+        anchorMin.y /= Screen.height;
+        anchorMax.x /= Screen.width;
+        anchorMax.y /= Screen.height;
+
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+    }
+
+    private void ConfigureCanvasForLandscape(Canvas canvas)
+    {
+        CanvasScaler scaler = canvas.GetComponent<CanvasScaler>();
+        if (scaler == null)
+        {
+            scaler = canvas.gameObject.AddComponent<CanvasScaler>();
+        }
+
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920, 1080);
+        scaler.matchWidthOrHeight = 0.5f;
+    }
+
+    private void ClearCanvasChildren(Transform canvasTransform)
+    {
+        for (int i = canvasTransform.childCount - 1; i >= 0; i--)
+        {
+            Transform child = canvasTransform.GetChild(i);
+            if (child.GetComponent<GameManager>() != null)
+            {
+                continue;
+            }
+
+            Destroy(child.gameObject);
+        }
+    }
+
+    public void CloseOfflinePanel()
+    {
+        CollectOfflineCoins(1);
+    }
+
+    public void CollectOfflineDouble()
+    {
+        CollectOfflineCoins(2);
+    }
+
+    private void CollectOfflineCoins(int multiplier)
+    {
+        if (lastOfflineCoins > 0)
+        {
+            coins += lastOfflineCoins * multiplier;
+            lastOfflineCoins = 0;
+            PlayerPrefs.SetInt("lastOfflineCoins", 0);
+            UpdateUI();
+        }
+        if (offlinePanel != null)
+        {
+            offlinePanel.SetActive(false);
+        }
+
+        SaveGame();
+    }
+
+    private void CreateOfflinePanel(Transform parent)
+    {
+        offlinePanel = new GameObject("OfflinePanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        offlinePanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = offlinePanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 40);
+        panelRect.sizeDelta = new Vector2(860, 390);
+
+        Image panelImage = offlinePanel.GetComponent<Image>();
+        panelImage.color = new Color(1f, 0.96f, 0.82f, 0.96f);
+
+        offlineText = CreateText(offlinePanel.transform, "OfflineText", "", new Vector2(0, 95), new Vector2(760, 150), 42);
+        offlineText.color = Color.black;
+
+        CreateButton(offlinePanel.transform, "OfflineCollectButton", "Topla", new Vector2(-220, -105), new Vector2(360, 100), CloseOfflinePanel, new Color(0.20f, 0.55f, 0.36f), 34);
+        CreateButton(offlinePanel.transform, "OfflineDoubleButton", "2x Topla", new Vector2(220, -105), new Vector2(360, 100), CollectOfflineDouble, new Color(0.18f, 0.38f, 0.82f), 34);
+        offlinePanel.transform.SetAsLastSibling();
+        offlinePanel.SetActive(false);
+    }
+
+    public void OpenDailyRewardPanel()
+    {
+        if (dailyRewardPanel == null)
+        {
+            return;
+        }
+
+        dailyRewardPanel.SetActive(true);
+        dailyRewardPanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void CloseDailyRewardPanel()
+    {
+        if (dailyRewardPanel != null)
+        {
+            dailyRewardPanel.SetActive(false);
+        }
+    }
+
+    public void ClaimDailyReward()
+    {
+        if (!CanClaimDailyReward())
+        {
+            return;
+        }
+
+        int gemReward = GetDailyGemReward(dailyRewardDay);
+        int chestReward = GetDailyChestReward(dailyRewardDay);
+
+        gems += gemReward;
+        chests += chestReward;
+        lastDailyRewardUtc = DateTime.UtcNow.Ticks.ToString();
+        dailyRewardDay = (dailyRewardDay + 1) % DailyRewardCycleDays;
+
+        if (dailyRewardPanel != null)
+        {
+            dailyRewardPanel.SetActive(false);
+        }
+
+        UpdateUI();
+        SaveGame();
+    }
+
+    private void ShowDailyRewardIfAvailable()
+    {
+        if (CanClaimDailyReward())
+        {
+            OpenDailyRewardPanel();
+        }
+    }
+
+    private void CreateDailyRewardPanel(Transform parent)
+    {
+        dailyRewardPanel = new GameObject("DailyRewardPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        dailyRewardPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = dailyRewardPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 25);
+        panelRect.sizeDelta = new Vector2(900, 650);
+
+        Image panelImage = dailyRewardPanel.GetComponent<Image>();
+        panelImage.color = new Color(1f, 0.91f, 0.84f, 0.98f);
+
+        TMP_Text title = CreateText(dailyRewardPanel.transform, "DailyRewardTitle", "Gunluk Giris Odulu", new Vector2(0, 270), new Vector2(820, 70), 42);
+        title.color = Color.black;
+
+        dailyRewardPanelText = CreateText(dailyRewardPanel.transform, "DailyRewardText", "", new Vector2(0, 65), new Vector2(790, 330), 28);
+        dailyRewardPanelText.color = Color.black;
+
+        dailyRewardButtonText = CreateButton(dailyRewardPanel.transform, "DailyRewardClaimButton", "Odulu Al", new Vector2(-190, -225), new Vector2(360, 85), ClaimDailyReward, new Color(0.84f, 0.38f, 0.22f), 32);
+        CreateButton(dailyRewardPanel.transform, "DailyRewardCloseButton", "Kapat", new Vector2(230, -225), new Vector2(300, 85), CloseDailyRewardPanel, new Color(0.20f, 0.20f, 0.20f), 30);
+
+        dailyRewardPanel.transform.SetAsLastSibling();
+        dailyRewardPanel.SetActive(false);
+    }
+
+    public void OpenChestPanel()
+    {
+        if (chestPanel == null)
+        {
+            return;
+        }
+
+        chestPanel.SetActive(true);
+        chestPanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void CloseChestPanel()
+    {
+        if (chestPanel != null)
+        {
+            chestPanel.SetActive(false);
+        }
+    }
+
+    public void OpenChest()
+    {
+        if (chests <= 0)
+        {
+            lastChestRewardText = "Acacak sandigin yok.";
+            UpdateUI();
+            return;
+        }
+
+        chests--;
+        dailyChestsOpened++;
+        int roll = UnityEngine.Random.Range(0, 100);
+
+        if (roll < 50)
+        {
+            gems += 1;
+            lastChestRewardText = "Sandiktan 1 Gem cikti.";
+        }
+        else if (roll < 80)
+        {
+            gems += 2;
+            lastChestRewardText = "Sandiktan 2 Gem cikti.";
+        }
+        else if (roll < 95)
+        {
+            paintPieces += 1;
+            lastChestRewardText = "Sandiktan 1 Boya Parcasi cikti.";
+        }
+        else
+        {
+            woodPieces += 1;
+            gems += 3;
+            lastChestRewardText = "Nadir odul: 1 Tahta + 3 Gem!";
+        }
+
+        UpdateUI();
+        SaveGame();
+    }
+
+    private void CreateChestPanel(Transform parent)
+    {
+        chestPanel = new GameObject("ChestPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        chestPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = chestPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 25);
+        panelRect.sizeDelta = new Vector2(900, 560);
+
+        Image panelImage = chestPanel.GetComponent<Image>();
+        panelImage.color = new Color(0.98f, 0.91f, 0.78f, 0.98f);
+
+        TMP_Text title = CreateText(chestPanel.transform, "ChestPanelTitle", "Sandiklar", new Vector2(0, 225), new Vector2(820, 70), 44);
+        title.color = Color.black;
+
+        chestPanelText = CreateText(chestPanel.transform, "ChestPanelText", "", new Vector2(0, 45), new Vector2(800, 260), 30);
+        chestPanelText.color = Color.black;
+
+        chestOpenButtonText = CreateButton(chestPanel.transform, "ChestOpenButton", "Sandik Ac", new Vector2(-190, -200), new Vector2(360, 90), OpenChest, new Color(0.64f, 0.36f, 0.16f), 34);
+        CreateButton(chestPanel.transform, "ChestCloseButton", "Kapat", new Vector2(230, -200), new Vector2(300, 90), CloseChestPanel, new Color(0.20f, 0.20f, 0.20f), 30);
+
+        chestPanel.transform.SetAsLastSibling();
+        chestPanel.SetActive(false);
+    }
+
+    public void OpenDecorPanel()
+    {
+        if (decorPanel == null)
+        {
+            return;
+        }
+
+        decorPanel.SetActive(true);
+        decorPanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void CloseDecorPanel()
+    {
+        if (decorPanel != null)
+        {
+            decorPanel.SetActive(false);
+        }
+    }
+
+    public void UnlockOrSelectPinkWall()
+    {
+        if (!pinkWallUnlocked)
+        {
+            if (paintPieces < DecorUnlockCost) return;
+            paintPieces -= DecorUnlockCost;
+            pinkWallUnlocked = true;
+        }
+
+        selectedWallStyle = 1;
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void UnlockOrSelectMintWall()
+    {
+        if (!mintWallUnlocked)
+        {
+            if (paintPieces < DecorUnlockCost) return;
+            paintPieces -= DecorUnlockCost;
+            mintWallUnlocked = true;
+        }
+
+        selectedWallStyle = 2;
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void UnlockOrSelectCreamFloor()
+    {
+        if (!creamFloorUnlocked)
+        {
+            if (paintPieces < 2) return;
+            paintPieces -= 2;
+            creamFloorUnlocked = true;
+        }
+
+        selectedFloorStyle = 1;
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void UnlockOrSelectRoseTable()
+    {
+        if (!roseTableUnlocked)
+        {
+            if (woodPieces < 5) return;
+            woodPieces -= 5;
+
+            roseTableUnlocked = true;
+        }
+
+        selectedTableStyle = 1;
+        UpdateUI();
+        SaveGame();
+    }
+
+    private void CreateDecorPanel(Transform parent)
+    {
+        decorPanel = new GameObject("DecorPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        decorPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = decorPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 15);
+        panelRect.sizeDelta = new Vector2(900, 690);
+
+        Image panelImage = decorPanel.GetComponent<Image>();
+        panelImage.color = new Color(1f, 0.90f, 0.95f, 0.98f);
+
+        TMP_Text title = CreateText(decorPanel.transform, "DecorPanelTitle", "Dekorasyon", new Vector2(0, 285), new Vector2(820, 70), 44);
+        title.color = Color.black;
+
+        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(0, 220), new Vector2(800, 55), 25);
+        decorPanelText.color = Color.black;
+
+        pinkWallButtonText = CreateButton(decorPanel.transform, "PinkWallButton", "Pembe Duvar", new Vector2(0, 120), new Vector2(760, 80), UnlockOrSelectPinkWall, new Color(0.82f, 0.34f, 0.55f), 27);
+        mintWallButtonText = CreateButton(decorPanel.transform, "MintWallButton", "Mint Duvar", new Vector2(0, 25), new Vector2(760, 80), UnlockOrSelectMintWall, new Color(0.28f, 0.62f, 0.54f), 27);
+        creamFloorButtonText = CreateButton(decorPanel.transform, "CreamFloorButton", "Krem Zemin", new Vector2(0, -70), new Vector2(760, 80), UnlockOrSelectCreamFloor, new Color(0.72f, 0.55f, 0.28f), 27);
+        roseTableButtonText = CreateButton(decorPanel.transform, "RoseTableButton", "Rose Masa", new Vector2(0, -165), new Vector2(760, 80), UnlockOrSelectRoseTable, new Color(0.70f, 0.30f, 0.45f), 27);
+
+        CreateButton(decorPanel.transform, "DecorCloseButton", "Kapat", new Vector2(0, -285), new Vector2(300, 70), CloseDecorPanel, new Color(0.20f, 0.20f, 0.20f), 28);
+
+        decorPanel.transform.SetAsLastSibling();
+        decorPanel.SetActive(false);
+    }
+
+    public void OpenTestPanel()
+    {
+        if (testPanel == null)
+        {
+            return;
+        }
+
+        testPanel.SetActive(true);
+        testPanel.transform.SetAsLastSibling();
+    }
+
+    public void CloseTestPanel()
+    {
+        if (testPanel != null)
+        {
+            testPanel.SetActive(false);
+        }
+    }
+
+    private void CreateTestPanel(Transform parent)
+    {
+        testPanel = new GameObject("TestPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        testPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = testPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 20);
+        panelRect.sizeDelta = new Vector2(620, 540);
+
+        Image panelImage = testPanel.GetComponent<Image>();
+        panelImage.color = new Color(0.92f, 0.92f, 0.92f, 0.97f);
+
+        GameObject dragHandleObject = new GameObject("TestPanelDragHandle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(FloatingWindowDrag));
+        dragHandleObject.transform.SetParent(testPanel.transform, false);
+
+        RectTransform dragHandleRect = dragHandleObject.GetComponent<RectTransform>();
+        dragHandleRect.anchorMin = new Vector2(0.5f, 0.5f);
+        dragHandleRect.anchorMax = new Vector2(0.5f, 0.5f);
+        dragHandleRect.anchoredPosition = new Vector2(0, 215);
+        dragHandleRect.sizeDelta = new Vector2(560, 64);
+
+        Image dragHandleImage = dragHandleObject.GetComponent<Image>();
+        dragHandleImage.color = new Color(0.78f, 0.78f, 0.78f, 0.95f);
+
+        FloatingWindowDrag dragHandle = dragHandleObject.GetComponent<FloatingWindowDrag>();
+        dragHandle.target = panelRect;
+
+        TMP_Text title = CreateText(dragHandleObject.transform, "TestPanelTitle", "Test Paneli - Tut ve Tasi", Vector2.zero, dragHandleRect.sizeDelta, 30);
+        title.color = Color.black;
+
+        GameObject scrollAreaObject = new GameObject("TestScrollArea", typeof(RectTransform), typeof(ScrollRect));
+        scrollAreaObject.transform.SetParent(testPanel.transform, false);
+
+        RectTransform scrollAreaRect = scrollAreaObject.GetComponent<RectTransform>();
+        scrollAreaRect.anchorMin = new Vector2(0.5f, 0.5f);
+        scrollAreaRect.anchorMax = new Vector2(0.5f, 0.5f);
+        scrollAreaRect.anchoredPosition = new Vector2(-15, 0);
+        scrollAreaRect.sizeDelta = new Vector2(500, 300);
+
+        GameObject viewportObject = new GameObject("TestScrollViewport", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Mask));
+        viewportObject.transform.SetParent(scrollAreaObject.transform, false);
+
+        RectTransform viewportRect = viewportObject.GetComponent<RectTransform>();
+        viewportRect.anchorMin = Vector2.zero;
+        viewportRect.anchorMax = Vector2.one;
+        viewportRect.offsetMin = Vector2.zero;
+        viewportRect.offsetMax = Vector2.zero;
+
+        Image viewportImage = viewportObject.GetComponent<Image>();
+        viewportImage.color = new Color(1f, 1f, 1f, 0.05f);
+
+        Mask viewportMask = viewportObject.GetComponent<Mask>();
+        viewportMask.showMaskGraphic = false;
+
+        GameObject contentObject = new GameObject("TestScrollContent", typeof(RectTransform));
+        contentObject.transform.SetParent(viewportObject.transform, false);
+
+        RectTransform contentRect = contentObject.GetComponent<RectTransform>();
+        contentRect.anchorMin = new Vector2(0.5f, 1f);
+        contentRect.anchorMax = new Vector2(0.5f, 1f);
+        contentRect.pivot = new Vector2(0.5f, 1f);
+        contentRect.anchoredPosition = Vector2.zero;
+        contentRect.sizeDelta = new Vector2(480, 520);
+
+        CreateButton(contentObject.transform, "TestCoinsButton", "TEST +10000 Coin", new Vector2(0, 215), new Vector2(440, 70), AddTestCoins, new Color(0.80f, 0.18f, 0.18f), 25);
+        CreateButton(contentObject.transform, "TestXpButton", "TEST +100 XP", new Vector2(0, 130), new Vector2(440, 70), AddTestXp, new Color(0.18f, 0.42f, 0.72f), 25);
+        CreateButton(contentObject.transform, "TestChestButton", "TEST +1 Sandik", new Vector2(0, 45), new Vector2(440, 70), AddTestChest, new Color(0.64f, 0.36f, 0.16f), 25);
+        CreateButton(contentObject.transform, "ResetButton", "RESET", new Vector2(0, -40), new Vector2(440, 70), ResetSave, new Color(0.20f, 0.20f, 0.20f), 25);
+        TMP_Text futureText = CreateText(contentObject.transform, "FutureTestText", "Yeni testler buraya eklenecek", new Vector2(0, -125), new Vector2(440, 70), 22);
+        futureText.color = Color.black;
+
+        GameObject scrollbarObject = new GameObject("TestScrollbar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Scrollbar));
+        scrollbarObject.transform.SetParent(testPanel.transform, false);
+
+        RectTransform scrollbarRect = scrollbarObject.GetComponent<RectTransform>();
+        scrollbarRect.anchorMin = new Vector2(0.5f, 0.5f);
+        scrollbarRect.anchorMax = new Vector2(0.5f, 0.5f);
+        scrollbarRect.anchoredPosition = new Vector2(265, 10);
+        scrollbarRect.sizeDelta = new Vector2(28, 330);
+
+        Image scrollbarImage = scrollbarObject.GetComponent<Image>();
+        scrollbarImage.color = new Color(0.70f, 0.70f, 0.70f, 0.9f);
+
+        GameObject handleObject = new GameObject("Handle", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        handleObject.transform.SetParent(scrollbarObject.transform, false);
+
+        RectTransform handleRect = handleObject.GetComponent<RectTransform>();
+        handleRect.anchorMin = Vector2.zero;
+        handleRect.anchorMax = Vector2.one;
+        handleRect.offsetMin = new Vector2(4, 4);
+        handleRect.offsetMax = new Vector2(-4, -4);
+
+        Image handleImage = handleObject.GetComponent<Image>();
+        handleImage.color = new Color(0.20f, 0.20f, 0.20f, 0.95f);
+
+        Scrollbar scrollbar = scrollbarObject.GetComponent<Scrollbar>();
+        scrollbar.direction = Scrollbar.Direction.BottomToTop;
+        scrollbar.targetGraphic = handleImage;
+        scrollbar.handleRect = handleRect;
+
+        ScrollRect scrollRect = scrollAreaObject.GetComponent<ScrollRect>();
+        scrollRect.viewport = viewportRect;
+        scrollRect.content = contentRect;
+        scrollRect.verticalScrollbar = scrollbar;
+        scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
+        scrollRect.verticalScrollbarSpacing = 8f;
+        scrollRect.horizontal = false;
+        scrollRect.vertical = true;
+        scrollRect.movementType = ScrollRect.MovementType.Clamped;
+        scrollRect.inertia = true;
+        scrollRect.scrollSensitivity = 55f;
+        scrollRect.verticalNormalizedPosition = 1f;
+
+        CreateButton(testPanel.transform, "TestPanelCloseButton", "Kapat", new Vector2(0, -220), new Vector2(300, 60), CloseTestPanel, new Color(0.30f, 0.30f, 0.30f), 24);
+        dragHandleObject.transform.SetAsLastSibling();
+
+        testPanel.transform.SetAsLastSibling();
+        testPanel.SetActive(false);
+    }
+
+    public void OpenDailyTasksPanel()
+    {
+        if (dailyTasksPanel == null)
+        {
+            return;
+        }
+
+        dailyTasksPanel.SetActive(true);
+        dailyTasksPanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void CloseDailyTasksPanel()
+    {
+        if (dailyTasksPanel != null)
+        {
+            dailyTasksPanel.SetActive(false);
+        }
+    }
+
+    public void ClaimDailyCoffeeTask()
+    {
+        if (dailyCoffeeRewardClaimed || dailyCoffeeSold < 20) return;
+
+        gems += 1;
+        dailyCoffeeRewardClaimed = true;
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void ClaimDailyCustomerTask()
+    {
+        if (dailyCustomerRewardClaimed || dailyCustomerSales < 5) return;
+
+        chests += 1;
+        dailyCustomerRewardClaimed = true;
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void ClaimDailyChestTask()
+    {
+        if (dailyChestRewardClaimed || dailyChestsOpened < 1) return;
+
+        paintPieces += 1;
+        dailyChestRewardClaimed = true;
+        UpdateUI();
+        SaveGame();
+    }
+
+    private void CreateDailyTasksPanel(Transform parent)
+    {
+        dailyTasksPanel = new GameObject("DailyTasksPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        dailyTasksPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = dailyTasksPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 25);
+        panelRect.sizeDelta = new Vector2(900, 620);
+
+        Image panelImage = dailyTasksPanel.GetComponent<Image>();
+        panelImage.color = new Color(0.88f, 0.94f, 1f, 0.98f);
+
+        TMP_Text title = CreateText(dailyTasksPanel.transform, "DailyTasksTitle", "Gunluk Gorevler", new Vector2(0, 250), new Vector2(780, 70), 42);
+        title.color = Color.black;
+
+        dailyTasksPanelText = CreateText(dailyTasksPanel.transform, "DailyTasksText", "", new Vector2(0, 140), new Vector2(780, 130), 27);
+        dailyTasksPanelText.color = Color.black;
+
+        dailyTaskCoffeeButtonText = CreateButton(dailyTasksPanel.transform, "DailyCoffeeTaskButton", "Odulu Al", new Vector2(0, 35), new Vector2(720, 70), ClaimDailyCoffeeTask, new Color(0.28f, 0.45f, 0.78f), 24);
+        dailyTaskCustomerButtonText = CreateButton(dailyTasksPanel.transform, "DailyCustomerTaskButton", "Odulu Al", new Vector2(0, -55), new Vector2(720, 70), ClaimDailyCustomerTask, new Color(0.18f, 0.58f, 0.32f), 24);
+        dailyTaskChestButtonText = CreateButton(dailyTasksPanel.transform, "DailyChestTaskButton", "Odulu Al", new Vector2(0, -145), new Vector2(720, 70), ClaimDailyChestTask, new Color(0.64f, 0.36f, 0.16f), 24);
+
+        CreateButton(dailyTasksPanel.transform, "DailyTasksCloseButton", "Kapat", new Vector2(0, -255), new Vector2(300, 70), CloseDailyTasksPanel, new Color(0.20f, 0.20f, 0.20f), 28);
+
+        dailyTasksPanel.transform.SetAsLastSibling();
+        dailyTasksPanel.SetActive(false);
+    }
+
+
+
+
+    private void CreateTaskPanel(Transform parent)
+    {
+        taskPanel = new GameObject("TaskPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        taskPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = taskPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 40);
+        panelRect.sizeDelta = new Vector2(880, 460);
+
+        Image panelImage = taskPanel.GetComponent<Image>();
+        panelImage.color = new Color(0.96f, 0.92f, 1f, 0.97f);
+
+        taskPanelText = CreateText(taskPanel.transform, "TaskPanelText", "", new Vector2(0, 100), new Vector2(780, 210), 34);
+        taskPanelText.color = Color.black;
+
+        taskRewardButtonText = CreateButton(taskPanel.transform, "TaskRewardButton", "Odulu Al", new Vector2(0, -105), new Vector2(420, 95), ClaimTaskReward, new Color(0.36f, 0.24f, 0.62f), 34);
+        CreateButton(taskPanel.transform, "TaskCloseButton", "Kapat", new Vector2(0, -210), new Vector2(300, 70), CloseTaskPanel, new Color(0.20f, 0.20f, 0.20f), 28);
+
+        taskPanel.transform.SetAsLastSibling();
+        taskPanel.SetActive(false);
+    }
+
+    private void CreateCoffeePanel(Transform parent)
+    {
+        coffeePanel = new GameObject("CoffeePanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        coffeePanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = coffeePanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 15);
+        panelRect.sizeDelta = new Vector2(900, 660);
+
+        Image panelImage = coffeePanel.GetComponent<Image>();
+        panelImage.color = new Color(1f, 0.94f, 0.82f, 0.98f);
+
+        TMP_Text title = CreateText(coffeePanel.transform, "CoffeePanelTitle", "Kahve Cesitleri", new Vector2(0, 270), new Vector2(780, 70), 42);
+        title.color = Color.black;
+
+        basicCoffeeButtonText = CreateButton(coffeePanel.transform, "BasicCoffeeButton", "Daha Iyi Kahve", new Vector2(0, 150), new Vector2(760, 95), BuyCoffeeUpgrade, new Color(0.86f, 0.56f, 0.20f), 27);
+        premiumCoffeeButtonText = CreateButton(coffeePanel.transform, "PremiumCoffeeButton", "Premium Cekirdek", new Vector2(0, 35), new Vector2(760, 95), BuyPremiumCoffee, new Color(0.62f, 0.36f, 0.18f), 27);
+        signatureCoffeeButtonText = CreateButton(coffeePanel.transform, "SignatureCoffeeButton", "Ozel Harman", new Vector2(0, -80), new Vector2(760, 95), BuySignatureCoffee, new Color(0.48f, 0.22f, 0.42f), 27);
+
+        CreateButton(coffeePanel.transform, "CoffeeCloseButton", "Kapat", new Vector2(0, -245), new Vector2(300, 70), CloseCoffeePanel, new Color(0.20f, 0.20f, 0.20f), 28);
+
+        coffeePanel.transform.SetAsLastSibling();
+        coffeePanel.SetActive(false);
+    }
+
+    private void CreateMachinePanel(Transform parent)
+    {
+        machinePanel = new GameObject("MachinePanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        machinePanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = machinePanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 15);
+        panelRect.sizeDelta = new Vector2(900, 660);
+
+        Image panelImage = machinePanel.GetComponent<Image>();
+        panelImage.color = new Color(0.88f, 0.97f, 0.94f, 0.98f);
+
+        TMP_Text title = CreateText(machinePanel.transform, "MachinePanelTitle", "Kahve Makineleri", new Vector2(0, 270), new Vector2(780, 70), 42);
+        title.color = Color.black;
+
+        basicMachineButtonText = CreateButton(machinePanel.transform, "BasicMachineButton", "Basit Kahve Makinesi", new Vector2(0, 150), new Vector2(760, 95), BuyMachineUpgrade, new Color(0.20f, 0.55f, 0.48f), 27);
+        espressoMachineButtonText = CreateButton(machinePanel.transform, "EspressoMachineButton", "Espresso Makinesi", new Vector2(0, 35), new Vector2(760, 95), BuyEspressoMachine, new Color(0.30f, 0.42f, 0.68f), 27);
+        premiumMachineButtonText = CreateButton(machinePanel.transform, "PremiumMachineButton", "Premium Makine", new Vector2(0, -80), new Vector2(760, 95), BuyPremiumMachine, new Color(0.62f, 0.42f, 0.18f), 27);
+
+        CreateButton(machinePanel.transform, "MachineCloseButton", "Kapat", new Vector2(0, -245), new Vector2(300, 70), CloseMachinePanel, new Color(0.20f, 0.20f, 0.20f), 28);
+
+        machinePanel.transform.SetAsLastSibling();
+        machinePanel.SetActive(false);
+    }
+
+    private void CreateBaristaPanel(Transform parent)
+    {
+        baristaPanel = new GameObject("BaristaPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        baristaPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = baristaPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 15);
+        panelRect.sizeDelta = new Vector2(900, 660);
+
+        Image panelImage = baristaPanel.GetComponent<Image>();
+        panelImage.color = new Color(0.94f, 0.88f, 1f, 0.98f);
+
+        TMP_Text title = CreateText(baristaPanel.transform, "BaristaPanelTitle", "Baristalar", new Vector2(0, 270), new Vector2(780, 70), 42);
+        title.color = Color.black;
+
+        juniorBaristaButtonText = CreateButton(baristaPanel.transform, "JuniorBaristaButton", "Barista", new Vector2(0, 150), new Vector2(760, 95), BuyBaristaUpgrade, new Color(0.54f, 0.32f, 0.72f), 27);
+        seniorBaristaButtonText = CreateButton(baristaPanel.transform, "SeniorBaristaButton", "Usta Barista", new Vector2(0, 35), new Vector2(760, 95), BuySeniorBarista, new Color(0.34f, 0.42f, 0.78f), 27);
+        masterBaristaButtonText = CreateButton(baristaPanel.transform, "MasterBaristaButton", "Sef Barista", new Vector2(0, -80), new Vector2(760, 95), BuyMasterBarista, new Color(0.62f, 0.30f, 0.50f), 27);
+
+        CreateButton(baristaPanel.transform, "BaristaCloseButton", "Kapat", new Vector2(0, -245), new Vector2(300, 70), CloseBaristaPanel, new Color(0.20f, 0.20f, 0.20f), 28);
+
+        baristaPanel.transform.SetAsLastSibling();
+        baristaPanel.SetActive(false);
+    }
+
+    private void CreateTimedOfferButton(Transform parent)
+    {
+        offerButtonText = CreateButton(parent, "TimedOfferButton", "2x\n60", new Vector2(350, 245), new Vector2(104, 104), OpenTimedOfferPanel, new Color(0.18f, 0.38f, 0.82f), 22);
+        offerButtonObject = offerButtonText.GetComponentInParent<Button>().gameObject;
+        offerButtonObject.SetActive(false);
+    }
+
+    private void CreateTimedOfferPanel(Transform parent)
+    {
+        offerPanel = new GameObject("TimedOfferPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        offerPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = offerPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 40);
+        panelRect.sizeDelta = new Vector2(860, 390);
+
+        Image panelImage = offerPanel.GetComponent<Image>();
+        panelImage.color = new Color(0.90f, 0.94f, 1f, 0.97f);
+
+        offerPanelText = CreateText(offerPanel.transform, "TimedOfferText", "5 dakikaligina\n2x coin kazan", new Vector2(0, 95), new Vector2(760, 150), 42);
+        offerPanelText.color = Color.black;
+
+        CreateButton(offerPanel.transform, "TimedOfferWatchButton", "Izle", new Vector2(0, -105), new Vector2(420, 100), WatchTimedOfferAd, new Color(0.18f, 0.38f, 0.82f), 38);
+        offerPanel.transform.SetAsLastSibling();
+        offerPanel.SetActive(false);
+    }
+
+    private void CreateBackgroundTapArea(Transform parent)
+    {
+        GameObject tapArea = new GameObject("BackgroundTapArea", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+        tapArea.transform.SetParent(parent, false);
+
+        RectTransform rect = tapArea.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        Image image = tapArea.GetComponent<Image>();
+        image.color = new Color(1f, 1f, 1f, 0.01f);
+
+        Button button = tapArea.GetComponent<Button>();
+        button.onClick.AddListener(SellCoffeeFromEmptySpace);
+    }
+
+    private void CreateCafeScene(Transform parent)
+    {
+        GameObject sceneRoot = new GameObject("CafeSceneRoot", typeof(RectTransform));
+        sceneRoot.transform.SetParent(parent, false);
+        RectTransform sceneRect = sceneRoot.GetComponent<RectTransform>();
+        sceneRect.anchorMin = new Vector2(0.5f, 0.5f);
+        sceneRect.anchorMax = new Vector2(0.5f, 0.5f);
+        sceneRect.anchoredPosition = new Vector2(0, 40);
+        sceneRect.sizeDelta = Vector2.zero;
+        float sceneScale = GetResponsiveCafeSceneScale(parent);
+        sceneRect.localScale = new Vector3(sceneScale, sceneScale, 1f);
+        parent = sceneRoot.transform;
+
+        isoFloorShadowGraphic = CreateSceneQuad(parent, "IsoFloorShadow", new Vector2(-620, 102), new Vector2(620, 102), new Vector2(705, -390), new Vector2(-705, -390), new Color(0.08f, 0.07f, 0.06f, 0.30f));
+        isoFloorGraphic = CreateSceneQuad(parent, "IsoFloor", new Vector2(-535, 94), new Vector2(535, 94), new Vector2(670, -350), new Vector2(-670, -350), GetFloorColor());
+        isoBackWallGraphic = CreateSceneQuad(parent, "IsoBackWall", new Vector2(-535, 360), new Vector2(535, 360), new Vector2(535, 94), new Vector2(-535, 94), GetWallColor());
+        isoLeftWallGraphic = CreateSceneQuad(parent, "IsoLeftWall", new Vector2(-695, -332), new Vector2(-535, 94), new Vector2(-535, 360), new Vector2(-695, 30), ShadeColor(GetWallColor(), 0.86f));
+        isoRightWallGraphic = CreateSceneQuad(parent, "IsoRightWall", new Vector2(535, 94), new Vector2(695, -332), new Vector2(695, 30), new Vector2(535, 360), ShadeColor(GetWallColor(), 0.80f));
+
+        Image roomShadow = CreateSceneBox(parent, "RoomShadow", new Vector2(0, -118), new Vector2(1240, 690), new Color(0.16f, 0.14f, 0.13f, 0.0f));
+        floorPreviewImage = CreateSceneBox(parent, "CafeFloor", new Vector2(0, -170), new Vector2(1110, 565), new Color(1f, 1f, 1f, 0f));
+        backgroundTapImage = CreateSceneBox(parent, "BackWall", new Vector2(0, 227), new Vector2(980, 255), new Color(1f, 1f, 1f, 0f));
+        leftWallImage = CreateSceneBox(parent, "LeftWall", new Vector2(-610, -22), new Vector2(190, 720), new Color(1f, 1f, 1f, 0f));
+        rightWallImage = CreateSceneBox(parent, "RightWall", new Vector2(610, -22), new Vector2(190, 720), new Color(1f, 1f, 1f, 0f));
+        backWallTopTrim = CreateSceneBox(parent, "BackWallTopTrim", new Vector2(0, 360), new Vector2(920, 18), new Color(0.30f, 0.24f, 0.20f));
+        Image backTrim = CreateSceneBox(parent, "BackWallTrim", new Vector2(0, 94), new Vector2(1080, 18), new Color(0.36f, 0.28f, 0.22f));
+        Image leftTrim = CreateSceneBox(parent, "LeftWallTrim", new Vector2(-610, -74), new Vector2(22, 540), new Color(0.36f, 0.28f, 0.22f));
+        Image rightTrim = CreateSceneBox(parent, "RightWallTrim", new Vector2(610, -74), new Vector2(22, 540), new Color(0.36f, 0.28f, 0.22f));
+        leftCornerLine = CreateSceneBox(parent, "LeftCornerLine", new Vector2(-535, 227), new Vector2(12, 266), new Color(0.22f, 0.18f, 0.15f, 0.65f));
+        rightCornerLine = CreateSceneBox(parent, "RightCornerLine", new Vector2(535, 227), new Vector2(12, 266), new Color(0.22f, 0.18f, 0.15f, 0.65f));
+        floorBackEdge = CreateSceneBox(parent, "FloorBackEdge", new Vector2(0, 94), new Vector2(1070, 12), new Color(0.20f, 0.17f, 0.14f, 0.35f));
+        floorCenterLine = CreateSceneBox(parent, "FloorCenterLine", new Vector2(0, -125), new Vector2(8, 430), new Color(1f, 1f, 1f, 0.12f));
+        floorLeftPerspectiveLine = CreateSceneBox(parent, "FloorLeftPerspectiveLine", new Vector2(-285, -122), new Vector2(8, 425), new Color(1f, 1f, 1f, 0.10f));
+        floorRightPerspectiveLine = CreateSceneBox(parent, "FloorRightPerspectiveLine", new Vector2(285, -122), new Vector2(8, 425), new Color(1f, 1f, 1f, 0.10f));
+        roomAccentStrip = CreateSceneBox(parent, "RoomAccentStrip", new Vector2(0, 196), new Vector2(780, 18), GetRoomAccentColor());
+
+        RotateSceneBox(leftWallImage, -7f);
+        RotateSceneBox(rightWallImage, 7f);
+        RotateSceneBox(leftTrim, -18f);
+        RotateSceneBox(rightTrim, 18f);
+        RotateSceneBox(floorLeftPerspectiveLine, -24f);
+        RotateSceneBox(floorRightPerspectiveLine, 24f);
+
+        tablePreviewImage = CreateSceneBox(parent, "CafeCounter", new Vector2(-130, 22), new Vector2(600, 108), GetTableColor());
+        Image counterTop = CreateSceneBox(parent, "CounterTop", new Vector2(-130, 86), new Vector2(650, 28), new Color(0.72f, 0.48f, 0.26f));
+        Image coffeeMachine = CreateSceneBox(parent, "CoffeeMachineVisual", new Vector2(40, 116), new Vector2(150, 90), new Color(0.28f, 0.28f, 0.32f));
+        Image machineTop = CreateSceneBox(parent, "CoffeeMachineTop", new Vector2(40, 166), new Vector2(120, 24), new Color(0.72f, 0.72f, 0.76f));
+        Image cup = CreateSceneBox(parent, "CounterCup", new Vector2(245, 114), new Vector2(48, 42), new Color(0.96f, 0.92f, 0.82f));
+
+        Image door = CreateSceneBox(parent, "CustomerDoor", new Vector2(620, -28), new Vector2(106, 198), new Color(0.38f, 0.24f, 0.15f));
+        Image doorGlass = CreateSceneBox(parent, "DoorGlass", new Vector2(620, 8), new Vector2(66, 88), new Color(0.62f, 0.85f, 0.95f));
+        Image window = CreateSceneBox(parent, "CafeWindow", new Vector2(-642, 34), new Vector2(94, 134), new Color(0.72f, 0.92f, 1f));
+        Image menuBoard = CreateSceneBox(parent, "MenuBoard", new Vector2(-340, 172), new Vector2(140, 64), new Color(0.16f, 0.20f, 0.16f));
+        Image plantPot = CreateSceneBox(parent, "PlantPot", new Vector2(-345, -242), new Vector2(64, 50), new Color(0.48f, 0.22f, 0.16f));
+        Image plantLeaf = CreateSceneBox(parent, "PlantLeaf", new Vector2(-345, -194), new Vector2(90, 60), new Color(0.20f, 0.58f, 0.32f));
+        Image customerSpot = CreateSceneBox(parent, "CustomerSpot", new Vector2(180, -252), new Vector2(240, 112), new Color(0.88f, 0.76f, 0.56f));
+        productionConveyorVisual = CreateSceneBox(parent, "ProductionConveyor", new Vector2(-245, -112), new Vector2(470, 58), new Color(0.22f, 0.28f, 0.32f));
+        productionMachineVisual = CreateSceneBox(parent, "ProductionMachine", new Vector2(-275, -35), new Vector2(210, 126), new Color(0.16f, 0.24f, 0.30f));
+        vipRugVisual = CreateSceneBox(parent, "VipRug", new Vector2(200, -188), new Vector2(340, 154), new Color(0.42f, 0.18f, 0.34f));
+        vipCounterVisual = CreateSceneBox(parent, "VipCounter", new Vector2(140, 20), new Vector2(420, 116), new Color(0.18f, 0.16f, 0.20f));
+        vipPlantVisual = CreateSceneBox(parent, "VipPlant", new Vector2(410, -82), new Vector2(102, 150), new Color(0.20f, 0.48f, 0.32f));
+
+        CreateSceneLabel(parent, "DoorLabel", "GIRIS", new Vector2(620, 82), new Vector2(90, 35), 15);
+        CreateSceneLabel(parent, "CounterLabel", "TEZGAH", new Vector2(-130, 22), new Vector2(190, 34), 20);
+        CreateSceneLabel(parent, "MachineLabel", "MAKINE", new Vector2(40, 116), new Vector2(112, 36), 14);
+        CreateSceneLabel(parent, "MenuLabel", "MENU", new Vector2(-340, 172), new Vector2(110, 35), 19);
+        CreateSceneLabel(parent, "CustomerSpotLabel", "MUSTERI\nALANI", new Vector2(180, -252), new Vector2(165, 62), 16);
+        roomLockOverlay = CreateSceneBox(parent, "RoomLockOverlay", new Vector2(0, -120), new Vector2(1110, 590), new Color(0.05f, 0.06f, 0.07f, 0.32f));
+
+        roomShadow.raycastTarget = false;
+        backWallTopTrim.raycastTarget = false;
+        leftWallImage.raycastTarget = false;
+        rightWallImage.raycastTarget = false;
+        backTrim.raycastTarget = false;
+        leftTrim.raycastTarget = false;
+        rightTrim.raycastTarget = false;
+        leftCornerLine.raycastTarget = false;
+        rightCornerLine.raycastTarget = false;
+        floorBackEdge.raycastTarget = false;
+        floorCenterLine.raycastTarget = false;
+        floorLeftPerspectiveLine.raycastTarget = false;
+        floorRightPerspectiveLine.raycastTarget = false;
+        roomAccentStrip.raycastTarget = false;
+        counterTop.raycastTarget = false;
+        door.raycastTarget = false;
+        doorGlass.raycastTarget = false;
+        window.raycastTarget = false;
+        menuBoard.raycastTarget = false;
+        coffeeMachine.raycastTarget = false;
+        machineTop.raycastTarget = false;
+        cup.raycastTarget = false;
+        plantPot.raycastTarget = false;
+        plantLeaf.raycastTarget = false;
+        customerSpot.raycastTarget = false;
+        productionConveyorVisual.raycastTarget = false;
+        productionMachineVisual.raycastTarget = false;
+        vipRugVisual.raycastTarget = false;
+        vipCounterVisual.raycastTarget = false;
+        vipPlantVisual.raycastTarget = false;
+        roomLockOverlay.raycastTarget = false;
+    }
+
+    private Image CreateSceneBox(Transform parent, string objectName, Vector2 position, Vector2 size, Color color)
+    {
+        GameObject boxObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        boxObject.transform.SetParent(parent, false);
+
+        RectTransform rect = boxObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = boxObject.GetComponent<Image>();
+        image.color = color;
+        image.raycastTarget = false;
+        return image;
+    }
+
+    private float GetResponsiveCafeSceneScale(Transform parent)
+    {
+        RectTransform parentRect = parent as RectTransform;
+        if (parentRect == null || parentRect.rect.width <= 0 || parentRect.rect.height <= 0)
+        {
+            return 0.96f;
+        }
+
+        float widthFit = (parentRect.rect.width - 90f) / 1410f;
+        float heightFit = (parentRect.rect.height - 110f) / 700f;
+        float scale = Mathf.Min(widthFit, heightFit, 1.38f);
+        return Mathf.Clamp(scale, 1.02f, 1.38f);
+    }
+
+    private IsoQuadGraphic CreateSceneQuad(Transform parent, string objectName, Vector2 topLeft, Vector2 topRight, Vector2 bottomRight, Vector2 bottomLeft, Color color)
+    {
+        GameObject quadObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(IsoQuadGraphic));
+        quadObject.transform.SetParent(parent, false);
+
+        RectTransform rect = quadObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = new Vector2(1100, 750);
+
+        IsoQuadGraphic quad = quadObject.GetComponent<IsoQuadGraphic>();
+        quad.SetCorners(topLeft, topRight, bottomRight, bottomLeft);
+        quad.color = color;
+        quad.raycastTarget = false;
+        return quad;
+    }
+
+    private void RotateSceneBox(Image image, float angle)
+    {
+        RectTransform rect = image.GetComponent<RectTransform>();
+        rect.localRotation = Quaternion.Euler(0, 0, angle);
+    }
+
+    private Color ShadeColor(Color color, float multiplier)
+    {
+        return new Color(color.r * multiplier, color.g * multiplier, color.b * multiplier, color.a);
+    }
+
+    private TMP_Text CreateSceneLabel(Transform parent, string objectName, string text, Vector2 position, Vector2 size, float fontSize)
+    {
+        TMP_Text label = CreateText(parent, objectName, text, position, size, fontSize);
+        label.raycastTarget = false;
+        label.color = Color.black;
+        return label;
+    }
+
+    private void CreateCustomerButton(Transform parent)
+    {
+        customerButtonText = CreateButton(parent, "CustomerButton", "Musteri\n2x tiklama + 1 XP", new Vector2(330, 105), new Vector2(165, 112), SellCoffeeToCustomer, new Color(0.18f, 0.58f, 0.32f), 18);
+        customerButtonObject = customerButtonText.GetComponentInParent<Button>().gameObject;
+        CreateVipBadge(customerButtonObject.transform);
+        customerButtonObject.SetActive(false);
+    }
+
+    private void CreateVipBadge(Transform parent)
+    {
+        GameObject badge = new GameObject("VipBadge", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        badge.transform.SetParent(parent, false);
+
+        RectTransform rect = badge.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = new Vector2(-92, 64);
+        rect.sizeDelta = new Vector2(82, 42);
+
+        Image image = badge.GetComponent<Image>();
+        image.color = new Color(1f, 0.82f, 0.12f, 1f);
+
+        vipBadgeText = CreateText(badge.transform, "Text", "VIP", Vector2.zero, rect.sizeDelta, 24);
+        vipBadgeText.color = Color.black;
+        vipBadgeObject = badge;
+        vipBadgeObject.SetActive(false);
+    }
+
+    private Image CreateNotifyDot(Transform parent, Vector2 position)
+    {
+        GameObject dotObject = new GameObject("TaskNotifyDot", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        dotObject.transform.SetParent(parent, false);
+
+        RectTransform rect = dotObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = new Vector2(26, 26);
+
+        Image image = dotObject.GetComponent<Image>();
+        image.color = Color.red;
+        dotObject.SetActive(false);
+        return image;
+    }
+    private TMP_Text CreateText(Transform parent, string objectName, string text, Vector2 position, Vector2 size, float fontSize)
+    {
+        GameObject textObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+        textObject.transform.SetParent(parent, false);
+
+        RectTransform rect = textObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        TMP_Text tmp = textObject.GetComponent<TMP_Text>();
+        tmp.text = text;
+        tmp.fontSize = fontSize;
+        tmp.color = Color.black;
+        tmp.alignment = TextAlignmentOptions.Center;
+        return tmp;
+    }
+
+    private TMP_Text CreateButton(Transform parent, string objectName, string label, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action, Color color, float fontSize)
+    {
+        GameObject buttonObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+        buttonObject.transform.SetParent(parent, false);
+
+        RectTransform rect = buttonObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = buttonObject.GetComponent<Image>();
+        image.color = color;
+
+        Button button = buttonObject.GetComponent<Button>();
+        button.onClick.AddListener(action);
+
+        TMP_Text labelText = CreateText(buttonObject.transform, "Text", label, Vector2.zero, size, fontSize);
+        labelText.color = Color.white;
+        return labelText;
+    }
+
+    private void UpdateUI()
+    {
+        if (coinText != null)
+            coinText.text = "Coin: " + Mathf.FloorToInt(coins);
+
+        if (tapPowerText != null)
+            tapPowerText.text = "Tiklama Gucu: " + GetCurrentTapPower();
+
+        if (autoIncomeText != null)
+            autoIncomeText.text = "Saniyelik Gelir: " + (coinsPerSecond * incomeMultiplier).ToString("0.#");
+
+        if (activeBoostText != null)
+        {
+            activeBoostText.text = bonusTimer > 0 ? "2x COIN AKTIF: " + FormatTime(bonusTimer) : "";
+            activeBoostText.color = new Color(0.02f, 0.18f, 0.82f);
+        }
+
+        if (gemText != null)
+            gemText.text = "Gem: " + gems;
+
+        if (chestText != null)
+            chestText.text = "Sandik: " + chests;
+
+        if (xpText != null)
+            xpText.text = "Lv." + playerLevel + " XP: " + xp + "/" + GetXpNeededForNextLevel();
+
+        if (roomNameText != null)
+            roomNameText.gameObject.SetActive(false);
+
+        if (roomUnlockButtonText != null)
+        {
+            Button roomButton = roomUnlockButtonText.GetComponentInParent<Button>();
+            bool roomUnlocked = IsCurrentRoomUnlocked();
+            int unlockCost = GetCurrentRoomUnlockCost();
+            roomUnlockButtonText.text = roomUnlocked ? "" : "Odayi Ac: " + unlockCost + " coin";
+            if (roomButton != null)
+            {
+                roomButton.gameObject.SetActive(!roomUnlocked);
+                roomButton.interactable = !roomUnlocked && coins >= unlockCost;
+            }
+        }
+
+        if (customerStatsText != null)
+            customerStatsText.text = "Satis: " + totalCoffeeSold + " | Musteri: " + customerSales + " | Kacan: " + missedCustomers;
+
+        if (taskPanelText != null)
+        {
+            taskPanelText.text = GetTaskText();
+        }
+
+        if (taskRewardButtonText != null)
+        {
+            Button rewardButton = taskRewardButtonText.GetComponentInParent<Button>();
+            bool canClaim = CanClaimCurrentTask();
+            bool hasTask = HasVisibleTask();
+            taskRewardButtonText.text = hasTask ? "Odulu Al" : "Gorev Yok";
+            if (rewardButton != null)
+                rewardButton.interactable = canClaim;
+        }
+
+        if (taskNotifyDot != null)
+        {
+            bool shouldShowDot = ShouldShowTaskNotifyDot();
+            taskNotifyDot.gameObject.SetActive(shouldShowDot);
+            if (shouldShowDot)
+            {
+                Color dotColor = Color.red;
+                dotColor.a = 0.35f + (Mathf.PingPong(Time.time * 2.5f, 1f) * 0.65f);
+                taskNotifyDot.color = dotColor;
+            }
+        }
+
+        if (dailyTasksNotifyDot != null)
+        {
+            bool shouldShowDailyDot = CanClaimAnyDailyTask();
+            dailyTasksNotifyDot.gameObject.SetActive(shouldShowDailyDot);
+            if (shouldShowDailyDot)
+            {
+                Color dotColor = Color.red;
+                dotColor.a = 0.35f + (Mathf.PingPong(Time.time * 2.5f, 1f) * 0.65f);
+                dailyTasksNotifyDot.color = dotColor;
+            }
+        }
+
+        if (adBoostButtonText != null)
+        {
+            if (bonusTimer >= MaxBoostSeconds)
+                adBoostButtonText.text = "2x\nMAX";
+            else if (bonusTimer > 0)
+                adBoostButtonText.text = "2x\n" + FormatCompactTime(bonusTimer);
+            else
+                adBoostButtonText.text = "2x\nAD";
+            Button adButton = adBoostButtonText.GetComponentInParent<Button>();
+            if (adButton != null)
+                adButton.interactable = bonusTimer < MaxBoostSeconds;
+        }
+
+        if (offerButtonObject != null)
+        {
+            offerButtonObject.SetActive(offerVisibleTimer > 0);
+            if (offerVisibleTimer > 0)
+            {
+                offerButtonObject.transform.SetAsLastSibling();
+            }
+        }
+
+        if (offerButtonText != null)
+            offerButtonText.text = "2x\n" + Mathf.CeilToInt(offerVisibleTimer) + " sn";
+
+        if (offerPanelText != null)
+            offerPanelText.text = "5 dakikaligina\n2x coin kazan";
+
+        if (customerButtonObject != null)
+        {
+            customerButtonObject.SetActive(customerVisibleTimer > 0);
+            bool panelIsOpen = (offlinePanel != null && offlinePanel.activeSelf)
+                || (taskPanel != null && taskPanel.activeSelf)
+                || (coffeePanel != null && coffeePanel.activeSelf)
+                || (machinePanel != null && machinePanel.activeSelf)
+                || (baristaPanel != null && baristaPanel.activeSelf)
+                || (dailyRewardPanel != null && dailyRewardPanel.activeSelf)
+                || (chestPanel != null && chestPanel.activeSelf)
+                || (decorPanel != null && decorPanel.activeSelf)
+                || (testPanel != null && testPanel.activeSelf)
+                || (dailyTasksPanel != null && dailyTasksPanel.activeSelf)
+                || (offerPanel != null && offerPanel.activeSelf);
+            if (customerVisibleTimer > 0 && !panelIsOpen)
+            {
+                customerButtonObject.transform.SetAsLastSibling();
+            }
+        }
+
+        if (customerButtonText != null)
+        {
+            customerButtonText.text = currentCustomerName + "\n+" + GetCurrentCustomerCoinReward() + " coin +" + currentCustomerXpReward + " XP\n" + Mathf.CeilToInt(customerVisibleTimer) + " sn";
+            Image customerImage = customerButtonText.GetComponentInParent<Image>();
+            if (customerImage != null)
+                customerImage.color = currentCustomerColor;
+        }
+
+        if (vipBadgeObject != null)
+        {
+            bool showVipBadge = customerVisibleTimer > 0 && currentCustomerName == "VIP Musteri";
+            vipBadgeObject.SetActive(showVipBadge);
+            if (showVipBadge)
+            {
+                Image badgeImage = vipBadgeObject.GetComponent<Image>();
+                if (badgeImage != null)
+                {
+                    Color badgeColor = new Color(1f, 0.82f, 0.12f, 1f);
+                    badgeColor.a = 0.55f + (Mathf.PingPong(Time.time * 3f, 1f) * 0.45f);
+                    badgeImage.color = badgeColor;
+                }
+            }
+        }
+
+        if (offlinePanel != null)
+        {
+            offlinePanel.SetActive(lastOfflineCoins > 0);
+            offlinePanel.transform.SetAsLastSibling();
+        }
+
+        if (offlineText != null)
+            offlineText.text = "Sen yokken\n" + lastOfflineCoins + " coin kazandin";
+
+        if (dailyRewardPanelText != null)
+            dailyRewardPanelText.text = GetDailyRewardText();
+
+        if (dailyRewardButtonText != null)
+        {
+            Button dailyButton = dailyRewardButtonText.GetComponentInParent<Button>();
+            bool canClaimDaily = CanClaimDailyReward();
+            dailyRewardButtonText.text = canClaimDaily ? "Odulu Al" : "Bekle";
+            if (dailyButton != null)
+                dailyButton.interactable = canClaimDaily;
+        }
+
+        if (dailyRewardPanel != null && dailyRewardPanel.activeSelf && lastOfflineCoins <= 0)
+            dailyRewardPanel.transform.SetAsLastSibling();
+
+        if (chestPanelText != null)
+        {
+            chestPanelText.text = "Sandik: " + chests
+                + "\nGem: " + gems
+                + "\nBoya Parcasi: " + paintPieces
+                + "\nTahta: " + woodPieces
+                + "\n\nSon odul: " + lastChestRewardText;
+        }
+
+        if (chestOpenButtonText != null)
+        {
+            Button chestButton = chestOpenButtonText.GetComponentInParent<Button>();
+            chestOpenButtonText.text = chests > 0 ? "Sandik Ac" : "Sandik Yok";
+            if (chestButton != null)
+                chestButton.interactable = chests > 0;
+        }
+
+        if (chestPanel != null && chestPanel.activeSelf && lastOfflineCoins <= 0)
+            chestPanel.transform.SetAsLastSibling();
+
+        if (decorPanelText != null)
+            decorPanelText.text = "Boya Parcasi: " + paintPieces + " | Tahta: " + woodPieces;
+
+        UpdateDecorButton(pinkWallButtonText, pinkWallUnlocked, selectedWallStyle == 1, paintPieces >= DecorUnlockCost, "Pembe Duvar", DecorUnlockCost + " Boya Parcasi");
+        UpdateDecorButton(mintWallButtonText, mintWallUnlocked, selectedWallStyle == 2, paintPieces >= DecorUnlockCost, "Mint Duvar", DecorUnlockCost + " Boya Parcasi");
+        UpdateDecorButton(creamFloorButtonText, creamFloorUnlocked, selectedFloorStyle == 1, paintPieces >= 2, "Krem Zemin", "2 Boya Parcasi");
+        UpdateDecorButton(roseTableButtonText, roseTableUnlocked, selectedTableStyle == 1, woodPieces >= 5, "Rose Masa", "5 Tahta");
+
+        if (decorPanel != null && decorPanel.activeSelf && lastOfflineCoins <= 0)
+            decorPanel.transform.SetAsLastSibling();
+
+        if (testPanel != null && testPanel.activeSelf && lastOfflineCoins <= 0)
+            testPanel.transform.SetAsLastSibling();
+
+        if (dailyTasksPanelText != null)
+            dailyTasksPanelText.text = GetDailyTasksText();
+
+        UpdateDailyTaskButton(dailyTaskCoffeeButtonText, dailyCoffeeRewardClaimed, dailyCoffeeSold >= 20, "20 kahve sat", dailyCoffeeSold, 20, "Odul: 1 Gem");
+        UpdateDailyTaskButton(dailyTaskCustomerButtonText, dailyCustomerRewardClaimed, dailyCustomerSales >= 5, "5 musteriye satis yap", dailyCustomerSales, 5, "Odul: 1 Sandik");
+        UpdateDailyTaskButton(dailyTaskChestButtonText, dailyChestRewardClaimed, dailyChestsOpened >= 1, "1 sandik ac", dailyChestsOpened, 1, "Odul: 1 Boya Parcasi");
+
+        if (dailyTasksPanel != null && dailyTasksPanel.activeSelf && lastOfflineCoins <= 0)
+            dailyTasksPanel.transform.SetAsLastSibling();
+
+        ApplyDecorations();
+
+        if (coffeeUpgradeButtonText != null)
+            coffeeUpgradeButtonText.text = "Kah";
+
+        if (basicCoffeeButtonText != null)
+        {
+            bool maxed = coffeeUpgradeLevel >= UpgradeMaxLevel;
+            basicCoffeeButtonText.text = maxed
+                ? "Daha Iyi Kahve Lv." + coffeeUpgradeLevel + "/" + UpgradeMaxLevel + "\nMAX"
+                : "Daha Iyi Kahve Lv." + coffeeUpgradeLevel + "/" + UpgradeMaxLevel + "\n+" + BasicCoffeeTapGain + " tiklama | " + coffeeUpgradeCost + " coin";
+            Button button = basicCoffeeButtonText.GetComponentInParent<Button>();
+            if (button != null)
+                button.interactable = !maxed && coins >= coffeeUpgradeCost;
+        }
+
+        if (premiumCoffeeButtonText != null)
+        {
+            bool unlocked = playerLevel >= PremiumTierUnlockLevel && coffeeUpgradeLevel >= NextTierRequiredLevel;
+            bool maxed = premiumCoffeeLevel >= UpgradeMaxLevel;
+            premiumCoffeeButtonText.text = !unlocked
+                ? "Premium Cekirdek\nKilitli: Lv." + PremiumTierUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
+                : maxed
+                    ? "Premium Cekirdek Lv." + premiumCoffeeLevel + "/" + UpgradeMaxLevel + "\nMAX"
+                    : "Premium Cekirdek Lv." + premiumCoffeeLevel + "/" + UpgradeMaxLevel + "\n+" + PremiumCoffeeTapGain + " tiklama | " + premiumCoffeeCost + " coin";
+            Button button = premiumCoffeeButtonText.GetComponentInParent<Button>();
+            if (button != null)
+                button.interactable = unlocked && !maxed && coins >= premiumCoffeeCost;
+        }
+
+        if (signatureCoffeeButtonText != null)
+        {
+            bool unlocked = playerLevel >= SignatureTierUnlockLevel && premiumCoffeeLevel >= NextTierRequiredLevel;
+            bool maxed = signatureCoffeeLevel >= UpgradeMaxLevel;
+            signatureCoffeeButtonText.text = !unlocked
+                ? "Ozel Harman\nKilitli: Lv." + SignatureTierUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
+                : maxed
+                    ? "Ozel Harman Lv." + signatureCoffeeLevel + "/" + UpgradeMaxLevel + "\nMAX"
+                    : "Ozel Harman Lv." + signatureCoffeeLevel + "/" + UpgradeMaxLevel + "\n+" + SignatureCoffeeTapGain + " tiklama | " + signatureCoffeeCost + " coin";
+            Button button = signatureCoffeeButtonText.GetComponentInParent<Button>();
+            if (button != null)
+                button.interactable = unlocked && !maxed && coins >= signatureCoffeeCost;
+        }
+
+        if (machineUpgradeButtonText != null)
+            machineUpgradeButtonText.text = "Mak";
+
+        if (basicMachineButtonText != null)
+        {
+            bool maxed = machineUpgradeLevel >= UpgradeMaxLevel;
+            basicMachineButtonText.text = maxed
+                ? "Basit Kahve Makinesi Lv." + machineUpgradeLevel + "/" + UpgradeMaxLevel + "\nMAX"
+                : "Basit Kahve Makinesi Lv." + machineUpgradeLevel + "/" + UpgradeMaxLevel + "\n+" + BasicMachineIncomeGain + "/sn | " + machineUpgradeCost + " coin";
+            Button button = basicMachineButtonText.GetComponentInParent<Button>();
+            if (button != null)
+                button.interactable = !maxed && coins >= machineUpgradeCost;
+        }
+
+        if (espressoMachineButtonText != null)
+        {
+            bool unlocked = playerLevel >= PremiumTierUnlockLevel && machineUpgradeLevel >= NextTierRequiredLevel;
+            bool maxed = espressoMachineLevel >= UpgradeMaxLevel;
+            espressoMachineButtonText.text = !unlocked
+                ? "Espresso Makinesi\nKilitli: Lv." + PremiumTierUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
+                : maxed
+                    ? "Espresso Makinesi Lv." + espressoMachineLevel + "/" + UpgradeMaxLevel + "\nMAX"
+                    : "Espresso Makinesi Lv." + espressoMachineLevel + "/" + UpgradeMaxLevel + "\n+" + EspressoMachineIncomeGain + "/sn | " + espressoMachineCost + " coin";
+            Button button = espressoMachineButtonText.GetComponentInParent<Button>();
+            if (button != null)
+                button.interactable = unlocked && !maxed && coins >= espressoMachineCost;
+        }
+
+        if (premiumMachineButtonText != null)
+        {
+            bool unlocked = playerLevel >= SignatureTierUnlockLevel && espressoMachineLevel >= NextTierRequiredLevel;
+            bool maxed = premiumMachineLevel >= UpgradeMaxLevel;
+            premiumMachineButtonText.text = !unlocked
+                ? "Premium Makine\nKilitli: Lv." + SignatureTierUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
+                : maxed
+                    ? "Premium Makine Lv." + premiumMachineLevel + "/" + UpgradeMaxLevel + "\nMAX"
+                    : "Premium Makine Lv." + premiumMachineLevel + "/" + UpgradeMaxLevel + "\n+" + PremiumMachineIncomeGain + "/sn | " + premiumMachineCost + " coin";
+            Button button = premiumMachineButtonText.GetComponentInParent<Button>();
+            if (button != null)
+                button.interactable = unlocked && !maxed && coins >= premiumMachineCost;
+        }
+
+        if (baristaUpgradeButtonText != null)
+            baristaUpgradeButtonText.text = "Bar";
+
+        if (juniorBaristaButtonText != null)
+        {
+            bool maxed = baristaUpgradeLevel >= UpgradeMaxLevel;
+            juniorBaristaButtonText.text = maxed
+                ? "Barista Lv." + baristaUpgradeLevel + "/" + UpgradeMaxLevel + "\nMAX"
+                : "Barista Lv." + baristaUpgradeLevel + "/" + UpgradeMaxLevel + "\n+" + JuniorBaristaIncomeGain + "/sn | " + baristaUpgradeCost + " coin";
+            Button button = juniorBaristaButtonText.GetComponentInParent<Button>();
+            if (button != null)
+                button.interactable = !maxed && coins >= baristaUpgradeCost;
+        }
+
+        if (seniorBaristaButtonText != null)
+        {
+            bool unlocked = playerLevel >= SeniorBaristaUnlockLevel && baristaUpgradeLevel >= NextTierRequiredLevel;
+            bool maxed = seniorBaristaLevel >= UpgradeMaxLevel;
+            seniorBaristaButtonText.text = !unlocked
+                ? "Usta Barista\nKilitli: Lv." + SeniorBaristaUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
+                : maxed
+                    ? "Usta Barista Lv." + seniorBaristaLevel + "/" + UpgradeMaxLevel + "\nMAX"
+                    : "Usta Barista Lv." + seniorBaristaLevel + "/" + UpgradeMaxLevel + "\n+" + SeniorBaristaIncomeGain + "/sn | " + seniorBaristaCost + " coin";
+            Button button = seniorBaristaButtonText.GetComponentInParent<Button>();
+            if (button != null)
+                button.interactable = unlocked && !maxed && coins >= seniorBaristaCost;
+        }
+
+        if (masterBaristaButtonText != null)
+        {
+            bool unlocked = playerLevel >= MasterBaristaUnlockLevel && seniorBaristaLevel >= NextTierRequiredLevel;
+            bool maxed = masterBaristaLevel >= UpgradeMaxLevel;
+            masterBaristaButtonText.text = !unlocked
+                ? "Sef Barista\nKilitli: Lv." + MasterBaristaUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
+                : maxed
+                    ? "Sef Barista Lv." + masterBaristaLevel + "/" + UpgradeMaxLevel + "\nMAX"
+                    : "Sef Barista Lv." + masterBaristaLevel + "/" + UpgradeMaxLevel + "\n+" + MasterBaristaIncomeGain + "/sn | " + masterBaristaCost + " coin";
+            Button button = masterBaristaButtonText.GetComponentInParent<Button>();
+            if (button != null)
+                button.interactable = unlocked && !maxed && coins >= masterBaristaCost;
+        }
+
+        if (coffeeUpgradeButton != null)
+            coffeeUpgradeButton.interactable = true;
+
+        if (machineUpgradeButton != null)
+            machineUpgradeButton.interactable = true;
+
+        if (baristaUpgradeButton != null)
+            baristaUpgradeButton.interactable = true;
+    }
+
+    private void UpdateDecorButton(TMP_Text buttonText, bool unlocked, bool selected, bool canUnlock, string itemName, string costText)
+    {
+        if (buttonText == null)
+        {
+            return;
+        }
+
+        Button button = buttonText.GetComponentInParent<Button>();
+        if (selected)
+        {
+            buttonText.text = itemName + "\nSecili";
+        }
+        else if (unlocked)
+        {
+            buttonText.text = itemName + "\nSec";
+        }
+        else
+        {
+            buttonText.text = itemName + "\nUret: " + costText;
+        }
+
+        if (button != null)
+        {
+            button.interactable = unlocked || canUnlock;
+        }
+    }
+
+    private void ApplyDecorations()
+    {
+        if (isoBackWallGraphic != null)
+            isoBackWallGraphic.color = GetWallColor();
+
+        if (isoLeftWallGraphic != null)
+            isoLeftWallGraphic.color = ShadeColor(GetWallColor(), 0.86f);
+
+        if (isoRightWallGraphic != null)
+            isoRightWallGraphic.color = ShadeColor(GetWallColor(), 0.80f);
+
+        if (isoFloorGraphic != null)
+            isoFloorGraphic.color = GetFloorColor();
+
+        if (isoFloorShadowGraphic != null)
+            isoFloorShadowGraphic.color = new Color(0.08f, 0.07f, 0.06f, 0.30f);
+
+        if (backgroundTapImage != null)
+            backgroundTapImage.color = new Color(1f, 1f, 1f, 0f);
+
+        if (leftWallImage != null)
+            leftWallImage.color = new Color(1f, 1f, 1f, 0f);
+
+        if (rightWallImage != null)
+            rightWallImage.color = new Color(1f, 1f, 1f, 0f);
+
+        if (floorPreviewImage != null)
+            floorPreviewImage.color = new Color(1f, 1f, 1f, 0f);
+
+        if (tablePreviewImage != null)
+            tablePreviewImage.color = GetTableColor();
+
+        if (backWallTopTrim != null)
+            backWallTopTrim.color = ShadeColor(GetRoomAccentColor(), 0.65f);
+
+        if (roomAccentStrip != null)
+            roomAccentStrip.color = GetRoomAccentColor();
+
+        if (floorBackEdge != null)
+            floorBackEdge.color = new Color(0.18f, 0.14f, 0.12f, currentRoomIndex == 1 ? 0.48f : 0.34f);
+
+        Color floorLineColor = currentRoomIndex == 1
+            ? new Color(0.74f, 0.86f, 0.92f, 0.18f)
+            : new Color(1f, 1f, 1f, 0.12f);
+        if (floorCenterLine != null)
+            floorCenterLine.color = floorLineColor;
+        if (floorLeftPerspectiveLine != null)
+            floorLeftPerspectiveLine.color = floorLineColor;
+        if (floorRightPerspectiveLine != null)
+            floorRightPerspectiveLine.color = floorLineColor;
+
+        UpdateRoomVisuals();
+    }
+
+    private Color GetWallColor()
+    {
+        if (selectedWallStyle == 1)
+            return new Color(1f, 0.72f, 0.84f, 1f);
+
+        if (selectedWallStyle == 2)
+            return new Color(0.70f, 0.92f, 0.84f, 1f);
+
+        if (currentRoomIndex == 1)
+            return new Color(0.66f, 0.72f, 0.76f, 1f);
+
+        if (currentRoomIndex == 2)
+            return new Color(0.76f, 0.70f, 0.82f, 1f);
+
+        return new Color(0.88f, 0.95f, 1f, 1f);
+    }
+
+    private Color GetFloorColor()
+    {
+        if (selectedFloorStyle == 1)
+            return new Color(0.86f, 0.74f, 0.55f, 1f);
+
+        if (currentRoomIndex == 1)
+            return new Color(0.42f, 0.46f, 0.48f, 1f);
+
+        if (currentRoomIndex == 2)
+            return new Color(0.50f, 0.42f, 0.56f, 1f);
+
+        return new Color(0.64f, 0.50f, 0.38f, 1f);
+    }
+
+    private Color GetTableColor()
+    {
+        if (selectedTableStyle == 1)
+            return new Color(0.86f, 0.38f, 0.54f, 1f);
+
+        if (currentRoomIndex == 1)
+            return new Color(0.26f, 0.30f, 0.34f, 1f);
+
+        if (currentRoomIndex == 2)
+            return new Color(0.24f, 0.18f, 0.28f, 1f);
+
+        return new Color(0.45f, 0.25f, 0.14f, 1f);
+    }
+
+    private Color GetRoomAccentColor()
+    {
+        if (currentRoomIndex == 1)
+            return new Color(0.22f, 0.42f, 0.52f, 1f);
+
+        if (currentRoomIndex == 2)
+            return new Color(0.72f, 0.54f, 0.22f, 1f);
+
+        return new Color(0.48f, 0.32f, 0.22f, 1f);
+    }
+
+    private void UpdateRoomVisuals()
+    {
+        bool unlocked = IsCurrentRoomUnlocked();
+        SetSceneImageActive(productionConveyorVisual, currentRoomIndex == 1);
+        SetSceneImageActive(productionMachineVisual, currentRoomIndex == 1);
+        SetSceneImageActive(vipRugVisual, currentRoomIndex == 2);
+        SetSceneImageActive(vipCounterVisual, currentRoomIndex == 2);
+        SetSceneImageActive(vipPlantVisual, currentRoomIndex == 2);
+        SetSceneImageActive(roomLockOverlay, !unlocked);
+    }
+
+    private void SetSceneImageActive(Image image, bool active)
+    {
+        if (image != null)
+        {
+            image.gameObject.SetActive(active);
+        }
+    }
+
+    private bool IsCurrentRoomUnlocked()
+    {
+        if (currentRoomIndex == 0)
+        {
+            return true;
+        }
+
+        if (currentRoomIndex == 1)
+        {
+            return productionRoomUnlocked;
+        }
+
+        return vipRoomUnlocked;
+    }
+
+    private int GetCurrentRoomUnlockCost()
+    {
+        if (currentRoomIndex == 1)
+        {
+            return ProductionRoomUnlockCost;
+        }
+
+        if (currentRoomIndex == 2)
+        {
+            return VipRoomUnlockCost;
+        }
+
+        return 0;
+    }
+
+    private string GetCurrentRoomName()
+    {
+        if (currentRoomIndex == 1)
+        {
+            return productionRoomUnlocked ? "Uretim Odasi" : "Kilitli: Uretim Odasi";
+        }
+
+        if (currentRoomIndex == 2)
+        {
+            return vipRoomUnlocked ? "VIP Servis Odasi" : "Kilitli: VIP Servis Odasi";
+        }
+
+        return "Baslangic Odasi";
+    }
+
+    private void RefreshDailyTasksIfNeeded()
+    {
+        if (string.IsNullOrEmpty(lastDailyTasksUtc) || !long.TryParse(lastDailyTasksUtc, out long ticks))
+        {
+            ResetDailyTasks();
+            return;
+        }
+
+        DateTime lastResetTime = new DateTime(ticks, DateTimeKind.Utc);
+        if ((DateTime.UtcNow - lastResetTime).TotalHours >= DailyTasksResetHours)
+        {
+            ResetDailyTasks();
+            SaveGame();
+        }
+    }
+
+    private void ResetDailyTasks()
+    {
+        dailyCoffeeSold = 0;
+        dailyCustomerSales = 0;
+        dailyChestsOpened = 0;
+        dailyCoffeeRewardClaimed = false;
+        dailyCustomerRewardClaimed = false;
+        dailyChestRewardClaimed = false;
+        lastDailyTasksUtc = DateTime.UtcNow.Ticks.ToString();
+    }
+
+    private bool CanClaimAnyDailyTask()
+    {
+        return (!dailyCoffeeRewardClaimed && dailyCoffeeSold >= 20)
+            || (!dailyCustomerRewardClaimed && dailyCustomerSales >= 5)
+            || (!dailyChestRewardClaimed && dailyChestsOpened >= 1);
+    }
+
+    private string GetDailyTasksText()
+    {
+        return "Yenilenme: " + GetDailyTasksWaitText()
+            + "\nBugun tamamlanan oduller: " + GetClaimedDailyTaskCount() + "/3";
+    }
+
+    private int GetClaimedDailyTaskCount()
+    {
+        int count = 0;
+        if (dailyCoffeeRewardClaimed) count++;
+        if (dailyCustomerRewardClaimed) count++;
+        if (dailyChestRewardClaimed) count++;
+        return count;
+    }
+
+    private string GetDailyTasksWaitText()
+    {
+        if (string.IsNullOrEmpty(lastDailyTasksUtc) || !long.TryParse(lastDailyTasksUtc, out long ticks))
+        {
+            return "hazirlaniyor";
+        }
+
+        DateTime lastResetTime = new DateTime(ticks, DateTimeKind.Utc);
+        double remainingSeconds = (lastResetTime.AddHours(DailyTasksResetHours) - DateTime.UtcNow).TotalSeconds;
+        return FormatLongTime((float)Math.Max(0, remainingSeconds));
+    }
+
+    private void UpdateDailyTaskButton(TMP_Text buttonText, bool claimed, bool ready, string taskName, int progress, int target, string rewardText)
+    {
+        if (buttonText == null)
+        {
+            return;
+        }
+
+        Button button = buttonText.GetComponentInParent<Button>();
+        if (claimed)
+        {
+            buttonText.text = taskName + ": " + target + "/" + target + "\nAlindi";
+        }
+        else
+        {
+            int shownProgress = Mathf.Min(progress, target);
+            buttonText.text = taskName + ": " + shownProgress + "/" + target + "\n" + rewardText + (ready ? " | Odulu Al" : "");
+        }
+
+        if (button != null)
+        {
+            button.interactable = ready && !claimed;
+        }
+    }
+
+
+    private bool HasVisibleTask()
+    {
+        if (!firstTaskRewardClaimed)
+        {
+            return true;
+        }
+
+        if (playerLevel >= 2 && !secondTaskRewardClaimed)
+        {
+            return true;
+        }
+
+        if (playerLevel >= 3 && !thirdTaskRewardClaimed)
+        {
+            return true;
+        }
+
+        if (playerLevel >= 4 && !fourthTaskRewardClaimed)
+        {
+            return true;
+        }
+
+        if (playerLevel >= 5 && !fifthTaskRewardClaimed)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private int GetCurrentTaskId()
+    {
+        if (!firstTaskRewardClaimed)
+        {
+            return 1;
+        }
+
+        if (playerLevel >= 2 && !secondTaskRewardClaimed)
+        {
+            return 2;
+        }
+
+        if (playerLevel >= 3 && !thirdTaskRewardClaimed)
+        {
+            return 3;
+        }
+
+        if (playerLevel >= 4 && !fourthTaskRewardClaimed)
+        {
+            return 4;
+        }
+
+        if (playerLevel >= 5 && !fifthTaskRewardClaimed)
+        {
+            return 5;
+        }
+
+        return 0;
+    }
+
+    private bool ShouldShowTaskNotifyDot()
+    {
+        int currentTaskId = GetCurrentTaskId();
+        bool hasNewUnseenTask = currentTaskId > 0 && currentTaskId != seenTaskId;
+        return hasNewUnseenTask;
+    }
+
+    private bool CanClaimCurrentTask()
+    {
+        if (!firstTaskRewardClaimed)
+        {
+            return totalCoffeeSold >= 10;
+        }
+
+        if (playerLevel >= 2 && !secondTaskRewardClaimed)
+        {
+            return GetTotalMachineLevel() >= 1;
+        }
+
+        if (playerLevel >= 3 && !thirdTaskRewardClaimed)
+        {
+            return customerSales >= 5;
+        }
+
+        if (playerLevel >= 4 && !fourthTaskRewardClaimed)
+        {
+            return GetTotalBaristaLevel() >= 1;
+        }
+
+        if (playerLevel >= 5 && !fifthTaskRewardClaimed)
+        {
+            return vipCustomerSales >= 3;
+        }
+
+        return false;
+    }
+
+    private string GetTaskText()
+    {
+        if (!firstTaskRewardClaimed)
+        {
+            int progress = Mathf.Min(totalCoffeeSold, 10);
+            return "Gorev\n10 kahve sat: " + progress + "/10\nOdul: 1 Gem + 25 XP";
+        }
+
+        if (playerLevel >= 2 && !secondTaskRewardClaimed)
+        {
+            int progress = Mathf.Min(GetTotalMachineLevel(), 1);
+            return "Gorev\nHerhangi 1 Kahve Makinesi al: " + progress + "/1\nOdul: 2 Gem + 50 XP";
+        }
+
+        if (playerLevel >= 3 && !thirdTaskRewardClaimed)
+        {
+            int progress = Mathf.Min(customerSales, 5);
+            return "Gorev\n5 musteriye kahve sat: " + progress + "/5\nOdul: 2 Gem + 75 XP";
+        }
+
+        if (playerLevel >= 4 && !fourthTaskRewardClaimed)
+        {
+            int progress = Mathf.Min(GetTotalBaristaLevel(), 1);
+            return "Gorev\nHerhangi 1 Barista al: " + progress + "/1\nOdul: 3 Gem + 100 XP";
+        }
+
+        if (playerLevel >= 5 && !fifthTaskRewardClaimed)
+        {
+            int progress = Mathf.Min(vipCustomerSales, 3);
+            return "Gorev\n3 VIP musteriye satis yap: " + progress + "/3\nOdul: 5 Gem + 150 XP";
+        }
+
+        return "Gorev\n\nYeni gorev yok";
+    }
+
+    private bool CanClaimDailyReward()
+    {
+        if (string.IsNullOrEmpty(lastDailyRewardUtc) || !long.TryParse(lastDailyRewardUtc, out long ticks))
+        {
+            return true;
+        }
+
+        DateTime lastRewardTime = new DateTime(ticks, DateTimeKind.Utc);
+        return (DateTime.UtcNow - lastRewardTime).TotalHours >= DailyRewardCooldownHours;
+    }
+
+    private string GetDailyRewardText()
+    {
+        string text = "";
+        for (int i = 0; i < DailyRewardCycleDays; i++)
+        {
+            int displayDay = i + 1;
+            string marker = i == dailyRewardDay ? "Bugun: " : "";
+            text += marker + "Gun " + displayDay + ": " + GetDailyRewardLine(i) + "\n";
+        }
+
+        if (CanClaimDailyReward())
+        {
+            return text + "\nHazir: Gun " + (dailyRewardDay + 1) + " odulunu alabilirsin.";
+        }
+
+        return text + "\nSiradaki odul: " + GetDailyRewardWaitText();
+    }
+
+    private string GetDailyRewardLine(int dayIndex)
+    {
+        int gemReward = GetDailyGemReward(dayIndex);
+        int chestReward = GetDailyChestReward(dayIndex);
+
+        if (chestReward <= 0)
+        {
+            return gemReward + " Gem";
+        }
+
+        return gemReward + " Gem + " + chestReward + " Sandik";
+    }
+
+    private string GetDailyRewardWaitText()
+    {
+        if (string.IsNullOrEmpty(lastDailyRewardUtc) || !long.TryParse(lastDailyRewardUtc, out long ticks))
+        {
+            return "hazir";
+        }
+
+        DateTime lastRewardTime = new DateTime(ticks, DateTimeKind.Utc);
+        double remainingSeconds = (lastRewardTime.AddHours(DailyRewardCooldownHours) - DateTime.UtcNow).TotalSeconds;
+        return FormatLongTime((float)Math.Max(0, remainingSeconds));
+    }
+
+    private int GetDailyGemReward(int dayIndex)
+    {
+        switch (dayIndex)
+        {
+            case 0: return 1;
+            case 1: return 1;
+            case 2: return 2;
+            case 3: return 2;
+            case 4: return 3;
+            case 5: return 4;
+            default: return 7;
+        }
+    }
+
+    private int GetDailyChestReward(int dayIndex)
+    {
+        switch (dayIndex)
+        {
+            case 1: return 1;
+            case 3: return 1;
+            case 4: return 1;
+            case 5: return 1;
+            case 6: return 2;
+            default: return 0;
+        }
+    }
+
+    private string FormatTime(float seconds)
+    {
+        int totalSeconds = Mathf.CeilToInt(seconds);
+        int minutes = totalSeconds / 60;
+        int secs = totalSeconds % 60;
+        return minutes + ":" + secs.ToString("00");
+    }
+
+    private string FormatCompactTime(float seconds)
+    {
+        int totalSeconds = Mathf.CeilToInt(seconds);
+        int minutes = totalSeconds / 60;
+        int secs = totalSeconds % 60;
+
+        if (minutes > 0)
+        {
+            return minutes + "dk";
+        }
+
+        return secs + "sn";
+    }
+
+    private string FormatLongTime(float seconds)
+    {
+        int totalSeconds = Mathf.CeilToInt(seconds);
+        int hours = totalSeconds / 3600;
+        int minutes = (totalSeconds % 3600) / 60;
+        int secs = totalSeconds % 60;
+
+        if (hours > 0)
+        {
+            return hours + "s " + minutes + "dk";
+        }
+
+        return minutes + "dk " + secs + "sn";
+    }
+
+    private void SaveGame()
+    {
+        PlayerPrefs.SetFloat("coins", coins);
+        PlayerPrefs.SetInt("coinsPerClick", coinsPerClick);
+        PlayerPrefs.SetFloat("coinsPerSecond", coinsPerSecond);
+        PlayerPrefs.SetInt("coffeeUpgradeLevel", coffeeUpgradeLevel);
+        PlayerPrefs.SetInt("coffeeUpgradeCost", coffeeUpgradeCost);
+        PlayerPrefs.SetInt("premiumCoffeeLevel", premiumCoffeeLevel);
+        PlayerPrefs.SetInt("premiumCoffeeCost", premiumCoffeeCost);
+        PlayerPrefs.SetInt("signatureCoffeeLevel", signatureCoffeeLevel);
+        PlayerPrefs.SetInt("signatureCoffeeCost", signatureCoffeeCost);
+        PlayerPrefs.SetInt("machineUpgradeLevel", machineUpgradeLevel);
+        PlayerPrefs.SetInt("machineUpgradeCost", machineUpgradeCost);
+        PlayerPrefs.SetInt("espressoMachineLevel", espressoMachineLevel);
+        PlayerPrefs.SetInt("espressoMachineCost", espressoMachineCost);
+        PlayerPrefs.SetInt("premiumMachineLevel", premiumMachineLevel);
+        PlayerPrefs.SetInt("premiumMachineCost", premiumMachineCost);
+        PlayerPrefs.SetInt("baristaUpgradeLevel", baristaUpgradeLevel);
+        PlayerPrefs.SetInt("baristaUpgradeCost", baristaUpgradeCost);
+        PlayerPrefs.SetInt("seniorBaristaLevel", seniorBaristaLevel);
+        PlayerPrefs.SetInt("seniorBaristaCost", seniorBaristaCost);
+        PlayerPrefs.SetInt("masterBaristaLevel", masterBaristaLevel);
+        PlayerPrefs.SetInt("masterBaristaCost", masterBaristaCost);
+        PlayerPrefs.SetInt("gems", gems);
+        PlayerPrefs.SetInt("chests", chests);
+        PlayerPrefs.SetInt("paintPieces", paintPieces);
+        PlayerPrefs.SetInt("woodPieces", woodPieces);
+        PlayerPrefs.SetString("lastChestRewardText", lastChestRewardText);
+        PlayerPrefs.SetInt("pinkWallUnlocked", pinkWallUnlocked ? 1 : 0);
+        PlayerPrefs.SetInt("mintWallUnlocked", mintWallUnlocked ? 1 : 0);
+        PlayerPrefs.SetInt("creamFloorUnlocked", creamFloorUnlocked ? 1 : 0);
+        PlayerPrefs.SetInt("roseTableUnlocked", roseTableUnlocked ? 1 : 0);
+        PlayerPrefs.SetInt("selectedWallStyle", selectedWallStyle);
+        PlayerPrefs.SetInt("selectedFloorStyle", selectedFloorStyle);
+        PlayerPrefs.SetInt("selectedTableStyle", selectedTableStyle);
+        PlayerPrefs.SetInt("currentRoomIndex", currentRoomIndex);
+        PlayerPrefs.SetInt("productionRoomUnlocked", productionRoomUnlocked ? 1 : 0);
+        PlayerPrefs.SetInt("vipRoomUnlocked", vipRoomUnlocked ? 1 : 0);
+        PlayerPrefs.SetInt("xp", xp);
+        PlayerPrefs.SetInt("playerLevel", playerLevel);
+        PlayerPrefs.SetInt("dailyRewardDay", dailyRewardDay);
+        PlayerPrefs.SetString("lastDailyRewardUtc", lastDailyRewardUtc);
+        PlayerPrefs.SetInt("totalCoffeeSold", totalCoffeeSold);
+        PlayerPrefs.SetInt("customerSales", customerSales);
+        PlayerPrefs.SetInt("dailyCoffeeSold", dailyCoffeeSold);
+        PlayerPrefs.SetInt("dailyCustomerSales", dailyCustomerSales);
+        PlayerPrefs.SetInt("dailyChestsOpened", dailyChestsOpened);
+        PlayerPrefs.SetInt("dailyCoffeeRewardClaimed", dailyCoffeeRewardClaimed ? 1 : 0);
+        PlayerPrefs.SetInt("dailyCustomerRewardClaimed", dailyCustomerRewardClaimed ? 1 : 0);
+        PlayerPrefs.SetInt("dailyChestRewardClaimed", dailyChestRewardClaimed ? 1 : 0);
+        PlayerPrefs.SetString("lastDailyTasksUtc", lastDailyTasksUtc);
+        PlayerPrefs.SetInt("vipCustomerSales", vipCustomerSales);
+        PlayerPrefs.SetInt("missedCustomers", missedCustomers);
+        PlayerPrefs.SetInt("firstTaskRewardClaimed", firstTaskRewardClaimed ? 1 : 0);
+        PlayerPrefs.SetInt("secondTaskRewardClaimed", secondTaskRewardClaimed ? 1 : 0);
+        PlayerPrefs.SetInt("thirdTaskRewardClaimed", thirdTaskRewardClaimed ? 1 : 0);
+        PlayerPrefs.SetInt("fourthTaskRewardClaimed", fourthTaskRewardClaimed ? 1 : 0);
+        PlayerPrefs.SetInt("fifthTaskRewardClaimed", fifthTaskRewardClaimed ? 1 : 0);
+        PlayerPrefs.SetInt("seenTaskId", seenTaskId);
+        PlayerPrefs.SetFloat("bonusTimer", bonusTimer);
+        PlayerPrefs.SetFloat("offerCooldownTimer", offerCooldownTimer);
+        PlayerPrefs.SetFloat("offerVisibleTimer", offerVisibleTimer);
+        PlayerPrefs.SetString("lastSaveUtc", DateTime.UtcNow.Ticks.ToString());
+        PlayerPrefs.Save();
+    }
+
+    private void LoadGame()
+    {
+        coins = PlayerPrefs.GetFloat("coins", 0);
+        coinsPerClick = PlayerPrefs.GetInt("coinsPerClick", 1);
+        coinsPerSecond = PlayerPrefs.GetFloat("coinsPerSecond", 0);
+        coffeeUpgradeLevel = PlayerPrefs.GetInt("coffeeUpgradeLevel", 0);
+        coffeeUpgradeCost = PlayerPrefs.GetInt("coffeeUpgradeCost", 25);
+        premiumCoffeeLevel = PlayerPrefs.GetInt("premiumCoffeeLevel", 0);
+        premiumCoffeeCost = PlayerPrefs.GetInt("premiumCoffeeCost", 750);
+        signatureCoffeeLevel = PlayerPrefs.GetInt("signatureCoffeeLevel", 0);
+        signatureCoffeeCost = PlayerPrefs.GetInt("signatureCoffeeCost", 5000);
+        machineUpgradeLevel = PlayerPrefs.GetInt("machineUpgradeLevel", 0);
+        machineUpgradeCost = PlayerPrefs.GetInt("machineUpgradeCost", 100);
+        espressoMachineLevel = PlayerPrefs.GetInt("espressoMachineLevel", 0);
+        espressoMachineCost = PlayerPrefs.GetInt("espressoMachineCost", 1000);
+        premiumMachineLevel = PlayerPrefs.GetInt("premiumMachineLevel", 0);
+        premiumMachineCost = PlayerPrefs.GetInt("premiumMachineCost", 10000);
+        baristaUpgradeLevel = PlayerPrefs.GetInt("baristaUpgradeLevel", 0);
+        baristaUpgradeCost = PlayerPrefs.GetInt("baristaUpgradeCost", 250);
+        seniorBaristaLevel = PlayerPrefs.GetInt("seniorBaristaLevel", 0);
+        seniorBaristaCost = PlayerPrefs.GetInt("seniorBaristaCost", 2500);
+        masterBaristaLevel = PlayerPrefs.GetInt("masterBaristaLevel", 0);
+        masterBaristaCost = PlayerPrefs.GetInt("masterBaristaCost", 20000);
+        gems = PlayerPrefs.GetInt("gems", 0);
+        chests = PlayerPrefs.GetInt("chests", 0);
+        paintPieces = PlayerPrefs.GetInt("paintPieces", PlayerPrefs.GetInt("decorPieces", 0));
+        woodPieces = PlayerPrefs.GetInt("woodPieces", PlayerPrefs.GetInt("premiumDecorPieces", 0));
+        lastChestRewardText = PlayerPrefs.GetString("lastChestRewardText", "Henuz sandik acilmadi.");
+        pinkWallUnlocked = PlayerPrefs.GetInt("pinkWallUnlocked", 0) == 1;
+        mintWallUnlocked = PlayerPrefs.GetInt("mintWallUnlocked", 0) == 1;
+        creamFloorUnlocked = PlayerPrefs.GetInt("creamFloorUnlocked", 0) == 1;
+        roseTableUnlocked = PlayerPrefs.GetInt("roseTableUnlocked", 0) == 1;
+        selectedWallStyle = PlayerPrefs.GetInt("selectedWallStyle", 0);
+        selectedFloorStyle = PlayerPrefs.GetInt("selectedFloorStyle", 0);
+        selectedTableStyle = PlayerPrefs.GetInt("selectedTableStyle", 0);
+        currentRoomIndex = Mathf.Clamp(PlayerPrefs.GetInt("currentRoomIndex", 0), 0, RoomCount - 1);
+        productionRoomUnlocked = PlayerPrefs.GetInt("productionRoomUnlocked", 0) == 1;
+        vipRoomUnlocked = PlayerPrefs.GetInt("vipRoomUnlocked", 0) == 1;
+        if (selectedWallStyle == 1 && !pinkWallUnlocked) selectedWallStyle = 0;
+        if (selectedWallStyle == 2 && !mintWallUnlocked) selectedWallStyle = 0;
+        if (selectedFloorStyle == 1 && !creamFloorUnlocked) selectedFloorStyle = 0;
+        if (selectedTableStyle == 1 && !roseTableUnlocked) selectedTableStyle = 0;
+        xp = PlayerPrefs.GetInt("xp", 0);
+        playerLevel = PlayerPrefs.GetInt("playerLevel", 1);
+        dailyRewardDay = PlayerPrefs.GetInt("dailyRewardDay", 0);
+        dailyRewardDay = Mathf.Clamp(dailyRewardDay, 0, DailyRewardCycleDays - 1);
+        lastDailyRewardUtc = PlayerPrefs.GetString("lastDailyRewardUtc", "");
+        totalCoffeeSold = PlayerPrefs.GetInt("totalCoffeeSold", 0);
+        customerSales = PlayerPrefs.GetInt("customerSales", 0);
+        dailyCoffeeSold = PlayerPrefs.GetInt("dailyCoffeeSold", 0);
+        dailyCustomerSales = PlayerPrefs.GetInt("dailyCustomerSales", 0);
+        dailyChestsOpened = PlayerPrefs.GetInt("dailyChestsOpened", 0);
+        dailyCoffeeRewardClaimed = PlayerPrefs.GetInt("dailyCoffeeRewardClaimed", 0) == 1;
+        dailyCustomerRewardClaimed = PlayerPrefs.GetInt("dailyCustomerRewardClaimed", 0) == 1;
+        dailyChestRewardClaimed = PlayerPrefs.GetInt("dailyChestRewardClaimed", 0) == 1;
+        lastDailyTasksUtc = PlayerPrefs.GetString("lastDailyTasksUtc", "");
+        vipCustomerSales = PlayerPrefs.GetInt("vipCustomerSales", 0);
+        missedCustomers = PlayerPrefs.GetInt("missedCustomers", 0);
+        firstTaskRewardClaimed = PlayerPrefs.GetInt("firstTaskRewardClaimed", 0) == 1;
+        secondTaskRewardClaimed = PlayerPrefs.GetInt("secondTaskRewardClaimed", 0) == 1;
+        thirdTaskRewardClaimed = PlayerPrefs.GetInt("thirdTaskRewardClaimed", 0) == 1;
+        fourthTaskRewardClaimed = PlayerPrefs.GetInt("fourthTaskRewardClaimed", 0) == 1;
+        fifthTaskRewardClaimed = PlayerPrefs.GetInt("fifthTaskRewardClaimed", 0) == 1;
+        seenTaskId = Mathf.Clamp(PlayerPrefs.GetInt("seenTaskId", 0), 0, 5);
+        bonusTimer = PlayerPrefs.GetFloat("bonusTimer", 0);
+        incomeMultiplier = bonusTimer > 0 ? 2 : 1;
+        offerCooldownTimer = PlayerPrefs.GetFloat("offerCooldownTimer", 10f);
+        offerVisibleTimer = PlayerPrefs.GetFloat("offerVisibleTimer", 0);
+    }
+
+    private void ApplyOfflineEarnings()
+    {
+        string lastSaveValue = PlayerPrefs.GetString("lastSaveUtc", "");
+        if (string.IsNullOrEmpty(lastSaveValue) || !long.TryParse(lastSaveValue, out long ticks))
+        {
+            return;
+        }
+
+        DateTime lastSaveTime = new DateTime(ticks, DateTimeKind.Utc);
+        double elapsedSeconds = Math.Max(0, (DateTime.UtcNow - lastSaveTime).TotalSeconds);
+        double cappedSeconds = Math.Min(elapsedSeconds, 60 * 60 * 8);
+        int offlineCoins = Mathf.FloorToInt(coinsPerSecond * (float)cappedSeconds);
+
+        if (offlineCoins <= 0)
+        {
+            return;
+        }
+
+        lastOfflineCoins = offlineCoins;
+        PlayerPrefs.SetInt("lastOfflineCoins", offlineCoins);
+    }
+
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+        {
+            SaveGame();
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveGame();
+    }
+}
+
+public class FloatingWindowDrag : MonoBehaviour, IBeginDragHandler, IDragHandler
+{
+    public RectTransform target;
+
+    private Vector2 pointerStartPosition;
+    private Vector2 panelStartPosition;
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        RectTransform parentRect = target.parent as RectTransform;
+        if (parentRect == null)
+        {
+            return;
+        }
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, eventData.position, eventData.pressEventCamera, out pointerStartPosition);
+        panelStartPosition = target.anchoredPosition;
+        target.SetAsLastSibling();
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        RectTransform parentRect = target.parent as RectTransform;
+        if (parentRect == null)
+        {
+            return;
+        }
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, eventData.position, eventData.pressEventCamera, out Vector2 currentPointerPosition);
+        target.anchoredPosition = panelStartPosition + (currentPointerPosition - pointerStartPosition);
+    }
+}
+
+public class IsoQuadGraphic : MaskableGraphic
+{
+    private Vector2 topLeft;
+    private Vector2 topRight;
+    private Vector2 bottomRight;
+    private Vector2 bottomLeft;
+
+    public void SetCorners(Vector2 newTopLeft, Vector2 newTopRight, Vector2 newBottomRight, Vector2 newBottomLeft)
+    {
+        topLeft = newTopLeft;
+        topRight = newTopRight;
+        bottomRight = newBottomRight;
+        bottomLeft = newBottomLeft;
+        SetVerticesDirty();
+    }
+
+    protected override void OnPopulateMesh(VertexHelper vh)
+    {
+        vh.Clear();
+
+        UIVertex vertex = UIVertex.simpleVert;
+        vertex.color = color;
+
+        vertex.position = topLeft;
+        vh.AddVert(vertex);
+
+        vertex.position = topRight;
+        vh.AddVert(vertex);
+
+        vertex.position = bottomRight;
+        vh.AddVert(vertex);
+
+        vertex.position = bottomLeft;
+        vh.AddVert(vertex);
+
+        vh.AddTriangle(0, 1, 2);
+        vh.AddTriangle(2, 3, 0);
+    }
+}
+
+
+
+
+
+
+
