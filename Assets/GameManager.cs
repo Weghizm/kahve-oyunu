@@ -128,6 +128,7 @@ public class GameManager : MonoBehaviour
     private GameObject offlinePanel;
     private GameObject dailyRewardPanel;
     private GameObject chestPanel;
+    private GameObject chestRewardPanel;
     private GameObject decorPanel;
     private GameObject testPanel;
     private GameObject dailyTasksPanel;
@@ -142,6 +143,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text coffeeUpgradeButtonText;
     private TMP_Text machineUpgradeButtonText;
     private TMP_Text baristaUpgradeButtonText;
+    private TMP_Text chestRewardText;
     private Button coffeeUpgradeButton;
     private Button machineUpgradeButton;
     private Button baristaUpgradeButton;
@@ -169,6 +171,9 @@ public class GameManager : MonoBehaviour
     private Image vipRugVisual;
     private Image vipPlantVisual;
     private Image roomLockOverlay;
+    private Image chestRewardIconImage;
+    private Sprite commonPaintCanSprite;
+    private Sprite rarePaintCanSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
 
     private float coins = 0;
@@ -969,6 +974,7 @@ public class GameManager : MonoBehaviour
         CreateOfflinePanel(canvas.transform);
         CreateDailyRewardPanel(canvas.transform);
         CreateChestPanel(canvas.transform);
+        CreateChestRewardPanel(canvas.transform);
         CreateDecorPanel(canvas.transform);
         CreateTestPanel(canvas.transform);
         CreateDailyTasksPanel(canvas.transform);
@@ -1411,11 +1417,13 @@ public class GameManager : MonoBehaviour
         {
             gems += 1;
             lastChestRewardText = "Siradan Sandiktan 1 Gem cikti.";
+            ShowChestReward(lastChestRewardText, null);
         }
         else if (roll < 70)
         {
             woodPieces += 1;
             lastChestRewardText = "Siradan Sandiktan 1 Tahta cikti.";
+            ShowChestReward(lastChestRewardText, null);
         }
         else
         {
@@ -1429,11 +1437,13 @@ public class GameManager : MonoBehaviour
         {
             gems += 2;
             lastChestRewardText = "Nadir Sandiktan 2 Gem cikti.";
+            ShowChestReward(lastChestRewardText, null);
         }
         else if (roll < 55)
         {
             woodPieces += 2;
             lastChestRewardText = "Nadir Sandiktan 2 Tahta cikti.";
+            ShowChestReward(lastChestRewardText, null);
         }
         else
         {
@@ -1447,12 +1457,14 @@ public class GameManager : MonoBehaviour
         {
             gems += 5;
             lastChestRewardText = "Ozel Sandiktan 5 Gem cikti.";
+            ShowChestReward(lastChestRewardText, null);
         }
         else if (roll < 45)
         {
             woodPieces += 3;
             gems += 2;
             lastChestRewardText = "Ozel Sandiktan 3 Tahta + 2 Gem cikti.";
+            ShowChestReward(lastChestRewardText, null);
         }
         else
         {
@@ -1468,11 +1480,13 @@ public class GameManager : MonoBehaviour
         {
             paintPieces += 1;
             lastChestRewardText = chestName + " odulu: 1 Boya Kutusu.";
+            ShowChestReward(lastChestRewardText, null);
             return;
         }
 
         AddInventoryItem(itemId, 1);
         lastChestRewardText = chestName + " odulu: 1 " + GetItemDisplayNameWithRarity(item) + ".";
+        ShowChestReward(lastChestRewardText, GetPaintCanSprite(item.Rarity));
     }
 
     private string GetItemDisplayNameWithRarity(ItemData item)
@@ -1582,6 +1596,110 @@ public class GameManager : MonoBehaviour
 
         chestPanel.transform.SetAsLastSibling();
         chestPanel.SetActive(false);
+    }
+
+    private void CreateChestRewardPanel(Transform parent)
+    {
+        chestRewardPanel = new GameObject("ChestRewardPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        chestRewardPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = chestRewardPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 15);
+        panelRect.sizeDelta = new Vector2(560, 500);
+
+        Image panelImage = chestRewardPanel.GetComponent<Image>();
+        panelImage.color = new Color(0.98f, 0.94f, 0.84f, 0.99f);
+
+        TMP_Text title = CreateText(chestRewardPanel.transform, "ChestRewardTitle", "Sandik Odulu", new Vector2(0, 205), new Vector2(500, 60), 38);
+        title.color = Color.black;
+
+        GameObject iconObject = new GameObject("ChestRewardIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        iconObject.transform.SetParent(chestRewardPanel.transform, false);
+        RectTransform iconRect = iconObject.GetComponent<RectTransform>();
+        iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+        iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+        iconRect.anchoredPosition = new Vector2(0, 55);
+        iconRect.sizeDelta = new Vector2(210, 210);
+        chestRewardIconImage = iconObject.GetComponent<Image>();
+        chestRewardIconImage.preserveAspect = true;
+        chestRewardIconImage.color = Color.white;
+
+        chestRewardText = CreateText(chestRewardPanel.transform, "ChestRewardText", "", new Vector2(0, -105), new Vector2(500, 110), 28);
+        chestRewardText.color = Color.black;
+        chestRewardText.enableWordWrapping = true;
+
+        CreateButton(chestRewardPanel.transform, "ChestRewardCloseButton", "Tamam", new Vector2(0, -210), new Vector2(260, 72), CloseChestRewardPanel, new Color(0.22f, 0.48f, 0.40f), 28);
+
+        chestRewardPanel.transform.SetAsLastSibling();
+        chestRewardPanel.SetActive(false);
+    }
+
+    public void CloseChestRewardPanel()
+    {
+        if (chestRewardPanel != null)
+        {
+            chestRewardPanel.SetActive(false);
+        }
+    }
+
+    private void ShowChestReward(string rewardText, Sprite rewardSprite)
+    {
+        if (chestRewardPanel == null)
+        {
+            return;
+        }
+
+        if (chestRewardText != null)
+        {
+            chestRewardText.text = rewardText;
+        }
+
+        if (chestRewardIconImage != null)
+        {
+            chestRewardIconImage.sprite = rewardSprite;
+            chestRewardIconImage.gameObject.SetActive(rewardSprite != null);
+        }
+
+        chestRewardPanel.SetActive(true);
+        chestRewardPanel.transform.SetAsLastSibling();
+    }
+
+    private Sprite GetPaintCanSprite(ItemRarity rarity)
+    {
+        if (rarity == ItemRarity.Luxury)
+        {
+            return null;
+        }
+
+        if (rarity == ItemRarity.Rare)
+        {
+            if (rarePaintCanSprite == null)
+            {
+                rarePaintCanSprite = LoadSpriteFromResources("Art/Items/paint_can_rare");
+            }
+
+            return rarePaintCanSprite;
+        }
+
+        if (commonPaintCanSprite == null)
+        {
+            commonPaintCanSprite = LoadSpriteFromResources("Art/Items/paint_can_common");
+        }
+
+        return commonPaintCanSprite;
+    }
+
+    private Sprite LoadSpriteFromResources(string path)
+    {
+        Texture2D texture = Resources.Load<Texture2D>(path);
+        if (texture == null)
+        {
+            return null;
+        }
+
+        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
     }
 
     public void OpenDecorPanel()
@@ -2559,6 +2677,9 @@ public class GameManager : MonoBehaviour
 
         if (chestPanel != null && chestPanel.activeSelf && lastOfflineCoins <= 0)
             chestPanel.transform.SetAsLastSibling();
+
+        if (chestRewardPanel != null && chestRewardPanel.activeSelf && lastOfflineCoins <= 0)
+            chestRewardPanel.transform.SetAsLastSibling();
 
         if (decorPanelText != null)
             decorPanelText.text = "Boya Kutusu: " + paintPieces + " | Tahta: " + woodPieces;
