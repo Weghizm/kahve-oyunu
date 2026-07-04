@@ -2560,10 +2560,14 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        Image image = text.gameObject.AddComponent<Image>();
-        image.color = new Color(1f, 1f, 1f, 0.01f);
+        text.raycastTarget = true;
+        Button button = text.GetComponent<Button>();
+        if (button == null)
+        {
+            button = text.gameObject.AddComponent<Button>();
+        }
 
-        Button button = text.gameObject.AddComponent<Button>();
+        button.targetGraphic = text;
         button.onClick.AddListener(action);
     }
 
