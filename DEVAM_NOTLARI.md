@@ -104,6 +104,14 @@ Sandiklar bu siniflara gore odul verecek:
 
 Siradan sandiktan luks boya cikmamali. Bu ekonomi ve market degerini korumak icin onemli.
 
+Test ve UI okunabilirligi icin boya kutularinin isminde nadirlik ibaresi gorunmeli:
+
+- Siradan boyalar: ek ibare olmayabilir veya `(S)` kullanilabilir.
+- Nadir boyalar: `(N)` ibaresi kullanilabilir.
+- Luks boyalar: `(L)` ibaresi kullanilabilir.
+
+Bu sayede test asamasinda sandiktan cikan boyanin siradan, nadir veya luks oldugu hemen anlasilir.
+
 ### VIP
 
 VIP sistemi olabilir.
