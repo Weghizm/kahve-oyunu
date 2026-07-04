@@ -967,7 +967,8 @@ public class GameManager : MonoBehaviour
         tapPowerText = CreateText(gameFrame, "TapPowerText", "Tiklama Gucu: 1", new Vector2(0, 456), new Vector2(460, 38), 22);
         autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Saniyelik Gelir: 0", new Vector2(0, 418), new Vector2(460, 38), 22);
         activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
-        customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -522), new Vector2(620, 34), 18);
+        customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
+        customerStatsText.gameObject.SetActive(false);
         gemText = CreateText(gameFrame, "GemText", "Gem: 0", new Vector2(-760, 500), new Vector2(260, 46), 26);
         chestText = CreateText(gameFrame, "ChestText", "Sandik: 0", new Vector2(-760, 456), new Vector2(260, 38), 20);
         xpText = CreateText(gameFrame, "XpText", "Lv.1 XP: 0/100", new Vector2(650, 500), new Vector2(430, 46), 24);
@@ -2223,7 +2224,7 @@ public class GameManager : MonoBehaviour
         RectTransform sceneRect = sceneRoot.GetComponent<RectTransform>();
         sceneRect.anchorMin = new Vector2(0.5f, 0.5f);
         sceneRect.anchorMax = new Vector2(0.5f, 0.5f);
-        sceneRect.anchoredPosition = new Vector2(0, 40);
+        sceneRect.anchoredPosition = new Vector2(0, -5);
         sceneRect.sizeDelta = Vector2.zero;
         float sceneScale = GetResponsiveCafeSceneScale(parent);
         sceneRect.localScale = new Vector3(sceneScale, sceneScale, 1f);
