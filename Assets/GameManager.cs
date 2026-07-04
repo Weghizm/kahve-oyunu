@@ -1017,19 +1017,16 @@ public class GameManager : MonoBehaviour
         RectTransform safeAreaRect = safeAreaObject.GetComponent<RectTransform>();
         ApplySafeAreaAnchors(safeAreaRect);
 
-        GameObject frameObject = new GameObject("GameFrame16x9", typeof(RectTransform), typeof(AspectRatioFitter));
+        GameObject frameObject = new GameObject("GameFrameResponsive", typeof(RectTransform));
         frameObject.transform.SetParent(safeAreaObject.transform, false);
 
         RectTransform frameRect = frameObject.GetComponent<RectTransform>();
-        frameRect.anchorMin = new Vector2(0.5f, 0.5f);
-        frameRect.anchorMax = new Vector2(0.5f, 0.5f);
+        frameRect.anchorMin = Vector2.zero;
+        frameRect.anchorMax = Vector2.one;
         frameRect.pivot = new Vector2(0.5f, 0.5f);
         frameRect.anchoredPosition = Vector2.zero;
-        frameRect.sizeDelta = new Vector2(1920, 1080);
-
-        AspectRatioFitter fitter = frameObject.GetComponent<AspectRatioFitter>();
-        fitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-        fitter.aspectRatio = 16f / 9f;
+        frameRect.offsetMin = Vector2.zero;
+        frameRect.offsetMax = Vector2.zero;
 
         return frameRect;
     }
@@ -1069,7 +1066,7 @@ public class GameManager : MonoBehaviour
 
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080);
-        scaler.matchWidthOrHeight = 0.5f;
+        scaler.matchWidthOrHeight = 1f;
     }
 
     private void ClearCanvasChildren(Transform canvasTransform)
