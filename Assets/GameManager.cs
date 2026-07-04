@@ -2605,7 +2605,8 @@ public class GameManager : MonoBehaviour
 
         if (customerButtonObject != null)
         {
-            customerButtonObject.SetActive(customerVisibleTimer > 0);
+            bool showCustomerInCurrentRoom = currentRoomIndex == 0 && customerVisibleTimer > 0;
+            customerButtonObject.SetActive(showCustomerInCurrentRoom);
             bool panelIsOpen = (offlinePanel != null && offlinePanel.activeSelf)
                 || (taskPanel != null && taskPanel.activeSelf)
                 || (coffeePanel != null && coffeePanel.activeSelf)
@@ -2617,7 +2618,7 @@ public class GameManager : MonoBehaviour
                 || (testPanel != null && testPanel.activeSelf)
                 || (dailyTasksPanel != null && dailyTasksPanel.activeSelf)
                 || (offerPanel != null && offerPanel.activeSelf);
-            if (customerVisibleTimer > 0 && !panelIsOpen)
+            if (showCustomerInCurrentRoom && !panelIsOpen)
             {
                 customerButtonObject.transform.SetAsLastSibling();
             }
@@ -2633,7 +2634,7 @@ public class GameManager : MonoBehaviour
 
         if (vipBadgeObject != null)
         {
-            bool showVipBadge = customerVisibleTimer > 0 && currentCustomerName == "VIP Musteri";
+            bool showVipBadge = currentRoomIndex == 0 && customerVisibleTimer > 0 && currentCustomerName == "VIP Musteri";
             vipBadgeObject.SetActive(showVipBadge);
             if (showVipBadge)
             {
