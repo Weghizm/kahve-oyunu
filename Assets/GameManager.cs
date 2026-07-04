@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -6,6 +7,42 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    private enum ItemRarity
+    {
+        Common,
+        Rare,
+        Luxury
+    }
+
+    private enum ItemCategory
+    {
+        Material,
+        Decor
+    }
+
+    private enum ChestTier
+    {
+        Common,
+        Rare,
+        Luxury
+    }
+
+    private class ItemData
+    {
+        public string Id;
+        public string DisplayName;
+        public ItemCategory Category;
+        public ItemRarity Rarity;
+
+        public ItemData(string id, string displayName, ItemCategory category, ItemRarity rarity)
+        {
+            Id = id;
+            DisplayName = displayName;
+            Category = category;
+            Rarity = rarity;
+        }
+    }
+
     private const float OfferCooldownSeconds = 600f;
     private const float OfferVisibleSeconds = 60f;
     private const float RewardBoostSeconds = 300f;
@@ -64,6 +101,8 @@ public class GameManager : MonoBehaviour
     private TMP_Text dailyRewardButtonText;
     private TMP_Text chestPanelText;
     private TMP_Text chestOpenButtonText;
+    private TMP_Text rareChestOpenButtonText;
+    private TMP_Text luxuryChestOpenButtonText;
     private TMP_Text decorPanelText;
     private TMP_Text pinkWallButtonText;
     private TMP_Text mintWallButtonText;
@@ -171,9 +210,13 @@ public class GameManager : MonoBehaviour
 
     private int gems = 0;
     private int chests = 0;
+    private int rareChests = 0;
+    private int luxuryChests = 0;
     private int paintPieces = 0;
     private int woodPieces = 0;
     private string lastChestRewardText = "Henuz sandik acilmadi.";
+    private readonly Dictionary<string, int> itemInventory = new Dictionary<string, int>();
+    private readonly List<ItemData> itemDatabase = new List<ItemData>();
     private bool pinkWallUnlocked = false;
     private bool mintWallUnlocked = false;
     private bool creamFloorUnlocked = false;
@@ -209,6 +252,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         ForceLandscapeMode();
+        InitializeItemDatabase();
         LoadGame();
         RefreshDailyTasksIfNeeded();
         ApplyOfflineEarnings();
@@ -410,6 +454,22 @@ public class GameManager : MonoBehaviour
         SaveGame();
     }
 
+    public void AddTestRareChest()
+    {
+        rareChests++;
+        lastChestRewardText = "Test nadir sandigi eklendi.";
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void AddTestLuxuryChest()
+    {
+        luxuryChests++;
+        lastChestRewardText = "Test luks sandigi eklendi.";
+        UpdateUI();
+        SaveGame();
+    }
+
     public void ResetSave()
     {
         PlayerPrefs.DeleteAll();
@@ -437,8 +497,11 @@ public class GameManager : MonoBehaviour
         masterBaristaCost = 20000;
         gems = 0;
         chests = 0;
+        rareChests = 0;
+        luxuryChests = 0;
         paintPieces = 0;
         woodPieces = 0;
+        itemInventory.Clear();
         lastChestRewardText = "Henuz sandik acilmadi.";
         pinkWallUnlocked = false;
         mintWallUnlocked = false;
@@ -1163,43 +1226,275 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void InitializeItemDatabase()
+    {
+        itemDatabase.Clear();
+
+        AddItemData("paint_can_white_001", "Beyaz Boya Kutusu", ItemCategory.Material, ItemRarity.Common);
+        AddItemData("paint_can_cream_001", "Krem Boya Kutusu", ItemCategory.Material, ItemRarity.Common);
+        AddItemData("paint_can_brown_001", "Kahverengi Boya Kutusu", ItemCategory.Material, ItemRarity.Common);
+        AddItemData("paint_can_light_blue_001", "Acik Mavi Boya Kutusu", ItemCategory.Material, ItemRarity.Common);
+        AddItemData("paint_can_light_green_001", "Acik Yesil Boya Kutusu", ItemCategory.Material, ItemRarity.Common);
+
+        AddItemData("paint_can_pink_001", "Pembe Boya Kutusu", ItemCategory.Material, ItemRarity.Rare);
+        AddItemData("paint_can_red_001", "Kirmizi Boya Kutusu", ItemCategory.Material, ItemRarity.Rare);
+        AddItemData("paint_can_purple_001", "Mor Boya Kutusu", ItemCategory.Material, ItemRarity.Rare);
+        AddItemData("paint_can_black_001", "Siyah Boya Kutusu", ItemCategory.Material, ItemRarity.Rare);
+        AddItemData("paint_can_turquoise_001", "Turkuaz Boya Kutusu", ItemCategory.Material, ItemRarity.Rare);
+
+        AddItemData("paint_can_gold_001", "Altin Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury);
+        AddItemData("paint_can_silver_001", "Gumus Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury);
+        AddItemData("paint_can_neon_blue_001", "Neon Mavi Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury);
+        AddItemData("paint_can_pearl_white_001", "Inci Beyazi Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury);
+        AddItemData("paint_can_marble_001", "Mermer Efekt Boyasi", ItemCategory.Material, ItemRarity.Luxury);
+    }
+
+    private void AddItemData(string id, string displayName, ItemCategory category, ItemRarity rarity)
+    {
+        itemDatabase.Add(new ItemData(id, displayName, category, rarity));
+    }
+
+    private ItemData GetItemData(string itemId)
+    {
+        for (int i = 0; i < itemDatabase.Count; i++)
+        {
+            if (itemDatabase[i].Id == itemId)
+            {
+                return itemDatabase[i];
+            }
+        }
+
+        return null;
+    }
+
+    private void AddInventoryItem(string itemId, int amount)
+    {
+        if (string.IsNullOrEmpty(itemId) || amount <= 0)
+        {
+            return;
+        }
+
+        if (!itemInventory.ContainsKey(itemId))
+        {
+            itemInventory[itemId] = 0;
+        }
+
+        itemInventory[itemId] += amount;
+    }
+
+    private int GetInventoryItemCount(string itemId)
+    {
+        if (string.IsNullOrEmpty(itemId) || !itemInventory.ContainsKey(itemId))
+        {
+            return 0;
+        }
+
+        return itemInventory[itemId];
+    }
+
+    private string GetRandomPaintCanId(ItemRarity maxRarity)
+    {
+        List<ItemData> candidates = new List<ItemData>();
+        for (int i = 0; i < itemDatabase.Count; i++)
+        {
+            ItemData item = itemDatabase[i];
+            if (item.Category == ItemCategory.Material
+                && item.Id.StartsWith("paint_can_", StringComparison.Ordinal)
+                && (int)item.Rarity <= (int)maxRarity)
+            {
+                candidates.Add(item);
+            }
+        }
+
+        if (candidates.Count == 0)
+        {
+            return "";
+        }
+
+        return candidates[UnityEngine.Random.Range(0, candidates.Count)].Id;
+    }
+
+    private string GetPaintInventorySummary()
+    {
+        string summary = "";
+        int shown = 0;
+
+        for (int i = 0; i < itemDatabase.Count; i++)
+        {
+            ItemData item = itemDatabase[i];
+            int count = GetInventoryItemCount(item.Id);
+            if (count <= 0 || !item.Id.StartsWith("paint_can_", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (shown >= 4)
+            {
+                summary += "\n+ diger boya kutulari";
+                break;
+            }
+
+            summary += "\n" + item.DisplayName + ": " + count;
+            shown++;
+        }
+
+        if (shown == 0)
+        {
+            return "\nRenkli Boya Kutusu: 0";
+        }
+
+        return summary;
+    }
+
     public void OpenChest()
     {
-        if (chests <= 0)
+        OpenChestByTier(ChestTier.Common);
+    }
+
+    public void OpenRareChest()
+    {
+        OpenChestByTier(ChestTier.Rare);
+    }
+
+    public void OpenLuxuryChest()
+    {
+        OpenChestByTier(ChestTier.Luxury);
+    }
+
+    private void OpenChestByTier(ChestTier tier)
+    {
+        if (GetChestCount(tier) <= 0)
         {
-            lastChestRewardText = "Acacak sandigin yok.";
+            lastChestRewardText = "Acacak " + GetChestTierName(tier) + " yok.";
             UpdateUI();
             return;
         }
 
-        chests--;
+        if (tier == ChestTier.Common)
+            chests--;
+        else if (tier == ChestTier.Rare)
+            rareChests--;
+        else
+            luxuryChests--;
+
         dailyChestsOpened++;
         int roll = UnityEngine.Random.Range(0, 100);
 
-        if (roll < 50)
+        if (tier == ChestTier.Common)
         {
-            gems += 1;
-            lastChestRewardText = "Sandiktan 1 Gem cikti.";
+            OpenCommonChestReward(roll);
         }
-        else if (roll < 80)
+        else if (tier == ChestTier.Rare)
         {
-            gems += 2;
-            lastChestRewardText = "Sandiktan 2 Gem cikti.";
-        }
-        else if (roll < 95)
-        {
-            paintPieces += 1;
-            lastChestRewardText = "Sandiktan 1 Boya Kutusu cikti.";
+            OpenRareChestReward(roll);
         }
         else
         {
-            woodPieces += 1;
-            gems += 3;
-            lastChestRewardText = "Nadir odul: 1 Tahta + 3 Gem!";
+            OpenLuxuryChestReward(roll);
         }
 
         UpdateUI();
         SaveGame();
+    }
+
+    private void OpenCommonChestReward(int roll)
+    {
+        if (roll < 45)
+        {
+            gems += 1;
+            lastChestRewardText = "Siradan Sandiktan 1 Gem cikti.";
+        }
+        else if (roll < 70)
+        {
+            woodPieces += 1;
+            lastChestRewardText = "Siradan Sandiktan 1 Tahta cikti.";
+        }
+        else
+        {
+            AddRandomPaintCanReward(ItemRarity.Common, "Siradan Sandik");
+        }
+    }
+
+    private void OpenRareChestReward(int roll)
+    {
+        if (roll < 35)
+        {
+            gems += 2;
+            lastChestRewardText = "Nadir Sandiktan 2 Gem cikti.";
+        }
+        else if (roll < 55)
+        {
+            woodPieces += 2;
+            lastChestRewardText = "Nadir Sandiktan 2 Tahta cikti.";
+        }
+        else
+        {
+            AddRandomPaintCanReward(ItemRarity.Rare, "Nadir Sandik");
+        }
+    }
+
+    private void OpenLuxuryChestReward(int roll)
+    {
+        if (roll < 25)
+        {
+            gems += 5;
+            lastChestRewardText = "Luks Sandiktan 5 Gem cikti.";
+        }
+        else if (roll < 45)
+        {
+            woodPieces += 3;
+            gems += 2;
+            lastChestRewardText = "Luks Sandiktan 3 Tahta + 2 Gem cikti.";
+        }
+        else
+        {
+            AddRandomPaintCanReward(ItemRarity.Luxury, "Luks Sandik");
+        }
+    }
+
+    private void AddRandomPaintCanReward(ItemRarity maxRarity, string chestName)
+    {
+        string itemId = GetRandomPaintCanId(maxRarity);
+        ItemData item = GetItemData(itemId);
+        if (item == null)
+        {
+            paintPieces += 1;
+            lastChestRewardText = chestName + " odulu: 1 Boya Kutusu.";
+            return;
+        }
+
+        AddInventoryItem(itemId, 1);
+        lastChestRewardText = chestName + " odulu: 1 " + item.DisplayName + ".";
+    }
+
+    private string GetChestTierName(ChestTier tier)
+    {
+        if (tier == ChestTier.Rare)
+        {
+            return "Nadir Sandik";
+        }
+
+        if (tier == ChestTier.Luxury)
+        {
+            return "Luks Sandik";
+        }
+
+        return "Siradan Sandik";
+    }
+
+    private int GetChestCount(ChestTier tier)
+    {
+        if (tier == ChestTier.Rare)
+        {
+            return rareChests;
+        }
+
+        if (tier == ChestTier.Luxury)
+        {
+            return luxuryChests;
+        }
+
+        return chests;
     }
 
     private void CreateChestPanel(Transform parent)
@@ -1219,11 +1514,13 @@ public class GameManager : MonoBehaviour
         TMP_Text title = CreateText(chestPanel.transform, "ChestPanelTitle", "Sandiklar", new Vector2(0, 225), new Vector2(820, 70), 44);
         title.color = Color.black;
 
-        chestPanelText = CreateText(chestPanel.transform, "ChestPanelText", "", new Vector2(0, 45), new Vector2(800, 260), 30);
+        chestPanelText = CreateText(chestPanel.transform, "ChestPanelText", "", new Vector2(0, 45), new Vector2(800, 275), 22);
         chestPanelText.color = Color.black;
 
-        chestOpenButtonText = CreateButton(chestPanel.transform, "ChestOpenButton", "Sandik Ac", new Vector2(-190, -200), new Vector2(360, 90), OpenChest, new Color(0.64f, 0.36f, 0.16f), 34);
-        CreateButton(chestPanel.transform, "ChestCloseButton", "Kapat", new Vector2(230, -200), new Vector2(300, 90), CloseChestPanel, new Color(0.20f, 0.20f, 0.20f), 30);
+        chestOpenButtonText = CreateButton(chestPanel.transform, "ChestOpenButton", "Siradan", new Vector2(-305, -200), new Vector2(180, 78), OpenChest, new Color(0.64f, 0.36f, 0.16f), 24);
+        rareChestOpenButtonText = CreateButton(chestPanel.transform, "RareChestOpenButton", "Nadir", new Vector2(-105, -200), new Vector2(180, 78), OpenRareChest, new Color(0.30f, 0.42f, 0.68f), 24);
+        luxuryChestOpenButtonText = CreateButton(chestPanel.transform, "LuxuryChestOpenButton", "Luks", new Vector2(95, -200), new Vector2(180, 78), OpenLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 24);
+        CreateButton(chestPanel.transform, "ChestCloseButton", "Kapat", new Vector2(310, -200), new Vector2(180, 78), CloseChestPanel, new Color(0.20f, 0.20f, 0.20f), 24);
 
         chestPanel.transform.SetAsLastSibling();
         chestPanel.SetActive(false);
@@ -1420,13 +1717,15 @@ public class GameManager : MonoBehaviour
         contentRect.anchorMax = new Vector2(0.5f, 1f);
         contentRect.pivot = new Vector2(0.5f, 1f);
         contentRect.anchoredPosition = Vector2.zero;
-        contentRect.sizeDelta = new Vector2(480, 520);
+        contentRect.sizeDelta = new Vector2(480, 700);
 
-        CreateButton(contentObject.transform, "TestCoinsButton", "TEST +10000 Coin", new Vector2(0, 215), new Vector2(440, 70), AddTestCoins, new Color(0.80f, 0.18f, 0.18f), 25);
-        CreateButton(contentObject.transform, "TestXpButton", "TEST +100 XP", new Vector2(0, 130), new Vector2(440, 70), AddTestXp, new Color(0.18f, 0.42f, 0.72f), 25);
-        CreateButton(contentObject.transform, "TestChestButton", "TEST +1 Sandik", new Vector2(0, 45), new Vector2(440, 70), AddTestChest, new Color(0.64f, 0.36f, 0.16f), 25);
-        CreateButton(contentObject.transform, "ResetButton", "RESET", new Vector2(0, -40), new Vector2(440, 70), ResetSave, new Color(0.20f, 0.20f, 0.20f), 25);
-        TMP_Text futureText = CreateText(contentObject.transform, "FutureTestText", "Yeni testler buraya eklenecek", new Vector2(0, -125), new Vector2(440, 70), 22);
+        CreateButton(contentObject.transform, "TestCoinsButton", "TEST +10000 Coin", new Vector2(0, 300), new Vector2(440, 70), AddTestCoins, new Color(0.80f, 0.18f, 0.18f), 25);
+        CreateButton(contentObject.transform, "TestXpButton", "TEST +100 XP", new Vector2(0, 215), new Vector2(440, 70), AddTestXp, new Color(0.18f, 0.42f, 0.72f), 25);
+        CreateButton(contentObject.transform, "TestChestButton", "TEST +1 Siradan Sandik", new Vector2(0, 130), new Vector2(440, 70), AddTestChest, new Color(0.64f, 0.36f, 0.16f), 25);
+        CreateButton(contentObject.transform, "TestRareChestButton", "TEST +1 Nadir Sandik", new Vector2(0, 45), new Vector2(440, 70), AddTestRareChest, new Color(0.30f, 0.42f, 0.68f), 25);
+        CreateButton(contentObject.transform, "TestLuxuryChestButton", "TEST +1 Luks Sandik", new Vector2(0, -40), new Vector2(440, 70), AddTestLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 25);
+        CreateButton(contentObject.transform, "ResetButton", "RESET", new Vector2(0, -125), new Vector2(440, 70), ResetSave, new Color(0.20f, 0.20f, 0.20f), 25);
+        TMP_Text futureText = CreateText(contentObject.transform, "FutureTestText", "Yeni testler buraya eklenecek", new Vector2(0, -210), new Vector2(440, 70), 22);
         futureText.color = Color.black;
 
         GameObject scrollbarObject = new GameObject("TestScrollbar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Scrollbar));
@@ -2150,19 +2449,38 @@ public class GameManager : MonoBehaviour
 
         if (chestPanelText != null)
         {
-            chestPanelText.text = "Sandik: " + chests
+            chestPanelText.text = "Siradan Sandik: " + chests
+                + "\nNadir Sandik: " + rareChests
+                + "\nLuks Sandik: " + luxuryChests
                 + "\nGem: " + gems
-                + "\nBoya Kutusu: " + paintPieces
+                + "\nGenel Boya Kutusu: " + paintPieces
                 + "\nTahta: " + woodPieces
+                + GetPaintInventorySummary()
                 + "\n\nSon odul: " + lastChestRewardText;
         }
 
         if (chestOpenButtonText != null)
         {
             Button chestButton = chestOpenButtonText.GetComponentInParent<Button>();
-            chestOpenButtonText.text = chests > 0 ? "Sandik Ac" : "Sandik Yok";
+            chestOpenButtonText.text = chests > 0 ? "Siradan\nAc" : "Siradan\nYok";
             if (chestButton != null)
                 chestButton.interactable = chests > 0;
+        }
+
+        if (rareChestOpenButtonText != null)
+        {
+            Button rareButton = rareChestOpenButtonText.GetComponentInParent<Button>();
+            rareChestOpenButtonText.text = rareChests > 0 ? "Nadir\nAc" : "Nadir\nYok";
+            if (rareButton != null)
+                rareButton.interactable = rareChests > 0;
+        }
+
+        if (luxuryChestOpenButtonText != null)
+        {
+            Button luxuryButton = luxuryChestOpenButtonText.GetComponentInParent<Button>();
+            luxuryChestOpenButtonText.text = luxuryChests > 0 ? "Luks\nAc" : "Luks\nYok";
+            if (luxuryButton != null)
+                luxuryButton.interactable = luxuryChests > 0;
         }
 
         if (chestPanel != null && chestPanel.activeSelf && lastOfflineCoins <= 0)
@@ -2867,6 +3185,53 @@ public class GameManager : MonoBehaviour
         return minutes + "dk " + secs + "sn";
     }
 
+    private string SerializeItemInventory()
+    {
+        string serialized = "";
+        foreach (KeyValuePair<string, int> entry in itemInventory)
+        {
+            if (entry.Value <= 0)
+            {
+                continue;
+            }
+
+            if (!string.IsNullOrEmpty(serialized))
+            {
+                serialized += "|";
+            }
+
+            serialized += entry.Key + ":" + entry.Value;
+        }
+
+        return serialized;
+    }
+
+    private void LoadItemInventory(string serialized)
+    {
+        itemInventory.Clear();
+        if (string.IsNullOrEmpty(serialized))
+        {
+            return;
+        }
+
+        string[] entries = serialized.Split('|');
+        for (int i = 0; i < entries.Length; i++)
+        {
+            string[] pair = entries[i].Split(':');
+            if (pair.Length != 2)
+            {
+                continue;
+            }
+
+            if (string.IsNullOrEmpty(pair[0]) || !int.TryParse(pair[1], out int count) || count <= 0)
+            {
+                continue;
+            }
+
+            itemInventory[pair[0]] = count;
+        }
+    }
+
     private void SaveGame()
     {
         PlayerPrefs.SetFloat("coins", coins);
@@ -2892,8 +3257,11 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("masterBaristaCost", masterBaristaCost);
         PlayerPrefs.SetInt("gems", gems);
         PlayerPrefs.SetInt("chests", chests);
+        PlayerPrefs.SetInt("rareChests", rareChests);
+        PlayerPrefs.SetInt("luxuryChests", luxuryChests);
         PlayerPrefs.SetInt("paintPieces", paintPieces);
         PlayerPrefs.SetInt("woodPieces", woodPieces);
+        PlayerPrefs.SetString("itemInventory", SerializeItemInventory());
         PlayerPrefs.SetString("lastChestRewardText", lastChestRewardText);
         PlayerPrefs.SetInt("pinkWallUnlocked", pinkWallUnlocked ? 1 : 0);
         PlayerPrefs.SetInt("mintWallUnlocked", mintWallUnlocked ? 1 : 0);
@@ -2958,8 +3326,11 @@ public class GameManager : MonoBehaviour
         masterBaristaCost = PlayerPrefs.GetInt("masterBaristaCost", 20000);
         gems = PlayerPrefs.GetInt("gems", 0);
         chests = PlayerPrefs.GetInt("chests", 0);
+        rareChests = PlayerPrefs.GetInt("rareChests", 0);
+        luxuryChests = PlayerPrefs.GetInt("luxuryChests", 0);
         paintPieces = PlayerPrefs.GetInt("paintPieces", PlayerPrefs.GetInt("decorPieces", 0));
         woodPieces = PlayerPrefs.GetInt("woodPieces", PlayerPrefs.GetInt("premiumDecorPieces", 0));
+        LoadItemInventory(PlayerPrefs.GetString("itemInventory", ""));
         lastChestRewardText = PlayerPrefs.GetString("lastChestRewardText", "Henuz sandik acilmadi.");
         pinkWallUnlocked = PlayerPrefs.GetInt("pinkWallUnlocked", 0) == 1;
         mintWallUnlocked = PlayerPrefs.GetInt("mintWallUnlocked", 0) == 1;

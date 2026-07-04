@@ -90,6 +90,20 @@ Ileride renkli boya kutulari ayri item olarak tanimlanacak:
 
 Duvar, zemin ve tezgah kaplamalari bu renkli boya kutulariyla craft edilebilir.
 
+Boya kutulari 3 sinifa ayrilacak:
+
+- Siradan boya kutulari
+- Nadir boya kutulari
+- Luks boya kutulari
+
+Sandiklar bu siniflara gore odul verecek:
+
+- Siradan Sandik: sadece siradan boya kutulari verebilir.
+- Nadir Sandik: siradan + nadir boya kutulari verebilir.
+- Luks Sandik: siradan + nadir + luks boya kutulari verebilir.
+
+Siradan sandiktan luks boya cikmamali. Bu ekonomi ve market degerini korumak icin onemli.
+
 ### VIP
 
 VIP sistemi olabilir.
