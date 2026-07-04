@@ -169,6 +169,7 @@ public class GameManager : MonoBehaviour
     private Image vipRugVisual;
     private Image vipPlantVisual;
     private Image roomLockOverlay;
+    private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
 
     private float coins = 0;
     private int coinsPerClick = 1;
@@ -2074,12 +2075,31 @@ public class GameManager : MonoBehaviour
         vipCounterVisual = CreateSceneBox(parent, "VipCounter", new Vector2(140, 20), new Vector2(420, 116), new Color(0.18f, 0.16f, 0.20f));
         vipPlantVisual = CreateSceneBox(parent, "VipPlant", new Vector2(410, -82), new Vector2(102, 150), new Color(0.20f, 0.48f, 0.32f));
 
-        CreateSceneLabel(parent, "DoorLabel", "GIRIS", new Vector2(620, 82), new Vector2(90, 35), 15);
-        CreateSceneLabel(parent, "CounterLabel", "TEZGAH", new Vector2(-130, 22), new Vector2(190, 34), 20);
-        CreateSceneLabel(parent, "MachineLabel", "MAKINE", new Vector2(40, 116), new Vector2(112, 36), 14);
-        CreateSceneLabel(parent, "MenuLabel", "MENU", new Vector2(-340, 172), new Vector2(110, 35), 19);
-        CreateSceneLabel(parent, "CustomerSpotLabel", "MUSTERI\nALANI", new Vector2(180, -252), new Vector2(165, 62), 16);
-        roomLockOverlay = CreateSceneBox(parent, "RoomLockOverlay", new Vector2(0, -120), new Vector2(1110, 590), new Color(0.05f, 0.06f, 0.07f, 0.92f));
+        TMP_Text doorLabel = CreateSceneLabel(parent, "DoorLabel", "GIRIS", new Vector2(620, 82), new Vector2(90, 35), 15);
+        TMP_Text counterLabel = CreateSceneLabel(parent, "CounterLabel", "TEZGAH", new Vector2(-130, 22), new Vector2(190, 34), 20);
+        TMP_Text machineLabel = CreateSceneLabel(parent, "MachineLabel", "MAKINE", new Vector2(40, 116), new Vector2(112, 36), 14);
+        TMP_Text menuLabel = CreateSceneLabel(parent, "MenuLabel", "MENU", new Vector2(-340, 172), new Vector2(110, 35), 19);
+        TMP_Text customerSpotLabel = CreateSceneLabel(parent, "CustomerSpotLabel", "MUSTERI\nALANI", new Vector2(180, -252), new Vector2(165, 62), 16);
+        roomLockOverlay = CreateSceneBox(parent, "RoomLockOverlay", new Vector2(0, -10), new Vector2(1700, 920), new Color(0.05f, 0.06f, 0.07f, 1f));
+
+        startingRoomVisuals.Clear();
+        startingRoomVisuals.Add(tablePreviewImage.gameObject);
+        startingRoomVisuals.Add(counterTop.gameObject);
+        startingRoomVisuals.Add(coffeeMachine.gameObject);
+        startingRoomVisuals.Add(machineTop.gameObject);
+        startingRoomVisuals.Add(cup.gameObject);
+        startingRoomVisuals.Add(door.gameObject);
+        startingRoomVisuals.Add(doorGlass.gameObject);
+        startingRoomVisuals.Add(window.gameObject);
+        startingRoomVisuals.Add(menuBoard.gameObject);
+        startingRoomVisuals.Add(plantPot.gameObject);
+        startingRoomVisuals.Add(plantLeaf.gameObject);
+        startingRoomVisuals.Add(customerSpot.gameObject);
+        startingRoomVisuals.Add(doorLabel.gameObject);
+        startingRoomVisuals.Add(counterLabel.gameObject);
+        startingRoomVisuals.Add(machineLabel.gameObject);
+        startingRoomVisuals.Add(menuLabel.gameObject);
+        startingRoomVisuals.Add(customerSpotLabel.gameObject);
 
         roomShadow.raycastTarget = false;
         backWallTopTrim.raycastTarget = false;
@@ -2788,11 +2808,20 @@ public class GameManager : MonoBehaviour
     private void UpdateRoomVisuals()
     {
         bool unlocked = IsCurrentRoomUnlocked();
-        SetSceneImageActive(productionConveyorVisual, currentRoomIndex == 1);
-        SetSceneImageActive(productionMachineVisual, currentRoomIndex == 1);
-        SetSceneImageActive(vipRugVisual, currentRoomIndex == 2);
-        SetSceneImageActive(vipCounterVisual, currentRoomIndex == 2);
-        SetSceneImageActive(vipPlantVisual, currentRoomIndex == 2);
+        bool showStartingRoom = currentRoomIndex == 0;
+        for (int i = 0; i < startingRoomVisuals.Count; i++)
+        {
+            if (startingRoomVisuals[i] != null)
+            {
+                startingRoomVisuals[i].SetActive(showStartingRoom);
+            }
+        }
+
+        SetSceneImageActive(productionConveyorVisual, currentRoomIndex == 1 && unlocked);
+        SetSceneImageActive(productionMachineVisual, currentRoomIndex == 1 && unlocked);
+        SetSceneImageActive(vipRugVisual, currentRoomIndex == 2 && unlocked);
+        SetSceneImageActive(vipCounterVisual, currentRoomIndex == 2 && unlocked);
+        SetSceneImageActive(vipPlantVisual, currentRoomIndex == 2 && unlocked);
 
         if (roomLockOverlay != null)
         {
@@ -2809,15 +2838,15 @@ public class GameManager : MonoBehaviour
     {
         if (currentRoomIndex == 1)
         {
-            return new Color(0.10f, 0.15f, 0.18f, 0.94f);
+            return new Color(0.10f, 0.15f, 0.18f, 1f);
         }
 
         if (currentRoomIndex == 2)
         {
-            return new Color(0.13f, 0.09f, 0.16f, 0.94f);
+            return new Color(0.13f, 0.09f, 0.16f, 1f);
         }
 
-        return new Color(0.05f, 0.06f, 0.07f, 0.94f);
+        return new Color(0.05f, 0.06f, 0.07f, 1f);
     }
 
     private void SetSceneImageActive(Image image, bool active)
