@@ -94,21 +94,29 @@ Boya kutulari 3 sinifa ayrilacak:
 
 - Siradan boya kutulari
 - Nadir boya kutulari
-- Luks boya kutulari
+- Ozel boya kutulari
 
 Sandiklar bu siniflara gore odul verecek:
 
 - Siradan Sandik: sadece siradan boya kutulari verebilir.
 - Nadir Sandik: siradan + nadir boya kutulari verebilir.
-- Luks Sandik: siradan + nadir + luks boya kutulari verebilir.
+- Ozel Sandik: siradan + nadir + ozel boya kutulari verebilir.
 
-Siradan sandiktan luks boya cikmamali. Bu ekonomi ve market degerini korumak icin onemli.
+Siradan sandiktan ozel boya cikmamali. Bu ekonomi ve market degerini korumak icin onemli.
+
+Sandiklar ve envanter ekraninda boya gruplari su isimlerle gorunmeli:
+
+- Siradan Boya Kutulari
+- Nadir Boya Kutulari
+- Ozel Boya Kutulari
+
+`Genel Boya Kutusu` ve `Renkli Boya Kutusu` ifadeleri karisik duruyor; boyalar zaten renkli oldugu icin bu isimler kullanilmamali.
 
 Test ve UI okunabilirligi icin boya kutularinin isminde nadirlik ibaresi gorunmeli:
 
 - Siradan boyalar: ek ibare olmayabilir veya `(S)` kullanilabilir.
 - Nadir boyalar: `(N)` ibaresi kullanilabilir.
-- Luks boyalar: `(L)` ibaresi kullanilabilir.
+- Ozel boyalar: `(O)` ibaresi kullanilabilir.
 
 Bu sayede test asamasinda sandiktan cikan boyanin siradan, nadir veya luks oldugu hemen anlasilir.
 
@@ -121,7 +129,7 @@ VIP sistemi olabilir.
 
 ## Sonraki Is Sirasi
 
-1. Sandiklar ekranini duzelt: gem logu/son gem odulu kalabaligini kaldir, siradan boya sayaci/ozeti net gorunsun.
+1. Sandiklar ekranini duzelt: gem logu/son gem odulu kalabaligini kaldir; boya gruplari `Siradan Boya Kutulari`, `Nadir Boya Kutulari`, `Ozel Boya Kutulari` olarak net gorunsun.
 2. Sahne perspektifini My Cafe benzeri izometrik oda olarak netlestir.
 3. `Satis / Musteri / Kacan` yazisini kaldir veya daha iyi yere tasi.
 4. Market butonu ve market penceresi ekle.
