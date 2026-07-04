@@ -174,6 +174,7 @@ public class GameManager : MonoBehaviour
     private Image chestRewardIconImage;
     private Sprite commonPaintCanSprite;
     private Sprite rarePaintCanSprite;
+    private Sprite chestButtonSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
 
     private float coins = 0;
@@ -994,7 +995,8 @@ public class GameManager : MonoBehaviour
         TMP_Text dailyTasksButtonText = CreateButton(gameFrame, "DailyTasksButton", "D", new Vector2(-890, 195), new Vector2(74, 70), OpenDailyTasksPanel, new Color(0.28f, 0.45f, 0.78f), 24);
         dailyTasksNotifyDot = CreateNotifyDot(dailyTasksButtonText.transform.parent, new Vector2(30, 28));
         CreateButton(gameFrame, "DailyRewardButton", "O", new Vector2(-890, 105), new Vector2(74, 70), OpenDailyRewardPanel, new Color(0.84f, 0.38f, 0.22f), 24);
-        CreateButton(gameFrame, "ChestsButton", "S", new Vector2(-890, 15), new Vector2(74, 70), OpenChestPanel, new Color(0.64f, 0.36f, 0.16f), 24);
+        TMP_Text chestsButtonText = CreateButton(gameFrame, "ChestsButton", "", new Vector2(-890, 15), new Vector2(82, 78), OpenChestPanel, Color.white, 24);
+        ApplyButtonSprite(chestsButtonText, GetChestButtonSprite());
         CreateButton(gameFrame, "DecorButton", "Dek", new Vector2(-890, -75), new Vector2(74, 70), OpenDecorPanel, new Color(0.72f, 0.30f, 0.50f), 19);
 
         coffeeUpgradeButtonText = CreateButton(gameFrame, "CoffeeUpgradeButton", "Kah", new Vector2(-150, -482), new Vector2(104, 56), OpenCoffeePanel, new Color(0.86f, 0.56f, 0.20f), 19);
@@ -1691,6 +1693,16 @@ public class GameManager : MonoBehaviour
         return commonPaintCanSprite;
     }
 
+    private Sprite GetChestButtonSprite()
+    {
+        if (chestButtonSprite == null)
+        {
+            chestButtonSprite = LoadSpriteFromResources("Art/UI/chest_button");
+        }
+
+        return chestButtonSprite;
+    }
+
     private Sprite LoadSpriteFromResources(string path)
     {
         Texture2D texture = Resources.Load<Texture2D>(path);
@@ -1700,6 +1712,25 @@ public class GameManager : MonoBehaviour
         }
 
         return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
+    }
+
+    private void ApplyButtonSprite(TMP_Text buttonText, Sprite sprite)
+    {
+        if (buttonText == null || sprite == null)
+        {
+            return;
+        }
+
+        buttonText.text = "";
+        Image buttonImage = buttonText.GetComponentInParent<Image>();
+        if (buttonImage == null)
+        {
+            return;
+        }
+
+        buttonImage.sprite = sprite;
+        buttonImage.color = Color.white;
+        buttonImage.preserveAspect = true;
     }
 
     public void OpenDecorPanel()
