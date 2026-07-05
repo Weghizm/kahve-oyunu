@@ -2620,8 +2620,8 @@ public class GameManager : MonoBehaviour
         RectTransform iconRect = iconObject.GetComponent<RectTransform>();
         iconRect.anchorMin = new Vector2(0f, 0.5f);
         iconRect.anchorMax = new Vector2(0f, 0.5f);
-        iconRect.anchoredPosition = new Vector2(19f, 0f);
-        float iconSize = (size.y + 26f) * iconScale;
+        iconRect.anchoredPosition = new Vector2(33f, 0f);
+        float iconSize = 80.24f * iconScale;
         iconRect.sizeDelta = new Vector2(iconSize, iconSize);
         Image iconImage = iconObject.GetComponent<Image>();
         iconImage.sprite = icon;
