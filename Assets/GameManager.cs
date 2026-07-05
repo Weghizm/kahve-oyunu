@@ -2617,9 +2617,9 @@ public class GameManager : MonoBehaviour
         iconImage.color = Color.white;
         iconImage.preserveAspect = true;
 
-        TMP_Text amountText = CreateText(barObject.transform, "AmountText", "0", new Vector2(38f, 0f), new Vector2(size.x - 92f, size.y), fontSize);
+        TMP_Text amountText = CreateText(barObject.transform, "AmountText", "0", new Vector2(42f, 0f), new Vector2(size.x - 112f, size.y), fontSize);
         amountText.color = Color.white;
-        amountText.alignment = TextAlignmentOptions.MidlineRight;
+        amountText.alignment = TextAlignmentOptions.Center;
         return amountText;
     }
 
