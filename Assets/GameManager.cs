@@ -2600,18 +2600,16 @@ public class GameManager : MonoBehaviour
         barRect.sizeDelta = size;
 
         Image background = barObject.GetComponent<Image>();
-        background.color = backgroundColor;
-        Outline outline = barObject.AddComponent<Outline>();
-        outline.effectColor = outlineColor;
-        outline.effectDistance = new Vector2(3f, -3f);
+        background.sprite = CreateResourceBarBackgroundSprite(size, backgroundColor, outlineColor);
+        background.color = Color.white;
 
         GameObject iconObject = new GameObject("Icon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         iconObject.transform.SetParent(barObject.transform, false);
         RectTransform iconRect = iconObject.GetComponent<RectTransform>();
         iconRect.anchorMin = new Vector2(0f, 0.5f);
         iconRect.anchorMax = new Vector2(0f, 0.5f);
-        iconRect.anchoredPosition = new Vector2(22f, 0f);
-        iconRect.sizeDelta = new Vector2(size.y + 32f, size.y + 32f);
+        iconRect.anchoredPosition = new Vector2(18f, 0f);
+        iconRect.sizeDelta = new Vector2(size.y + 42f, size.y + 42f);
         Image iconImage = iconObject.GetComponent<Image>();
         iconImage.sprite = icon;
         iconImage.color = Color.white;
@@ -2622,6 +2620,63 @@ public class GameManager : MonoBehaviour
         amountText.alignment = TextAlignmentOptions.Center;
         amountText.fontStyle = FontStyles.Bold;
         return amountText;
+    }
+
+    private Sprite CreateResourceBarBackgroundSprite(Vector2 size, Color fillColor, Color borderColor)
+    {
+        int width = Mathf.Max(32, Mathf.RoundToInt(size.x));
+        int height = Mathf.Max(24, Mathf.RoundToInt(size.y));
+        int border = 4;
+        int radius = height / 2;
+        Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        texture.filterMode = FilterMode.Bilinear;
+        texture.wrapMode = TextureWrapMode.Clamp;
+
+        Color clear = new Color(0f, 0f, 0f, 0f);
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                Color pixel = clear;
+                if (IsInsideRoundedBarPixel(x, y, width, height, radius))
+                {
+                    pixel = borderColor;
+                }
+
+                if (IsInsideRoundedBarPixel(x, y, width - border * 2, height - border * 2, Mathf.Max(0, radius - border), border, border))
+                {
+                    pixel = fillColor;
+                }
+
+                texture.SetPixel(x, y, pixel);
+            }
+        }
+
+        texture.Apply();
+        return Sprite.Create(texture, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 100f);
+    }
+
+    private bool IsInsideRoundedBarPixel(int x, int y, int width, int height, int radius, int offsetX = 0, int offsetY = 0)
+    {
+        int localX = x - offsetX;
+        int localY = y - offsetY;
+        if (localX < 0 || localY < 0 || localX >= width || localY >= height)
+        {
+            return false;
+        }
+
+        int left = radius;
+        int right = width - radius - 1;
+        if (localX >= left && localX <= right)
+        {
+            return true;
+        }
+
+        int centerX = localX < left ? left : right;
+        int centerY = height / 2;
+        int dx = localX - centerX;
+        int dy = localY - centerY;
+        return dx * dx + dy * dy <= radius * radius;
     }
 
     private void MakeTextClickable(TMP_Text text, UnityEngine.Events.UnityAction action)
