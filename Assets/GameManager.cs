@@ -2716,10 +2716,10 @@ public class GameManager : MonoBehaviour
         badgeObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
         levelBadgeText = CreateText(badgeObject.transform, "LevelText", "1", new Vector2(0f, -1f), new Vector2(62f, 46f), 27);
-        levelBadgeText.color = new Color(0.34f, 0.17f, 0.08f, 1f);
+        levelBadgeText.color = Color.white;
         levelBadgeText.fontStyle = FontStyles.Bold;
-        levelBadgeText.outlineColor = new Color(1f, 0.90f, 0.58f, 0.90f);
-        levelBadgeText.outlineWidth = 0.12f;
+        levelBadgeText.outlineColor = new Color(0.08f, 0.07f, 0.16f, 0.95f);
+        levelBadgeText.outlineWidth = 0.10f;
         levelBadgeText.gameObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
         return text;
