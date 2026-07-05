@@ -127,6 +127,15 @@ VIP sistemi olabilir.
 - Gem/coin marketinde indirim verilebilir.
 - Gercek para paketlerinde fiyat dusurmek yerine ekstra bonus vermek daha mantikli.
 
+### UI / HUD Notlari
+
+Coin ve gem barlari ikon + bar olarak tek butun gibi davranmali.
+
+- `CoinBar` icindeki ikon veya arka plan secilip tasinsa bile tum coin bari hareket etmeli.
+- `GemBar` icindeki ikon veya arka plan secilip tasinsa bile tum gem bari hareket etmeli.
+- XP/level UI tamamlandiginda ayni davranis XP bari icin de eklenmeli.
+- XP ileride coin barinin altina alinabilir; bu yerlesim yeniden degerlendirilecek.
+
 ## Sonraki Is Sirasi
 
 1. Sandiklar ekranini duzelt: gem logu/son gem odulu kalabaligini kaldir; boya gruplari `Siradan Boya Kutulari`, `Nadir Boya Kutulari`, `Ozel Boya Kutulari` olarak net gorunsun.
