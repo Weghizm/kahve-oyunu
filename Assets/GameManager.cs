@@ -2695,7 +2695,7 @@ public class GameManager : MonoBehaviour
         xpFillImage.color = Color.white;
         fillObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
-        TMP_Text text = CreateText(backgroundObject.transform, "XpText", "0/100", Vector2.zero, backgroundSize, 18);
+        TMP_Text text = CreateText(backgroundObject.transform, "XpText", "", Vector2.zero, backgroundSize, 18);
         text.color = Color.white;
         text.fontStyle = FontStyles.Bold;
         text.gameObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
@@ -2715,9 +2715,11 @@ public class GameManager : MonoBehaviour
         badgeObject.transform.SetAsLastSibling();
         badgeObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
-        levelBadgeText = CreateText(badgeObject.transform, "LevelText", "1", Vector2.zero, new Vector2(54f, 42f), 25);
-        levelBadgeText.color = Color.white;
+        levelBadgeText = CreateText(badgeObject.transform, "LevelText", "1", new Vector2(0f, -1f), new Vector2(62f, 46f), 27);
+        levelBadgeText.color = new Color(0.34f, 0.17f, 0.08f, 1f);
         levelBadgeText.fontStyle = FontStyles.Bold;
+        levelBadgeText.outlineColor = new Color(1f, 0.90f, 0.58f, 0.90f);
+        levelBadgeText.outlineWidth = 0.12f;
         levelBadgeText.gameObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
         return text;
@@ -2868,7 +2870,7 @@ public class GameManager : MonoBehaviour
         if (xpText != null)
         {
             int xpNeeded = GetXpNeededForNextLevel();
-            xpText.text = xp + "/" + xpNeeded;
+            xpText.text = "";
             if (levelBadgeText != null)
                 levelBadgeText.text = playerLevel.ToString();
 
