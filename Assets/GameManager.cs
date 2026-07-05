@@ -176,6 +176,7 @@ public class GameManager : MonoBehaviour
     private Image vipPlantVisual;
     private Image roomLockOverlay;
     private Image chestRewardIconImage;
+    private Image xpFillImage;
     private Sprite commonPaintCanSprite;
     private Sprite rarePaintCanSprite;
     private Sprite specialPaintCanSprite;
@@ -1022,16 +1023,16 @@ public class GameManager : MonoBehaviour
         CreateButton(gameFrame, "NextRoomButton", ">", new Vector2(735, -105), new Vector2(58, 86), NextRoom, new Color(0.25f, 0.32f, 0.38f), 30);
         roomUnlockButtonText = CreateButton(gameFrame, "RoomUnlockButton", "", new Vector2(0, -382), new Vector2(380, 46), UnlockCurrentRoom, new Color(0.22f, 0.48f, 0.40f), 19);
 
-        coinText = CreateResourceBar(gameFrame, "CoinBar", GetCoinIconSprite(), new Vector2(0, 502), new Vector2(310, 56), new Color(0.28f, 0.15f, 0.05f, 0.93f), new Color(0.96f, 0.69f, 0.19f, 1f), 31);
+        coinText = CreateResourceBar(gameFrame, "CoinBar", GetCoinIconSprite(), new Vector2(-215, 502), new Vector2(220, 42), new Color(0.28f, 0.15f, 0.05f, 0.93f), new Color(0.96f, 0.69f, 0.19f, 1f), 24);
         tapPowerText = CreateText(gameFrame, "TapPowerText", "Kahve Ucreti: 1", new Vector2(0, 456), new Vector2(460, 38), 22);
         autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Pasif Gelir: 0", new Vector2(0, 418), new Vector2(460, 38), 22);
         MakeTextClickable(autoIncomeText, OpenPassiveIncomePanel);
         activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
         customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
         customerStatsText.gameObject.SetActive(false);
-        gemText = CreateResourceBar(gameFrame, "GemBar", GetGemIconSprite(), new Vector2(-760, 502), new Vector2(235, 50), new Color(0.04f, 0.15f, 0.22f, 0.93f), new Color(0.22f, 0.81f, 1f, 1f), 27);
+        gemText = CreateResourceBar(gameFrame, "GemBar", GetGemIconSprite(), new Vector2(25, 502), new Vector2(175, 42), new Color(0.04f, 0.15f, 0.22f, 0.93f), new Color(0.22f, 0.81f, 1f, 1f), 24);
         chestText = CreateText(gameFrame, "ChestText", "Sandik: 0", new Vector2(-760, 456), new Vector2(260, 38), 20);
-        xpText = CreateText(gameFrame, "XpText", "Lv.1 XP: 0/100", new Vector2(650, 500), new Vector2(430, 46), 24);
+        xpText = CreateXpBar(gameFrame, new Vector2(295, 502), new Vector2(300, 34));
 
         CreateOfflinePanel(canvas.transform);
         CreateDailyRewardPanel(canvas.transform);
@@ -2608,8 +2609,8 @@ public class GameManager : MonoBehaviour
         RectTransform iconRect = iconObject.GetComponent<RectTransform>();
         iconRect.anchorMin = new Vector2(0f, 0.5f);
         iconRect.anchorMax = new Vector2(0f, 0.5f);
-        iconRect.anchoredPosition = new Vector2(18f, 0f);
-        iconRect.sizeDelta = new Vector2(size.y + 42f, size.y + 42f);
+        iconRect.anchoredPosition = new Vector2(19f, 0f);
+        iconRect.sizeDelta = new Vector2(size.y + 26f, size.y + 26f);
         Image iconImage = iconObject.GetComponent<Image>();
         iconImage.sprite = icon;
         iconImage.color = Color.white;
@@ -2620,6 +2621,40 @@ public class GameManager : MonoBehaviour
         amountText.alignment = TextAlignmentOptions.Center;
         amountText.fontStyle = FontStyles.Bold;
         return amountText;
+    }
+
+    private TMP_Text CreateXpBar(Transform parent, Vector2 position, Vector2 size)
+    {
+        GameObject barObject = new GameObject("XpBar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        barObject.transform.SetParent(parent, false);
+
+        RectTransform barRect = barObject.GetComponent<RectTransform>();
+        barRect.anchorMin = new Vector2(0.5f, 0.5f);
+        barRect.anchorMax = new Vector2(0.5f, 0.5f);
+        barRect.anchoredPosition = position;
+        barRect.sizeDelta = size;
+
+        Image background = barObject.GetComponent<Image>();
+        background.sprite = CreateResourceBarBackgroundSprite(size, new Color(0.06f, 0.10f, 0.22f, 0.93f), new Color(0.55f, 0.55f, 1f, 1f));
+        background.color = Color.white;
+
+        GameObject fillObject = new GameObject("XpFill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        fillObject.transform.SetParent(barObject.transform, false);
+        RectTransform fillRect = fillObject.GetComponent<RectTransform>();
+        fillRect.anchorMin = new Vector2(0f, 0.5f);
+        fillRect.anchorMax = new Vector2(0f, 0.5f);
+        fillRect.pivot = new Vector2(0f, 0.5f);
+        fillRect.anchoredPosition = new Vector2(4f, 0f);
+        fillRect.sizeDelta = new Vector2(0f, size.y - 8f);
+
+        xpFillImage = fillObject.GetComponent<Image>();
+        xpFillImage.sprite = CreateResourceBarBackgroundSprite(new Vector2(size.x - 8f, size.y - 8f), new Color(0.45f, 0.42f, 1f, 0.95f), new Color(0.45f, 0.42f, 1f, 0f));
+        xpFillImage.color = Color.white;
+
+        TMP_Text text = CreateText(barObject.transform, "XpText", "Lv.1 0/100", Vector2.zero, size, 18);
+        text.color = Color.white;
+        text.fontStyle = FontStyles.Bold;
+        return text;
     }
 
     private Sprite CreateResourceBarBackgroundSprite(Vector2 size, Color fillColor, Color borderColor)
@@ -2766,7 +2801,22 @@ public class GameManager : MonoBehaviour
             chestText.text = "Sandik: " + chests;
 
         if (xpText != null)
-            xpText.text = "Lv." + playerLevel + " XP: " + xp + "/" + GetXpNeededForNextLevel();
+        {
+            int xpNeeded = GetXpNeededForNextLevel();
+            xpText.text = "Lv." + playerLevel + "  " + xp + "/" + xpNeeded;
+
+            if (xpFillImage != null)
+            {
+                RectTransform fillRect = xpFillImage.GetComponent<RectTransform>();
+                if (fillRect != null)
+                {
+                    float ratio = xpNeeded > 0 ? Mathf.Clamp01((float)xp / xpNeeded) : 0f;
+                    RectTransform parentRect = xpFillImage.transform.parent.GetComponent<RectTransform>();
+                    float maxFillWidth = parentRect != null ? Mathf.Max(0f, parentRect.sizeDelta.x - 8f) : 0f;
+                    fillRect.sizeDelta = new Vector2(maxFillWidth * ratio, fillRect.sizeDelta.y);
+                }
+            }
+        }
 
         if (roomNameText != null)
             roomNameText.gameObject.SetActive(false);
