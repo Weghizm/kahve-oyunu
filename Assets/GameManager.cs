@@ -176,9 +176,11 @@ public class GameManager : MonoBehaviour
     private Image vipPlantVisual;
     private Image roomLockOverlay;
     private Image chestRewardIconImage;
+    private Sprite commonPaintCanSprite;
+    private Sprite rarePaintCanSprite;
+    private Sprite specialPaintCanSprite;
     private Sprite chestButtonSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
-    private readonly Dictionary<string, Sprite> paintCanSprites = new Dictionary<string, Sprite>();
 
     private float coins = 0;
     private int coinsPerClick = 1;
@@ -1730,220 +1732,32 @@ public class GameManager : MonoBehaviour
             return null;
         }
 
-        if (!paintCanSprites.ContainsKey(item.Id))
-        {
-            paintCanSprites[item.Id] = CreatePaintCanSprite(item);
-        }
-
-        return paintCanSprites[item.Id];
-    }
-
-    private Sprite CreatePaintCanSprite(ItemData item)
-    {
-        const int size = 256;
-        Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
-        Color clear = new Color(0f, 0f, 0f, 0f);
-
-        for (int y = 0; y < size; y++)
-        {
-            for (int x = 0; x < size; x++)
-            {
-                texture.SetPixel(x, y, clear);
-            }
-        }
-
-        Color backgroundColor;
-        Color frameColor;
-        Color glowColor;
-        GetPaintIconRarityColors(item.Rarity, out backgroundColor, out frameColor, out glowColor);
-
-        DrawRoundedRect(texture, 30, 28, 196, 198, 34, backgroundColor);
-        DrawRoundedRectOutline(texture, 20, 18, 216, 218, 40, frameColor, 10);
-        DrawRoundedRectOutline(texture, 36, 34, 184, 186, 28, glowColor, 4);
-
-        if (item.Rarity != ItemRarity.Common)
-        {
-            DrawSparkle(texture, 55, 188, 9, glowColor);
-            DrawSparkle(texture, 203, 174, 7, glowColor);
-            DrawSparkle(texture, 73, 58, 6, glowColor);
-        }
-
         if (item.Rarity == ItemRarity.Luxury)
         {
-            DrawSparkle(texture, 196, 72, 10, new Color(1f, 0.86f, 0.28f, 1f));
-            DrawSparkle(texture, 128, 209, 6, new Color(1f, 0.96f, 0.55f, 1f));
-        }
-
-        DrawPaintCan(texture, item.PaintColor);
-        texture.Apply();
-        return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
-    }
-
-    private void GetPaintIconRarityColors(ItemRarity rarity, out Color backgroundColor, out Color frameColor, out Color glowColor)
-    {
-        if (rarity == ItemRarity.Rare)
-        {
-            backgroundColor = new Color(0.08f, 0.32f, 0.24f, 1f);
-            frameColor = new Color(0.34f, 0.88f, 0.48f, 1f);
-            glowColor = new Color(0.72f, 1f, 0.58f, 1f);
-            return;
-        }
-
-        if (rarity == ItemRarity.Luxury)
-        {
-            backgroundColor = new Color(0.48f, 0.04f, 0.04f, 1f);
-            frameColor = new Color(1f, 0.74f, 0.14f, 1f);
-            glowColor = new Color(1f, 0.34f, 0.18f, 1f);
-            return;
-        }
-
-        backgroundColor = new Color(0.92f, 0.90f, 0.84f, 1f);
-        frameColor = new Color(0.84f, 0.84f, 0.78f, 1f);
-        glowColor = new Color(1f, 1f, 1f, 1f);
-    }
-
-    private void DrawPaintCan(Texture2D texture, Color paintColor)
-    {
-        Color metalDark = new Color(0.43f, 0.43f, 0.46f, 1f);
-        Color metalMid = new Color(0.78f, 0.78f, 0.80f, 1f);
-        Color metalLight = new Color(0.96f, 0.94f, 0.88f, 1f);
-        Color body = new Color(0.90f, 0.88f, 0.82f, 1f);
-        Color paintDark = ShadeColor(paintColor, 0.70f);
-        Color paintLight = Color.Lerp(paintColor, Color.white, 0.35f);
-
-        DrawRoundedRect(texture, 72, 58, 112, 100, 15, metalDark);
-        DrawRoundedRect(texture, 78, 64, 100, 90, 12, body);
-        DrawRect(texture, 78, 92, 100, 30, paintColor);
-        DrawRect(texture, 78, 116, 100, 6, paintLight);
-        DrawRect(texture, 78, 92, 100, 6, paintDark);
-        DrawRect(texture, 78, 64, 100, 10, metalMid);
-        DrawRect(texture, 78, 144, 100, 10, metalMid);
-
-        DrawEllipse(texture, 62, 142, 132, 44, metalDark);
-        DrawEllipse(texture, 70, 148, 116, 30, metalLight);
-        DrawEllipse(texture, 82, 153, 92, 19, paintColor);
-        DrawEllipse(texture, 100, 160, 46, 7, paintLight);
-
-        DrawRect(texture, 63, 74, 15, 62, metalMid);
-        DrawRect(texture, 178, 74, 15, 62, metalMid);
-        DrawCircle(texture, 70, 132, 10, metalLight);
-        DrawCircle(texture, 185, 132, 10, metalLight);
-        DrawCircle(texture, 70, 132, 5, metalDark);
-        DrawCircle(texture, 185, 132, 5, metalDark);
-    }
-
-    private void DrawRoundedRect(Texture2D texture, int x, int y, int width, int height, int radius, Color color)
-    {
-        for (int py = y; py < y + height; py++)
-        {
-            for (int px = x; px < x + width; px++)
+            if (specialPaintCanSprite == null)
             {
-                if (IsInsideRoundedRect(px, py, x, y, width, height, radius))
-                {
-                    texture.SetPixel(px, py, color);
-                }
+                specialPaintCanSprite = LoadSpriteFromResources("Art/Items/paint_can_special");
             }
-        }
-    }
 
-    private void DrawRoundedRectOutline(Texture2D texture, int x, int y, int width, int height, int radius, Color color, int thickness)
-    {
-        for (int py = y; py < y + height; py++)
+            return specialPaintCanSprite;
+        }
+
+        if (item.Rarity == ItemRarity.Rare)
         {
-            for (int px = x; px < x + width; px++)
+            if (rarePaintCanSprite == null)
             {
-                bool outer = IsInsideRoundedRect(px, py, x, y, width, height, radius);
-                bool inner = IsInsideRoundedRect(px, py, x + thickness, y + thickness, width - thickness * 2, height - thickness * 2, Mathf.Max(0, radius - thickness));
-                if (outer && !inner)
-                {
-                    texture.SetPixel(px, py, color);
-                }
+                rarePaintCanSprite = LoadSpriteFromResources("Art/Items/paint_can_rare");
             }
+
+            return rarePaintCanSprite;
         }
-    }
 
-    private bool IsInsideRoundedRect(int px, int py, int x, int y, int width, int height, int radius)
-    {
-        int left = x + radius;
-        int right = x + width - radius - 1;
-        int bottom = y + radius;
-        int top = y + height - radius - 1;
-
-        if ((px >= left && px <= right && py >= y && py < y + height)
-            || (py >= bottom && py <= top && px >= x && px < x + width))
+        if (commonPaintCanSprite == null)
         {
-            return true;
+            commonPaintCanSprite = LoadSpriteFromResources("Art/Items/paint_can_common");
         }
 
-        int cx = px < left ? left : right;
-        int cy = py < bottom ? bottom : top;
-        int dx = px - cx;
-        int dy = py - cy;
-        return dx * dx + dy * dy <= radius * radius;
-    }
-
-    private void DrawRect(Texture2D texture, int x, int y, int width, int height, Color color)
-    {
-        for (int py = y; py < y + height; py++)
-        {
-            for (int px = x; px < x + width; px++)
-            {
-                texture.SetPixel(px, py, color);
-            }
-        }
-    }
-
-    private void DrawCircle(Texture2D texture, int centerX, int centerY, int radius, Color color)
-    {
-        int radiusSquared = radius * radius;
-        for (int py = centerY - radius; py <= centerY + radius; py++)
-        {
-            for (int px = centerX - radius; px <= centerX + radius; px++)
-            {
-                int dx = px - centerX;
-                int dy = py - centerY;
-                if (dx * dx + dy * dy <= radiusSquared)
-                {
-                    texture.SetPixel(px, py, color);
-                }
-            }
-        }
-    }
-
-    private void DrawEllipse(Texture2D texture, int x, int y, int width, int height, Color color)
-    {
-        float centerX = x + width * 0.5f;
-        float centerY = y + height * 0.5f;
-        float radiusX = width * 0.5f;
-        float radiusY = height * 0.5f;
-
-        for (int py = y; py < y + height; py++)
-        {
-            for (int px = x; px < x + width; px++)
-            {
-                float dx = (px - centerX) / radiusX;
-                float dy = (py - centerY) / radiusY;
-                if (dx * dx + dy * dy <= 1f)
-                {
-                    texture.SetPixel(px, py, color);
-                }
-            }
-        }
-    }
-
-    private void DrawSparkle(Texture2D texture, int centerX, int centerY, int radius, Color color)
-    {
-        for (int py = centerY - radius; py <= centerY + radius; py++)
-        {
-            for (int px = centerX - radius; px <= centerX + radius; px++)
-            {
-                int distance = Mathf.Abs(px - centerX) + Mathf.Abs(py - centerY);
-                if (distance <= radius)
-                {
-                    texture.SetPixel(px, py, color);
-                }
-            }
-        }
+        return commonPaintCanSprite;
     }
 
     private Sprite GetChestButtonSprite()
