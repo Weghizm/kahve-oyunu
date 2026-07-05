@@ -2600,7 +2600,7 @@ public class GameManager : MonoBehaviour
         barRect.anchoredPosition = position;
         barRect.sizeDelta = size;
 
-        float backgroundOffset = size.y + 8f;
+        float backgroundOffset = size.y * 0.48f;
         Vector2 backgroundSize = new Vector2(size.x - backgroundOffset, size.y);
         GameObject backgroundObject = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         backgroundObject.transform.SetParent(barObject.transform, false);
