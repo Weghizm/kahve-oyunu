@@ -34,9 +34,9 @@ Son onemli durum:
 - Coin ve gem ikonlari eklendi.
 - Coin ve gem barlari ikon + bar olarak tek parca gibi gorunuyor.
 - Coin/gem barlarinda ikon, arka plan veya sayi secilmeye calisilirsa Unity editorunde ana bar objesi secilecek sekilde duzenlendi.
-- XP bar prototipi var, ama son hali tamamlanmadi.
-- XP/level rozeti icin gorsel asset olusturuldu: `Assets/Art/UI/level_badge_icon.png`
-- XP rozeti henuz oyuna baglanmadi.
+- XP/level rozeti oyuna baglandi, ancak gorsel karar degisecek.
+- Mevcut rozet kalkan gibi gorunuyor ve level sayisi icine tam oturmamis.
+- Siradaki ilk is: rozeti kafe/level hissine uygun yeni ikonla degistirmek, sayiyi ortalamak, XP barindaki `0/100` yazisini kaldirip ilerlemeyi sadece bar dolumuyla gostermek.
 
 ## Son UI Karari
 
@@ -72,11 +72,11 @@ Son commitlerden bazilari:
 
 ## Siradaki Muhtemel Isler
 
-1. XP/level UI kararini tamamla.
-   - Level rozeti XP barinin soluna eklenebilir.
-   - Rozetin icine sadece seviye sayisi yazilabilir.
-   - XP barinda `1/150` gibi ilerleme yazabilir.
-   - XP barinda da coin/gem gibi child secilince ana bar secilsin davranisi eklenmeli.
+1. XP/level ikonunu duzelt.
+   - Mevcut ikon kalkan gibi duruyor; daha kafe/level rozeti hissinde yeni ikon gerekli.
+   - Level sayisi ikonun icine tam ortali ve dengeli oturmali.
+   - XP barinda `0/100` yazisi gorunmemeli.
+   - XP ilerlemesi direkt barin ic dolumuyla anlasilmali.
 
 2. Coin/gem barlarini son kez telefonda kontrol et.
    - Gem ikonunun altinda mavi bar gorunuyor mu?

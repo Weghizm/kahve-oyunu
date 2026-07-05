@@ -136,14 +136,28 @@ Coin ve gem barlari ikon + bar olarak tek butun gibi davranmali.
 - XP/level UI tamamlandiginda ayni davranis XP bari icin de eklenmeli.
 - XP ileride coin barinin altina alinabilir; bu yerlesim yeniden degerlendirilecek.
 
+
+### Bir Sonraki Ilk Is: XP / Level Ikonu
+
+Kullanici telefonda kontrol etti: level ikonu kalkan gibi gorunuyor ve icindeki sayi tam oturmamis.
+
+Ilk yapilacak is bu olacak:
+
+- Mevcut level ikonunu degistir; kalkan hissi vermesin, daha kafe/level rozeti gibi dursun.
+- Level sayisini ikonun icine daha dengeli oturt.
+- XP barinda `0/100` gibi yazi gorunmesin.
+- XP ilerlemesi direkt barin icinin dolmasiyla anlasilsin.
+- Bu degisiklik simdi yapilmayacak; kullanici yaklasik 1 saat sonra devam etmek istiyor.
+
 ## Sonraki Is Sirasi
 
-1. Sandiklar ekranini duzelt: gem logu/son gem odulu kalabaligini kaldir; boya gruplari `Siradan Boya Kutulari`, `Nadir Boya Kutulari`, `Ozel Boya Kutulari` olarak net gorunsun.
-2. Sahne perspektifini My Cafe benzeri izometrik oda olarak netlestir.
-3. `Satis / Musteri / Kacan` yazisini kaldir veya daha iyi yere tasi.
-4. Market butonu ve market penceresi ekle.
-5. `ItemDatabase` altyapisini kur.
-6. Ilk dekor itemlerini ItemId ile tanimla.
-7. Sandik sistemini ItemId ile odul verecek hale getir.
-8. Tema secim sistemi ekle.
-9. Market icinde ilk kombin setlerini prototip olarak goster.
+1. XP/level ikonunu duzelt: kalkan gibi gorunmeyen yeni ikon, sayiyi ortala, XP yazisini kaldir ve ilerlemeyi sadece dolumla goster.
+2. Sandiklar ekranini duzelt: gem logu/son gem odulu kalabaligini kaldir; boya gruplari `Siradan Boya Kutulari`, `Nadir Boya Kutulari`, `Ozel Boya Kutulari` olarak net gorunsun.
+3. Sahne perspektifini My Cafe benzeri izometrik oda olarak netlestir.
+4. `Satis / Musteri / Kacan` yazisini kaldir veya daha iyi yere tasi.
+5. Market butonu ve market penceresi ekle.
+6. `ItemDatabase` altyapisini kur.
+7. Ilk dekor itemlerini ItemId ile tanimla.
+8. Sandik sistemini ItemId ile odul verecek hale getir.
+9. Tema secim sistemi ekle.
+10. Market icinde ilk kombin setlerini prototip olarak goster.
