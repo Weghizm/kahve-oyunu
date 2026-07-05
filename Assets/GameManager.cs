@@ -1023,16 +1023,16 @@ public class GameManager : MonoBehaviour
         CreateButton(gameFrame, "NextRoomButton", ">", new Vector2(735, -105), new Vector2(58, 86), NextRoom, new Color(0.25f, 0.32f, 0.38f), 30);
         roomUnlockButtonText = CreateButton(gameFrame, "RoomUnlockButton", "", new Vector2(0, -382), new Vector2(380, 46), UnlockCurrentRoom, new Color(0.22f, 0.48f, 0.40f), 19);
 
-        coinText = CreateResourceBar(gameFrame, "CoinBar", GetCoinIconSprite(), new Vector2(-215, 502), new Vector2(220, 42), new Color(0.28f, 0.15f, 0.05f, 0.93f), new Color(0.96f, 0.69f, 0.19f, 1f), 24);
+        coinText = CreateResourceBar(gameFrame, "CoinBar", GetCoinIconSprite(), new Vector2(-190, 502), new Vector2(175, 42), new Color(0.28f, 0.15f, 0.05f, 0.93f), new Color(0.96f, 0.69f, 0.19f, 1f), 24, 1f);
         tapPowerText = CreateText(gameFrame, "TapPowerText", "Kahve Ucreti: 1", new Vector2(0, 456), new Vector2(460, 38), 22);
         autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Pasif Gelir: 0", new Vector2(0, 418), new Vector2(460, 38), 22);
         MakeTextClickable(autoIncomeText, OpenPassiveIncomePanel);
         activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
         customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
         customerStatsText.gameObject.SetActive(false);
-        gemText = CreateResourceBar(gameFrame, "GemBar", GetGemIconSprite(), new Vector2(25, 502), new Vector2(175, 42), new Color(0.04f, 0.15f, 0.22f, 0.93f), new Color(0.22f, 0.81f, 1f, 1f), 24);
+        gemText = CreateResourceBar(gameFrame, "GemBar", GetGemIconSprite(), new Vector2(15, 502), new Vector2(175, 42), new Color(0.04f, 0.15f, 0.22f, 0.93f), new Color(0.22f, 0.81f, 1f, 1f), 24, 1.18f);
         chestText = CreateText(gameFrame, "ChestText", "Sandik: 0", new Vector2(-760, 456), new Vector2(260, 38), 20);
-        xpText = CreateXpBar(gameFrame, new Vector2(295, 502), new Vector2(300, 34));
+        xpText = CreateXpBar(gameFrame, new Vector2(220, 502), new Vector2(175, 42));
 
         CreateOfflinePanel(canvas.transform);
         CreateDailyRewardPanel(canvas.transform);
@@ -2589,7 +2589,7 @@ public class GameManager : MonoBehaviour
         return tmp;
     }
 
-    private TMP_Text CreateResourceBar(Transform parent, string objectName, Sprite icon, Vector2 position, Vector2 size, Color backgroundColor, Color outlineColor, float fontSize)
+    private TMP_Text CreateResourceBar(Transform parent, string objectName, Sprite icon, Vector2 position, Vector2 size, Color backgroundColor, Color outlineColor, float fontSize, float iconScale = 1f)
     {
         GameObject barObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         barObject.transform.SetParent(parent, false);
@@ -2610,13 +2610,14 @@ public class GameManager : MonoBehaviour
         iconRect.anchorMin = new Vector2(0f, 0.5f);
         iconRect.anchorMax = new Vector2(0f, 0.5f);
         iconRect.anchoredPosition = new Vector2(19f, 0f);
-        iconRect.sizeDelta = new Vector2(size.y + 26f, size.y + 26f);
+        float iconSize = (size.y + 26f) * iconScale;
+        iconRect.sizeDelta = new Vector2(iconSize, iconSize);
         Image iconImage = iconObject.GetComponent<Image>();
         iconImage.sprite = icon;
         iconImage.color = Color.white;
         iconImage.preserveAspect = true;
 
-        TMP_Text amountText = CreateText(barObject.transform, "AmountText", "0", new Vector2(42f, 0f), new Vector2(size.x - 112f, size.y), fontSize);
+        TMP_Text amountText = CreateText(barObject.transform, "AmountText", "0", new Vector2(42f, 0f), new Vector2(size.x - 96f, size.y), fontSize);
         amountText.color = Color.white;
         amountText.alignment = TextAlignmentOptions.Center;
         amountText.fontStyle = FontStyles.Bold;
@@ -2651,7 +2652,7 @@ public class GameManager : MonoBehaviour
         xpFillImage.sprite = CreateResourceBarBackgroundSprite(new Vector2(size.x - 8f, size.y - 8f), new Color(0.45f, 0.42f, 1f, 0.95f), new Color(0.45f, 0.42f, 1f, 0f));
         xpFillImage.color = Color.white;
 
-        TMP_Text text = CreateText(barObject.transform, "XpText", "Lv.1 0/100", Vector2.zero, size, 18);
+        TMP_Text text = CreateText(barObject.transform, "XpText", "Lv1 0/100", Vector2.zero, size, 18);
         text.color = Color.white;
         text.fontStyle = FontStyles.Bold;
         return text;
@@ -2803,7 +2804,7 @@ public class GameManager : MonoBehaviour
         if (xpText != null)
         {
             int xpNeeded = GetXpNeededForNextLevel();
-            xpText.text = "Lv." + playerLevel + "  " + xp + "/" + xpNeeded;
+            xpText.text = "Lv" + playerLevel + " " + xp + "/" + xpNeeded;
 
             if (xpFillImage != null)
             {
