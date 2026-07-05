@@ -1484,7 +1484,7 @@ public class GameManager : MonoBehaviour
         {
             gems += 1;
             lastChestRewardText = "Siradan Sandiktan 1 Gem cikti.";
-            ShowChestReward(lastChestRewardText, null);
+            ShowChestReward(lastChestRewardText, GetGemIconSprite());
         }
         else if (roll < 70)
         {
@@ -1504,7 +1504,7 @@ public class GameManager : MonoBehaviour
         {
             gems += 2;
             lastChestRewardText = "Nadir Sandiktan 2 Gem cikti.";
-            ShowChestReward(lastChestRewardText, null);
+            ShowChestReward(lastChestRewardText, GetGemIconSprite());
         }
         else if (roll < 55)
         {
@@ -1524,14 +1524,14 @@ public class GameManager : MonoBehaviour
         {
             gems += 5;
             lastChestRewardText = "Ozel Sandiktan 5 Gem cikti.";
-            ShowChestReward(lastChestRewardText, null);
+            ShowChestReward(lastChestRewardText, GetGemIconSprite());
         }
         else if (roll < 45)
         {
             woodPieces += 3;
             gems += 2;
             lastChestRewardText = "Ozel Sandiktan 3 Tahta + 2 Gem cikti.";
-            ShowChestReward(lastChestRewardText, null);
+            ShowChestReward(lastChestRewardText, GetGemIconSprite());
         }
         else
         {
