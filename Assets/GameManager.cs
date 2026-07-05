@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -94,6 +94,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text gemText;
     private TMP_Text chestText;
     private TMP_Text xpText;
+    private TMP_Text levelBadgeText;
     private TMP_Text roomNameText;
     private TMP_Text roomUnlockButtonText;
     private TMP_Text taskPanelText;
@@ -186,6 +187,7 @@ public class GameManager : MonoBehaviour
     private Sprite chestButtonSprite;
     private Sprite coinIconSprite;
     private Sprite gemIconSprite;
+    private Sprite levelBadgeSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
 
     private float coins = 0;
@@ -1796,6 +1798,16 @@ public class GameManager : MonoBehaviour
         return gemIconSprite;
     }
 
+    private Sprite GetLevelBadgeSprite()
+    {
+        if (levelBadgeSprite == null)
+        {
+            levelBadgeSprite = LoadSpriteFromResources("Art/UI/level_badge_icon");
+        }
+
+        return levelBadgeSprite;
+    }
+
     private Sprite LoadSpriteFromResources(string path)
     {
         Texture2D texture = Resources.Load<Texture2D>(path);
@@ -2644,7 +2656,7 @@ public class GameManager : MonoBehaviour
 
     private TMP_Text CreateXpBar(Transform parent, Vector2 position, Vector2 size)
     {
-        GameObject barObject = new GameObject("XpBar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        GameObject barObject = new GameObject("XpBar", typeof(RectTransform));
         barObject.transform.SetParent(parent, false);
 
         RectTransform barRect = barObject.GetComponent<RectTransform>();
@@ -2653,12 +2665,24 @@ public class GameManager : MonoBehaviour
         barRect.anchoredPosition = position;
         barRect.sizeDelta = size;
 
-        Image background = barObject.GetComponent<Image>();
-        background.sprite = CreateResourceBarBackgroundSprite(size, new Color(0.06f, 0.10f, 0.22f, 0.93f), new Color(0.55f, 0.55f, 1f, 1f));
+        float backgroundOffset = size.y * 0.48f;
+        Vector2 backgroundSize = new Vector2(size.x - backgroundOffset, size.y);
+        GameObject backgroundObject = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        backgroundObject.transform.SetParent(barObject.transform, false);
+        RectTransform backgroundRect = backgroundObject.GetComponent<RectTransform>();
+        backgroundRect.anchorMin = new Vector2(0f, 0.5f);
+        backgroundRect.anchorMax = new Vector2(0f, 0.5f);
+        backgroundRect.pivot = new Vector2(0f, 0.5f);
+        backgroundRect.anchoredPosition = new Vector2(backgroundOffset, 0f);
+        backgroundRect.sizeDelta = backgroundSize;
+
+        Image background = backgroundObject.GetComponent<Image>();
+        background.sprite = CreateResourceBarBackgroundSprite(backgroundSize, new Color(0.06f, 0.10f, 0.22f, 0.93f), new Color(0.55f, 0.55f, 1f, 1f));
         background.color = Color.white;
+        backgroundObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
         GameObject fillObject = new GameObject("XpFill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        fillObject.transform.SetParent(barObject.transform, false);
+        fillObject.transform.SetParent(backgroundObject.transform, false);
         RectTransform fillRect = fillObject.GetComponent<RectTransform>();
         fillRect.anchorMin = new Vector2(0f, 0.5f);
         fillRect.anchorMax = new Vector2(0f, 0.5f);
@@ -2667,15 +2691,37 @@ public class GameManager : MonoBehaviour
         fillRect.sizeDelta = new Vector2(0f, size.y - 8f);
 
         xpFillImage = fillObject.GetComponent<Image>();
-        xpFillImage.sprite = CreateResourceBarBackgroundSprite(new Vector2(size.x - 8f, size.y - 8f), new Color(0.45f, 0.42f, 1f, 0.95f), new Color(0.45f, 0.42f, 1f, 0f));
+        xpFillImage.sprite = CreateResourceBarBackgroundSprite(new Vector2(backgroundSize.x - 8f, size.y - 8f), new Color(0.45f, 0.42f, 1f, 0.95f), new Color(0.45f, 0.42f, 1f, 0f));
         xpFillImage.color = Color.white;
+        fillObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
-        TMP_Text text = CreateText(barObject.transform, "XpText", "Lv1 0/100", Vector2.zero, size, 18);
+        TMP_Text text = CreateText(backgroundObject.transform, "XpText", "0/100", Vector2.zero, backgroundSize, 18);
         text.color = Color.white;
         text.fontStyle = FontStyles.Bold;
+        text.gameObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
+
+        GameObject badgeObject = new GameObject("LevelBadge", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        badgeObject.transform.SetParent(barObject.transform, false);
+        RectTransform badgeRect = badgeObject.GetComponent<RectTransform>();
+        badgeRect.anchorMin = new Vector2(0f, 0.5f);
+        badgeRect.anchorMax = new Vector2(0f, 0.5f);
+        badgeRect.anchoredPosition = new Vector2(33f, 0f);
+        badgeRect.sizeDelta = new Vector2(80f, 80f);
+
+        Image badgeImage = badgeObject.GetComponent<Image>();
+        badgeImage.sprite = GetLevelBadgeSprite();
+        badgeImage.color = Color.white;
+        badgeImage.preserveAspect = true;
+        badgeObject.transform.SetAsLastSibling();
+        badgeObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
+
+        levelBadgeText = CreateText(badgeObject.transform, "LevelText", "1", Vector2.zero, new Vector2(54f, 42f), 25);
+        levelBadgeText.color = Color.white;
+        levelBadgeText.fontStyle = FontStyles.Bold;
+        levelBadgeText.gameObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
+
         return text;
     }
-
     private Sprite CreateResourceBarBackgroundSprite(Vector2 size, Color fillColor, Color borderColor)
     {
         int width = Mathf.Max(32, Mathf.RoundToInt(size.x));
@@ -2822,7 +2868,9 @@ public class GameManager : MonoBehaviour
         if (xpText != null)
         {
             int xpNeeded = GetXpNeededForNextLevel();
-            xpText.text = "Lv" + playerLevel + " " + xp + "/" + xpNeeded;
+            xpText.text = xp + "/" + xpNeeded;
+            if (levelBadgeText != null)
+                levelBadgeText.text = playerLevel.ToString();
 
             if (xpFillImage != null)
             {
