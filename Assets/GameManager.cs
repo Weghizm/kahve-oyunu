@@ -2591,7 +2591,7 @@ public class GameManager : MonoBehaviour
 
     private TMP_Text CreateResourceBar(Transform parent, string objectName, Sprite icon, Vector2 position, Vector2 size, Color backgroundColor, Color outlineColor, float fontSize, float iconScale = 1f)
     {
-        GameObject barObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        GameObject barObject = new GameObject(objectName, typeof(RectTransform));
         barObject.transform.SetParent(parent, false);
 
         RectTransform barRect = barObject.GetComponent<RectTransform>();
@@ -2600,8 +2600,19 @@ public class GameManager : MonoBehaviour
         barRect.anchoredPosition = position;
         barRect.sizeDelta = size;
 
-        Image background = barObject.GetComponent<Image>();
-        background.sprite = CreateResourceBarBackgroundSprite(size, backgroundColor, outlineColor);
+        float backgroundOffset = size.y + 8f;
+        Vector2 backgroundSize = new Vector2(size.x - backgroundOffset, size.y);
+        GameObject backgroundObject = new GameObject("Background", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        backgroundObject.transform.SetParent(barObject.transform, false);
+        RectTransform backgroundRect = backgroundObject.GetComponent<RectTransform>();
+        backgroundRect.anchorMin = new Vector2(0f, 0.5f);
+        backgroundRect.anchorMax = new Vector2(0f, 0.5f);
+        backgroundRect.pivot = new Vector2(0f, 0.5f);
+        backgroundRect.anchoredPosition = new Vector2(backgroundOffset, 0f);
+        backgroundRect.sizeDelta = backgroundSize;
+
+        Image background = backgroundObject.GetComponent<Image>();
+        background.sprite = CreateResourceBarBackgroundSprite(backgroundSize, backgroundColor, outlineColor);
         background.color = Color.white;
 
         GameObject iconObject = new GameObject("Icon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -2616,8 +2627,9 @@ public class GameManager : MonoBehaviour
         iconImage.sprite = icon;
         iconImage.color = Color.white;
         iconImage.preserveAspect = true;
+        iconObject.transform.SetAsLastSibling();
 
-        TMP_Text amountText = CreateText(barObject.transform, "AmountText", "0", new Vector2(42f, 0f), new Vector2(size.x - 96f, size.y), fontSize);
+        TMP_Text amountText = CreateText(backgroundObject.transform, "AmountText", "0", Vector2.zero, backgroundSize, fontSize);
         amountText.color = Color.white;
         amountText.alignment = TextAlignmentOptions.Center;
         amountText.fontStyle = FontStyles.Bold;
