@@ -176,6 +176,7 @@ public class GameManager : MonoBehaviour
     private Image chestRewardIconImage;
     private Sprite commonPaintCanSprite;
     private Sprite rarePaintCanSprite;
+    private Sprite specialPaintCanSprite;
     private Sprite chestButtonSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
 
@@ -1726,7 +1727,12 @@ public class GameManager : MonoBehaviour
     {
         if (rarity == ItemRarity.Luxury)
         {
-            return null;
+            if (specialPaintCanSprite == null)
+            {
+                specialPaintCanSprite = LoadSpriteFromResources("Art/Items/paint_can_special");
+            }
+
+            return specialPaintCanSprite;
         }
 
         if (rarity == ItemRarity.Rare)
