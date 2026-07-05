@@ -180,6 +180,8 @@ public class GameManager : MonoBehaviour
     private Sprite rarePaintCanSprite;
     private Sprite specialPaintCanSprite;
     private Sprite chestButtonSprite;
+    private Sprite coinIconSprite;
+    private Sprite gemIconSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
 
     private float coins = 0;
@@ -1020,14 +1022,14 @@ public class GameManager : MonoBehaviour
         CreateButton(gameFrame, "NextRoomButton", ">", new Vector2(735, -105), new Vector2(58, 86), NextRoom, new Color(0.25f, 0.32f, 0.38f), 30);
         roomUnlockButtonText = CreateButton(gameFrame, "RoomUnlockButton", "", new Vector2(0, -382), new Vector2(380, 46), UnlockCurrentRoom, new Color(0.22f, 0.48f, 0.40f), 19);
 
-        coinText = CreateText(gameFrame, "CoinText", "Coin: 0", new Vector2(0, 500), new Vector2(520, 56), 36);
+        coinText = CreateResourceBar(gameFrame, "CoinBar", GetCoinIconSprite(), new Vector2(0, 502), new Vector2(310, 56), new Color(0.22f, 0.15f, 0.08f, 0.88f), new Color(0.94f, 0.66f, 0.18f, 1f), 31);
         tapPowerText = CreateText(gameFrame, "TapPowerText", "Kahve Ucreti: 1", new Vector2(0, 456), new Vector2(460, 38), 22);
         autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Pasif Gelir: 0", new Vector2(0, 418), new Vector2(460, 38), 22);
         MakeTextClickable(autoIncomeText, OpenPassiveIncomePanel);
         activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
         customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
         customerStatsText.gameObject.SetActive(false);
-        gemText = CreateText(gameFrame, "GemText", "Gem: 0", new Vector2(-760, 500), new Vector2(260, 46), 26);
+        gemText = CreateResourceBar(gameFrame, "GemBar", GetGemIconSprite(), new Vector2(-760, 502), new Vector2(235, 50), new Color(0.08f, 0.18f, 0.26f, 0.88f), new Color(0.18f, 0.74f, 0.96f, 1f), 27);
         chestText = CreateText(gameFrame, "ChestText", "Sandik: 0", new Vector2(-760, 456), new Vector2(260, 38), 20);
         xpText = CreateText(gameFrame, "XpText", "Lv.1 XP: 0/100", new Vector2(650, 500), new Vector2(430, 46), 24);
 
@@ -1768,6 +1770,26 @@ public class GameManager : MonoBehaviour
         }
 
         return chestButtonSprite;
+    }
+
+    private Sprite GetCoinIconSprite()
+    {
+        if (coinIconSprite == null)
+        {
+            coinIconSprite = LoadSpriteFromResources("Art/UI/coin_icon");
+        }
+
+        return coinIconSprite;
+    }
+
+    private Sprite GetGemIconSprite()
+    {
+        if (gemIconSprite == null)
+        {
+            gemIconSprite = LoadSpriteFromResources("Art/UI/gem_icon");
+        }
+
+        return gemIconSprite;
     }
 
     private Sprite LoadSpriteFromResources(string path)
@@ -2566,6 +2588,41 @@ public class GameManager : MonoBehaviour
         return tmp;
     }
 
+    private TMP_Text CreateResourceBar(Transform parent, string objectName, Sprite icon, Vector2 position, Vector2 size, Color backgroundColor, Color outlineColor, float fontSize)
+    {
+        GameObject barObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        barObject.transform.SetParent(parent, false);
+
+        RectTransform barRect = barObject.GetComponent<RectTransform>();
+        barRect.anchorMin = new Vector2(0.5f, 0.5f);
+        barRect.anchorMax = new Vector2(0.5f, 0.5f);
+        barRect.anchoredPosition = position;
+        barRect.sizeDelta = size;
+
+        Image background = barObject.GetComponent<Image>();
+        background.color = backgroundColor;
+        Outline outline = barObject.AddComponent<Outline>();
+        outline.effectColor = outlineColor;
+        outline.effectDistance = new Vector2(3f, -3f);
+
+        GameObject iconObject = new GameObject("Icon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        iconObject.transform.SetParent(barObject.transform, false);
+        RectTransform iconRect = iconObject.GetComponent<RectTransform>();
+        iconRect.anchorMin = new Vector2(0f, 0.5f);
+        iconRect.anchorMax = new Vector2(0f, 0.5f);
+        iconRect.anchoredPosition = new Vector2(30f, 0f);
+        iconRect.sizeDelta = new Vector2(size.y + 18f, size.y + 18f);
+        Image iconImage = iconObject.GetComponent<Image>();
+        iconImage.sprite = icon;
+        iconImage.color = Color.white;
+        iconImage.preserveAspect = true;
+
+        TMP_Text amountText = CreateText(barObject.transform, "AmountText", "0", new Vector2(38f, 0f), new Vector2(size.x - 92f, size.y), fontSize);
+        amountText.color = Color.white;
+        amountText.alignment = TextAlignmentOptions.MidlineRight;
+        return amountText;
+    }
+
     private void MakeTextClickable(TMP_Text text, UnityEngine.Events.UnityAction action)
     {
         if (text == null)
@@ -2606,10 +2663,30 @@ public class GameManager : MonoBehaviour
         return labelText;
     }
 
+    private string FormatResourceAmount(int amount)
+    {
+        if (amount >= 1000000000)
+        {
+            return (amount / 1000000000f).ToString("0.#") + "B";
+        }
+
+        if (amount >= 1000000)
+        {
+            return (amount / 1000000f).ToString("0.#") + "M";
+        }
+
+        if (amount >= 10000)
+        {
+            return (amount / 1000f).ToString("0.#") + "K";
+        }
+
+        return amount.ToString();
+    }
+
     private void UpdateUI()
     {
         if (coinText != null)
-            coinText.text = "Coin: " + Mathf.FloorToInt(coins);
+            coinText.text = FormatResourceAmount(Mathf.FloorToInt(coins));
 
         if (tapPowerText != null)
             tapPowerText.text = "Kahve Ucreti: " + GetCurrentTapPower();
@@ -2627,7 +2704,7 @@ public class GameManager : MonoBehaviour
         }
 
         if (gemText != null)
-            gemText.text = "Gem: " + gems;
+            gemText.text = FormatResourceAmount(gems);
 
         if (chestText != null)
             chestText.text = "Sandik: " + chests;
@@ -2646,9 +2723,9 @@ public class GameManager : MonoBehaviour
             roomUnlockButtonText.text = roomUnlocked ? "" : "Odayi Ac: " + unlockCost + " coin";
             if (roomButton != null)
             {
-                roomButton.gameObject.SetActive(!roomUnlocked);
-                roomButton.interactable = !roomUnlocked && coins >= unlockCost;
-            }
+            roomButton.gameObject.SetActive(!roomUnlocked);
+            roomButton.interactable = !roomUnlocked && coins >= unlockCost;
+        }
         }
 
         if (customerStatsText != null)
