@@ -2614,6 +2614,8 @@ public class GameManager : MonoBehaviour
         Image background = backgroundObject.GetComponent<Image>();
         background.sprite = CreateResourceBarBackgroundSprite(backgroundSize, backgroundColor, outlineColor);
         background.color = Color.white;
+        CurrencyBarPartMover backgroundMover = backgroundObject.AddComponent<CurrencyBarPartMover>();
+        backgroundMover.Bind(barRect, backgroundRect);
 
         GameObject iconObject = new GameObject("Icon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         iconObject.transform.SetParent(barObject.transform, false);
@@ -2628,6 +2630,8 @@ public class GameManager : MonoBehaviour
         iconImage.color = Color.white;
         iconImage.preserveAspect = true;
         iconObject.transform.SetAsLastSibling();
+        CurrencyBarPartMover iconMover = iconObject.AddComponent<CurrencyBarPartMover>();
+        iconMover.Bind(barRect, iconRect);
 
         TMP_Text amountText = CreateText(backgroundObject.transform, "AmountText", "0", Vector2.zero, backgroundSize, fontSize);
         amountText.color = Color.white;
@@ -4066,6 +4070,39 @@ public class IsoQuadGraphic : MaskableGraphic
 
         vh.AddTriangle(0, 1, 2);
         vh.AddTriangle(2, 3, 0);
+    }
+}
+
+public class CurrencyBarPartMover : MonoBehaviour
+{
+    private RectTransform barRect;
+    private RectTransform partRect;
+    private Vector2 defaultPartPosition;
+    private bool bound;
+
+    public void Bind(RectTransform parentBar, RectTransform childPart)
+    {
+        barRect = parentBar;
+        partRect = childPart;
+        defaultPartPosition = childPart != null ? childPart.anchoredPosition : Vector2.zero;
+        bound = barRect != null && partRect != null;
+    }
+
+    private void LateUpdate()
+    {
+        if (!bound)
+        {
+            return;
+        }
+
+        Vector2 delta = partRect.anchoredPosition - defaultPartPosition;
+        if (delta.sqrMagnitude <= 0.01f)
+        {
+            return;
+        }
+
+        barRect.anchoredPosition += delta;
+        partRect.anchoredPosition = defaultPartPosition;
     }
 }
 
