@@ -4,6 +4,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class GameManager : MonoBehaviour
 {
@@ -2614,8 +2617,7 @@ public class GameManager : MonoBehaviour
         Image background = backgroundObject.GetComponent<Image>();
         background.sprite = CreateResourceBarBackgroundSprite(backgroundSize, backgroundColor, outlineColor);
         background.color = Color.white;
-        CurrencyBarPartMover backgroundMover = backgroundObject.AddComponent<CurrencyBarPartMover>();
-        backgroundMover.Bind(barRect, backgroundRect);
+        backgroundObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
         GameObject iconObject = new GameObject("Icon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         iconObject.transform.SetParent(barObject.transform, false);
@@ -2630,13 +2632,13 @@ public class GameManager : MonoBehaviour
         iconImage.color = Color.white;
         iconImage.preserveAspect = true;
         iconObject.transform.SetAsLastSibling();
-        CurrencyBarPartMover iconMover = iconObject.AddComponent<CurrencyBarPartMover>();
-        iconMover.Bind(barRect, iconRect);
+        iconObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
         TMP_Text amountText = CreateText(backgroundObject.transform, "AmountText", "0", Vector2.zero, backgroundSize, fontSize);
         amountText.color = Color.white;
         amountText.alignment = TextAlignmentOptions.Center;
         amountText.fontStyle = FontStyles.Bold;
+        amountText.gameObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
         return amountText;
     }
 
@@ -4073,36 +4075,23 @@ public class IsoQuadGraphic : MaskableGraphic
     }
 }
 
-public class CurrencyBarPartMover : MonoBehaviour
+public class CurrencyBarPartSelector : MonoBehaviour
 {
-    private RectTransform barRect;
-    private RectTransform partRect;
-    private Vector2 defaultPartPosition;
-    private bool bound;
+    private GameObject parentBar;
 
-    public void Bind(RectTransform parentBar, RectTransform childPart)
+    public void Bind(GameObject barObject)
     {
-        barRect = parentBar;
-        partRect = childPart;
-        defaultPartPosition = childPart != null ? childPart.anchoredPosition : Vector2.zero;
-        bound = barRect != null && partRect != null;
+        parentBar = barObject;
     }
 
-    private void LateUpdate()
+    private void Update()
     {
-        if (!bound)
+#if UNITY_EDITOR
+        if (parentBar != null && Selection.activeGameObject == gameObject)
         {
-            return;
+            Selection.activeGameObject = parentBar;
         }
-
-        Vector2 delta = partRect.anchoredPosition - defaultPartPosition;
-        if (delta.sqrMagnitude <= 0.01f)
-        {
-            return;
-        }
-
-        barRect.anchoredPosition += delta;
-        partRect.anchoredPosition = defaultPartPosition;
+#endif
     }
 }
 
