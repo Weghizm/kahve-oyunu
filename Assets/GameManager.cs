@@ -4358,7 +4358,11 @@ public class GameManager : MonoBehaviour
         if (pauseStatus)
         {
             SaveGame();
+            return;
         }
+
+        ApplyOfflineEarnings();
+        UpdateUI();
     }
 
     private void OnApplicationQuit()
