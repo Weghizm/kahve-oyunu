@@ -24,6 +24,7 @@ Bu proje Android icin yatay ekranli kafe/clicker/idle oyun prototipidir.
 - Gorev ve gunluk gorev pencereleri
 - Offline kazanc penceresi
 - Reklamla 2x coin sistemi, sure stacklenir, maksimum 30 dakika
+- Offline kazanc aktif pasif gelirin 1/3'u olarak hesaplanir ve maksimum 4 saatle sinirlidir; reklamla 2x coin offline kazanca etki etmez.
 - Test paneli
 - Oda sistemi: baslangic odasi, uretim odasi, VIP servis odasi
 - VIP seviye sistemi: 0-5 seviye, gem ile yukseltme prototipi, HUD VIP rozeti, VIP paneli, kit/bonus metinleri

@@ -52,6 +52,8 @@ public class GameManager : MonoBehaviour
     private const float OfferVisibleSeconds = 60f;
     private const float RewardBoostSeconds = 300f;
     private const float MaxBoostSeconds = 1800f;
+    private const float OfflineIncomeRate = 0.33333334f;
+    private const float MaxOfflineEarningsSeconds = 60f * 60f * 4f;
     private const float CustomerSpawnSeconds = 8f;
     private const float CustomerVisibleSeconds = 12f;
     private const int UpgradeMaxLevel = 30;
@@ -3309,7 +3311,7 @@ public class GameManager : MonoBehaviour
         }
 
         if (offlineText != null)
-            offlineText.text = "Sen yokken\n" + lastOfflineCoins + " coin kazandin";
+            offlineText.text = "Sen yokken\n" + lastOfflineCoins + " coin kazandin\nOffline kazanc: pasif gelirin 1/3'u, en fazla 4 saat";
 
         if (dailyRewardPanelText != null)
             dailyRewardPanelText.text = GetDailyRewardText();
@@ -4341,8 +4343,9 @@ public class GameManager : MonoBehaviour
 
         DateTime lastSaveTime = new DateTime(ticks, DateTimeKind.Utc);
         double elapsedSeconds = Math.Max(0, (DateTime.UtcNow - lastSaveTime).TotalSeconds);
-        double cappedSeconds = Math.Min(elapsedSeconds, 60 * 60 * 8);
-        int offlineCoins = Mathf.FloorToInt(coinsPerSecond * GetVipPassiveIncomeMultiplier() * (float)cappedSeconds);
+        double cappedSeconds = Math.Min(elapsedSeconds, MaxOfflineEarningsSeconds);
+        float offlineIncomePerSecond = coinsPerSecond * GetVipPassiveIncomeMultiplier() * OfflineIncomeRate;
+        int offlineCoins = Mathf.FloorToInt(offlineIncomePerSecond * (float)cappedSeconds);
 
         if (offlineCoins <= 0)
         {
