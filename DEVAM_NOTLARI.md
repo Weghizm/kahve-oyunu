@@ -26,8 +26,53 @@ Bu proje Android icin yatay ekranli kafe/clicker/idle oyun prototipidir.
 - Reklamla 2x coin sistemi, sure stacklenir, maksimum 30 dakika
 - Test paneli
 - Oda sistemi: baslangic odasi, uretim odasi, VIP servis odasi
+- VIP seviye sistemi: 0-5 seviye, gem ile yukseltme prototipi, HUD VIP rozeti, VIP paneli, kit/bonus metinleri
 - Kahve cesitleri, kahve makineleri, barista panelleri
 - Dekorasyon paneli prototipi
+
+## Son Yapilanlar
+
+### XP / Level HUD
+
+- Kullanici telefonda kontrol etti; yeni level rozeti iyi gorunuyor.
+- XP yazisi kaldirildi, ilerleme bar dolumuyla anlasiliyor.
+- Level sayisi yeni rozet icinde daha dengeli duruyor.
+
+### VIP Sistem Altyapisi
+
+- `Assets/GameManager.cs` icine VIP seviye sistemi eklendi.
+- VIP seviyesi 0-5 arasi tutuluyor.
+- VIP seviyesi `PlayerPrefs` ile kaydediliyor ve resetlenebiliyor.
+- HUD ust barina `VIP 0` butonu eklendi.
+- VIP paneli acma/kapama akisi eklendi.
+- VIP seviyesi simdilik gem ile yukseliyor; bu sadece prototip ekonomi.
+- Test paneline `TEST +1 VIP` butonu eklendi.
+- VIP bonuslari su alanlara baglandi:
+  - Coin kazanci
+  - XP kazanci
+  - Pasif gelir
+  - Musteri bekleme suresi
+- Ayrica offline kazanc VIP pasif gelir bonusunu hesaba katiyor.
+
+### VIP UI Onizleme
+
+- Kullanici laptopta calisirken screenshot yolu olarak `C:\Users\X\Pictures\Screenshots` kullanilacak.
+- Kullanicinin gonderdigi VIP referans screenshoti incelendi.
+- Referanstaki koyu arka plan + altin premium kart hissi begenildi.
+- Yatay ekran icin yeni VIP panel onizlemesi olusturuldu:
+  - `vip_ui_landscape_preview.png`
+  - `vip_ui_landscape_preview_tier_colors.png`
+- Ilk onizlemede koyu zemin, buyuk uyelik karti, VIP seviye kartlari ve bonus ikonlari denendi.
+- Son onizlemede VIP sinif kartlari kendi renklerine ayrildi:
+  - VIP 1: Bronz Servis Kiti, bronz kart
+  - VIP 2: Gumus Kazanc Kiti, gumus kart
+  - VIP 3: Altin Dekor Kiti, altin kart
+  - VIP 4: Premium Barista Kiti, mor/premium kart
+  - VIP 5: Elmas VIP Kiti, acik mavi/elmas kart
+- Renkli sinif kartlari fikri Unity paneline uygulandi.
+- VIP paneli artik daha buyuk koyu premium panel, ustte aktif uyelik karti ve altta Bronz/Gumus/Altin/Premium/Elmas kartlariyla aciliyor.
+- VIP kartlari kisa bonus metinleri kullaniyor; kilitli kartlar daha sonuk, aktif kart daha parlak gorunuyor.
+- Yukseltme butonu `VIP X Al / Gem` formatina gecti.
 
 ## Gorsel Yon
 
@@ -122,8 +167,16 @@ Bu sayede test asamasinda sandiktan cikan boyanin siradan, nadir veya ozel oldug
 
 ### VIP
 
-VIP sistemi olabilir.
+VIP sistemi prototip olarak eklendi.
 
+- VIP 0-5 arasi seviye tutar.
+- HUD ust barinda `VIP 0` butonu bulunur; VIP panelini acar.
+- VIP paneli mevcut seviye, aktif kit ve 1-5 seviye bonuslarini gosterir.
+- Simdilik VIP seviyesi gem ile yukselir; ileride gercek satin alma, gorev odulu veya reklam odulu akisi buraya baglanabilir.
+- Test panelinde `TEST +1 VIP` butonu vardir.
+- VIP bonuslari coin, XP, pasif gelir ve musteri bekleme suresine etki eder.
+- VIP UI hedefi: koyu premium panel, sinif rengine gore VIP kartlari ve buyuk aktif uyelik karti.
+- Bronz/Gumus/Altin/Premium/Elmas siniflari gorsel olarak birbirinden net ayrilmali.
 - Gem/coin marketinde indirim verilebilir.
 - Gercek para paketlerinde fiyat dusurmek yerine ekstra bonus vermek daha mantikli.
 
@@ -151,13 +204,15 @@ Ilk yapilacak is bu olacak:
 
 ## Sonraki Is Sirasi
 
-1. XP/level ikonunu duzelt: kalkan gibi gorunmeyen yeni ikon, sayiyi ortala, XP yazisini kaldir ve ilerlemeyi sadece dolumla goster.
-2. Sandiklar ekranini duzelt: gem logu/son gem odulu kalabaligini kaldir; boya gruplari `Siradan Boya Kutulari`, `Nadir Boya Kutulari`, `Ozel Boya Kutulari` olarak net gorunsun.
-3. Sahne perspektifini My Cafe benzeri izometrik oda olarak netlestir.
-4. `Satis / Musteri / Kacan` yazisini kaldir veya daha iyi yere tasi.
-5. Market butonu ve market penceresi ekle.
-6. `ItemDatabase` altyapisini kur.
-7. Ilk dekor itemlerini ItemId ile tanimla.
-8. Sandik sistemini ItemId ile odul verecek hale getir.
-9. Tema secim sistemi ekle.
-10. Market icinde ilk kombin setlerini prototip olarak goster.
+1. Unity icinde VIP HUD butonu ve yeni VIP panelini telefonda/gorunumde kontrol et.
+2. VIP bonuslarini test et: TEST +1 VIP ile coin, XP, pasif gelir ve musteri surelerinin arttigini dogrula.
+3. VIP kart metinlerini mobilde kontrol et; tasma/ust uste binme varsa font ve kart bosluklarini ayarla.
+4. Sandiklar ekranini duzelt: gem logu/son gem odulu kalabaligini kaldir; boya gruplari `Siradan Boya Kutulari`, `Nadir Boya Kutulari`, `Ozel Boya Kutulari` olarak net gorunsun.
+5. Sahne perspektifini My Cafe benzeri izometrik oda olarak netlestir.
+6. `Satis / Musteri / Kacan` yazisini kaldir veya daha iyi yere tasi.
+7. Market butonu ve market penceresi ekle.
+8. `ItemDatabase` altyapisini kur.
+9. Ilk dekor itemlerini ItemId ile tanimla.
+10. Sandik sistemini ItemId ile odul verecek hale getir.
+11. Tema secim sistemi ekle.
+12. Market icinde ilk kombin setlerini prototip olarak goster.

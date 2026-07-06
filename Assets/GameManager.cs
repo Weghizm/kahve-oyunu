@@ -85,6 +85,7 @@ public class GameManager : MonoBehaviour
     private const int RoomCount = 3;
     private const int ProductionRoomUnlockCost = 5000;
     private const int VipRoomUnlockCost = 25000;
+    private const int MaxVipLevel = 5;
 
     private TMP_Text coinText;
     private TMP_Text tapPowerText;
@@ -131,6 +132,11 @@ public class GameManager : MonoBehaviour
     private TMP_Text offerPanelText;
     private TMP_Text customerButtonText;
     private TMP_Text vipBadgeText;
+    private TMP_Text vipHudText;
+    private TMP_Text vipPanelText;
+    private TMP_Text vipUpgradeButtonText;
+    private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
+    private readonly List<Image> vipLevelCardImages = new List<Image>();
     private TMP_Text passiveIncomePanelText;
     private GameObject offlinePanel;
     private GameObject dailyRewardPanel;
@@ -148,6 +154,7 @@ public class GameManager : MonoBehaviour
     private GameObject offerPanel;
     private GameObject customerButtonObject;
     private GameObject vipBadgeObject;
+    private GameObject vipPanel;
     private TMP_Text coffeeUpgradeButtonText;
     private TMP_Text machineUpgradeButtonText;
     private TMP_Text baristaUpgradeButtonText;
@@ -268,6 +275,7 @@ public class GameManager : MonoBehaviour
     private int currentRoomIndex = 0;
     private bool productionRoomUnlocked = false;
     private bool vipRoomUnlocked = false;
+    private int vipLevel = 0;
 
     private void Start()
     {
@@ -300,7 +308,7 @@ public class GameManager : MonoBehaviour
 
         if (coinsPerSecond > 0)
         {
-            coins += coinsPerSecond * incomeMultiplier * Time.deltaTime;
+            coins += GetCurrentPassiveIncome() * Time.deltaTime;
         }
 
         UpdateUI();
@@ -388,7 +396,7 @@ public class GameManager : MonoBehaviour
             currentCustomerCoinMultiplier = VipCustomerCoinMultiplier;
             currentCustomerXpReward = VipCustomerXpReward;
             currentCustomerColor = new Color(0.78f, 0.50f, 0.08f);
-            customerVisibleTimer = 8f;
+            customerVisibleTimer = 8f * GetVipCustomerPatienceMultiplier();
         }
         else if (roll < 30)
         {
@@ -396,7 +404,7 @@ public class GameManager : MonoBehaviour
             currentCustomerCoinMultiplier = RushCustomerCoinMultiplier;
             currentCustomerXpReward = RushCustomerXpReward;
             currentCustomerColor = new Color(0.82f, 0.28f, 0.18f);
-            customerVisibleTimer = 6f;
+            customerVisibleTimer = 6f * GetVipCustomerPatienceMultiplier();
         }
         else
         {
@@ -404,7 +412,7 @@ public class GameManager : MonoBehaviour
             currentCustomerCoinMultiplier = NormalCustomerCoinMultiplier;
             currentCustomerXpReward = NormalCustomerXpReward;
             currentCustomerColor = new Color(0.18f, 0.58f, 0.32f);
-            customerVisibleTimer = CustomerVisibleSeconds;
+            customerVisibleTimer = CustomerVisibleSeconds * GetVipCustomerPatienceMultiplier();
         }
 
         customerSpawnTimer = 0;
@@ -490,6 +498,54 @@ public class GameManager : MonoBehaviour
         SaveGame();
     }
 
+    public void AddTestVipLevel()
+    {
+        if (vipLevel >= MaxVipLevel) return;
+
+        vipLevel++;
+        UpdateUI();
+        SaveGame();
+    }
+
+    public void OpenVipPanel()
+    {
+        if (vipPanel == null)
+        {
+            return;
+        }
+
+        vipPanel.SetActive(true);
+        vipPanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void CloseVipPanel()
+    {
+        if (vipPanel != null)
+        {
+            vipPanel.SetActive(false);
+        }
+    }
+
+    public void UpgradeVipLevel()
+    {
+        if (vipLevel >= MaxVipLevel)
+        {
+            return;
+        }
+
+        int cost = GetVipUpgradeCost();
+        if (gems < cost)
+        {
+            return;
+        }
+
+        gems -= cost;
+        vipLevel++;
+        UpdateUI();
+        SaveGame();
+    }
+
     public void ResetSave()
     {
         PlayerPrefs.DeleteAll();
@@ -533,6 +589,7 @@ public class GameManager : MonoBehaviour
         currentRoomIndex = 0;
         productionRoomUnlocked = false;
         vipRoomUnlocked = false;
+        vipLevel = 0;
         xp = 0;
         playerLevel = 1;
         dailyRewardDay = 0;
@@ -571,6 +628,7 @@ public class GameManager : MonoBehaviour
         if (machinePanel != null) machinePanel.SetActive(false);
         if (baristaPanel != null) baristaPanel.SetActive(false);
         if (passiveIncomePanel != null) passiveIncomePanel.SetActive(false);
+        if (vipPanel != null) vipPanel.SetActive(false);
         if (customerButtonObject != null) customerButtonObject.SetActive(false);
         if (vipBadgeObject != null) vipBadgeObject.SetActive(false);
         UpdateUI();
@@ -823,6 +881,7 @@ public class GameManager : MonoBehaviour
 
     private void AddXp(int amount)
     {
+        amount = Mathf.CeilToInt(amount * GetVipXpMultiplier());
         xp += amount;
         while (xp >= GetXpNeededForNextLevel())
         {
@@ -838,12 +897,17 @@ public class GameManager : MonoBehaviour
 
     private int GetCurrentCustomerCoinReward()
     {
-        return GetCurrentTapPower() * currentCustomerCoinMultiplier;
+        return Mathf.CeilToInt(coinsPerClick * incomeMultiplier * currentCustomerCoinMultiplier * GetVipCoinMultiplier());
     }
 
     private int GetCurrentTapPower()
     {
-        return Mathf.FloorToInt(coinsPerClick * incomeMultiplier);
+        return Mathf.CeilToInt(coinsPerClick * incomeMultiplier * GetVipCoinMultiplier());
+    }
+
+    private float GetCurrentPassiveIncome()
+    {
+        return coinsPerSecond * incomeMultiplier * GetVipPassiveIncomeMultiplier();
     }
 
     private int GetTotalMachineLevel()
@@ -867,7 +931,7 @@ public class GameManager : MonoBehaviour
         float machineTotal = basicMachineIncome + espressoMachineIncome + premiumMachineIncome;
         float baristaTotal = juniorBaristaIncome + seniorBaristaIncome + masterBaristaIncome;
         float baseTotal = machineTotal + baristaTotal;
-        float boostedTotal = baseTotal * incomeMultiplier;
+        float boostedTotal = baseTotal * incomeMultiplier * GetVipPassiveIncomeMultiplier();
 
         string text = "Kahve Makineleri: " + machineTotal.ToString("0.#") + "/sn"
             + "\n- Basit Makine: " + basicMachineIncome.ToString("0.#") + "/sn"
@@ -879,12 +943,131 @@ public class GameManager : MonoBehaviour
             + "\n- Sef Barista: " + masterBaristaIncome.ToString("0.#") + "/sn"
             + "\n\nToplam: " + baseTotal.ToString("0.#") + "/sn";
 
+        if (vipLevel > 0)
+        {
+            text += "\nVIP bonuslu toplam: " + (baseTotal * GetVipPassiveIncomeMultiplier()).ToString("0.#") + "/sn";
+        }
+
         if (incomeMultiplier > 1f)
         {
             text += "\n2x aktif toplam: " + boostedTotal.ToString("0.#") + "/sn";
         }
 
         return text;
+    }
+
+    private float GetVipCoinMultiplier()
+    {
+        return 1f + (vipLevel * 0.04f);
+    }
+
+    private float GetVipXpMultiplier()
+    {
+        return 1f + (vipLevel * 0.03f);
+    }
+
+    private float GetVipPassiveIncomeMultiplier()
+    {
+        return 1f + (vipLevel * 0.05f);
+    }
+
+    private float GetVipCustomerPatienceMultiplier()
+    {
+        return 1f + (vipLevel * 0.04f);
+    }
+
+    private int GetVipUpgradeCost()
+    {
+        switch (vipLevel)
+        {
+            case 0: return 8;
+            case 1: return 15;
+            case 2: return 28;
+            case 3: return 45;
+            case 4: return 70;
+            default: return 0;
+        }
+    }
+
+    private string GetVipKitName(int level)
+    {
+        switch (level)
+        {
+            case 1: return "Bronz Servis Kiti";
+            case 2: return "Gumus Kazanc Kiti";
+            case 3: return "Altin Dekor Kiti";
+            case 4: return "Premium Barista Kiti";
+            case 5: return "Elmas VIP Kiti";
+            default: return "VIP Yok";
+        }
+    }
+
+    private string GetVipTierName(int level)
+    {
+        switch (level)
+        {
+            case 1: return "BRONZ";
+            case 2: return "GUMUS";
+            case 3: return "ALTIN";
+            case 4: return "PREMIUM";
+            case 5: return "ELMAS";
+            default: return "BASLANGIC";
+        }
+    }
+
+    private Color GetVipTierColor(int level)
+    {
+        switch (level)
+        {
+            case 1: return new Color(0.72f, 0.42f, 0.24f, 0.96f);
+            case 2: return new Color(0.72f, 0.76f, 0.82f, 0.96f);
+            case 3: return new Color(0.95f, 0.67f, 0.18f, 0.96f);
+            case 4: return new Color(0.48f, 0.24f, 0.72f, 0.96f);
+            case 5: return new Color(0.28f, 0.74f, 0.92f, 0.96f);
+            default: return new Color(0.22f, 0.18f, 0.26f, 0.96f);
+        }
+    }
+
+    private Color GetVipTierTextColor(int level)
+    {
+        return level == 2 || level == 3 || level == 5 ? new Color(0.08f, 0.07f, 0.09f, 1f) : Color.white;
+    }
+
+    private string GetVipLevelBonusLine(int level)
+    {
+        switch (level)
+        {
+            case 1: return "+4% coin\n+3% XP\n+5% pasif";
+            case 2: return "+8% coin\n+6% XP\n+8% bekleme";
+            case 3: return "+12% coin\n+9% XP\nAltin dekor";
+            case 4: return "+16% coin\n+12% XP\n+20% pasif";
+            case 5: return "+20% coin\n+15% XP\nElmas kit";
+            default: return "Bonus yok";
+        }
+    }
+
+    private string GetVipPanelText()
+    {
+        return "VIP " + vipLevel + "/" + MaxVipLevel
+            + "\n" + GetVipKitName(vipLevel)
+            + "\nCoin +" + Mathf.RoundToInt((GetVipCoinMultiplier() - 1f) * 100f) + "%"
+            + "   XP +" + Mathf.RoundToInt((GetVipXpMultiplier() - 1f) * 100f) + "%"
+            + "   Pasif +" + Mathf.RoundToInt((GetVipPassiveIncomeMultiplier() - 1f) * 100f) + "%"
+            + "   Bekleme +" + Mathf.RoundToInt((GetVipCustomerPatienceMultiplier() - 1f) * 100f) + "%";
+    }
+
+    private string GetVipCardText(int level)
+    {
+        string state = vipLevel >= level ? "ACIK" : "KILIT";
+        if (vipLevel == level)
+        {
+            state = "AKTIF";
+        }
+
+        return "VIP " + level
+            + "\n" + GetVipTierName(level)
+            + "\n" + state
+            + "\n\n" + GetVipLevelBonusLine(level);
     }
 
     public void BuyCoffeeUpgrade()
@@ -1038,6 +1221,7 @@ public class GameManager : MonoBehaviour
         gemText = CreateResourceBar(gameFrame, "GemBar", GetGemIconSprite(), new Vector2(15, 502), new Vector2(175, 42), new Color(0.04f, 0.15f, 0.22f, 0.93f), new Color(0.22f, 0.81f, 1f, 1f), 24, 1.18f);
         chestText = CreateText(gameFrame, "ChestText", "Sandik: 0", new Vector2(-760, 456), new Vector2(260, 38), 20);
         xpText = CreateXpBar(gameFrame, new Vector2(220, 502), new Vector2(175, 42));
+        vipHudText = CreateButton(gameFrame, "VipHudButton", "VIP 0", new Vector2(430, 502), new Vector2(126, 42), OpenVipPanel, new Color(0.72f, 0.54f, 0.18f), 20);
 
         CreateOfflinePanel(canvas.transform);
         CreateDailyRewardPanel(canvas.transform);
@@ -1051,6 +1235,7 @@ public class GameManager : MonoBehaviour
         CreateMachinePanel(canvas.transform);
         CreateBaristaPanel(canvas.transform);
         CreatePassiveIncomePanel(canvas.transform);
+        CreateVipPanel(canvas.transform);
         CreateTimedOfferButton(gameFrame);
         CreateTimedOfferPanel(canvas.transform);
         CreateCustomerButton(gameFrame);
@@ -2037,7 +2222,8 @@ public class GameManager : MonoBehaviour
         CreateButton(contentObject.transform, "TestRareChestButton", "TEST +1 Nadir Sandik", new Vector2(0, 45), new Vector2(440, 70), AddTestRareChest, new Color(0.30f, 0.42f, 0.68f), 25);
         CreateButton(contentObject.transform, "TestLuxuryChestButton", "TEST +1 Ozel Sandik", new Vector2(0, -40), new Vector2(440, 70), AddTestLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 25);
         CreateButton(contentObject.transform, "ResetButton", "RESET", new Vector2(0, -125), new Vector2(440, 70), ResetSave, new Color(0.20f, 0.20f, 0.20f), 25);
-        TMP_Text futureText = CreateText(contentObject.transform, "FutureTestText", "Yeni testler buraya eklenecek", new Vector2(0, -210), new Vector2(440, 70), 22);
+        CreateButton(contentObject.transform, "TestVipButton", "TEST +1 VIP", new Vector2(0, -210), new Vector2(440, 70), AddTestVipLevel, new Color(0.72f, 0.54f, 0.18f), 25);
+        TMP_Text futureText = CreateText(contentObject.transform, "FutureTestText", "Yeni testler buraya eklenecek", new Vector2(0, -295), new Vector2(440, 70), 22);
         futureText.color = Color.black;
 
         GameObject scrollbarObject = new GameObject("TestScrollbar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Scrollbar));
@@ -2303,6 +2489,98 @@ public class GameManager : MonoBehaviour
 
         passiveIncomePanel.transform.SetAsLastSibling();
         passiveIncomePanel.SetActive(false);
+    }
+
+    private void CreateVipPanel(Transform parent)
+    {
+        vipPanel = new GameObject("VipPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        vipPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = vipPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 18);
+        panelRect.sizeDelta = new Vector2(1040, 700);
+
+        Image panelImage = vipPanel.GetComponent<Image>();
+        panelImage.color = new Color(0.08f, 0.07f, 0.10f, 0.98f);
+
+        CreatePanelStrip(vipPanel.transform, "VipPanelTopGlow", new Vector2(0, 326), new Vector2(960, 18), new Color(1f, 0.74f, 0.22f, 0.42f));
+
+        TMP_Text title = CreateText(vipPanel.transform, "VipPanelTitle", "VIP Kulubu", new Vector2(0, 286), new Vector2(820, 54), 40);
+        title.color = new Color(1f, 0.83f, 0.26f);
+        title.fontStyle = FontStyles.Bold;
+
+        GameObject activeCard = new GameObject("VipActiveMembershipCard", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        activeCard.transform.SetParent(vipPanel.transform, false);
+        RectTransform activeRect = activeCard.GetComponent<RectTransform>();
+        activeRect.anchorMin = new Vector2(0.5f, 0.5f);
+        activeRect.anchorMax = new Vector2(0.5f, 0.5f);
+        activeRect.anchoredPosition = new Vector2(0, 192);
+        activeRect.sizeDelta = new Vector2(760, 132);
+        activeCard.GetComponent<Image>().color = new Color(0.18f, 0.13f, 0.19f, 0.98f);
+
+        CreatePanelStrip(activeCard.transform, "VipActiveGoldStrip", new Vector2(0, 52), new Vector2(700, 8), new Color(1f, 0.74f, 0.22f, 0.78f));
+
+        vipPanelText = CreateText(activeCard.transform, "VipPanelText", "", new Vector2(0, -4), new Vector2(700, 104), 24);
+        vipPanelText.color = new Color(1f, 0.93f, 0.78f, 1f);
+        vipPanelText.alignment = TextAlignmentOptions.Center;
+        vipPanelText.enableWordWrapping = true;
+
+        vipLevelCardTexts.Clear();
+        vipLevelCardImages.Clear();
+        for (int i = 1; i <= MaxVipLevel; i++)
+        {
+            float x = -400f + ((i - 1) * 200f);
+            vipLevelCardTexts.Add(CreateVipLevelCard(vipPanel.transform, i, new Vector2(x, -55)));
+        }
+
+        vipUpgradeButtonText = CreateButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(-190, -304), new Vector2(360, 70), UpgradeVipLevel, new Color(0.86f, 0.58f, 0.16f), 26);
+        CreateButton(vipPanel.transform, "VipCloseButton", "Kapat", new Vector2(230, -304), new Vector2(300, 70), CloseVipPanel, new Color(0.18f, 0.17f, 0.20f), 26);
+
+        vipPanel.transform.SetAsLastSibling();
+        vipPanel.SetActive(false);
+    }
+
+    private TMP_Text CreateVipLevelCard(Transform parent, int level, Vector2 position)
+    {
+        GameObject cardObject = new GameObject("VipLevelCard" + level, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        cardObject.transform.SetParent(parent, false);
+
+        RectTransform rect = cardObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = new Vector2(178, 330);
+
+        Image image = cardObject.GetComponent<Image>();
+        image.color = GetVipTierColor(level);
+        vipLevelCardImages.Add(image);
+
+        CreatePanelStrip(cardObject.transform, "TopShine", new Vector2(0, 144), new Vector2(146, 8), new Color(1f, 1f, 1f, 0.18f));
+
+        TMP_Text text = CreateText(cardObject.transform, "Text", "", new Vector2(0, -8), new Vector2(148, 286), 17);
+        text.color = GetVipTierTextColor(level);
+        text.alignment = TextAlignmentOptions.Center;
+        text.enableWordWrapping = true;
+        text.fontStyle = FontStyles.Bold;
+        return text;
+    }
+
+    private Image CreatePanelStrip(Transform parent, string name, Vector2 position, Vector2 size, Color color)
+    {
+        GameObject stripObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        stripObject.transform.SetParent(parent, false);
+
+        RectTransform rect = stripObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = stripObject.GetComponent<Image>();
+        image.color = color;
+        return image;
     }
 
     private void CreateTimedOfferButton(Transform parent)
@@ -2850,7 +3128,7 @@ public class GameManager : MonoBehaviour
             tapPowerText.text = "Kahve Ucreti: " + GetCurrentTapPower();
 
         if (autoIncomeText != null)
-            autoIncomeText.text = "Pasif Gelir: " + (coinsPerSecond * incomeMultiplier).ToString("0.#");
+            autoIncomeText.text = "Pasif Gelir: " + GetCurrentPassiveIncome().ToString("0.#");
 
         if (passiveIncomePanelText != null)
             passiveIncomePanelText.text = GetPassiveIncomeBreakdownText();
@@ -2863,6 +3141,9 @@ public class GameManager : MonoBehaviour
 
         if (gemText != null)
             gemText.text = FormatResourceAmount(gems);
+
+        if (vipHudText != null)
+            vipHudText.text = "VIP " + vipLevel;
 
         if (chestText != null)
             chestText.text = "Sandik: " + chests;
@@ -2987,6 +3268,7 @@ public class GameManager : MonoBehaviour
                 || (chestPanel != null && chestPanel.activeSelf)
                 || (decorPanel != null && decorPanel.activeSelf)
                 || (testPanel != null && testPanel.activeSelf)
+                || (vipPanel != null && vipPanel.activeSelf)
                 || (dailyTasksPanel != null && dailyTasksPanel.activeSelf)
                 || (offerPanel != null && offerPanel.activeSelf);
             if (showCustomerInCurrentRoom && !panelIsOpen)
@@ -2997,7 +3279,8 @@ public class GameManager : MonoBehaviour
 
         if (customerButtonText != null)
         {
-            customerButtonText.text = currentCustomerName + "\n+" + GetCurrentCustomerCoinReward() + " coin +" + currentCustomerXpReward + " XP\n" + Mathf.CeilToInt(customerVisibleTimer) + " sn";
+            int shownXpReward = Mathf.CeilToInt(currentCustomerXpReward * GetVipXpMultiplier());
+            customerButtonText.text = currentCustomerName + "\n+" + GetCurrentCustomerCoinReward() + " coin +" + shownXpReward + " XP\n" + Mathf.CeilToInt(customerVisibleTimer) + " sn";
             Image customerImage = customerButtonText.GetComponentInParent<Image>();
             if (customerImage != null)
                 customerImage.color = currentCustomerColor;
@@ -3084,6 +3367,46 @@ public class GameManager : MonoBehaviour
 
         if (passiveIncomePanel != null && passiveIncomePanel.activeSelf && lastOfflineCoins <= 0)
             passiveIncomePanel.transform.SetAsLastSibling();
+
+        if (vipPanelText != null)
+            vipPanelText.text = GetVipPanelText();
+
+        if (vipUpgradeButtonText != null)
+        {
+            Button vipButton = vipUpgradeButtonText.GetComponentInParent<Button>();
+            bool maxed = vipLevel >= MaxVipLevel;
+            int cost = GetVipUpgradeCost();
+            vipUpgradeButtonText.text = maxed ? "VIP MAX" : "VIP " + (vipLevel + 1) + " Al\n" + cost + " Gem";
+            if (vipButton != null)
+                vipButton.interactable = !maxed && gems >= cost;
+        }
+
+        for (int i = 0; i < vipLevelCardTexts.Count; i++)
+        {
+            int cardLevel = i + 1;
+            vipLevelCardTexts[i].text = GetVipCardText(cardLevel);
+            vipLevelCardTexts[i].color = GetVipTierTextColor(cardLevel);
+
+            if (i < vipLevelCardImages.Count)
+            {
+                Color cardColor = GetVipTierColor(cardLevel);
+                if (vipLevel < cardLevel)
+                {
+                    cardColor = Color.Lerp(cardColor, new Color(0.05f, 0.05f, 0.06f, cardColor.a), 0.58f);
+                    cardColor.a = 0.84f;
+                }
+                else if (vipLevel == cardLevel)
+                {
+                    cardColor = Color.Lerp(cardColor, Color.white, 0.15f);
+                    cardColor.a = 1f;
+                }
+
+                vipLevelCardImages[i].color = cardColor;
+            }
+        }
+
+        if (vipPanel != null && vipPanel.activeSelf && lastOfflineCoins <= 0)
+            vipPanel.transform.SetAsLastSibling();
 
         if (decorPanelText != null)
             decorPanelText.text = "Boya Kutusu: " + paintPieces + " | Tahta: " + woodPieces;
@@ -3905,6 +4228,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("currentRoomIndex", currentRoomIndex);
         PlayerPrefs.SetInt("productionRoomUnlocked", productionRoomUnlocked ? 1 : 0);
         PlayerPrefs.SetInt("vipRoomUnlocked", vipRoomUnlocked ? 1 : 0);
+        PlayerPrefs.SetInt("vipLevel", vipLevel);
         PlayerPrefs.SetInt("xp", xp);
         PlayerPrefs.SetInt("playerLevel", playerLevel);
         PlayerPrefs.SetInt("dailyRewardDay", dailyRewardDay);
@@ -3974,6 +4298,7 @@ public class GameManager : MonoBehaviour
         currentRoomIndex = Mathf.Clamp(PlayerPrefs.GetInt("currentRoomIndex", 0), 0, RoomCount - 1);
         productionRoomUnlocked = PlayerPrefs.GetInt("productionRoomUnlocked", 0) == 1;
         vipRoomUnlocked = PlayerPrefs.GetInt("vipRoomUnlocked", 0) == 1;
+        vipLevel = Mathf.Clamp(PlayerPrefs.GetInt("vipLevel", 0), 0, MaxVipLevel);
         if (selectedWallStyle == 1 && !pinkWallUnlocked) selectedWallStyle = 0;
         if (selectedWallStyle == 2 && !mintWallUnlocked) selectedWallStyle = 0;
         if (selectedFloorStyle == 1 && !creamFloorUnlocked) selectedFloorStyle = 0;
@@ -4017,7 +4342,7 @@ public class GameManager : MonoBehaviour
         DateTime lastSaveTime = new DateTime(ticks, DateTimeKind.Utc);
         double elapsedSeconds = Math.Max(0, (DateTime.UtcNow - lastSaveTime).TotalSeconds);
         double cappedSeconds = Math.Min(elapsedSeconds, 60 * 60 * 8);
-        int offlineCoins = Mathf.FloorToInt(coinsPerSecond * (float)cappedSeconds);
+        int offlineCoins = Mathf.FloorToInt(coinsPerSecond * GetVipPassiveIncomeMultiplier() * (float)cappedSeconds);
 
         if (offlineCoins <= 0)
         {
