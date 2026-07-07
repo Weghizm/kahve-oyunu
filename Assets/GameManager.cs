@@ -2926,10 +2926,18 @@ public class GameManager : MonoBehaviour
         iconObject.transform.SetAsLastSibling();
         iconObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
-        TMP_Text amountText = CreateText(backgroundObject.transform, "AmountText", "0", Vector2.zero, backgroundSize, fontSize);
+        float amountLeftPadding = Mathf.Min(backgroundSize.x * 0.42f, iconSize * 0.58f);
+        Vector2 amountTextSize = new Vector2(backgroundSize.x - amountLeftPadding - 8f, backgroundSize.y);
+        Vector2 amountTextPosition = new Vector2(amountLeftPadding * 0.5f - 4f, 0f);
+        TMP_Text amountText = CreateText(backgroundObject.transform, "AmountText", "0", amountTextPosition, amountTextSize, fontSize);
         amountText.color = Color.white;
         amountText.alignment = TextAlignmentOptions.Center;
         amountText.fontStyle = FontStyles.Bold;
+        amountText.enableAutoSizing = true;
+        amountText.fontSizeMin = 14;
+        amountText.fontSizeMax = fontSize;
+        amountText.enableWordWrapping = false;
+        amountText.overflowMode = TextOverflowModes.Ellipsis;
         amountText.gameObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
         return amountText;
     }

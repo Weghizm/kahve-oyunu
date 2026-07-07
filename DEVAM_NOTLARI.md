@@ -39,6 +39,7 @@ Bu proje Android icin yatay ekranli kafe/clicker/idle oyun prototipidir.
 - XP yazisi kaldirildi, ilerleme bar dolumuyla anlasiliyor.
 - Level sayisi yeni rozet icinde daha dengeli duruyor.
 - Level sayisi otomatik kuculerek iki haneli seviyelerde de rozet icinde kalacak.
+- Coin/gem barlarinda sayi buyudukce ikonun icine girmemesi icin metin alani saga alindi ve otomatik kuculme eklendi.
 
 ### VIP Sistem Altyapisi
 
