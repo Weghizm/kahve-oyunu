@@ -228,6 +228,7 @@ public class GameManager : MonoBehaviour
     private Sprite chestButtonSprite;
     private Sprite coinIconSprite;
     private Sprite gemIconSprite;
+    private Sprite woodIconSprite;
     private Sprite levelBadgeSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
 
@@ -1729,7 +1730,7 @@ public class GameManager : MonoBehaviour
         {
             woodPieces += 1;
             lastChestRewardText = "Siradan Sandiktan 1 Tahta cikti.";
-            ShowChestReward(lastChestRewardText, null);
+            ShowChestReward(lastChestRewardText, GetWoodIconSprite());
         }
         else
         {
@@ -1749,7 +1750,7 @@ public class GameManager : MonoBehaviour
         {
             woodPieces += 2;
             lastChestRewardText = "Nadir Sandiktan 2 Tahta cikti.";
-            ShowChestReward(lastChestRewardText, null);
+            ShowChestReward(lastChestRewardText, GetWoodIconSprite());
         }
         else
         {
@@ -1770,7 +1771,7 @@ public class GameManager : MonoBehaviour
             woodPieces += 3;
             gems += 2;
             lastChestRewardText = "Ozel Sandiktan 3 Tahta + 2 Gem cikti.";
-            ShowChestReward(lastChestRewardText, GetGemIconSprite());
+            ShowChestReward(lastChestRewardText, GetWoodIconSprite());
         }
         else
         {
@@ -2082,6 +2083,16 @@ public class GameManager : MonoBehaviour
         }
 
         return gemIconSprite;
+    }
+
+    private Sprite GetWoodIconSprite()
+    {
+        if (woodIconSprite == null)
+        {
+            woodIconSprite = LoadSpriteFromResources("Art/Items/wood_bundle_001");
+        }
+
+        return woodIconSprite;
     }
 
     private Sprite GetLevelBadgeSprite()
