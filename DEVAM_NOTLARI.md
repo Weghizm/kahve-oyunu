@@ -38,6 +38,7 @@ Bu proje Android icin yatay ekranli kafe/clicker/idle oyun prototipidir.
 - Kullanici telefonda kontrol etti; yeni level rozeti iyi gorunuyor.
 - XP yazisi kaldirildi, ilerleme bar dolumuyla anlasiliyor.
 - Level sayisi yeni rozet icinde daha dengeli duruyor.
+- Level sayisi otomatik kuculerek iki haneli seviyelerde de rozet icinde kalacak.
 
 ### VIP Sistem Altyapisi
 
@@ -191,17 +192,9 @@ Coin ve gem barlari ikon + bar olarak tek butun gibi davranmali.
 - XP ileride coin barinin altina alinabilir; bu yerlesim yeniden degerlendirilecek.
 
 
-### Bir Sonraki Ilk Is: XP / Level Ikonu
+### Bir Sonraki Ilk Is: VIP Kontrolu
 
-Kullanici telefonda kontrol etti: level ikonu kalkan gibi gorunuyor ve icindeki sayi tam oturmamis.
-
-Ilk yapilacak is bu olacak:
-
-- Mevcut level ikonunu degistir; kalkan hissi vermesin, daha kafe/level rozeti gibi dursun.
-- Level sayisini ikonun icine daha dengeli oturt.
-- XP barinda `0/100` gibi yazi gorunmesin.
-- XP ilerlemesi direkt barin icinin dolmasiyla anlasilsin.
-- Bu degisiklik simdi yapilmayacak; kullanici yaklasik 1 saat sonra devam etmek istiyor.
+XP/level rozeti toparlandi. Siradaki ilk is VIP HUD butonu ve yeni VIP panelini Unity/telefonda kontrol etmek olacak.
 
 ## Sonraki Is Sirasi
 

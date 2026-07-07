@@ -2978,6 +2978,7 @@ public class GameManager : MonoBehaviour
         TMP_Text text = CreateText(backgroundObject.transform, "XpText", "", Vector2.zero, backgroundSize, 18);
         text.color = Color.white;
         text.fontStyle = FontStyles.Bold;
+        text.gameObject.SetActive(false);
         text.gameObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
         GameObject badgeObject = new GameObject("LevelBadge", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -2995,11 +2996,14 @@ public class GameManager : MonoBehaviour
         badgeObject.transform.SetAsLastSibling();
         badgeObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
-        levelBadgeText = CreateText(badgeObject.transform, "LevelText", "1", new Vector2(0f, -1f), new Vector2(62f, 46f), 27);
+        levelBadgeText = CreateText(badgeObject.transform, "LevelText", "1", new Vector2(0f, -3f), new Vector2(52f, 34f), 28);
         levelBadgeText.color = Color.white;
         levelBadgeText.fontStyle = FontStyles.Bold;
+        levelBadgeText.enableAutoSizing = true;
+        levelBadgeText.fontSizeMin = 18;
+        levelBadgeText.fontSizeMax = 28;
         levelBadgeText.outlineColor = new Color(0.08f, 0.07f, 0.16f, 0.95f);
-        levelBadgeText.outlineWidth = 0.10f;
+        levelBadgeText.outlineWidth = 0.08f;
         levelBadgeText.gameObject.AddComponent<CurrencyBarPartSelector>().Bind(barObject);
 
         return text;

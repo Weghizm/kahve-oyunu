@@ -34,9 +34,10 @@ Son onemli durum:
 - Coin ve gem ikonlari eklendi.
 - Coin ve gem barlari ikon + bar olarak tek parca gibi gorunuyor.
 - Coin/gem barlarinda ikon, arka plan veya sayi secilmeye calisilirsa Unity editorunde ana bar objesi secilecek sekilde duzenlendi.
-- XP/level rozeti oyuna baglandi, ancak gorsel karar degisecek.
-- Mevcut rozet kalkan gibi gorunuyor ve level sayisi icine tam oturmamis.
-- Siradaki ilk is: rozeti kafe/level hissine uygun yeni ikonla degistirmek, sayiyi ortalamak, XP barindaki `0/100` yazisini kaldirip ilerlemeyi sadece bar dolumuyla gostermek.
+- XP/level rozeti kahve cekirdekli premium rozet gorseline gecti.
+- XP barinda `0/100` yazisi gorunmuyor; ilerleme sadece bar dolumuyla anlasiliyor.
+- Level sayisi rozetin merkezine alindi ve iki haneli seviyelerde otomatik kuculecek.
+- Siradaki ilk is: VIP HUD butonu ve yeni VIP panelini Unity/telefonda kontrol etmek.
 
 ## Son UI Karari
 
@@ -72,15 +73,15 @@ Son commitlerden bazilari:
 
 ## Siradaki Muhtemel Isler
 
-1. XP/level ikonunu duzelt.
-   - Mevcut ikon kalkan gibi duruyor; daha kafe/level rozeti hissinde yeni ikon gerekli.
-   - Level sayisi ikonun icine tam ortali ve dengeli oturmali.
-   - XP barinda `0/100` yazisi gorunmemeli.
-   - XP ilerlemesi direkt barin ic dolumuyla anlasilmali.
+1. VIP HUD butonu ve yeni VIP panelini kontrol et.
+   - VIP butonu paneli aciyor mu?
+   - VIP kart metinleri mobilde tasiyor mu?
+   - TEST +1 VIP ile coin, XP, pasif gelir ve musteri bekleme suresi bonuslari artiyor mu?
 
-2. Coin/gem barlarini son kez telefonda kontrol et.
+2. Coin/gem/XP barlarini son kez telefonda kontrol et.
    - Gem ikonunun altinda mavi bar gorunuyor mu?
    - Sayi ortada mi?
+   - XP level sayisi rozet icinde dengeli mi?
    - Barlar ustte cok mu sikisik?
 
 3. Sandik UI tarafini toparla.
