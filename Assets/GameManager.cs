@@ -117,6 +117,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text mintWallButtonText;
     private TMP_Text creamFloorButtonText;
     private TMP_Text roseTableButtonText;
+    private TMP_Text decorActionButtonText;
     private TMP_Text basicCoffeeButtonText;
     private TMP_Text premiumCoffeeButtonText;
     private TMP_Text signatureCoffeeButtonText;
@@ -253,6 +254,7 @@ public class GameManager : MonoBehaviour
     private int selectedWallStyle = 0;
     private int selectedFloorStyle = 0;
     private int selectedTableStyle = 0;
+    private int previewDecorItem = 1;
     private int xp = 0;
     private int playerLevel = 1;
     private int dailyRewardDay = 0;
@@ -2032,6 +2034,11 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if (previewDecorItem <= 0)
+        {
+            previewDecorItem = 1;
+        }
+
         decorPanel.SetActive(true);
         decorPanel.transform.SetAsLastSibling();
         UpdateUI();
@@ -2042,6 +2049,53 @@ public class GameManager : MonoBehaviour
         if (decorPanel != null)
         {
             decorPanel.SetActive(false);
+        }
+
+        previewDecorItem = 0;
+        UpdateUI();
+    }
+
+    public void PreviewPinkWall()
+    {
+        previewDecorItem = 1;
+        UpdateUI();
+    }
+
+    public void PreviewMintWall()
+    {
+        previewDecorItem = 2;
+        UpdateUI();
+    }
+
+    public void PreviewCreamFloor()
+    {
+        previewDecorItem = 3;
+        UpdateUI();
+    }
+
+    public void PreviewRoseTable()
+    {
+        previewDecorItem = 4;
+        UpdateUI();
+    }
+
+    public void ConfirmDecorPreview()
+    {
+        if (previewDecorItem == 1)
+        {
+            UnlockOrSelectPinkWall();
+        }
+        else if (previewDecorItem == 2)
+        {
+            UnlockOrSelectMintWall();
+        }
+        else if (previewDecorItem == 3)
+        {
+            UnlockOrSelectCreamFloor();
+        }
+        else if (previewDecorItem == 4)
+        {
+            UnlockOrSelectRoseTable();
         }
     }
 
@@ -2116,18 +2170,19 @@ public class GameManager : MonoBehaviour
         Image panelImage = decorPanel.GetComponent<Image>();
         panelImage.color = new Color(1f, 0.90f, 0.95f, 0.98f);
 
-        TMP_Text title = CreateText(decorPanel.transform, "DecorPanelTitle", "Dekorasyon", new Vector2(0, 285), new Vector2(820, 70), 44);
+        TMP_Text title = CreateText(decorPanel.transform, "DecorPanelTitle", "Atolye", new Vector2(0, 285), new Vector2(820, 70), 44);
         title.color = Color.black;
 
-        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(0, 220), new Vector2(800, 55), 25);
+        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(0, 215), new Vector2(820, 110), 23);
         decorPanelText.color = Color.black;
 
-        pinkWallButtonText = CreateButton(decorPanel.transform, "PinkWallButton", "Pembe Duvar", new Vector2(0, 120), new Vector2(760, 80), UnlockOrSelectPinkWall, new Color(0.82f, 0.34f, 0.55f), 27);
-        mintWallButtonText = CreateButton(decorPanel.transform, "MintWallButton", "Mint Duvar", new Vector2(0, 25), new Vector2(760, 80), UnlockOrSelectMintWall, new Color(0.28f, 0.62f, 0.54f), 27);
-        creamFloorButtonText = CreateButton(decorPanel.transform, "CreamFloorButton", "Krem Zemin", new Vector2(0, -70), new Vector2(760, 80), UnlockOrSelectCreamFloor, new Color(0.72f, 0.55f, 0.28f), 27);
-        roseTableButtonText = CreateButton(decorPanel.transform, "RoseTableButton", "Rose Masa", new Vector2(0, -165), new Vector2(760, 80), UnlockOrSelectRoseTable, new Color(0.70f, 0.30f, 0.45f), 27);
+        pinkWallButtonText = CreateButton(decorPanel.transform, "PinkWallButton", "Pembe Duvar", new Vector2(-210, 80), new Vector2(360, 92), PreviewPinkWall, new Color(0.82f, 0.34f, 0.55f), 24);
+        mintWallButtonText = CreateButton(decorPanel.transform, "MintWallButton", "Mint Duvar", new Vector2(210, 80), new Vector2(360, 92), PreviewMintWall, new Color(0.28f, 0.62f, 0.54f), 24);
+        creamFloorButtonText = CreateButton(decorPanel.transform, "CreamFloorButton", "Krem Zemin", new Vector2(-210, -35), new Vector2(360, 92), PreviewCreamFloor, new Color(0.72f, 0.55f, 0.28f), 24);
+        roseTableButtonText = CreateButton(decorPanel.transform, "RoseTableButton", "Rose Masa", new Vector2(210, -35), new Vector2(360, 92), PreviewRoseTable, new Color(0.70f, 0.30f, 0.45f), 24);
 
-        CreateButton(decorPanel.transform, "DecorCloseButton", "Kapat", new Vector2(0, -285), new Vector2(300, 70), CloseDecorPanel, new Color(0.20f, 0.20f, 0.20f), 28);
+        decorActionButtonText = CreateButton(decorPanel.transform, "DecorActionButton", "Kullan", new Vector2(-170, -235), new Vector2(300, 70), ConfirmDecorPreview, new Color(0.26f, 0.55f, 0.38f), 25);
+        CreateButton(decorPanel.transform, "DecorCloseButton", "Kapat", new Vector2(170, -235), new Vector2(300, 70), CloseDecorPanel, new Color(0.20f, 0.20f, 0.20f), 25);
 
         decorPanel.transform.SetAsLastSibling();
         decorPanel.SetActive(false);
@@ -3423,12 +3478,37 @@ public class GameManager : MonoBehaviour
             vipPanel.transform.SetAsLastSibling();
 
         if (decorPanelText != null)
-            decorPanelText.text = "Boya Kutusu: " + paintPieces + " | Tahta: " + woodPieces;
+        {
+            string statusText = IsPreviewDecorUnlocked() ? "Acik" : "Kilitli";
+            decorPanelText.text = GetPreviewDecorName()
+                + "\nTur: " + GetPreviewDecorTypeText() + " | Durum: " + statusText
+                + "\nBoya Kutusu: " + paintPieces + " | Tahta: " + woodPieces;
+        }
 
-        UpdateDecorButton(pinkWallButtonText, pinkWallUnlocked, selectedWallStyle == 1, paintPieces >= DecorUnlockCost, "Pembe Duvar", DecorUnlockCost + " Boya Kutusu");
-        UpdateDecorButton(mintWallButtonText, mintWallUnlocked, selectedWallStyle == 2, paintPieces >= DecorUnlockCost, "Mint Duvar", DecorUnlockCost + " Boya Kutusu");
-        UpdateDecorButton(creamFloorButtonText, creamFloorUnlocked, selectedFloorStyle == 1, paintPieces >= 2, "Krem Zemin", "2 Boya Kutusu");
-        UpdateDecorButton(roseTableButtonText, roseTableUnlocked, selectedTableStyle == 1, woodPieces >= 5, "Rose Masa", "5 Tahta");
+        UpdateDecorButton(pinkWallButtonText, pinkWallUnlocked, previewDecorItem == 1, paintPieces >= DecorUnlockCost, "Pembe Duvar", DecorUnlockCost + " Boya Kutusu");
+        UpdateDecorButton(mintWallButtonText, mintWallUnlocked, previewDecorItem == 2, paintPieces >= DecorUnlockCost, "Mint Duvar", DecorUnlockCost + " Boya Kutusu");
+        UpdateDecorButton(creamFloorButtonText, creamFloorUnlocked, previewDecorItem == 3, paintPieces >= 2, "Krem Zemin", "2 Boya Kutusu");
+        UpdateDecorButton(roseTableButtonText, roseTableUnlocked, previewDecorItem == 4, woodPieces >= 5, "Rose Masa", "5 Tahta");
+
+        if (decorActionButtonText != null)
+        {
+            Button actionButton = decorActionButtonText.GetComponentInParent<Button>();
+            bool unlocked = IsPreviewDecorUnlocked();
+            bool canUnlock = CanUnlockPreviewDecor();
+            if (unlocked)
+            {
+                decorActionButtonText.text = "Kullan";
+            }
+            else
+            {
+                decorActionButtonText.text = canUnlock ? "Uret" : "Eksik: " + GetPreviewDecorCostText();
+            }
+
+            if (actionButton != null)
+            {
+                actionButton.interactable = unlocked || canUnlock;
+            }
+        }
 
         if (decorPanel != null && decorPanel.activeSelf && lastOfflineCoins <= 0)
             decorPanel.transform.SetAsLastSibling();
@@ -3594,21 +3674,72 @@ public class GameManager : MonoBehaviour
         Button button = buttonText.GetComponentInParent<Button>();
         if (selected)
         {
-            buttonText.text = itemName + "\nSecili";
+            buttonText.text = itemName + "\nOnizleme";
         }
         else if (unlocked)
         {
-            buttonText.text = itemName + "\nSec";
+            buttonText.text = itemName + "\nAcik";
+        }
+        else if (canUnlock)
+        {
+            buttonText.text = itemName + "\nUretilebilir";
         }
         else
         {
-            buttonText.text = itemName + "\nUret: " + costText;
+            buttonText.text = itemName + "\nKilitli: " + costText;
         }
 
         if (button != null)
         {
-            button.interactable = unlocked || canUnlock;
+            button.interactable = true;
         }
+    }
+
+    private bool IsPreviewingDecor()
+    {
+        return decorPanel != null && decorPanel.activeSelf && previewDecorItem > 0;
+    }
+
+    private string GetPreviewDecorName()
+    {
+        if (previewDecorItem == 1) return "Pembe Duvar";
+        if (previewDecorItem == 2) return "Mint Duvar";
+        if (previewDecorItem == 3) return "Krem Zemin";
+        if (previewDecorItem == 4) return "Rose Masa";
+        return "Dekor";
+    }
+
+    private bool IsPreviewDecorUnlocked()
+    {
+        if (previewDecorItem == 1) return pinkWallUnlocked;
+        if (previewDecorItem == 2) return mintWallUnlocked;
+        if (previewDecorItem == 3) return creamFloorUnlocked;
+        if (previewDecorItem == 4) return roseTableUnlocked;
+        return false;
+    }
+
+    private bool CanUnlockPreviewDecor()
+    {
+        if (previewDecorItem == 1 || previewDecorItem == 2) return paintPieces >= DecorUnlockCost;
+        if (previewDecorItem == 3) return paintPieces >= 2;
+        if (previewDecorItem == 4) return woodPieces >= 5;
+        return false;
+    }
+
+    private string GetPreviewDecorCostText()
+    {
+        if (previewDecorItem == 1 || previewDecorItem == 2) return DecorUnlockCost + " Boya Kutusu";
+        if (previewDecorItem == 3) return "2 Boya Kutusu";
+        if (previewDecorItem == 4) return "5 Tahta";
+        return "";
+    }
+
+    private string GetPreviewDecorTypeText()
+    {
+        if (previewDecorItem == 1 || previewDecorItem == 2) return "Duvar";
+        if (previewDecorItem == 3) return "Zemin";
+        if (previewDecorItem == 4) return "Masa";
+        return "Dekor";
     }
 
     private void ApplyDecorations()
@@ -3667,10 +3798,16 @@ public class GameManager : MonoBehaviour
 
     private Color GetWallColor()
     {
-        if (selectedWallStyle == 1)
+        int wallStyle = selectedWallStyle;
+        if (IsPreviewingDecor() && (previewDecorItem == 1 || previewDecorItem == 2))
+        {
+            wallStyle = previewDecorItem;
+        }
+
+        if (wallStyle == 1)
             return new Color(1f, 0.72f, 0.84f, 1f);
 
-        if (selectedWallStyle == 2)
+        if (wallStyle == 2)
             return new Color(0.70f, 0.92f, 0.84f, 1f);
 
         if (currentRoomIndex == 1)
@@ -3684,7 +3821,13 @@ public class GameManager : MonoBehaviour
 
     private Color GetFloorColor()
     {
-        if (selectedFloorStyle == 1)
+        int floorStyle = selectedFloorStyle;
+        if (IsPreviewingDecor() && previewDecorItem == 3)
+        {
+            floorStyle = 1;
+        }
+
+        if (floorStyle == 1)
             return new Color(0.86f, 0.74f, 0.55f, 1f);
 
         if (currentRoomIndex == 1)
@@ -3698,7 +3841,13 @@ public class GameManager : MonoBehaviour
 
     private Color GetTableColor()
     {
-        if (selectedTableStyle == 1)
+        int tableStyle = selectedTableStyle;
+        if (IsPreviewingDecor() && previewDecorItem == 4)
+        {
+            tableStyle = 1;
+        }
+
+        if (tableStyle == 1)
             return new Color(0.86f, 0.38f, 0.54f, 1f);
 
         if (currentRoomIndex == 1)

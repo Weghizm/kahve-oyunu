@@ -192,6 +192,14 @@ Coin ve gem barlari ikon + bar olarak tek butun gibi davranmali.
 - XP/level UI tamamlandiginda ayni davranis XP bari icin de eklenmeli.
 - XP ileride coin barinin altina alinabilir; bu yerlesim yeniden degerlendirilecek.
 
+### Envanter / Atolye Yonelimi
+
+- Craft/uretim ekrani Bannerlord War Sails tersane hissinden ilham alacak: buyuk dukkan onizlemesi, secili item bilgisi, uret/kullan karari.
+- Market ekrani ileride Transformice marketi gibi daha hizli kart/katalog gezme hissinde olacak.
+- Ilk prototipte mevcut `Dekorasyon` paneli `Atolye` olarak degistirildi.
+- Dekor kartina dokununca kilitli olsa bile dukkanda gecici onizleme yapiliyor.
+- `Kullan` veya `Uret` butonu ayri; panel kapatilinca onizleme eski secime geri donuyor.
+
 
 ### Bir Sonraki Ilk Is: VIP Kontrolu
 
