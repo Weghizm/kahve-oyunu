@@ -143,6 +143,12 @@ public class GameManager : MonoBehaviour
     private TMP_Text rareChestOpenButtonText;
     private TMP_Text luxuryChestOpenButtonText;
     private TMP_Text decorPanelText;
+    private Image decorCostIconImage;
+    private TMP_Text decorCostText;
+    private Image decorStoragePaintIconImage;
+    private TMP_Text decorStoragePaintText;
+    private Image decorStorageWoodIconImage;
+    private TMP_Text decorStorageWoodText;
     private TMP_Text pinkWallButtonText;
     private TMP_Text mintWallButtonText;
     private TMP_Text creamFloorButtonText;
@@ -225,6 +231,7 @@ public class GameManager : MonoBehaviour
     private Sprite rarePaintCanSprite;
     private Sprite specialPaintCanSprite;
     private readonly Dictionary<string, Sprite> paintCanSprites = new Dictionary<string, Sprite>();
+    private Sprite craftPaintIconSprite;
     private Sprite chestButtonSprite;
     private Sprite coinIconSprite;
     private Sprite gemIconSprite;
@@ -2095,6 +2102,16 @@ public class GameManager : MonoBehaviour
         return woodIconSprite;
     }
 
+    private Sprite GetCraftPaintIconSprite()
+    {
+        if (craftPaintIconSprite == null)
+        {
+            craftPaintIconSprite = LoadSpriteFromResources("Art/Items/paint_can_white_001");
+        }
+
+        return craftPaintIconSprite;
+    }
+
     private Sprite GetLevelBadgeSprite()
     {
         if (levelBadgeSprite == null)
@@ -2311,10 +2328,28 @@ public class GameManager : MonoBehaviour
         selectedLabel.color = new Color(1f, 0.74f, 0.32f);
         selectedLabel.fontStyle = FontStyles.Bold;
 
-        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(54, 155), new Vector2(720, 118), 22);
+        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(54, 184), new Vector2(720, 62), 22);
         decorPanelText.color = new Color(0.96f, 0.91f, 0.82f);
         decorPanelText.alignment = TextAlignmentOptions.TopLeft;
         decorPanelText.enableWordWrapping = true;
+
+        decorCostIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorCostIcon", new Vector2(-292, 124), GetCraftPaintIconSprite());
+        decorCostText = CreateText(decorPanel.transform, "DecorCostText", "", new Vector2(-208, 124), new Vector2(250, 42), 20);
+        decorCostText.color = new Color(0.96f, 0.91f, 0.82f);
+        decorCostText.alignment = TextAlignmentOptions.Left;
+        decorCostText.fontStyle = FontStyles.Bold;
+
+        decorStoragePaintIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStoragePaintIcon", new Vector2(162, 124), GetCraftPaintIconSprite());
+        decorStoragePaintText = CreateText(decorPanel.transform, "DecorStoragePaintText", "", new Vector2(246, 124), new Vector2(120, 42), 20);
+        decorStoragePaintText.color = new Color(0.96f, 0.91f, 0.82f);
+        decorStoragePaintText.alignment = TextAlignmentOptions.Left;
+        decorStoragePaintText.fontStyle = FontStyles.Bold;
+
+        decorStorageWoodIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStorageWoodIcon", new Vector2(382, 124), GetWoodIconSprite());
+        decorStorageWoodText = CreateText(decorPanel.transform, "DecorStorageWoodText", "", new Vector2(466, 124), new Vector2(120, 42), 20);
+        decorStorageWoodText.color = new Color(0.96f, 0.91f, 0.82f);
+        decorStorageWoodText.alignment = TextAlignmentOptions.Left;
+        decorStorageWoodText.fontStyle = FontStyles.Bold;
 
         TMP_Text categoryLabel = CreateText(decorPanel.transform, "WorkshopCategoryLabel", "Dekor Kartlari", new Vector2(-320, 78), new Vector2(250, 32), 19);
         categoryLabel.color = new Color(1f, 0.74f, 0.32f);
@@ -2798,6 +2833,24 @@ public class GameManager : MonoBehaviour
 
         Image image = boxObject.GetComponent<Image>();
         image.color = color;
+        return image;
+    }
+
+    private Image CreateWorkshopResourceIcon(Transform parent, string name, Vector2 position, Sprite sprite)
+    {
+        GameObject iconObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        iconObject.transform.SetParent(parent, false);
+
+        RectTransform rect = iconObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = new Vector2(58, 58);
+
+        Image image = iconObject.GetComponent<Image>();
+        image.sprite = sprite;
+        image.color = Color.white;
+        image.preserveAspect = true;
         return image;
     }
 
@@ -3640,12 +3693,14 @@ public class GameManager : MonoBehaviour
 
         if (decorPanelText != null)
         {
+            DecorItemData previewItem = GetPreviewDecorItem();
             bool previewUnlocked = IsPreviewDecorUnlocked();
             string statusText = previewUnlocked ? "Acik" : "Kilitli";
             decorPanelText.text = GetPreviewDecorName()
                 + "\nTur: " + GetPreviewDecorTypeText() + " | Durum: " + statusText
-                + "\n" + (previewUnlocked ? "Sahip olundu" : "Gereken: " + GetPreviewDecorCostText())
-                + "\nDepo: " + GetAvailablePaintCanCount() + " Boya Kutusu | " + woodPieces + " Tahta";
+                + "\n" + (previewUnlocked ? "Sahip olundu" : "Uretim icin kaynak gerekiyor");
+
+            UpdateDecorResourceRow(previewItem, previewUnlocked);
         }
 
         UpdateDecorButton(pinkWallButtonText, GetDecorItemData(1));
@@ -3853,7 +3908,6 @@ public class GameManager : MonoBehaviour
         bool unlocked = IsDecorItemUnlocked(item);
         bool selected = previewDecorItem == item.PreviewId;
         bool canUnlock = CanUnlockDecorItem(item);
-        string costText = GetDecorCostText(item);
 
         Button button = buttonText.GetComponentInParent<Button>();
         if (selected)
@@ -3870,7 +3924,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            buttonText.text = item.DisplayName + "\nKilitli: " + costText;
+            buttonText.text = item.DisplayName + "\nKilitli";
         }
 
         if (button != null)
@@ -3938,6 +3992,56 @@ public class GameManager : MonoBehaviour
         if (item.Slot == DecorSlot.Floor) return "Zemin";
         if (item.Slot == DecorSlot.Table) return "Masa";
         return "Dekor";
+    }
+
+    private void UpdateDecorResourceRow(DecorItemData item, bool previewUnlocked)
+    {
+        bool hasItem = item != null;
+        bool usesWood = hasItem && item.CostResource == "wood";
+        int available = usesWood ? woodPieces : GetAvailablePaintCanCount();
+        bool hasEnough = previewUnlocked || (hasItem && available >= item.CostAmount);
+        Color readyColor = new Color(0.72f, 1f, 0.66f, 1f);
+        Color missingColor = new Color(1f, 0.72f, 0.58f, 1f);
+        Color normalColor = new Color(0.96f, 0.91f, 0.82f, 1f);
+        Color valueColor = hasEnough ? readyColor : missingColor;
+
+        if (decorCostIconImage != null)
+        {
+            decorCostIconImage.sprite = usesWood ? GetWoodIconSprite() : GetCraftPaintIconSprite();
+            decorCostIconImage.color = previewUnlocked ? new Color(1f, 1f, 1f, 0.55f) : Color.white;
+            decorCostIconImage.gameObject.SetActive(hasItem);
+        }
+
+        if (decorCostText != null)
+        {
+            decorCostText.text = previewUnlocked ? "Gereken: tamam" : "Gereken: x" + (hasItem ? item.CostAmount : 0);
+            decorCostText.color = previewUnlocked ? readyColor : valueColor;
+            decorCostText.gameObject.SetActive(hasItem);
+        }
+
+        if (decorStoragePaintIconImage != null)
+        {
+            decorStoragePaintIconImage.sprite = GetCraftPaintIconSprite();
+            decorStoragePaintIconImage.color = Color.white;
+        }
+
+        if (decorStoragePaintText != null)
+        {
+            decorStoragePaintText.text = "x" + GetAvailablePaintCanCount();
+            decorStoragePaintText.color = normalColor;
+        }
+
+        if (decorStorageWoodIconImage != null)
+        {
+            decorStorageWoodIconImage.sprite = GetWoodIconSprite();
+            decorStorageWoodIconImage.color = Color.white;
+        }
+
+        if (decorStorageWoodText != null)
+        {
+            decorStorageWoodText.text = "x" + woodPieces;
+            decorStorageWoodText.color = normalColor;
+        }
     }
 
     private DecorItemData GetPreviewDecorItem()
