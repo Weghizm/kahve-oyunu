@@ -2324,41 +2324,27 @@ public class GameManager : MonoBehaviour
         TMP_Text subtitle = CreateText(decorPanel.transform, "WorkshopSubtitle", "Dukkanda onizle, sonra uret ya da kullan", new Vector2(0, 250), new Vector2(760, 38), 20);
         subtitle.color = new Color(0.92f, 0.82f, 0.68f);
 
-        TMP_Text selectedLabel = CreateText(decorPanel.transform, "WorkshopSelectedLabel", "Secili Parca", new Vector2(-330, 214), new Vector2(220, 32), 19);
-        selectedLabel.color = new Color(1f, 0.74f, 0.32f);
-        selectedLabel.fontStyle = FontStyles.Bold;
-
-        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(54, 190), new Vector2(720, 74), 21);
+        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(-8, 190), new Vector2(760, 74), 21);
         decorPanelText.color = new Color(0.96f, 0.91f, 0.82f);
         decorPanelText.alignment = TextAlignmentOptions.TopLeft;
         decorPanelText.enableWordWrapping = true;
 
-        CreatePanelStrip(decorPanel.transform, "DecorResourceDivider", new Vector2(54, 126), new Vector2(700, 3), new Color(1f, 0.74f, 0.32f, 0.25f));
+        CreatePanelStrip(decorPanel.transform, "DecorResourceDivider", new Vector2(0, 128), new Vector2(740, 3), new Color(1f, 0.74f, 0.32f, 0.25f));
 
-        TMP_Text decorCostLabel = CreateText(decorPanel.transform, "DecorCostLabel", "Gereken", new Vector2(-280, 108), new Vector2(130, 34), 17);
-        decorCostLabel.color = new Color(1f, 0.74f, 0.32f);
-        decorCostLabel.alignment = TextAlignmentOptions.Left;
-        decorCostLabel.fontStyle = FontStyles.Bold;
-
-        TMP_Text decorStorageLabel = CreateText(decorPanel.transform, "DecorStorageLabel", "Depo", new Vector2(70, 108), new Vector2(90, 34), 17);
-        decorStorageLabel.color = new Color(1f, 0.74f, 0.32f);
-        decorStorageLabel.alignment = TextAlignmentOptions.Left;
-        decorStorageLabel.fontStyle = FontStyles.Bold;
-
-        decorCostIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorCostIcon", new Vector2(-176, 108), GetCraftPaintIconSprite());
-        decorCostText = CreateText(decorPanel.transform, "DecorCostText", "", new Vector2(-102, 108), new Vector2(150, 38), 19);
+        decorCostIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorCostIcon", new Vector2(-260, 104), GetCraftPaintIconSprite());
+        decorCostText = CreateText(decorPanel.transform, "DecorCostText", "", new Vector2(-198, 104), new Vector2(120, 38), 19);
         decorCostText.color = new Color(0.96f, 0.91f, 0.82f);
         decorCostText.alignment = TextAlignmentOptions.Left;
         decorCostText.fontStyle = FontStyles.Bold;
 
-        decorStoragePaintIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStoragePaintIcon", new Vector2(150, 108), GetCraftPaintIconSprite());
-        decorStoragePaintText = CreateText(decorPanel.transform, "DecorStoragePaintText", "", new Vector2(214, 108), new Vector2(90, 38), 19);
+        decorStoragePaintIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStoragePaintIcon", new Vector2(146, 104), GetCraftPaintIconSprite());
+        decorStoragePaintText = CreateText(decorPanel.transform, "DecorStoragePaintText", "", new Vector2(208, 104), new Vector2(90, 38), 19);
         decorStoragePaintText.color = new Color(0.96f, 0.91f, 0.82f);
         decorStoragePaintText.alignment = TextAlignmentOptions.Left;
         decorStoragePaintText.fontStyle = FontStyles.Bold;
 
-        decorStorageWoodIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStorageWoodIcon", new Vector2(330, 108), GetWoodIconSprite());
-        decorStorageWoodText = CreateText(decorPanel.transform, "DecorStorageWoodText", "", new Vector2(394, 108), new Vector2(90, 38), 19);
+        decorStorageWoodIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStorageWoodIcon", new Vector2(324, 104), GetWoodIconSprite());
+        decorStorageWoodText = CreateText(decorPanel.transform, "DecorStorageWoodText", "", new Vector2(386, 104), new Vector2(90, 38), 19);
         decorStorageWoodText.color = new Color(0.96f, 0.91f, 0.82f);
         decorStorageWoodText.alignment = TextAlignmentOptions.Left;
         decorStorageWoodText.fontStyle = FontStyles.Bold;
@@ -4026,7 +4012,7 @@ public class GameManager : MonoBehaviour
 
         if (decorCostText != null)
         {
-            decorCostText.text = previewUnlocked ? "Gereken: tamam" : "Gereken: x" + (hasItem ? item.CostAmount : 0);
+            decorCostText.text = previewUnlocked ? "OK" : "x" + (hasItem ? item.CostAmount : 0);
             decorCostText.color = previewUnlocked ? readyColor : valueColor;
             decorCostText.gameObject.SetActive(hasItem);
         }
