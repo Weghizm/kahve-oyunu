@@ -231,6 +231,7 @@ public class GameManager : MonoBehaviour
     private Sprite rarePaintCanSprite;
     private Sprite specialPaintCanSprite;
     private readonly Dictionary<string, Sprite> paintCanSprites = new Dictionary<string, Sprite>();
+    private readonly Dictionary<string, Sprite> decorIconSprites = new Dictionary<string, Sprite>();
     private Sprite craftPaintIconSprite;
     private Sprite chestButtonSprite;
     private Sprite coinIconSprite;
@@ -2112,6 +2113,21 @@ public class GameManager : MonoBehaviour
         return craftPaintIconSprite;
     }
 
+    private Sprite GetDecorIconSprite(DecorItemData item)
+    {
+        if (item == null || string.IsNullOrEmpty(item.ItemId))
+        {
+            return null;
+        }
+
+        if (!decorIconSprites.ContainsKey(item.ItemId))
+        {
+            decorIconSprites[item.ItemId] = LoadSpriteFromResources("Art/DecorIcons/" + item.ItemId);
+        }
+
+        return decorIconSprites[item.ItemId];
+    }
+
     private Sprite GetLevelBadgeSprite()
     {
         if (levelBadgeSprite == null)
@@ -2357,6 +2373,10 @@ public class GameManager : MonoBehaviour
         mintWallButtonText = CreateButton(decorPanel.transform, "MintWallButton", "Mint Duvar", new Vector2(218, 20), new Vector2(370, 86), PreviewMintWall, new Color(0.20f, 0.34f, 0.30f), 22);
         creamFloorButtonText = CreateButton(decorPanel.transform, "CreamFloorButton", "Krem Zemin", new Vector2(-218, -86), new Vector2(370, 86), PreviewCreamFloor, new Color(0.35f, 0.29f, 0.20f), 22);
         roseTableButtonText = CreateButton(decorPanel.transform, "RoseTableButton", "Rose Masa", new Vector2(218, -86), new Vector2(370, 86), PreviewRoseTable, new Color(0.34f, 0.20f, 0.26f), 22);
+        CreateDecorButtonIcon(pinkWallButtonText, GetDecorItemData(1));
+        CreateDecorButtonIcon(mintWallButtonText, GetDecorItemData(2));
+        CreateDecorButtonIcon(creamFloorButtonText, GetDecorItemData(3));
+        CreateDecorButtonIcon(roseTableButtonText, GetDecorItemData(4));
 
         decorActionButtonText = CreateButton(decorPanel.transform, "DecorActionButton", "Kullan", new Vector2(-175, -270), new Vector2(330, 68), ConfirmDecorPreview, new Color(0.27f, 0.54f, 0.34f), 24);
         CreateButton(decorPanel.transform, "DecorCloseButton", "Kapat", new Vector2(190, -270), new Vector2(270, 68), CloseDecorPanel, new Color(0.18f, 0.17f, 0.16f), 24);
@@ -2849,6 +2869,47 @@ public class GameManager : MonoBehaviour
         image.sprite = sprite;
         image.color = Color.white;
         image.preserveAspect = true;
+        return image;
+    }
+
+    private Image CreateDecorButtonIcon(TMP_Text buttonText, DecorItemData item)
+    {
+        if (buttonText == null || item == null)
+        {
+            return null;
+        }
+
+        Transform buttonTransform = buttonText.transform.parent;
+        if (buttonTransform == null)
+        {
+            return null;
+        }
+
+        RectTransform textRect = buttonText.GetComponent<RectTransform>();
+        if (textRect != null)
+        {
+            textRect.anchoredPosition = new Vector2(46, 0);
+            textRect.sizeDelta = new Vector2(240, 76);
+        }
+
+        buttonText.fontSize = 18;
+        buttonText.enableWordWrapping = true;
+
+        GameObject iconObject = new GameObject("DecorIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        iconObject.transform.SetParent(buttonTransform, false);
+
+        RectTransform rect = iconObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = new Vector2(-130, 0);
+        rect.sizeDelta = new Vector2(74, 74);
+
+        Image image = iconObject.GetComponent<Image>();
+        image.sprite = GetDecorIconSprite(item);
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+        iconObject.transform.SetAsFirstSibling();
         return image;
     }
 
