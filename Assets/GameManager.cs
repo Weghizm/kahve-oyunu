@@ -30,6 +30,13 @@ public class GameManager : MonoBehaviour
         Luxury
     }
 
+    private enum DecorSlot
+    {
+        Wall,
+        Floor,
+        Table
+    }
+
     private class ItemData
     {
         public string Id;
@@ -45,6 +52,28 @@ public class GameManager : MonoBehaviour
             Category = category;
             Rarity = rarity;
             PaintColor = paintColor;
+        }
+    }
+
+    private class DecorItemData
+    {
+        public int PreviewId;
+        public string ItemId;
+        public string DisplayName;
+        public DecorSlot Slot;
+        public int StyleId;
+        public string CostResource;
+        public int CostAmount;
+
+        public DecorItemData(int previewId, string itemId, string displayName, DecorSlot slot, int styleId, string costResource, int costAmount)
+        {
+            PreviewId = previewId;
+            ItemId = itemId;
+            DisplayName = displayName;
+            Slot = slot;
+            StyleId = styleId;
+            CostResource = costResource;
+            CostAmount = costAmount;
         }
     }
 
@@ -247,6 +276,7 @@ public class GameManager : MonoBehaviour
     private string lastChestRewardText = "Henuz sandik acilmadi.";
     private readonly Dictionary<string, int> itemInventory = new Dictionary<string, int>();
     private readonly List<ItemData> itemDatabase = new List<ItemData>();
+    private readonly List<DecorItemData> decorItemDatabase = new List<DecorItemData>();
     private bool pinkWallUnlocked = false;
     private bool mintWallUnlocked = false;
     private bool creamFloorUnlocked = false;
@@ -1492,6 +1522,7 @@ public class GameManager : MonoBehaviour
     private void InitializeItemDatabase()
     {
         itemDatabase.Clear();
+        decorItemDatabase.Clear();
 
         AddItemData("paint_can_white_001", "Beyaz Boya Kutusu", ItemCategory.Material, ItemRarity.Common, new Color(0.96f, 0.94f, 0.88f));
         AddItemData("paint_can_cream_001", "Krem Boya Kutusu", ItemCategory.Material, ItemRarity.Common, new Color(0.94f, 0.82f, 0.56f));
@@ -1510,11 +1541,21 @@ public class GameManager : MonoBehaviour
         AddItemData("paint_can_neon_blue_001", "Neon Mavi Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.08f, 0.38f, 1.00f));
         AddItemData("paint_can_pearl_white_001", "Inci Beyazi Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.95f, 0.92f, 0.98f));
         AddItemData("paint_can_marble_001", "Mermer Efekt Boyasi", ItemCategory.Material, ItemRarity.Luxury, new Color(0.66f, 0.66f, 0.70f));
+
+        AddDecorItemData(1, "wall_pink_soft_001", "Pembe Duvar", DecorSlot.Wall, 1, "paint", DecorUnlockCost);
+        AddDecorItemData(2, "wall_mint_soft_001", "Mint Duvar", DecorSlot.Wall, 2, "paint", DecorUnlockCost);
+        AddDecorItemData(3, "floor_cream_tile_001", "Krem Zemin", DecorSlot.Floor, 1, "paint", 2);
+        AddDecorItemData(4, "table_rose_round_001", "Rose Masa", DecorSlot.Table, 1, "wood", 5);
     }
 
     private void AddItemData(string id, string displayName, ItemCategory category, ItemRarity rarity, Color paintColor)
     {
         itemDatabase.Add(new ItemData(id, displayName, category, rarity, paintColor));
+    }
+
+    private void AddDecorItemData(int previewId, string itemId, string displayName, DecorSlot slot, int styleId, string costResource, int costAmount)
+    {
+        decorItemDatabase.Add(new DecorItemData(previewId, itemId, displayName, slot, styleId, costResource, costAmount));
     }
 
     private ItemData GetItemData(string itemId)
@@ -2081,19 +2122,25 @@ public class GameManager : MonoBehaviour
 
     public void ConfirmDecorPreview()
     {
-        if (previewDecorItem == 1)
+        DecorItemData item = GetPreviewDecorItem();
+        if (item == null)
+        {
+            return;
+        }
+
+        if (item.PreviewId == 1)
         {
             UnlockOrSelectPinkWall();
         }
-        else if (previewDecorItem == 2)
+        else if (item.PreviewId == 2)
         {
             UnlockOrSelectMintWall();
         }
-        else if (previewDecorItem == 3)
+        else if (item.PreviewId == 3)
         {
             UnlockOrSelectCreamFloor();
         }
-        else if (previewDecorItem == 4)
+        else if (item.PreviewId == 4)
         {
             UnlockOrSelectRoseTable();
         }
@@ -3522,10 +3569,10 @@ public class GameManager : MonoBehaviour
                 + "\nDepo: " + paintPieces + " Boya Kutusu | " + woodPieces + " Tahta";
         }
 
-        UpdateDecorButton(pinkWallButtonText, pinkWallUnlocked, previewDecorItem == 1, paintPieces >= DecorUnlockCost, "Pembe Duvar", DecorUnlockCost + " Boya Kutusu");
-        UpdateDecorButton(mintWallButtonText, mintWallUnlocked, previewDecorItem == 2, paintPieces >= DecorUnlockCost, "Mint Duvar", DecorUnlockCost + " Boya Kutusu");
-        UpdateDecorButton(creamFloorButtonText, creamFloorUnlocked, previewDecorItem == 3, paintPieces >= 2, "Krem Zemin", "2 Boya Kutusu");
-        UpdateDecorButton(roseTableButtonText, roseTableUnlocked, previewDecorItem == 4, woodPieces >= 5, "Rose Masa", "5 Tahta");
+        UpdateDecorButton(pinkWallButtonText, GetDecorItemData(1));
+        UpdateDecorButton(mintWallButtonText, GetDecorItemData(2));
+        UpdateDecorButton(creamFloorButtonText, GetDecorItemData(3));
+        UpdateDecorButton(roseTableButtonText, GetDecorItemData(4));
 
         if (decorActionButtonText != null)
         {
@@ -3717,29 +3764,34 @@ public class GameManager : MonoBehaviour
             baristaUpgradeButton.interactable = true;
     }
 
-    private void UpdateDecorButton(TMP_Text buttonText, bool unlocked, bool selected, bool canUnlock, string itemName, string costText)
+    private void UpdateDecorButton(TMP_Text buttonText, DecorItemData item)
     {
-        if (buttonText == null)
+        if (buttonText == null || item == null)
         {
             return;
         }
 
+        bool unlocked = IsDecorItemUnlocked(item);
+        bool selected = previewDecorItem == item.PreviewId;
+        bool canUnlock = CanUnlockDecorItem(item);
+        string costText = GetDecorCostText(item);
+
         Button button = buttonText.GetComponentInParent<Button>();
         if (selected)
         {
-            buttonText.text = itemName + "\nOnizleme";
+            buttonText.text = item.DisplayName + "\nOnizleme";
         }
         else if (unlocked)
         {
-            buttonText.text = itemName + "\nAcik";
+            buttonText.text = item.DisplayName + "\nAcik";
         }
         else if (canUnlock)
         {
-            buttonText.text = itemName + "\nUretilebilir";
+            buttonText.text = item.DisplayName + "\nUretilebilir";
         }
         else
         {
-            buttonText.text = itemName + "\nKilitli: " + costText;
+            buttonText.text = item.DisplayName + "\nKilitli: " + costText;
         }
 
         if (button != null)
@@ -3775,44 +3827,101 @@ public class GameManager : MonoBehaviour
 
     private string GetPreviewDecorName()
     {
-        if (previewDecorItem == 1) return "Pembe Duvar";
-        if (previewDecorItem == 2) return "Mint Duvar";
-        if (previewDecorItem == 3) return "Krem Zemin";
-        if (previewDecorItem == 4) return "Rose Masa";
+        DecorItemData item = GetPreviewDecorItem();
+        if (item != null) return item.DisplayName;
         return "Dekor";
     }
 
     private bool IsPreviewDecorUnlocked()
     {
-        if (previewDecorItem == 1) return pinkWallUnlocked;
-        if (previewDecorItem == 2) return mintWallUnlocked;
-        if (previewDecorItem == 3) return creamFloorUnlocked;
-        if (previewDecorItem == 4) return roseTableUnlocked;
-        return false;
+        return IsDecorItemUnlocked(GetPreviewDecorItem());
     }
 
     private bool CanUnlockPreviewDecor()
     {
-        if (previewDecorItem == 1 || previewDecorItem == 2) return paintPieces >= DecorUnlockCost;
-        if (previewDecorItem == 3) return paintPieces >= 2;
-        if (previewDecorItem == 4) return woodPieces >= 5;
-        return false;
+        return CanUnlockDecorItem(GetPreviewDecorItem());
     }
 
     private string GetPreviewDecorCostText()
     {
-        if (previewDecorItem == 1 || previewDecorItem == 2) return DecorUnlockCost + " Boya Kutusu";
-        if (previewDecorItem == 3) return "2 Boya Kutusu";
-        if (previewDecorItem == 4) return "5 Tahta";
-        return "";
+        return GetDecorCostText(GetPreviewDecorItem());
     }
 
     private string GetPreviewDecorTypeText()
     {
-        if (previewDecorItem == 1 || previewDecorItem == 2) return "Duvar";
-        if (previewDecorItem == 3) return "Zemin";
-        if (previewDecorItem == 4) return "Masa";
+        DecorItemData item = GetPreviewDecorItem();
+        if (item == null)
+        {
+            return "Dekor";
+        }
+
+        if (item.Slot == DecorSlot.Wall) return "Duvar";
+        if (item.Slot == DecorSlot.Floor) return "Zemin";
+        if (item.Slot == DecorSlot.Table) return "Masa";
         return "Dekor";
+    }
+
+    private DecorItemData GetPreviewDecorItem()
+    {
+        return GetDecorItemData(previewDecorItem);
+    }
+
+    private DecorItemData GetDecorItemData(int previewId)
+    {
+        for (int i = 0; i < decorItemDatabase.Count; i++)
+        {
+            if (decorItemDatabase[i].PreviewId == previewId)
+            {
+                return decorItemDatabase[i];
+            }
+        }
+
+        return null;
+    }
+
+    private bool IsDecorItemUnlocked(DecorItemData item)
+    {
+        if (item == null)
+        {
+            return false;
+        }
+
+        if (item.PreviewId == 1) return pinkWallUnlocked;
+        if (item.PreviewId == 2) return mintWallUnlocked;
+        if (item.PreviewId == 3) return creamFloorUnlocked;
+        if (item.PreviewId == 4) return roseTableUnlocked;
+        return false;
+    }
+
+    private bool CanUnlockDecorItem(DecorItemData item)
+    {
+        if (item == null)
+        {
+            return false;
+        }
+
+        if (item.CostResource == "paint")
+        {
+            return paintPieces >= item.CostAmount;
+        }
+
+        if (item.CostResource == "wood")
+        {
+            return woodPieces >= item.CostAmount;
+        }
+
+        return false;
+    }
+
+    private string GetDecorCostText(DecorItemData item)
+    {
+        if (item == null)
+        {
+            return "";
+        }
+
+        string resourceName = item.CostResource == "wood" ? "Tahta" : "Boya Kutusu";
+        return item.CostAmount + " " + resourceName;
     }
 
     private void ApplyDecorations()
@@ -3872,9 +3981,10 @@ public class GameManager : MonoBehaviour
     private Color GetWallColor()
     {
         int wallStyle = selectedWallStyle;
-        if (IsPreviewingDecor() && (previewDecorItem == 1 || previewDecorItem == 2))
+        DecorItemData previewItem = GetPreviewDecorItem();
+        if (IsPreviewingDecor() && previewItem != null && previewItem.Slot == DecorSlot.Wall)
         {
-            wallStyle = previewDecorItem;
+            wallStyle = previewItem.StyleId;
         }
 
         if (wallStyle == 1)
@@ -3895,9 +4005,10 @@ public class GameManager : MonoBehaviour
     private Color GetFloorColor()
     {
         int floorStyle = selectedFloorStyle;
-        if (IsPreviewingDecor() && previewDecorItem == 3)
+        DecorItemData previewItem = GetPreviewDecorItem();
+        if (IsPreviewingDecor() && previewItem != null && previewItem.Slot == DecorSlot.Floor)
         {
-            floorStyle = 1;
+            floorStyle = previewItem.StyleId;
         }
 
         if (floorStyle == 1)
@@ -3915,9 +4026,10 @@ public class GameManager : MonoBehaviour
     private Color GetTableColor()
     {
         int tableStyle = selectedTableStyle;
-        if (IsPreviewingDecor() && previewDecorItem == 4)
+        DecorItemData previewItem = GetPreviewDecorItem();
+        if (IsPreviewingDecor() && previewItem != null && previewItem.Slot == DecorSlot.Table)
         {
-            tableStyle = 1;
+            tableStyle = previewItem.StyleId;
         }
 
         if (tableStyle == 1)

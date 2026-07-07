@@ -199,6 +199,8 @@ Coin ve gem barlari ikon + bar olarak tek butun gibi davranmali.
 - Ilk prototipte mevcut `Dekorasyon` paneli `Atolye` olarak degistirildi.
 - Dekor kartina dokununca kilitli olsa bile dukkanda gecici onizleme yapiliyor.
 - `Kullan` veya `Uret` butonu ayri; panel kapatilinca onizleme eski secime geri donuyor.
+- Mevcut 4 dekor itemi `DecorItemData` listesine baglandi; yeni dekor eklemek icin artik item id, slot, style ve maliyet verisi eklemek yeterli olacak.
+- Sonraki adim: yeni dekor esyalari veya tahta/boya gibi malzeme ikonlari eklemek.
 
 
 ### Bir Sonraki Ilk Is: VIP Kontrolu
