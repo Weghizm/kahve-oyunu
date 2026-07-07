@@ -201,6 +201,8 @@ Coin ve gem barlari ikon + bar olarak tek butun gibi davranmali.
 - `Kullan` veya `Uret` butonu ayri; panel kapatilinca onizleme eski secime geri donuyor.
 - Mevcut 4 dekor itemi `DecorItemData` listesine baglandi; yeni dekor eklemek icin artik item id, slot, style ve maliyet verisi eklemek yeterli olacak.
 - Sonraki adim: yeni dekor esyalari veya tahta/boya gibi malzeme ikonlari eklemek.
+- Boya kutusu ikonlari sade kalacak; nadirlik ikonun ustunde degil, sandik/envanter/market kart zeminiyle anlatilacak.
+- `Mermer Efekt Boyasi` yerine `Lavanta Boya Kutusu` kullanilacak.
 
 
 ### Bir Sonraki Ilk Is: VIP Kontrolu

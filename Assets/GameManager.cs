@@ -138,6 +138,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text dailyRewardPanelText;
     private TMP_Text dailyRewardButtonText;
     private TMP_Text chestPanelText;
+    private TMP_Text chestRewardTitleText;
     private TMP_Text chestOpenButtonText;
     private TMP_Text rareChestOpenButtonText;
     private TMP_Text luxuryChestOpenButtonText;
@@ -223,6 +224,7 @@ public class GameManager : MonoBehaviour
     private Sprite commonPaintCanSprite;
     private Sprite rarePaintCanSprite;
     private Sprite specialPaintCanSprite;
+    private readonly Dictionary<string, Sprite> paintCanSprites = new Dictionary<string, Sprite>();
     private Sprite chestButtonSprite;
     private Sprite coinIconSprite;
     private Sprite gemIconSprite;
@@ -1547,7 +1549,7 @@ public class GameManager : MonoBehaviour
         AddItemData("paint_can_silver_001", "Gumus Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.78f, 0.82f, 0.86f));
         AddItemData("paint_can_neon_blue_001", "Neon Mavi Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.08f, 0.38f, 1.00f));
         AddItemData("paint_can_pearl_white_001", "Inci Beyazi Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.95f, 0.92f, 0.98f));
-        AddItemData("paint_can_marble_001", "Mermer Efekt Boyasi", ItemCategory.Material, ItemRarity.Luxury, new Color(0.66f, 0.66f, 0.70f));
+        AddItemData("paint_can_lavender_001", "Lavanta Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.84f, 0.68f, 1.00f));
 
         AddDecorItemData(1, "wall_pink_soft_001", "Pembe Duvar", DecorSlot.Wall, 1, "paint", DecorUnlockCost);
         AddDecorItemData(2, "wall_mint_soft_001", "Mint Duvar", DecorSlot.Wall, 2, "paint", DecorUnlockCost);
@@ -1790,7 +1792,7 @@ public class GameManager : MonoBehaviour
 
         AddInventoryItem(itemId, 1);
         lastChestRewardText = chestName + " odulu: 1 " + GetItemDisplayNameWithRarity(item) + ".";
-        ShowChestReward(lastChestRewardText, GetPaintCanSprite(item));
+        ShowChestReward(lastChestRewardText, GetPaintCanSprite(item), GetItemRarityPanelColor(item));
     }
 
     private string GetItemDisplayNameWithRarity(ItemData item)
@@ -1916,8 +1918,8 @@ public class GameManager : MonoBehaviour
         Image panelImage = chestRewardPanel.GetComponent<Image>();
         panelImage.color = new Color(0.98f, 0.94f, 0.84f, 0.99f);
 
-        TMP_Text title = CreateText(chestRewardPanel.transform, "ChestRewardTitle", "Sandik Odulu", new Vector2(0, 205), new Vector2(500, 60), 38);
-        title.color = Color.black;
+        chestRewardTitleText = CreateText(chestRewardPanel.transform, "ChestRewardTitle", "Sandik Odulu", new Vector2(0, 205), new Vector2(500, 60), 38);
+        chestRewardTitleText.color = Color.black;
 
         GameObject iconObject = new GameObject("ChestRewardIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         iconObject.transform.SetParent(chestRewardPanel.transform, false);
@@ -1950,14 +1952,32 @@ public class GameManager : MonoBehaviour
 
     private void ShowChestReward(string rewardText, Sprite rewardSprite)
     {
+        ShowChestReward(rewardText, rewardSprite, new Color(0.98f, 0.94f, 0.84f, 0.99f));
+    }
+
+    private void ShowChestReward(string rewardText, Sprite rewardSprite, Color panelColor)
+    {
         if (chestRewardPanel == null)
         {
             return;
         }
 
+        Image panelImage = chestRewardPanel.GetComponent<Image>();
+        if (panelImage != null)
+        {
+            panelImage.color = panelColor;
+        }
+
+        Color textColor = IsDarkColor(panelColor) ? Color.white : Color.black;
+        if (chestRewardTitleText != null)
+        {
+            chestRewardTitleText.color = textColor;
+        }
+
         if (chestRewardText != null)
         {
             chestRewardText.text = rewardText;
+            chestRewardText.color = textColor;
         }
 
         if (chestRewardIconImage != null)
@@ -1970,11 +1990,50 @@ public class GameManager : MonoBehaviour
         chestRewardPanel.transform.SetAsLastSibling();
     }
 
+    private Color GetItemRarityPanelColor(ItemData item)
+    {
+        if (item == null)
+        {
+            return new Color(0.98f, 0.94f, 0.84f, 0.99f);
+        }
+
+        if (item.Rarity == ItemRarity.Luxury)
+        {
+            return new Color(0.24f, 0.15f, 0.07f, 0.99f);
+        }
+
+        if (item.Rarity == ItemRarity.Rare)
+        {
+            return new Color(0.12f, 0.18f, 0.34f, 0.99f);
+        }
+
+        return new Color(0.15f, 0.26f, 0.17f, 0.99f);
+    }
+
+    private bool IsDarkColor(Color color)
+    {
+        float brightness = (color.r * 0.2126f) + (color.g * 0.7152f) + (color.b * 0.0722f);
+        return brightness < 0.45f;
+    }
+
     private Sprite GetPaintCanSprite(ItemData item)
     {
         if (item == null)
         {
             return null;
+        }
+
+        if (!string.IsNullOrEmpty(item.Id))
+        {
+            if (!paintCanSprites.ContainsKey(item.Id))
+            {
+                paintCanSprites[item.Id] = LoadSpriteFromResources("Art/Items/" + item.Id);
+            }
+
+            if (paintCanSprites[item.Id] != null)
+            {
+                return paintCanSprites[item.Id];
+            }
         }
 
         if (item.Rarity == ItemRarity.Luxury)
@@ -4655,7 +4714,13 @@ public class GameManager : MonoBehaviour
                 continue;
             }
 
-            itemInventory[pair[0]] = count;
+            string itemId = pair[0] == "paint_can_marble_001" ? "paint_can_lavender_001" : pair[0];
+            if (!itemInventory.ContainsKey(itemId))
+            {
+                itemInventory[itemId] = 0;
+            }
+
+            itemInventory[itemId] += count;
         }
     }
 
