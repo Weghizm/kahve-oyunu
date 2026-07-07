@@ -220,6 +220,8 @@ public class GameManager : MonoBehaviour
     private Image vipPlantVisual;
     private Image roomLockOverlay;
     private Image chestRewardIconImage;
+    private Image chestRewardRarityGlowImage;
+    private readonly List<Image> chestRewardRarityFrameImages = new List<Image>();
     private Image xpFillImage;
     private Sprite commonPaintCanSprite;
     private Sprite rarePaintCanSprite;
@@ -1792,7 +1794,7 @@ public class GameManager : MonoBehaviour
 
         AddInventoryItem(itemId, 1);
         lastChestRewardText = chestName + " odulu: 1 " + GetItemDisplayNameWithRarity(item) + ".";
-        ShowChestReward(lastChestRewardText, GetPaintCanSprite(item), GetItemRarityPanelColor(item));
+        ShowChestReward(lastChestRewardText, GetPaintCanSprite(item), GetItemRarityPanelColor(item), item.Rarity);
     }
 
     private string GetItemDisplayNameWithRarity(ItemData item)
@@ -1921,6 +1923,13 @@ public class GameManager : MonoBehaviour
         chestRewardTitleText = CreateText(chestRewardPanel.transform, "ChestRewardTitle", "Sandik Odulu", new Vector2(0, 205), new Vector2(500, 60), 38);
         chestRewardTitleText.color = Color.black;
 
+        chestRewardRarityGlowImage = CreatePanelStrip(chestRewardPanel.transform, "ChestRewardRarityGlow", new Vector2(0, 55), new Vector2(290, 290), new Color(0f, 0f, 0f, 0f));
+        chestRewardRarityFrameImages.Clear();
+        chestRewardRarityFrameImages.Add(CreatePanelStrip(chestRewardPanel.transform, "ChestRewardFrameTop", new Vector2(0, 170), new Vector2(250, 10), new Color(0f, 0f, 0f, 0f)));
+        chestRewardRarityFrameImages.Add(CreatePanelStrip(chestRewardPanel.transform, "ChestRewardFrameBottom", new Vector2(0, -60), new Vector2(250, 10), new Color(0f, 0f, 0f, 0f)));
+        chestRewardRarityFrameImages.Add(CreatePanelStrip(chestRewardPanel.transform, "ChestRewardFrameLeft", new Vector2(-125, 55), new Vector2(10, 240), new Color(0f, 0f, 0f, 0f)));
+        chestRewardRarityFrameImages.Add(CreatePanelStrip(chestRewardPanel.transform, "ChestRewardFrameRight", new Vector2(125, 55), new Vector2(10, 240), new Color(0f, 0f, 0f, 0f)));
+
         GameObject iconObject = new GameObject("ChestRewardIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         iconObject.transform.SetParent(chestRewardPanel.transform, false);
         RectTransform iconRect = iconObject.GetComponent<RectTransform>();
@@ -1952,10 +1961,15 @@ public class GameManager : MonoBehaviour
 
     private void ShowChestReward(string rewardText, Sprite rewardSprite)
     {
-        ShowChestReward(rewardText, rewardSprite, new Color(0.98f, 0.94f, 0.84f, 0.99f));
+        ShowChestReward(rewardText, rewardSprite, new Color(0.98f, 0.94f, 0.84f, 0.99f), null);
     }
 
     private void ShowChestReward(string rewardText, Sprite rewardSprite, Color panelColor)
+    {
+        ShowChestReward(rewardText, rewardSprite, panelColor, null);
+    }
+
+    private void ShowChestReward(string rewardText, Sprite rewardSprite, Color panelColor, ItemRarity? rarity)
     {
         if (chestRewardPanel == null)
         {
@@ -1986,6 +2000,8 @@ public class GameManager : MonoBehaviour
             chestRewardIconImage.gameObject.SetActive(rewardSprite != null);
         }
 
+        UpdateChestRewardRarityEffect(rarity);
+
         chestRewardPanel.SetActive(true);
         chestRewardPanel.transform.SetAsLastSibling();
     }
@@ -1999,15 +2015,54 @@ public class GameManager : MonoBehaviour
 
         if (item.Rarity == ItemRarity.Luxury)
         {
-            return new Color(0.24f, 0.15f, 0.07f, 0.99f);
+            return new Color(0.62f, 0.10f, 0.10f, 0.99f);
         }
 
         if (item.Rarity == ItemRarity.Rare)
         {
-            return new Color(0.12f, 0.18f, 0.34f, 0.99f);
+            return new Color(0.12f, 0.46f, 0.26f, 0.99f);
         }
 
-        return new Color(0.15f, 0.26f, 0.17f, 0.99f);
+        return new Color(0.98f, 0.94f, 0.84f, 0.99f);
+    }
+
+    private void UpdateChestRewardRarityEffect(ItemRarity? rarity)
+    {
+        bool showEffect = rarity.HasValue && rarity.Value != ItemRarity.Common;
+        if (!showEffect)
+        {
+            SetChestRewardRarityEffect(false, Color.clear, Color.clear);
+            return;
+        }
+
+        if (rarity.Value == ItemRarity.Luxury)
+        {
+            SetChestRewardRarityEffect(true, new Color(1f, 0.12f, 0.10f, 0.30f), new Color(1f, 0.42f, 0.28f, 0.95f));
+            return;
+        }
+
+        SetChestRewardRarityEffect(true, new Color(0.18f, 0.86f, 0.38f, 0.26f), new Color(0.42f, 1f, 0.58f, 0.92f));
+    }
+
+    private void SetChestRewardRarityEffect(bool visible, Color glowColor, Color frameColor)
+    {
+        if (chestRewardRarityGlowImage != null)
+        {
+            chestRewardRarityGlowImage.gameObject.SetActive(visible);
+            chestRewardRarityGlowImage.color = glowColor;
+        }
+
+        for (int i = 0; i < chestRewardRarityFrameImages.Count; i++)
+        {
+            Image frameImage = chestRewardRarityFrameImages[i];
+            if (frameImage == null)
+            {
+                continue;
+            }
+
+            frameImage.gameObject.SetActive(visible);
+            frameImage.color = frameColor;
+        }
     }
 
     private bool IsDarkColor(Color color)
