@@ -2168,12 +2168,12 @@ public class GameManager : MonoBehaviour
         panelRect.sizeDelta = new Vector2(1020, 700);
 
         Image panelImage = decorPanel.GetComponent<Image>();
-        panelImage.color = new Color(0.12f, 0.10f, 0.09f, 0.98f);
+        panelImage.color = new Color(0.12f, 0.10f, 0.09f, 1f);
 
         CreatePanelStrip(decorPanel.transform, "WorkshopTopLine", new Vector2(0, 324), new Vector2(930, 10), new Color(0.94f, 0.64f, 0.25f, 0.62f));
         CreatePanelStrip(decorPanel.transform, "WorkshopLeftRail", new Vector2(-445, -12), new Vector2(8, 560), new Color(0.94f, 0.64f, 0.25f, 0.35f));
-        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopInfoBox", new Vector2(0, 154), new Vector2(820, 172), new Color(0.22f, 0.18f, 0.15f, 0.96f));
-        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopCardsBox", new Vector2(0, -28), new Vector2(840, 252), new Color(0.17f, 0.14f, 0.13f, 0.96f));
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopInfoBox", new Vector2(0, 154), new Vector2(820, 172), new Color(0.22f, 0.18f, 0.15f, 1f));
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopCardsBox", new Vector2(0, -28), new Vector2(840, 252), new Color(0.17f, 0.14f, 0.13f, 1f));
 
         TMP_Text title = CreateText(decorPanel.transform, "DecorPanelTitle", "Atolye", new Vector2(0, 288), new Vector2(820, 56), 40);
         title.color = new Color(1f, 0.80f, 0.40f);
