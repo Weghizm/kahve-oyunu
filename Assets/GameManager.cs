@@ -1999,15 +1999,15 @@ public class GameManager : MonoBehaviour
 
         if (item.Rarity == ItemRarity.Luxury)
         {
-            return new Color(0.24f, 0.15f, 0.07f, 0.99f);
+            return new Color(0.62f, 0.10f, 0.10f, 0.99f);
         }
 
         if (item.Rarity == ItemRarity.Rare)
         {
-            return new Color(0.12f, 0.18f, 0.34f, 0.99f);
+            return new Color(0.14f, 0.32f, 0.72f, 0.99f);
         }
 
-        return new Color(0.15f, 0.26f, 0.17f, 0.99f);
+        return new Color(0.98f, 0.94f, 0.84f, 0.99f);
     }
 
     private bool IsDarkColor(Color color)
