@@ -2165,24 +2165,43 @@ public class GameManager : MonoBehaviour
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
         panelRect.anchoredPosition = new Vector2(0, 15);
-        panelRect.sizeDelta = new Vector2(900, 690);
+        panelRect.sizeDelta = new Vector2(1020, 700);
 
         Image panelImage = decorPanel.GetComponent<Image>();
-        panelImage.color = new Color(1f, 0.90f, 0.95f, 0.98f);
+        panelImage.color = new Color(0.12f, 0.10f, 0.09f, 0.98f);
 
-        TMP_Text title = CreateText(decorPanel.transform, "DecorPanelTitle", "Atolye", new Vector2(0, 285), new Vector2(820, 70), 44);
-        title.color = Color.black;
+        CreatePanelStrip(decorPanel.transform, "WorkshopTopLine", new Vector2(0, 324), new Vector2(930, 10), new Color(0.94f, 0.64f, 0.25f, 0.62f));
+        CreatePanelStrip(decorPanel.transform, "WorkshopLeftRail", new Vector2(-445, -12), new Vector2(8, 560), new Color(0.94f, 0.64f, 0.25f, 0.35f));
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopInfoBox", new Vector2(0, 154), new Vector2(820, 172), new Color(0.22f, 0.18f, 0.15f, 0.96f));
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopCardsBox", new Vector2(0, -28), new Vector2(840, 252), new Color(0.17f, 0.14f, 0.13f, 0.96f));
 
-        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(0, 215), new Vector2(820, 110), 23);
-        decorPanelText.color = Color.black;
+        TMP_Text title = CreateText(decorPanel.transform, "DecorPanelTitle", "Atolye", new Vector2(0, 288), new Vector2(820, 56), 40);
+        title.color = new Color(1f, 0.80f, 0.40f);
+        title.fontStyle = FontStyles.Bold;
 
-        pinkWallButtonText = CreateButton(decorPanel.transform, "PinkWallButton", "Pembe Duvar", new Vector2(-210, 80), new Vector2(360, 92), PreviewPinkWall, new Color(0.82f, 0.34f, 0.55f), 24);
-        mintWallButtonText = CreateButton(decorPanel.transform, "MintWallButton", "Mint Duvar", new Vector2(210, 80), new Vector2(360, 92), PreviewMintWall, new Color(0.28f, 0.62f, 0.54f), 24);
-        creamFloorButtonText = CreateButton(decorPanel.transform, "CreamFloorButton", "Krem Zemin", new Vector2(-210, -35), new Vector2(360, 92), PreviewCreamFloor, new Color(0.72f, 0.55f, 0.28f), 24);
-        roseTableButtonText = CreateButton(decorPanel.transform, "RoseTableButton", "Rose Masa", new Vector2(210, -35), new Vector2(360, 92), PreviewRoseTable, new Color(0.70f, 0.30f, 0.45f), 24);
+        TMP_Text subtitle = CreateText(decorPanel.transform, "WorkshopSubtitle", "Dukkanda onizle, sonra uret ya da kullan", new Vector2(0, 250), new Vector2(760, 38), 20);
+        subtitle.color = new Color(0.92f, 0.82f, 0.68f);
 
-        decorActionButtonText = CreateButton(decorPanel.transform, "DecorActionButton", "Kullan", new Vector2(-170, -235), new Vector2(300, 70), ConfirmDecorPreview, new Color(0.26f, 0.55f, 0.38f), 25);
-        CreateButton(decorPanel.transform, "DecorCloseButton", "Kapat", new Vector2(170, -235), new Vector2(300, 70), CloseDecorPanel, new Color(0.20f, 0.20f, 0.20f), 25);
+        TMP_Text selectedLabel = CreateText(decorPanel.transform, "WorkshopSelectedLabel", "Secili Parca", new Vector2(-330, 214), new Vector2(220, 32), 19);
+        selectedLabel.color = new Color(1f, 0.74f, 0.32f);
+        selectedLabel.fontStyle = FontStyles.Bold;
+
+        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(54, 155), new Vector2(720, 118), 22);
+        decorPanelText.color = new Color(0.96f, 0.91f, 0.82f);
+        decorPanelText.alignment = TextAlignmentOptions.TopLeft;
+        decorPanelText.enableWordWrapping = true;
+
+        TMP_Text categoryLabel = CreateText(decorPanel.transform, "WorkshopCategoryLabel", "Dekor Kartlari", new Vector2(-320, 78), new Vector2(250, 32), 19);
+        categoryLabel.color = new Color(1f, 0.74f, 0.32f);
+        categoryLabel.fontStyle = FontStyles.Bold;
+
+        pinkWallButtonText = CreateButton(decorPanel.transform, "PinkWallButton", "Pembe Duvar", new Vector2(-218, 20), new Vector2(370, 86), PreviewPinkWall, new Color(0.35f, 0.22f, 0.28f), 22);
+        mintWallButtonText = CreateButton(decorPanel.transform, "MintWallButton", "Mint Duvar", new Vector2(218, 20), new Vector2(370, 86), PreviewMintWall, new Color(0.20f, 0.34f, 0.30f), 22);
+        creamFloorButtonText = CreateButton(decorPanel.transform, "CreamFloorButton", "Krem Zemin", new Vector2(-218, -86), new Vector2(370, 86), PreviewCreamFloor, new Color(0.35f, 0.29f, 0.20f), 22);
+        roseTableButtonText = CreateButton(decorPanel.transform, "RoseTableButton", "Rose Masa", new Vector2(218, -86), new Vector2(370, 86), PreviewRoseTable, new Color(0.34f, 0.20f, 0.26f), 22);
+
+        decorActionButtonText = CreateButton(decorPanel.transform, "DecorActionButton", "Kullan", new Vector2(-175, -270), new Vector2(330, 68), ConfirmDecorPreview, new Color(0.27f, 0.54f, 0.34f), 24);
+        CreateButton(decorPanel.transform, "DecorCloseButton", "Kapat", new Vector2(190, -270), new Vector2(270, 68), CloseDecorPanel, new Color(0.18f, 0.17f, 0.16f), 24);
 
         decorPanel.transform.SetAsLastSibling();
         decorPanel.SetActive(false);
@@ -2636,6 +2655,22 @@ public class GameManager : MonoBehaviour
         rect.sizeDelta = size;
 
         Image image = stripObject.GetComponent<Image>();
+        image.color = color;
+        return image;
+    }
+
+    private Image CreateWorkshopPanelBox(Transform parent, string name, Vector2 position, Vector2 size, Color color)
+    {
+        GameObject boxObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        boxObject.transform.SetParent(parent, false);
+
+        RectTransform rect = boxObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = boxObject.GetComponent<Image>();
         image.color = color;
         return image;
     }
@@ -3479,10 +3514,12 @@ public class GameManager : MonoBehaviour
 
         if (decorPanelText != null)
         {
-            string statusText = IsPreviewDecorUnlocked() ? "Acik" : "Kilitli";
+            bool previewUnlocked = IsPreviewDecorUnlocked();
+            string statusText = previewUnlocked ? "Acik" : "Kilitli";
             decorPanelText.text = GetPreviewDecorName()
                 + "\nTur: " + GetPreviewDecorTypeText() + " | Durum: " + statusText
-                + "\nBoya Kutusu: " + paintPieces + " | Tahta: " + woodPieces;
+                + "\n" + (previewUnlocked ? "Sahip olundu" : "Gereken: " + GetPreviewDecorCostText())
+                + "\nDepo: " + paintPieces + " Boya Kutusu | " + woodPieces + " Tahta";
         }
 
         UpdateDecorButton(pinkWallButtonText, pinkWallUnlocked, previewDecorItem == 1, paintPieces >= DecorUnlockCost, "Pembe Duvar", DecorUnlockCost + " Boya Kutusu");
@@ -3507,6 +3544,22 @@ public class GameManager : MonoBehaviour
             if (actionButton != null)
             {
                 actionButton.interactable = unlocked || canUnlock;
+                Image actionImage = actionButton.GetComponent<Image>();
+                if (actionImage != null)
+                {
+                    if (unlocked)
+                    {
+                        actionImage.color = new Color(0.25f, 0.56f, 0.34f, 1f);
+                    }
+                    else if (canUnlock)
+                    {
+                        actionImage.color = new Color(0.82f, 0.55f, 0.18f, 1f);
+                    }
+                    else
+                    {
+                        actionImage.color = new Color(0.28f, 0.26f, 0.24f, 1f);
+                    }
+                }
             }
         }
 
@@ -3692,6 +3745,26 @@ public class GameManager : MonoBehaviour
         if (button != null)
         {
             button.interactable = true;
+            Image buttonImage = button.GetComponent<Image>();
+            if (buttonImage != null)
+            {
+                if (selected)
+                {
+                    buttonImage.color = new Color(0.86f, 0.58f, 0.18f, 1f);
+                }
+                else if (unlocked)
+                {
+                    buttonImage.color = new Color(0.26f, 0.45f, 0.34f, 1f);
+                }
+                else if (canUnlock)
+                {
+                    buttonImage.color = new Color(0.45f, 0.32f, 0.20f, 1f);
+                }
+                else
+                {
+                    buttonImage.color = new Color(0.22f, 0.20f, 0.19f, 1f);
+                }
+            }
         }
     }
 
