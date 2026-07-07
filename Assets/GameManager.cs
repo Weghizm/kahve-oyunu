@@ -501,6 +501,13 @@ public class GameManager : MonoBehaviour
         SaveGame();
     }
 
+    public void AddTestGems()
+    {
+        gems += 1000;
+        UpdateUI();
+        SaveGame();
+    }
+
     public void AddTestXp()
     {
         AddXp(100);
@@ -2351,13 +2358,14 @@ public class GameManager : MonoBehaviour
         contentRect.sizeDelta = new Vector2(480, 700);
 
         CreateButton(contentObject.transform, "TestCoinsButton", "TEST +10000 Coin", new Vector2(0, 300), new Vector2(440, 70), AddTestCoins, new Color(0.80f, 0.18f, 0.18f), 25);
-        CreateButton(contentObject.transform, "TestXpButton", "TEST +100 XP", new Vector2(0, 215), new Vector2(440, 70), AddTestXp, new Color(0.18f, 0.42f, 0.72f), 25);
-        CreateButton(contentObject.transform, "TestChestButton", "TEST +1 Siradan Sandik", new Vector2(0, 130), new Vector2(440, 70), AddTestChest, new Color(0.64f, 0.36f, 0.16f), 25);
-        CreateButton(contentObject.transform, "TestRareChestButton", "TEST +1 Nadir Sandik", new Vector2(0, 45), new Vector2(440, 70), AddTestRareChest, new Color(0.30f, 0.42f, 0.68f), 25);
-        CreateButton(contentObject.transform, "TestLuxuryChestButton", "TEST +1 Ozel Sandik", new Vector2(0, -40), new Vector2(440, 70), AddTestLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 25);
-        CreateButton(contentObject.transform, "ResetButton", "RESET", new Vector2(0, -125), new Vector2(440, 70), ResetSave, new Color(0.20f, 0.20f, 0.20f), 25);
-        CreateButton(contentObject.transform, "TestVipButton", "TEST +1 VIP", new Vector2(0, -210), new Vector2(440, 70), AddTestVipLevel, new Color(0.72f, 0.54f, 0.18f), 25);
-        TMP_Text futureText = CreateText(contentObject.transform, "FutureTestText", "Yeni testler buraya eklenecek", new Vector2(0, -295), new Vector2(440, 70), 22);
+        CreateButton(contentObject.transform, "TestGemsButton", "TEST +1000 Gem", new Vector2(0, 215), new Vector2(440, 70), AddTestGems, new Color(0.10f, 0.58f, 0.78f), 25);
+        CreateButton(contentObject.transform, "TestXpButton", "TEST +100 XP", new Vector2(0, 130), new Vector2(440, 70), AddTestXp, new Color(0.18f, 0.42f, 0.72f), 25);
+        CreateButton(contentObject.transform, "TestChestButton", "TEST +1 Siradan Sandik", new Vector2(0, 45), new Vector2(440, 70), AddTestChest, new Color(0.64f, 0.36f, 0.16f), 25);
+        CreateButton(contentObject.transform, "TestRareChestButton", "TEST +1 Nadir Sandik", new Vector2(0, -40), new Vector2(440, 70), AddTestRareChest, new Color(0.30f, 0.42f, 0.68f), 25);
+        CreateButton(contentObject.transform, "TestLuxuryChestButton", "TEST +1 Ozel Sandik", new Vector2(0, -125), new Vector2(440, 70), AddTestLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 25);
+        CreateButton(contentObject.transform, "ResetButton", "RESET", new Vector2(0, -210), new Vector2(440, 70), ResetSave, new Color(0.20f, 0.20f, 0.20f), 25);
+        CreateButton(contentObject.transform, "TestVipButton", "TEST +1 VIP", new Vector2(0, -295), new Vector2(440, 70), AddTestVipLevel, new Color(0.72f, 0.54f, 0.18f), 25);
+        TMP_Text futureText = CreateText(contentObject.transform, "FutureTestText", "Yeni testler buraya eklenecek", new Vector2(0, -380), new Vector2(440, 70), 22);
         futureText.color = Color.black;
 
         GameObject scrollbarObject = new GameObject("TestScrollbar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Scrollbar));
