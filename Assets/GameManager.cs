@@ -2123,35 +2123,48 @@ public class GameManager : MonoBehaviour
     public void ConfirmDecorPreview()
     {
         DecorItemData item = GetPreviewDecorItem();
+        UnlockOrSelectDecorItem(item);
+    }
+
+    private void UnlockOrSelectDecorItem(DecorItemData item)
+    {
         if (item == null)
         {
             return;
         }
 
-        if (item.PreviewId == 1)
+        if (!IsDecorItemUnlocked(item))
         {
-            UnlockOrSelectPinkWall();
+            if (!TrySpendDecorCost(item))
+            {
+                return;
+            }
+
+            SetDecorItemUnlocked(item, true);
         }
-        else if (item.PreviewId == 2)
+
+        if (item.Slot == DecorSlot.Wall)
         {
-            UnlockOrSelectMintWall();
+            selectedWallStyle = item.StyleId;
         }
-        else if (item.PreviewId == 3)
+        else if (item.Slot == DecorSlot.Floor)
         {
-            UnlockOrSelectCreamFloor();
+            selectedFloorStyle = item.StyleId;
         }
-        else if (item.PreviewId == 4)
+        else if (item.Slot == DecorSlot.Table)
         {
-            UnlockOrSelectRoseTable();
+            selectedTableStyle = item.StyleId;
         }
+
+        UpdateUI();
+        SaveGame();
     }
 
     public void UnlockOrSelectPinkWall()
     {
         if (!pinkWallUnlocked)
         {
-            if (paintPieces < DecorUnlockCost) return;
-            paintPieces -= DecorUnlockCost;
+            if (!TrySpendPaintCans(DecorUnlockCost)) return;
             pinkWallUnlocked = true;
         }
 
@@ -2164,8 +2177,7 @@ public class GameManager : MonoBehaviour
     {
         if (!mintWallUnlocked)
         {
-            if (paintPieces < DecorUnlockCost) return;
-            paintPieces -= DecorUnlockCost;
+            if (!TrySpendPaintCans(DecorUnlockCost)) return;
             mintWallUnlocked = true;
         }
 
@@ -2178,8 +2190,7 @@ public class GameManager : MonoBehaviour
     {
         if (!creamFloorUnlocked)
         {
-            if (paintPieces < 2) return;
-            paintPieces -= 2;
+            if (!TrySpendPaintCans(2)) return;
             creamFloorUnlocked = true;
         }
 
@@ -3566,7 +3577,7 @@ public class GameManager : MonoBehaviour
             decorPanelText.text = GetPreviewDecorName()
                 + "\nTur: " + GetPreviewDecorTypeText() + " | Durum: " + statusText
                 + "\n" + (previewUnlocked ? "Sahip olundu" : "Gereken: " + GetPreviewDecorCostText())
-                + "\nDepo: " + paintPieces + " Boya Kutusu | " + woodPieces + " Tahta";
+                + "\nDepo: " + GetAvailablePaintCanCount() + " Boya Kutusu | " + woodPieces + " Tahta";
         }
 
         UpdateDecorButton(pinkWallButtonText, GetDecorItemData(1));
@@ -3902,7 +3913,7 @@ public class GameManager : MonoBehaviour
 
         if (item.CostResource == "paint")
         {
-            return paintPieces >= item.CostAmount;
+            return GetAvailablePaintCanCount() >= item.CostAmount;
         }
 
         if (item.CostResource == "wood")
@@ -3911,6 +3922,111 @@ public class GameManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    private bool TrySpendDecorCost(DecorItemData item)
+    {
+        if (item == null)
+        {
+            return false;
+        }
+
+        if (item.CostResource == "paint")
+        {
+            return TrySpendPaintCans(item.CostAmount);
+        }
+
+        if (item.CostResource == "wood")
+        {
+            if (woodPieces < item.CostAmount)
+            {
+                return false;
+            }
+
+            woodPieces -= item.CostAmount;
+            return true;
+        }
+
+        return false;
+    }
+
+    private int GetAvailablePaintCanCount()
+    {
+        int total = paintPieces;
+        for (int i = 0; i < itemDatabase.Count; i++)
+        {
+            ItemData item = itemDatabase[i];
+            if (item.Category == ItemCategory.Material && item.Id.StartsWith("paint_can_", StringComparison.Ordinal))
+            {
+                total += GetInventoryItemCount(item.Id);
+            }
+        }
+
+        return total;
+    }
+
+    private bool TrySpendPaintCans(int amount)
+    {
+        if (amount <= 0)
+        {
+            return true;
+        }
+
+        if (GetAvailablePaintCanCount() < amount)
+        {
+            return false;
+        }
+
+        int remaining = amount;
+        int legacySpend = Mathf.Min(paintPieces, remaining);
+        paintPieces -= legacySpend;
+        remaining -= legacySpend;
+
+        for (int i = 0; i < itemDatabase.Count && remaining > 0; i++)
+        {
+            ItemData item = itemDatabase[i];
+            if (item.Category != ItemCategory.Material || !item.Id.StartsWith("paint_can_", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            int count = GetInventoryItemCount(item.Id);
+            if (count <= 0)
+            {
+                continue;
+            }
+
+            int spend = Mathf.Min(count, remaining);
+            itemInventory[item.Id] = count - spend;
+            remaining -= spend;
+        }
+
+        return true;
+    }
+
+    private void SetDecorItemUnlocked(DecorItemData item, bool unlocked)
+    {
+        if (item == null)
+        {
+            return;
+        }
+
+        if (item.PreviewId == 1)
+        {
+            pinkWallUnlocked = unlocked;
+        }
+        else if (item.PreviewId == 2)
+        {
+            mintWallUnlocked = unlocked;
+        }
+        else if (item.PreviewId == 3)
+        {
+            creamFloorUnlocked = unlocked;
+        }
+        else if (item.PreviewId == 4)
+        {
+            roseTableUnlocked = unlocked;
+        }
     }
 
     private string GetDecorCostText(DecorItemData item)
