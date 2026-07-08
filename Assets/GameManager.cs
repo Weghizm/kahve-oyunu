@@ -1327,7 +1327,7 @@ public class GameManager : MonoBehaviour
         chestText = CreateText(gameFrame, "ChestText", "", new Vector2(-760, 456), new Vector2(260, 38), 20);
         chestText.gameObject.SetActive(false);
         xpText = CreateXpBar(gameFrame, new Vector2(245, 500), new Vector2(220, 52));
-        vipHudText = CreateButton(gameFrame, "VipHudButton", "", new Vector2(-890, -205), new Vector2(112, 112), OpenVipPanel, new Color(1f, 1f, 1f, 0f), 18);
+        vipHudText = CreateButton(gameFrame, "VipHudButton", "", new Vector2(-890, -315), new Vector2(112, 112), OpenVipPanel, new Color(1f, 1f, 1f, 0f), 18);
         ConfigureVipHudButton(vipHudText);
 
         CreateOfflinePanel(canvas.transform);
