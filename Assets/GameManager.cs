@@ -213,6 +213,7 @@ public class GameManager : MonoBehaviour
     private Button coffeeUpgradeButton;
     private Button machineUpgradeButton;
     private Button baristaUpgradeButton;
+    private Image cafeSceneImage;
     private Image backgroundTapImage;
     private Image leftWallImage;
     private Image rightWallImage;
@@ -250,6 +251,7 @@ public class GameManager : MonoBehaviour
     private Sprite gemIconSprite;
     private Sprite woodIconSprite;
     private Sprite levelBadgeSprite;
+    private Sprite warmWoodCafeSceneSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
 
     private float coins = 0;
@@ -2150,6 +2152,16 @@ public class GameManager : MonoBehaviour
         return levelBadgeSprite;
     }
 
+    private Sprite GetWarmWoodCafeSceneSprite()
+    {
+        if (warmWoodCafeSceneSprite == null)
+        {
+            warmWoodCafeSceneSprite = LoadSpriteFromResources("Art/CafeScenes/warm_wood_cafe_scene");
+        }
+
+        return warmWoodCafeSceneSprite;
+    }
+
     private Sprite LoadSpriteFromResources(string path)
     {
         Texture2D texture = Resources.Load<Texture2D>(path);
@@ -3195,9 +3207,15 @@ public class GameManager : MonoBehaviour
         TMP_Text machineLabel = CreateSceneLabel(parent, "MachineLabel", "MAKINE", new Vector2(40, 116), new Vector2(112, 36), 14);
         TMP_Text menuLabel = CreateSceneLabel(parent, "MenuLabel", "MENU", new Vector2(-340, 172), new Vector2(110, 35), 19);
         TMP_Text customerSpotLabel = CreateSceneLabel(parent, "CustomerSpotLabel", "MUSTERI\nALANI", new Vector2(180, -252), new Vector2(165, 62), 16);
+        Sprite cafeSceneSprite = GetWarmWoodCafeSceneSprite();
+        cafeSceneImage = CreateSceneBox(parent, "WarmWoodCafeScene", new Vector2(0, -18), new Vector2(1420, 812), cafeSceneSprite != null ? Color.white : new Color(1f, 1f, 1f, 0f));
+        cafeSceneImage.sprite = cafeSceneSprite;
+        cafeSceneImage.preserveAspect = true;
+        cafeSceneImage.raycastTarget = false;
         roomLockOverlay = CreateSceneBox(parent, "RoomLockOverlay", new Vector2(0, -10), new Vector2(1700, 920), new Color(0.05f, 0.06f, 0.07f, 1f));
 
         startingRoomVisuals.Clear();
+        startingRoomVisuals.Add(cafeSceneImage.gameObject);
         startingRoomVisuals.Add(tablePreviewImage.gameObject);
         startingRoomVisuals.Add(counterTop.gameObject);
         startingRoomVisuals.Add(coffeeMachine.gameObject);
