@@ -358,7 +358,7 @@ public class GameManager : MonoBehaviour
     private bool productionRoomUnlocked = false;
     private bool vipRoomUnlocked = false;
     private int vipLevel = 0;
-    private int selectedVipPreviewLevel = 1;
+    private int selectedVipPreviewLevel = 0;
 
     private void Start()
     {
@@ -593,7 +593,7 @@ public class GameManager : MonoBehaviour
         if (vipLevel >= MaxVipLevel) return;
 
         vipLevel++;
-        selectedVipPreviewLevel = Mathf.Clamp(vipLevel, 1, MaxVipLevel);
+        selectedVipPreviewLevel = 0;
         UpdateUI();
         SaveGame();
     }
@@ -605,7 +605,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        selectedVipPreviewLevel = Mathf.Clamp(vipLevel > 0 ? vipLevel : 1, 1, MaxVipLevel);
+        selectedVipPreviewLevel = 0;
         vipPanel.SetActive(true);
         vipPanel.transform.SetAsLastSibling();
         UpdateUI();
@@ -614,6 +614,12 @@ public class GameManager : MonoBehaviour
     public void SelectVipPreviewLevel(int level)
     {
         selectedVipPreviewLevel = Mathf.Clamp(level, 1, MaxVipLevel);
+        UpdateUI();
+    }
+
+    public void ClearVipPreviewSelection()
+    {
+        selectedVipPreviewLevel = 0;
         UpdateUI();
     }
 
@@ -640,7 +646,7 @@ public class GameManager : MonoBehaviour
 
         gems -= cost;
         vipLevel++;
-        selectedVipPreviewLevel = Mathf.Clamp(vipLevel, 1, MaxVipLevel);
+        selectedVipPreviewLevel = 0;
         UpdateUI();
         SaveGame();
     }
@@ -3132,6 +3138,8 @@ public class GameManager : MonoBehaviour
         vipPanelText.enableWordWrapping = true;
         vipPanelText.fontStyle = FontStyles.Bold;
 
+        CreateVipPanelClearSelectionArea(vipPanel.transform);
+
         vipLevelCardTexts.Clear();
         vipLevelCardImages.Clear();
         vipLevelLockImages.Clear();
@@ -3156,6 +3164,26 @@ public class GameManager : MonoBehaviour
 
         vipPanel.transform.SetAsLastSibling();
         vipPanel.SetActive(false);
+    }
+
+    private void CreateVipPanelClearSelectionArea(Transform parent)
+    {
+        GameObject clearObject = new GameObject("VipClearSelectionArea", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+        clearObject.transform.SetParent(parent, false);
+
+        RectTransform rect = clearObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = new Vector2(160f, 8f);
+        rect.sizeDelta = new Vector2(900f, 430f);
+
+        Image image = clearObject.GetComponent<Image>();
+        image.color = new Color(1f, 1f, 1f, 0.001f);
+
+        Button button = clearObject.GetComponent<Button>();
+        button.targetGraphic = image;
+        button.transition = Selectable.Transition.None;
+        button.onClick.AddListener(ClearVipPreviewSelection);
     }
 
     private Image CreateVipUpgradeGemIcon(Transform parent)
@@ -4493,7 +4521,7 @@ public class GameManager : MonoBehaviour
         if (vipLevelSummaryText != null)
             vipLevelSummaryText.gameObject.SetActive(false);
 
-        int shownVipLevel = Mathf.Clamp(selectedVipPreviewLevel, 1, MaxVipLevel);
+        int shownVipLevel = selectedVipPreviewLevel > 0 ? selectedVipPreviewLevel : Mathf.Clamp(vipLevel > 0 ? vipLevel : 1, 1, MaxVipLevel);
         string shownVipName = GetVipTierName(shownVipLevel);
 
         if (vipCoinBonusText != null)
