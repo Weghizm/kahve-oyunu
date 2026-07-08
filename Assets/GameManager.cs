@@ -354,6 +354,7 @@ public class GameManager : MonoBehaviour
     private bool productionRoomUnlocked = false;
     private bool vipRoomUnlocked = false;
     private int vipLevel = 0;
+    private int selectedVipPreviewLevel = 1;
 
     private void Start()
     {
@@ -588,6 +589,7 @@ public class GameManager : MonoBehaviour
         if (vipLevel >= MaxVipLevel) return;
 
         vipLevel++;
+        selectedVipPreviewLevel = Mathf.Clamp(vipLevel, 1, MaxVipLevel);
         UpdateUI();
         SaveGame();
     }
@@ -599,8 +601,15 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        selectedVipPreviewLevel = Mathf.Clamp(vipLevel > 0 ? vipLevel : 1, 1, MaxVipLevel);
         vipPanel.SetActive(true);
         vipPanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void SelectVipPreviewLevel(int level)
+    {
+        selectedVipPreviewLevel = Mathf.Clamp(level, 1, MaxVipLevel);
         UpdateUI();
     }
 
@@ -627,6 +636,7 @@ public class GameManager : MonoBehaviour
 
         gems -= cost;
         vipLevel++;
+        selectedVipPreviewLevel = Mathf.Clamp(vipLevel, 1, MaxVipLevel);
         UpdateUI();
         SaveGame();
     }
@@ -3164,7 +3174,14 @@ public class GameManager : MonoBehaviour
 
         Image image = cardObject.GetComponent<Image>();
         image.color = textOnly ? new Color(1f, 1f, 1f, 0f) : GetVipTierColor(level);
-        image.raycastTarget = false;
+        image.raycastTarget = textOnly;
+        if (textOnly)
+        {
+            Button button = cardObject.AddComponent<Button>();
+            int selectedLevel = level;
+            button.onClick.AddListener(() => SelectVipPreviewLevel(selectedLevel));
+            button.transition = Selectable.Transition.None;
+        }
         if (!textOnly)
         {
             vipLevelCardImages.Add(image);
@@ -4376,20 +4393,22 @@ public class GameManager : MonoBehaviour
         if (vipLevelSummaryText != null)
             vipLevelSummaryText.text = "VIP " + vipLevel + " / " + MaxVipLevel;
 
+        int shownVipLevel = Mathf.Clamp(selectedVipPreviewLevel, 1, MaxVipLevel);
+
         if (vipCoinBonusText != null)
-            vipCoinBonusText.text = "Coin\n" + GetVipBonusValueText(GetVipCoinBonusPercent(vipLevel));
+            vipCoinBonusText.text = "VIP " + shownVipLevel + "\nCoin " + GetVipBonusValueText(GetVipCoinBonusPercent(shownVipLevel));
 
         if (vipXpBonusText != null)
-            vipXpBonusText.text = "XP\n" + GetVipBonusValueText(GetVipXpBonusPercent(vipLevel));
+            vipXpBonusText.text = "VIP " + shownVipLevel + "\nXP " + GetVipBonusValueText(GetVipXpBonusPercent(shownVipLevel));
 
         if (vipCoffeeBonusText != null)
-            vipCoffeeBonusText.text = "Musteri\n" + GetVipBonusValueText(GetVipPatienceBonusPercent(vipLevel));
+            vipCoffeeBonusText.text = "VIP " + shownVipLevel + "\nMusteri " + GetVipBonusValueText(GetVipPatienceBonusPercent(shownVipLevel));
 
         if (vipPassiveBonusText != null)
-            vipPassiveBonusText.text = "Pasif\n" + GetVipBonusValueText(GetVipPassiveBonusPercent(vipLevel));
+            vipPassiveBonusText.text = "VIP " + shownVipLevel + "\nPasif " + GetVipBonusValueText(GetVipPassiveBonusPercent(shownVipLevel));
 
         if (vipDecorBonusText != null)
-            vipDecorBonusText.text = "Dekor\n" + (vipLevel >= 3 ? "Acik" : "VIP 3");
+            vipDecorBonusText.text = "VIP " + shownVipLevel + "\n" + (shownVipLevel >= 3 ? "Dekor acik" : "Dekor VIP 3");
 
         if (vipUpgradeButtonText != null)
         {
