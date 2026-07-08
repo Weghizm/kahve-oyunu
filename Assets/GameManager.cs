@@ -197,6 +197,7 @@ public class GameManager : MonoBehaviour
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
     private readonly List<Image> vipLevelCardImages = new List<Image>();
     private readonly List<Image> vipLevelLockImages = new List<Image>();
+    private readonly List<Image> vipLevelSelectImages = new List<Image>();
     private TMP_Text passiveIncomePanelText;
     private GameObject coinInfoPopup;
     private GameObject offlinePanel;
@@ -3119,6 +3120,7 @@ public class GameManager : MonoBehaviour
         vipLevelCardTexts.Clear();
         vipLevelCardImages.Clear();
         vipLevelLockImages.Clear();
+        vipLevelSelectImages.Clear();
         for (int i = 1; i <= MaxVipLevel; i++)
         {
             float x = 76f + ((i - 1) * 151f);
@@ -3181,6 +3183,13 @@ public class GameManager : MonoBehaviour
             int selectedLevel = level;
             button.onClick.AddListener(() => SelectVipPreviewLevel(selectedLevel));
             button.transition = Selectable.Transition.None;
+        }
+
+        if (textOnly)
+        {
+            Image selectGlow = CreatePanelStrip(cardObject.transform, "SelectedGlow", new Vector2(0, -124), new Vector2(104, 10), new Color(1f, 0.78f, 0.18f, 0f));
+            selectGlow.raycastTarget = false;
+            vipLevelSelectImages.Add(selectGlow);
         }
         if (!textOnly)
         {
@@ -4447,6 +4456,13 @@ public class GameManager : MonoBehaviour
                 bool locked = vipLevel < cardLevel;
                 vipLevelLockImages[i].gameObject.SetActive(locked);
                 vipLevelLockImages[i].color = new Color(1f, 1f, 1f, locked ? 0.62f : 0f);
+            }
+
+            if (i < vipLevelSelectImages.Count)
+            {
+                bool selected = selectedVipPreviewLevel == cardLevel;
+                float alpha = selected ? 0.46f + (Mathf.PingPong(Time.time * 2.4f, 1f) * 0.26f) : 0f;
+                vipLevelSelectImages[i].color = new Color(1f, 0.78f, 0.18f, alpha);
             }
         }
 
