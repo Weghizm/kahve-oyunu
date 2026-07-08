@@ -1286,7 +1286,8 @@ public class GameManager : MonoBehaviour
         customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
         customerStatsText.gameObject.SetActive(false);
         gemText = CreateResourceBar(gameFrame, "GemBar", GetGemIconSprite(), new Vector2(15, 502), new Vector2(175, 42), new Color(0.04f, 0.15f, 0.22f, 0.93f), new Color(0.22f, 0.81f, 1f, 1f), 24, 1.18f);
-        chestText = CreateText(gameFrame, "ChestText", "Sandik: 0", new Vector2(-760, 456), new Vector2(260, 38), 20);
+        chestText = CreateText(gameFrame, "ChestText", "", new Vector2(-760, 456), new Vector2(260, 38), 20);
+        chestText.gameObject.SetActive(false);
         xpText = CreateXpBar(gameFrame, new Vector2(220, 502), new Vector2(175, 42));
         vipHudText = CreateButton(gameFrame, "VipHudButton", "VIP 0", new Vector2(430, 502), new Vector2(126, 42), OpenVipPanel, new Color(0.72f, 0.54f, 0.18f), 20);
 
@@ -3698,7 +3699,7 @@ public class GameManager : MonoBehaviour
             vipHudText.text = "VIP " + vipLevel;
 
         if (chestText != null)
-            chestText.text = "Sandik: " + chests;
+            chestText.gameObject.SetActive(false);
 
         if (xpText != null)
         {
