@@ -176,6 +176,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text masterBaristaButtonText;
     private Image taskNotifyDot;
     private Image dailyTasksNotifyDot;
+    private Image vipNotifyDot;
     private TMP_Text offlineText;
     private TMP_Text adBoostButtonText;
     private TMP_Text offerButtonText;
@@ -188,6 +189,11 @@ public class GameManager : MonoBehaviour
     private TMP_Text vipPanelText;
     private TMP_Text vipLevelSummaryText;
     private TMP_Text vipUpgradeButtonText;
+    private TMP_Text vipCoinBonusText;
+    private TMP_Text vipXpBonusText;
+    private TMP_Text vipCoffeeBonusText;
+    private TMP_Text vipPassiveBonusText;
+    private TMP_Text vipDecorBonusText;
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
     private readonly List<Image> vipLevelCardImages = new List<Image>();
     private readonly List<Image> vipLevelLockImages = new List<Image>();
@@ -1062,22 +1068,67 @@ public class GameManager : MonoBehaviour
 
     private float GetVipCoinMultiplier()
     {
-        return 1f + (vipLevel * 0.04f);
+        return GetVipCoinMultiplier(vipLevel);
+    }
+
+    private float GetVipCoinMultiplier(int level)
+    {
+        return 1f + (Mathf.Clamp(level, 0, MaxVipLevel) * 0.04f);
     }
 
     private float GetVipXpMultiplier()
     {
-        return 1f + (vipLevel * 0.03f);
+        return GetVipXpMultiplier(vipLevel);
+    }
+
+    private float GetVipXpMultiplier(int level)
+    {
+        return 1f + (Mathf.Clamp(level, 0, MaxVipLevel) * 0.03f);
     }
 
     private float GetVipPassiveIncomeMultiplier()
     {
-        return 1f + (vipLevel * 0.05f);
+        return GetVipPassiveIncomeMultiplier(vipLevel);
+    }
+
+    private float GetVipPassiveIncomeMultiplier(int level)
+    {
+        return 1f + (Mathf.Clamp(level, 0, MaxVipLevel) * 0.05f);
     }
 
     private float GetVipCustomerPatienceMultiplier()
     {
-        return 1f + (vipLevel * 0.04f);
+        return GetVipCustomerPatienceMultiplier(vipLevel);
+    }
+
+    private float GetVipCustomerPatienceMultiplier(int level)
+    {
+        return 1f + (Mathf.Clamp(level, 0, MaxVipLevel) * 0.04f);
+    }
+
+    private int GetVipCoinBonusPercent(int level)
+    {
+        return Mathf.RoundToInt((GetVipCoinMultiplier(level) - 1f) * 100f);
+    }
+
+    private int GetVipXpBonusPercent(int level)
+    {
+        return Mathf.RoundToInt((GetVipXpMultiplier(level) - 1f) * 100f);
+    }
+
+    private int GetVipPassiveBonusPercent(int level)
+    {
+        return Mathf.RoundToInt((GetVipPassiveIncomeMultiplier(level) - 1f) * 100f);
+    }
+
+    private int GetVipPatienceBonusPercent(int level)
+    {
+        return Mathf.RoundToInt((GetVipCustomerPatienceMultiplier(level) - 1f) * 100f);
+    }
+
+    private bool CanUpgradeVipLevel()
+    {
+        return vipLevel < MaxVipLevel && gems >= GetVipUpgradeCost();
     }
 
     private int GetVipUpgradeCost()
@@ -1139,29 +1190,37 @@ public class GameManager : MonoBehaviour
 
     private string GetVipLevelBonusLine(int level)
     {
-        switch (level)
+        if (level <= 0)
         {
-            case 1: return "+4% coin\n+3% XP\n+5% pasif";
-            case 2: return "+8% coin\n+6% XP\n+8% bekleme";
-            case 3: return "+12% coin\n+9% XP\nAltin dekor";
-            case 4: return "+16% coin\n+12% XP\n+20% pasif";
-            case 5: return "+20% coin\n+15% XP\nElmas kit";
-            default: return "Bonus yok";
+            return "Bonus yok";
         }
+
+        return "+" + GetVipCoinBonusPercent(level) + "% coin"
+            + "\n+" + GetVipXpBonusPercent(level) + "% XP"
+            + "\n+" + GetVipPassiveBonusPercent(level) + "% pasif";
     }
 
     private string GetVipPanelText()
     {
         if (vipLevel <= 0)
         {
-            return "VIP yok\nIlk paketi acarak\nbonuslari baslat.";
+            return "VIP yok"
+                + "\nSonraki: " + GetVipKitName(1)
+                + "\nUcret: " + GetVipUpgradeCost() + " Gem";
+        }
+
+        if (vipLevel >= MaxVipLevel)
+        {
+            return "Aktif Paket\n"
+                + GetVipKitName(vipLevel)
+                + "\nCoin +" + GetVipCoinBonusPercent(vipLevel) + "%  XP +" + GetVipXpBonusPercent(vipLevel) + "%"
+                + "\nVIP MAX";
         }
 
         return "Aktif Paket\n"
             + GetVipKitName(vipLevel)
-            + "\nCoin +" + Mathf.RoundToInt((GetVipCoinMultiplier() - 1f) * 100f) + "%"
-            + "  XP +" + Mathf.RoundToInt((GetVipXpMultiplier() - 1f) * 100f) + "%"
-            + "\nPasif +" + Mathf.RoundToInt((GetVipPassiveIncomeMultiplier() - 1f) * 100f) + "%";
+            + "\nCoin +" + GetVipCoinBonusPercent(vipLevel) + "%  XP +" + GetVipXpBonusPercent(vipLevel) + "%"
+            + "\nSonraki: " + GetVipKitName(vipLevel + 1) + " / " + GetVipUpgradeCost() + " Gem";
     }
 
     private string GetVipCardText(int level)
@@ -2358,6 +2417,10 @@ public class GameManager : MonoBehaviour
         vipHudLevelText.fontStyle = FontStyles.Bold;
         vipHudLevelText.raycastTarget = false;
         vipHudLevelText.gameObject.SetActive(false);
+
+        vipNotifyDot = CreateNotifyDot(buttonTransform, new Vector2(44, 48));
+        RectTransform notifyRect = vipNotifyDot.GetComponent<RectTransform>();
+        notifyRect.sizeDelta = new Vector2(34, 44);
     }
 
     public void OpenDecorPanel()
@@ -3047,11 +3110,11 @@ public class GameManager : MonoBehaviour
             vipLevelCardTexts.Add(CreateVipLevelCard(vipPanel.transform, i, new Vector2(x, 18), true));
         }
 
-        CreateVipBonusPill(vipPanel.transform, "Coin", "+20%", new Vector2(-420, -212), new Color(1f, 0.72f, 0.14f, 1f));
-        CreateVipBonusPill(vipPanel.transform, "XP", "+15%", new Vector2(-200, -212), new Color(0.35f, 0.55f, 1f, 1f));
-        CreateVipBonusPill(vipPanel.transform, "Kahve", "+20%", new Vector2(22, -212), new Color(0.28f, 0.70f, 0.42f, 1f));
-        CreateVipBonusPill(vipPanel.transform, "Pasif", "+20%", new Vector2(244, -212), new Color(0.92f, 0.24f, 0.32f, 1f));
-        CreateVipBonusPill(vipPanel.transform, "Dekor", "Kit", new Vector2(466, -212), new Color(0.18f, 0.74f, 0.82f, 1f));
+        vipCoinBonusText = CreateVipBonusPill(vipPanel.transform, "Coin", "+0%", new Vector2(-420, -212), new Color(1f, 0.72f, 0.14f, 1f));
+        vipXpBonusText = CreateVipBonusPill(vipPanel.transform, "XP", "+0%", new Vector2(-200, -212), new Color(0.35f, 0.55f, 1f, 1f));
+        vipCoffeeBonusText = CreateVipBonusPill(vipPanel.transform, "Musteri", "+0%", new Vector2(22, -212), new Color(0.28f, 0.70f, 0.42f, 1f));
+        vipPassiveBonusText = CreateVipBonusPill(vipPanel.transform, "Pasif", "+0%", new Vector2(244, -212), new Color(0.92f, 0.24f, 0.32f, 1f));
+        vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "Dekor", "Kilitli", new Vector2(466, -212), new Color(0.18f, 0.74f, 0.82f, 1f));
 
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
         CreateInvisibleButton(vipPanel.transform, "VipCloseButton", new Vector2(592, 309), new Vector2(92, 92), CloseVipPanel);
@@ -3137,7 +3200,7 @@ public class GameManager : MonoBehaviour
         return text;
     }
 
-    private void CreateVipBonusPill(Transform parent, string title, string value, Vector2 position, Color iconColor)
+    private TMP_Text CreateVipBonusPill(Transform parent, string title, string value, Vector2 position, Color iconColor)
     {
         GameObject pill = new GameObject("VipBonus" + title, typeof(RectTransform));
         pill.transform.SetParent(parent, false);
@@ -3158,6 +3221,7 @@ public class GameManager : MonoBehaviour
         text.enableAutoSizing = true;
         text.fontSizeMin = 12;
         text.fontSizeMax = 15;
+        return text;
     }
 
     private Image CreatePanelStrip(Transform parent, string name, Vector2 position, Vector2 size, Color color)
@@ -4059,7 +4123,24 @@ public class GameManager : MonoBehaviour
             vipHudText.text = "";
 
         if (vipHudLevelText != null)
-            vipHudLevelText.gameObject.SetActive(false);
+        {
+            bool showVipLevel = vipLevel > 0;
+            vipHudLevelText.gameObject.SetActive(showVipLevel);
+            if (showVipLevel)
+                vipHudLevelText.text = vipLevel.ToString();
+        }
+
+        if (vipNotifyDot != null)
+        {
+            bool shouldShowVipDot = CanUpgradeVipLevel();
+            vipNotifyDot.gameObject.SetActive(shouldShowVipDot);
+            if (shouldShowVipDot)
+            {
+                Color dotColor = Color.white;
+                dotColor.a = 0.72f + (Mathf.PingPong(Time.time * 3f, 1f) * 0.28f);
+                vipNotifyDot.color = dotColor;
+            }
+        }
 
         if (chestText != null)
             chestText.gameObject.SetActive(false);
@@ -4290,12 +4371,27 @@ public class GameManager : MonoBehaviour
         if (vipLevelSummaryText != null)
             vipLevelSummaryText.text = "VIP " + vipLevel + " / " + MaxVipLevel;
 
+        if (vipCoinBonusText != null)
+            vipCoinBonusText.text = "Coin\n+" + GetVipCoinBonusPercent(vipLevel) + "%";
+
+        if (vipXpBonusText != null)
+            vipXpBonusText.text = "XP\n+" + GetVipXpBonusPercent(vipLevel) + "%";
+
+        if (vipCoffeeBonusText != null)
+            vipCoffeeBonusText.text = "Musteri\n+" + GetVipPatienceBonusPercent(vipLevel) + "%";
+
+        if (vipPassiveBonusText != null)
+            vipPassiveBonusText.text = "Pasif\n+" + GetVipPassiveBonusPercent(vipLevel) + "%";
+
+        if (vipDecorBonusText != null)
+            vipDecorBonusText.text = "Dekor\n" + (vipLevel >= 3 ? "Acik" : "VIP 3");
+
         if (vipUpgradeButtonText != null)
         {
             Button vipButton = vipUpgradeButtonText.GetComponentInParent<Button>();
             bool maxed = vipLevel >= MaxVipLevel;
             int cost = GetVipUpgradeCost();
-            vipUpgradeButtonText.text = maxed ? "VIP MAX" : "VIP " + (vipLevel + 1) + " - " + cost + " Gem";
+            vipUpgradeButtonText.text = maxed ? "VIP MAX" : (gems >= cost ? "VIP " + (vipLevel + 1) + " - " + cost + " Gem" : cost + " Gem Gerekir");
             if (vipButton != null)
                 vipButton.interactable = !maxed && gems >= cost;
         }
