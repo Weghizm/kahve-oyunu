@@ -277,6 +277,7 @@ public class GameManager : MonoBehaviour
     private Sprite vipLockIconSprite;
     private Sprite warmWoodCafeSceneSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
+    private readonly List<GameObject> cafeObjectHotspots = new List<GameObject>();
     private readonly List<GameObject> cafePrototypeVisuals = new List<GameObject>();
 
     private float coins = 0;
@@ -1411,6 +1412,7 @@ public class GameManager : MonoBehaviour
 
         CreateCafeScene(gameFrame);
         CreateBackgroundTapArea(gameFrame);
+        CreateCafeObjectHotspots(gameFrame);
 
         roomNameText = CreateText(gameFrame, "RoomNameText", "", new Vector2(0, -330), new Vector2(520, 42), 24);
         roomNameText.gameObject.SetActive(false);
@@ -1467,12 +1469,15 @@ public class GameManager : MonoBehaviour
 
         coffeeUpgradeButtonText = CreateButton(gameFrame, "CoffeeUpgradeButton", "Kah", new Vector2(-165, -475), new Vector2(126, 68), OpenCoffeePanel, new Color(0.86f, 0.56f, 0.20f), 23);
         coffeeUpgradeButton = coffeeUpgradeButtonText.GetComponentInParent<Button>();
+        HideLegacyUpgradeButton(coffeeUpgradeButtonText);
 
         machineUpgradeButtonText = CreateButton(gameFrame, "MachineUpgradeButton", "Mak", new Vector2(-315, -475), new Vector2(126, 68), OpenMachinePanel, new Color(0.20f, 0.55f, 0.48f), 23);
         machineUpgradeButton = machineUpgradeButtonText.GetComponentInParent<Button>();
+        HideLegacyUpgradeButton(machineUpgradeButtonText);
 
         baristaUpgradeButtonText = CreateButton(gameFrame, "BaristaUpgradeButton", "Bar", new Vector2(165, -475), new Vector2(126, 68), OpenBaristaPanel, new Color(0.54f, 0.32f, 0.72f), 23);
         baristaUpgradeButton = baristaUpgradeButtonText.GetComponentInParent<Button>();
+        HideLegacyUpgradeButton(baristaUpgradeButtonText);
     }
 
     private RectTransform CreateSafeGameFrame(Transform canvasTransform)
@@ -3629,6 +3634,45 @@ public class GameManager : MonoBehaviour
         button.onClick.AddListener(SellCoffeeFromEmptySpace);
     }
 
+    private void CreateCafeObjectHotspots(Transform parent)
+    {
+        cafeObjectHotspots.Clear();
+        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeePackagesHotspot", new Vector2(565, 385), new Vector2(300, 170), OpenCoffeePanel));
+        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeeMachineHotspot", new Vector2(-430, 185), new Vector2(330, 250), OpenMachinePanel));
+        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "BaristaCounterHotspot", new Vector2(330, 150), new Vector2(300, 220), OpenBaristaPanel));
+    }
+
+    private GameObject CreateCafeObjectHotspot(Transform parent, string objectName, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action)
+    {
+        GameObject hotspot = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+        hotspot.transform.SetParent(parent, false);
+
+        RectTransform rect = hotspot.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = hotspot.GetComponent<Image>();
+        image.color = new Color(1f, 1f, 1f, 0.001f);
+
+        Button button = hotspot.GetComponent<Button>();
+        button.targetGraphic = image;
+        button.transition = Selectable.Transition.None;
+        button.onClick.AddListener(action);
+        return hotspot;
+    }
+
+    private void HideLegacyUpgradeButton(TMP_Text buttonText)
+    {
+        if (buttonText == null || buttonText.transform.parent == null)
+        {
+            return;
+        }
+
+        buttonText.transform.parent.gameObject.SetActive(false);
+    }
+
     private void CreateCafeScene(Transform parent)
     {
         GameObject sceneRoot = new GameObject("CafeSceneRoot", typeof(RectTransform));
@@ -5405,6 +5449,14 @@ public class GameManager : MonoBehaviour
             if (cafePrototypeVisuals[i] != null)
             {
                 cafePrototypeVisuals[i].SetActive(!showStartingRoom || !useCafeSceneImage);
+            }
+        }
+
+        for (int i = 0; i < cafeObjectHotspots.Count; i++)
+        {
+            if (cafeObjectHotspots[i] != null)
+            {
+                cafeObjectHotspots[i].SetActive(showStartingRoom && unlocked);
             }
         }
 
