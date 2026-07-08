@@ -1282,22 +1282,22 @@ public class GameManager : MonoBehaviour
 
         roomNameText = CreateText(gameFrame, "RoomNameText", "", new Vector2(0, -330), new Vector2(520, 42), 24);
         roomNameText.gameObject.SetActive(false);
-        CreateButton(gameFrame, "PreviousRoomButton", "<", new Vector2(-805, -95), new Vector2(54, 76), PreviousRoom, new Color(0.25f, 0.32f, 0.38f), 28);
-        CreateButton(gameFrame, "NextRoomButton", ">", new Vector2(805, -95), new Vector2(54, 76), NextRoom, new Color(0.25f, 0.32f, 0.38f), 28);
+        CreateButton(gameFrame, "PreviousRoomButton", "<", new Vector2(-790, -95), new Vector2(66, 88), PreviousRoom, new Color(0.25f, 0.32f, 0.38f), 34);
+        CreateButton(gameFrame, "NextRoomButton", ">", new Vector2(790, -95), new Vector2(66, 88), NextRoom, new Color(0.25f, 0.32f, 0.38f), 34);
         roomUnlockButtonText = CreateButton(gameFrame, "RoomUnlockButton", "", new Vector2(0, -382), new Vector2(380, 46), UnlockCurrentRoom, new Color(0.22f, 0.48f, 0.40f), 19);
 
-        coinText = CreateResourceBar(gameFrame, "CoinBar", GetCoinIconSprite(), new Vector2(-190, 502), new Vector2(175, 42), new Color(0.28f, 0.15f, 0.05f, 0.93f), new Color(0.96f, 0.69f, 0.19f, 1f), 24, 1f);
-        tapPowerText = CreateText(gameFrame, "TapPowerText", "Kahve Ucreti: 1", new Vector2(0, 470), new Vector2(420, 32), 18);
-        autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Pasif Gelir: 0", new Vector2(0, 442), new Vector2(420, 32), 18);
+        coinText = CreateResourceBar(gameFrame, "CoinBar", GetCoinIconSprite(), new Vector2(-245, 500), new Vector2(220, 52), new Color(0.28f, 0.15f, 0.05f, 0.93f), new Color(0.96f, 0.69f, 0.19f, 1f), 29, 1f);
+        tapPowerText = CreateText(gameFrame, "TapPowerText", "Kahve Ucreti: 1", new Vector2(0, 463), new Vector2(480, 36), 22);
+        autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Pasif Gelir: 0", new Vector2(0, 431), new Vector2(480, 36), 22);
         MakeTextClickable(autoIncomeText, OpenPassiveIncomePanel);
         activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
         customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
         customerStatsText.gameObject.SetActive(false);
-        gemText = CreateResourceBar(gameFrame, "GemBar", GetGemIconSprite(), new Vector2(15, 502), new Vector2(175, 42), new Color(0.04f, 0.15f, 0.22f, 0.93f), new Color(0.22f, 0.81f, 1f, 1f), 24, 1.18f);
+        gemText = CreateResourceBar(gameFrame, "GemBar", GetGemIconSprite(), new Vector2(0, 500), new Vector2(220, 52), new Color(0.04f, 0.15f, 0.22f, 0.93f), new Color(0.22f, 0.81f, 1f, 1f), 29, 1.18f);
         chestText = CreateText(gameFrame, "ChestText", "", new Vector2(-760, 456), new Vector2(260, 38), 20);
         chestText.gameObject.SetActive(false);
-        xpText = CreateXpBar(gameFrame, new Vector2(220, 502), new Vector2(175, 42));
-        vipHudText = CreateButton(gameFrame, "VipHudButton", "", new Vector2(-890, -165), new Vector2(92, 92), OpenVipPanel, new Color(1f, 1f, 1f, 0f), 18);
+        xpText = CreateXpBar(gameFrame, new Vector2(245, 500), new Vector2(220, 52));
+        vipHudText = CreateButton(gameFrame, "VipHudButton", "", new Vector2(-890, -205), new Vector2(112, 112), OpenVipPanel, new Color(1f, 1f, 1f, 0f), 18);
         ConfigureVipHudButton(vipHudText);
 
         CreateOfflinePanel(canvas.transform);
@@ -1317,29 +1317,29 @@ public class GameManager : MonoBehaviour
         CreateTimedOfferPanel(canvas.transform);
         CreateCustomerButton(gameFrame);
 
-        CreateButton(gameFrame, "SellCoffeeButton", "SAT", new Vector2(0, -482), new Vector2(124, 56), SellCoffee, new Color(0.43f, 0.24f, 0.14f), 23);
-        adBoostButtonText = CreateButton(gameFrame, "AdBoostButton", "2x", new Vector2(850, 250), new Vector2(78, 78), WatchAdForBoost, new Color(0.18f, 0.38f, 0.82f), 20);
-        CreateButton(gameFrame, "OpenTestPanelButton", "T", new Vector2(850, -420), new Vector2(70, 64), OpenTestPanel, new Color(0.20f, 0.20f, 0.20f), 22);
-        TMP_Text tasksButtonText = CreateButton(gameFrame, "TasksButton", "", new Vector2(-890, 285), new Vector2(82, 78), OpenTaskPanel, Color.white, 24);
+        CreateButton(gameFrame, "SellCoffeeButton", "SAT", new Vector2(0, -475), new Vector2(150, 68), SellCoffee, new Color(0.43f, 0.24f, 0.14f), 28);
+        adBoostButtonText = CreateButton(gameFrame, "AdBoostButton", "2x", new Vector2(850, 250), new Vector2(94, 94), WatchAdForBoost, new Color(0.18f, 0.38f, 0.82f), 24);
+        CreateButton(gameFrame, "OpenTestPanelButton", "T", new Vector2(850, -415), new Vector2(82, 74), OpenTestPanel, new Color(0.20f, 0.20f, 0.20f), 26);
+        TMP_Text tasksButtonText = CreateButton(gameFrame, "TasksButton", "", new Vector2(-890, 310), new Vector2(112, 106), OpenTaskPanel, Color.white, 24);
         ApplyButtonSprite(tasksButtonText, GetTasksMenuIconSprite());
-        taskNotifyDot = CreateNotifyDot(tasksButtonText.transform.parent, new Vector2(34, 31));
-        TMP_Text dailyTasksButtonText = CreateButton(gameFrame, "DailyTasksButton", "", new Vector2(-890, 195), new Vector2(82, 78), OpenDailyTasksPanel, Color.white, 24);
+        taskNotifyDot = CreateNotifyDot(tasksButtonText.transform.parent, new Vector2(46, 43));
+        TMP_Text dailyTasksButtonText = CreateButton(gameFrame, "DailyTasksButton", "", new Vector2(-890, 185), new Vector2(112, 106), OpenDailyTasksPanel, Color.white, 24);
         ApplyButtonSprite(dailyTasksButtonText, GetDailyTasksMenuIconSprite());
-        dailyTasksNotifyDot = CreateNotifyDot(dailyTasksButtonText.transform.parent, new Vector2(34, 31));
-        TMP_Text dailyRewardMenuButtonText = CreateButton(gameFrame, "DailyRewardButton", "", new Vector2(-890, 105), new Vector2(82, 78), OpenDailyRewardPanel, Color.white, 24);
+        dailyTasksNotifyDot = CreateNotifyDot(dailyTasksButtonText.transform.parent, new Vector2(46, 43));
+        TMP_Text dailyRewardMenuButtonText = CreateButton(gameFrame, "DailyRewardButton", "", new Vector2(-890, 60), new Vector2(112, 106), OpenDailyRewardPanel, Color.white, 24);
         ApplyButtonSprite(dailyRewardMenuButtonText, GetDailyRewardMenuIconSprite());
-        TMP_Text chestsButtonText = CreateButton(gameFrame, "ChestsButton", "", new Vector2(-890, 15), new Vector2(82, 78), OpenChestPanel, Color.white, 24);
+        TMP_Text chestsButtonText = CreateButton(gameFrame, "ChestsButton", "", new Vector2(-890, -65), new Vector2(112, 106), OpenChestPanel, Color.white, 24);
         ApplyButtonSprite(chestsButtonText, GetChestButtonSprite());
-        TMP_Text decorButtonText = CreateButton(gameFrame, "DecorButton", "", new Vector2(-890, -75), new Vector2(82, 78), OpenDecorPanel, Color.white, 19);
+        TMP_Text decorButtonText = CreateButton(gameFrame, "DecorButton", "", new Vector2(-890, -190), new Vector2(112, 106), OpenDecorPanel, Color.white, 19);
         ApplyButtonSprite(decorButtonText, GetDecorMenuIconSprite());
 
-        coffeeUpgradeButtonText = CreateButton(gameFrame, "CoffeeUpgradeButton", "Kah", new Vector2(-150, -482), new Vector2(104, 56), OpenCoffeePanel, new Color(0.86f, 0.56f, 0.20f), 19);
+        coffeeUpgradeButtonText = CreateButton(gameFrame, "CoffeeUpgradeButton", "Kah", new Vector2(-165, -475), new Vector2(126, 68), OpenCoffeePanel, new Color(0.86f, 0.56f, 0.20f), 23);
         coffeeUpgradeButton = coffeeUpgradeButtonText.GetComponentInParent<Button>();
 
-        machineUpgradeButtonText = CreateButton(gameFrame, "MachineUpgradeButton", "Mak", new Vector2(-275, -482), new Vector2(104, 56), OpenMachinePanel, new Color(0.20f, 0.55f, 0.48f), 19);
+        machineUpgradeButtonText = CreateButton(gameFrame, "MachineUpgradeButton", "Mak", new Vector2(-315, -475), new Vector2(126, 68), OpenMachinePanel, new Color(0.20f, 0.55f, 0.48f), 23);
         machineUpgradeButton = machineUpgradeButtonText.GetComponentInParent<Button>();
 
-        baristaUpgradeButtonText = CreateButton(gameFrame, "BaristaUpgradeButton", "Bar", new Vector2(150, -482), new Vector2(104, 56), OpenBaristaPanel, new Color(0.54f, 0.32f, 0.72f), 19);
+        baristaUpgradeButtonText = CreateButton(gameFrame, "BaristaUpgradeButton", "Bar", new Vector2(165, -475), new Vector2(126, 68), OpenBaristaPanel, new Color(0.54f, 0.32f, 0.72f), 23);
         baristaUpgradeButton = baristaUpgradeButtonText.GetComponentInParent<Button>();
     }
 
@@ -3513,7 +3513,7 @@ public class GameManager : MonoBehaviour
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = position;
-        rect.sizeDelta = new Vector2(32, 42);
+        rect.sizeDelta = new Vector2(42, 54);
 
         Image image = dotObject.GetComponent<Image>();
         image.sprite = GetNotifyExclamationSprite();
