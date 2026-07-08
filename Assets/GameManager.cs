@@ -194,6 +194,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text vipCoffeeBonusText;
     private TMP_Text vipPassiveBonusText;
     private TMP_Text vipDecorBonusText;
+    private Image vipUpgradeGemIconImage;
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
     private readonly List<Image> vipLevelCardImages = new List<Image>();
     private readonly List<Image> vipLevelLockImages = new List<Image>();
@@ -474,7 +475,7 @@ public class GameManager : MonoBehaviour
 
         if (roll < 10)
         {
-            currentCustomerName = "VIP Musteri";
+            currentCustomerName = "VIP Müşteri";
             currentCustomerCoinMultiplier = VipCustomerCoinMultiplier;
             currentCustomerXpReward = VipCustomerXpReward;
             currentCustomerColor = new Color(0.78f, 0.50f, 0.08f);
@@ -521,7 +522,7 @@ public class GameManager : MonoBehaviour
 
     public void SellCoffeeToCustomer()
     {
-        bool soldToVip = currentCustomerName == "VIP Musteri";
+        bool soldToVip = currentCustomerName == "VIP Müşteri";
         coins += GetCurrentCustomerCoinReward();
         totalCoffeeSold++;
         customerSales++;
@@ -1166,11 +1167,11 @@ public class GameManager : MonoBehaviour
     {
         switch (level)
         {
-            case 1: return "Bronz Servis Kiti";
-            case 2: return "Gumus Kazanc Kiti";
-            case 3: return "Altin Dekor Kiti";
-            case 4: return "Premium Barista Kiti";
-            case 5: return "Elmas VIP Kiti";
+            case 1: return "Bronz VIP";
+            case 2: return "Gümüş VIP";
+            case 3: return "Altın VIP";
+            case 4: return "Platin VIP";
+            case 5: return "Elmas VIP";
             default: return "VIP Yok";
         }
     }
@@ -1179,11 +1180,11 @@ public class GameManager : MonoBehaviour
     {
         switch (level)
         {
-            case 1: return "BRONZ";
-            case 2: return "GUMUS";
-            case 3: return "ALTIN";
-            case 4: return "PREMIUM";
-            case 5: return "ELMAS";
+            case 1: return "Bronz VIP";
+            case 2: return "Gümüş VIP";
+            case 3: return "Altın VIP";
+            case 4: return "Platin VIP";
+            case 5: return "Elmas VIP";
             default: return "BASLANGIC";
         }
     }
@@ -1224,7 +1225,7 @@ public class GameManager : MonoBehaviour
         {
             return "VIP yok"
                 + "\nSonraki: " + GetVipKitName(1)
-                + "\nUcret: " + GetVipUpgradeCost() + " Gem";
+                + "\nÜcret: " + GetVipUpgradeCost() + " Elmas";
         }
 
         if (vipLevel >= MaxVipLevel)
@@ -1238,7 +1239,7 @@ public class GameManager : MonoBehaviour
         return "Aktif Paket\n"
             + GetVipKitName(vipLevel)
             + "\nCoin +" + GetVipCoinBonusPercent(vipLevel) + "%  XP +" + GetVipXpBonusPercent(vipLevel) + "%"
-            + "\nSonraki: " + GetVipKitName(vipLevel + 1) + " / " + GetVipUpgradeCost() + " Gem";
+            + "\nSonraki: " + GetVipKitName(vipLevel + 1) + " / " + GetVipUpgradeCost() + " Elmas";
     }
 
     private string GetVipCardText(int level)
@@ -1249,7 +1250,7 @@ public class GameManager : MonoBehaviour
             state = "AKTIF";
         }
 
-        return "VIP " + level
+        return GetVipTierName(level)
             + "\n" + state;
     }
 
@@ -1640,13 +1641,13 @@ public class GameManager : MonoBehaviour
         Image panelImage = dailyRewardPanel.GetComponent<Image>();
         panelImage.color = new Color(1f, 0.91f, 0.84f, 0.98f);
 
-        TMP_Text title = CreateText(dailyRewardPanel.transform, "DailyRewardTitle", "Gunluk Giris Odulu", new Vector2(0, 270), new Vector2(820, 70), 42);
+        TMP_Text title = CreateText(dailyRewardPanel.transform, "DailyRewardTitle", "Günlük Giriş Ödülü", new Vector2(0, 270), new Vector2(820, 70), 42);
         title.color = Color.black;
 
         dailyRewardPanelText = CreateText(dailyRewardPanel.transform, "DailyRewardText", "", new Vector2(0, 65), new Vector2(790, 330), 28);
         dailyRewardPanelText.color = Color.black;
 
-        dailyRewardButtonText = CreateButton(dailyRewardPanel.transform, "DailyRewardClaimButton", "Odulu Al", new Vector2(-190, -225), new Vector2(360, 85), ClaimDailyReward, new Color(0.84f, 0.38f, 0.22f), 32);
+        dailyRewardButtonText = CreateButton(dailyRewardPanel.transform, "DailyRewardClaimButton", "Ödülü Al", new Vector2(-190, -225), new Vector2(360, 85), ClaimDailyReward, new Color(0.84f, 0.38f, 0.22f), 32);
         CreateButton(dailyRewardPanel.transform, "DailyRewardCloseButton", "Kapat", new Vector2(230, -225), new Vector2(300, 85), CloseDailyRewardPanel, new Color(0.20f, 0.20f, 0.20f), 30);
 
         dailyRewardPanel.transform.SetAsLastSibling();
@@ -1690,8 +1691,8 @@ public class GameManager : MonoBehaviour
         AddItemData("paint_can_black_001", "Siyah Boya Kutusu", ItemCategory.Material, ItemRarity.Rare, new Color(0.08f, 0.08f, 0.10f));
         AddItemData("paint_can_turquoise_001", "Turkuaz Boya Kutusu", ItemCategory.Material, ItemRarity.Rare, new Color(0.10f, 0.78f, 0.76f));
 
-        AddItemData("paint_can_gold_001", "Altin Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(1.00f, 0.72f, 0.12f));
-        AddItemData("paint_can_silver_001", "Gumus Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.78f, 0.82f, 0.86f));
+        AddItemData("paint_can_gold_001", "Altın Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(1.00f, 0.72f, 0.12f));
+        AddItemData("paint_can_silver_001", "Gümüş Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.78f, 0.82f, 0.86f));
         AddItemData("paint_can_neon_blue_001", "Neon Mavi Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.08f, 0.38f, 1.00f));
         AddItemData("paint_can_pearl_white_001", "Inci Beyazi Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.95f, 0.92f, 0.98f));
         AddItemData("paint_can_lavender_001", "Lavanta Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.84f, 0.68f, 1.00f));
@@ -1867,13 +1868,13 @@ public class GameManager : MonoBehaviour
         if (roll < 45)
         {
             gems += 1;
-            lastChestRewardText = "Siradan Sandiktan 1 Gem cikti.";
+            lastChestRewardText = "Sıradan Sandıktan 1 Elmas çıktı.";
             ShowChestReward(lastChestRewardText, GetGemIconSprite());
         }
         else if (roll < 70)
         {
             woodPieces += 1;
-            lastChestRewardText = "Siradan Sandiktan 1 Tahta cikti.";
+            lastChestRewardText = "Sıradan Sandıktan 1 Tahta çıktı.";
             ShowChestReward(lastChestRewardText, GetWoodIconSprite());
         }
         else
@@ -1887,13 +1888,13 @@ public class GameManager : MonoBehaviour
         if (roll < 35)
         {
             gems += 2;
-            lastChestRewardText = "Nadir Sandiktan 2 Gem cikti.";
+            lastChestRewardText = "Nadir Sandıktan 2 Elmas çıktı.";
             ShowChestReward(lastChestRewardText, GetGemIconSprite());
         }
         else if (roll < 55)
         {
             woodPieces += 2;
-            lastChestRewardText = "Nadir Sandiktan 2 Tahta cikti.";
+            lastChestRewardText = "Nadir Sandıktan 2 Tahta çıktı.";
             ShowChestReward(lastChestRewardText, GetWoodIconSprite());
         }
         else
@@ -1907,14 +1908,14 @@ public class GameManager : MonoBehaviour
         if (roll < 25)
         {
             gems += 5;
-            lastChestRewardText = "Ozel Sandiktan 5 Gem cikti.";
+            lastChestRewardText = "Özel Sandıktan 5 Elmas çıktı.";
             ShowChestReward(lastChestRewardText, GetGemIconSprite());
         }
         else if (roll < 45)
         {
             woodPieces += 3;
             gems += 2;
-            lastChestRewardText = "Ozel Sandiktan 3 Tahta + 2 Gem cikti.";
+            lastChestRewardText = "Özel Sandıktan 3 Tahta + 2 Elmas çıktı.";
             ShowChestReward(lastChestRewardText, GetWoodIconSprite());
         }
         else
@@ -2063,7 +2064,7 @@ public class GameManager : MonoBehaviour
         Image panelImage = chestRewardPanel.GetComponent<Image>();
         panelImage.color = new Color(0.98f, 0.94f, 0.84f, 0.99f);
 
-        chestRewardTitleText = CreateText(chestRewardPanel.transform, "ChestRewardTitle", "Sandik Odulu", new Vector2(0, 205), new Vector2(500, 60), 38);
+        chestRewardTitleText = CreateText(chestRewardPanel.transform, "ChestRewardTitle", "Sandık Ödülü", new Vector2(0, 205), new Vector2(500, 60), 38);
         chestRewardTitleText.color = Color.black;
 
         GameObject iconObject = new GameObject("ChestRewardIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -2824,7 +2825,7 @@ public class GameManager : MonoBehaviour
         contentRect.sizeDelta = new Vector2(480, 700);
 
         CreateButton(contentObject.transform, "TestCoinsButton", "TEST +10000 Coin", new Vector2(0, 300), new Vector2(440, 70), AddTestCoins, new Color(0.80f, 0.18f, 0.18f), 25);
-        CreateButton(contentObject.transform, "TestGemsButton", "TEST +1000 Gem", new Vector2(0, 215), new Vector2(440, 70), AddTestGems, new Color(0.10f, 0.58f, 0.78f), 25);
+        CreateButton(contentObject.transform, "TestGemsButton", "TEST +1000 Elmas", new Vector2(0, 215), new Vector2(440, 70), AddTestGems, new Color(0.10f, 0.58f, 0.78f), 25);
         CreateButton(contentObject.transform, "TestXpButton", "TEST +100 XP", new Vector2(0, 130), new Vector2(440, 70), AddTestXp, new Color(0.18f, 0.42f, 0.72f), 25);
         CreateButton(contentObject.transform, "TestChestButton", "TEST +1 Siradan Sandik", new Vector2(0, 45), new Vector2(440, 70), AddTestChest, new Color(0.64f, 0.36f, 0.16f), 25);
         CreateButton(contentObject.transform, "TestRareChestButton", "TEST +1 Nadir Sandik", new Vector2(0, -40), new Vector2(440, 70), AddTestRareChest, new Color(0.30f, 0.42f, 0.68f), 25);
@@ -2947,15 +2948,15 @@ public class GameManager : MonoBehaviour
         Image panelImage = dailyTasksPanel.GetComponent<Image>();
         panelImage.color = new Color(0.88f, 0.94f, 1f, 0.98f);
 
-        TMP_Text title = CreateText(dailyTasksPanel.transform, "DailyTasksTitle", "Gunluk Gorevler", new Vector2(0, 250), new Vector2(780, 70), 42);
+        TMP_Text title = CreateText(dailyTasksPanel.transform, "DailyTasksTitle", "Günlük Görevler", new Vector2(0, 250), new Vector2(780, 70), 42);
         title.color = Color.black;
 
         dailyTasksPanelText = CreateText(dailyTasksPanel.transform, "DailyTasksText", "", new Vector2(0, 140), new Vector2(780, 130), 27);
         dailyTasksPanelText.color = Color.black;
 
-        dailyTaskCoffeeButtonText = CreateButton(dailyTasksPanel.transform, "DailyCoffeeTaskButton", "Odulu Al", new Vector2(0, 35), new Vector2(720, 70), ClaimDailyCoffeeTask, new Color(0.28f, 0.45f, 0.78f), 24);
-        dailyTaskCustomerButtonText = CreateButton(dailyTasksPanel.transform, "DailyCustomerTaskButton", "Odulu Al", new Vector2(0, -55), new Vector2(720, 70), ClaimDailyCustomerTask, new Color(0.18f, 0.58f, 0.32f), 24);
-        dailyTaskChestButtonText = CreateButton(dailyTasksPanel.transform, "DailyChestTaskButton", "Odulu Al", new Vector2(0, -145), new Vector2(720, 70), ClaimDailyChestTask, new Color(0.64f, 0.36f, 0.16f), 24);
+        dailyTaskCoffeeButtonText = CreateButton(dailyTasksPanel.transform, "DailyCoffeeTaskButton", "Ödülü Al", new Vector2(0, 35), new Vector2(720, 70), ClaimDailyCoffeeTask, new Color(0.28f, 0.45f, 0.78f), 24);
+        dailyTaskCustomerButtonText = CreateButton(dailyTasksPanel.transform, "DailyCustomerTaskButton", "Ödülü Al", new Vector2(0, -55), new Vector2(720, 70), ClaimDailyCustomerTask, new Color(0.18f, 0.58f, 0.32f), 24);
+        dailyTaskChestButtonText = CreateButton(dailyTasksPanel.transform, "DailyChestTaskButton", "Ödülü Al", new Vector2(0, -145), new Vector2(720, 70), ClaimDailyChestTask, new Color(0.64f, 0.36f, 0.16f), 24);
 
         CreateButton(dailyTasksPanel.transform, "DailyTasksCloseButton", "Kapat", new Vector2(0, -255), new Vector2(300, 70), CloseDailyTasksPanel, new Color(0.20f, 0.20f, 0.20f), 28);
 
@@ -2983,7 +2984,7 @@ public class GameManager : MonoBehaviour
         taskPanelText = CreateText(taskPanel.transform, "TaskPanelText", "", new Vector2(0, 100), new Vector2(780, 210), 34);
         taskPanelText.color = Color.black;
 
-        taskRewardButtonText = CreateButton(taskPanel.transform, "TaskRewardButton", "Odulu Al", new Vector2(0, -105), new Vector2(420, 95), ClaimTaskReward, new Color(0.36f, 0.24f, 0.62f), 34);
+        taskRewardButtonText = CreateButton(taskPanel.transform, "TaskRewardButton", "Ödülü Al", new Vector2(0, -105), new Vector2(420, 95), ClaimTaskReward, new Color(0.36f, 0.24f, 0.62f), 34);
         CreateButton(taskPanel.transform, "TaskCloseButton", "Kapat", new Vector2(0, -210), new Vector2(300, 70), CloseTaskPanel, new Color(0.20f, 0.20f, 0.20f), 28);
 
         taskPanel.transform.SetAsLastSibling();
@@ -3147,10 +3148,32 @@ public class GameManager : MonoBehaviour
         vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "Dekor", "Kilitli", new Vector2(466, -212), new Color(0.18f, 0.74f, 0.82f, 1f));
 
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
+        vipUpgradeButtonText.rectTransform.anchoredPosition = new Vector2(-18f, 0f);
+        vipUpgradeButtonText.rectTransform.sizeDelta = new Vector2(260f, 62f);
+        vipUpgradeGemIconImage = CreateVipUpgradeGemIcon(vipUpgradeButtonText.transform.parent);
         CreateInvisibleButton(vipPanel.transform, "VipCloseButton", new Vector2(592, 309), new Vector2(92, 92), CloseVipPanel);
 
         vipPanel.transform.SetAsLastSibling();
         vipPanel.SetActive(false);
+    }
+
+    private Image CreateVipUpgradeGemIcon(Transform parent)
+    {
+        GameObject iconObject = new GameObject("VipUpgradeGemIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        iconObject.transform.SetParent(parent, false);
+
+        RectTransform rect = iconObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = new Vector2(98f, 0f);
+        rect.sizeDelta = new Vector2(42f, 42f);
+
+        Image image = iconObject.GetComponent<Image>();
+        image.sprite = GetGemIconSprite();
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+        return image;
     }
 
     private TMP_Text CreateVipLevelCard(Transform parent, int level, Vector2 position)
@@ -4203,7 +4226,7 @@ public class GameManager : MonoBehaviour
             coinText.text = FormatResourceAmount(Mathf.FloorToInt(coins));
 
         if (coinInfoPopupText != null)
-            coinInfoPopupText.text = "Kahve Ucreti: " + GetCurrentTapPower() + "\nPasif Gelir: " + GetCurrentPassiveIncome().ToString("0.#") + " / sn";
+            coinInfoPopupText.text = "Kahve Ücreti: " + GetCurrentTapPower() + "\nPasif Gelir: " + GetCurrentPassiveIncome().ToString("0.#") + " / sn";
 
         if (passiveIncomePanelText != null)
             passiveIncomePanelText.text = GetPassiveIncomeBreakdownText();
@@ -4292,7 +4315,7 @@ public class GameManager : MonoBehaviour
             Button rewardButton = taskRewardButtonText.GetComponentInParent<Button>();
             bool canClaim = CanClaimCurrentTask();
             bool hasTask = HasVisibleTask();
-            taskRewardButtonText.text = hasTask ? "Odulu Al" : "Gorev Yok";
+            taskRewardButtonText.text = hasTask ? "Ödülü Al" : "Görev Yok";
             if (rewardButton != null)
                 rewardButton.interactable = canClaim;
         }
@@ -4383,7 +4406,7 @@ public class GameManager : MonoBehaviour
 
         if (vipBadgeObject != null)
         {
-            bool showVipBadge = currentRoomIndex == 0 && customerVisibleTimer > 0 && currentCustomerName == "VIP Musteri";
+            bool showVipBadge = currentRoomIndex == 0 && customerVisibleTimer > 0 && currentCustomerName == "VIP Müşteri";
             vipBadgeObject.SetActive(showVipBadge);
             if (showVipBadge)
             {
@@ -4413,7 +4436,7 @@ public class GameManager : MonoBehaviour
         {
             Button dailyButton = dailyRewardButtonText.GetComponentInParent<Button>();
             bool canClaimDaily = CanClaimDailyReward();
-            dailyRewardButtonText.text = canClaimDaily ? "Odulu Al" : "Bekle";
+            dailyRewardButtonText.text = canClaimDaily ? "Ödülü Al" : "Bekle";
             if (dailyButton != null)
                 dailyButton.interactable = canClaimDaily;
         }
@@ -4470,28 +4493,31 @@ public class GameManager : MonoBehaviour
             vipLevelSummaryText.text = "VIP " + vipLevel + " / " + MaxVipLevel;
 
         int shownVipLevel = Mathf.Clamp(selectedVipPreviewLevel, 1, MaxVipLevel);
+        string shownVipName = GetVipTierName(shownVipLevel);
 
         if (vipCoinBonusText != null)
-            vipCoinBonusText.text = "VIP " + shownVipLevel + "\nCoin " + GetVipBonusValueText(GetVipCoinBonusPercent(shownVipLevel));
+            vipCoinBonusText.text = shownVipName + "\nCoin " + GetVipBonusValueText(GetVipCoinBonusPercent(shownVipLevel));
 
         if (vipXpBonusText != null)
-            vipXpBonusText.text = "VIP " + shownVipLevel + "\nXP " + GetVipBonusValueText(GetVipXpBonusPercent(shownVipLevel));
+            vipXpBonusText.text = shownVipName + "\nXP " + GetVipBonusValueText(GetVipXpBonusPercent(shownVipLevel));
 
         if (vipCoffeeBonusText != null)
-            vipCoffeeBonusText.text = "VIP " + shownVipLevel + "\nMusteri " + GetVipBonusValueText(GetVipPatienceBonusPercent(shownVipLevel));
+            vipCoffeeBonusText.text = shownVipName + "\nMusteri " + GetVipBonusValueText(GetVipPatienceBonusPercent(shownVipLevel));
 
         if (vipPassiveBonusText != null)
-            vipPassiveBonusText.text = "VIP " + shownVipLevel + "\nPasif " + GetVipBonusValueText(GetVipPassiveBonusPercent(shownVipLevel));
+            vipPassiveBonusText.text = shownVipName + "\nPasif " + GetVipBonusValueText(GetVipPassiveBonusPercent(shownVipLevel));
 
         if (vipDecorBonusText != null)
-            vipDecorBonusText.text = "VIP " + shownVipLevel + "\n" + (shownVipLevel >= 3 ? "Dekor acik" : "Dekor VIP 3");
+            vipDecorBonusText.text = shownVipName + "\n" + (shownVipLevel >= 3 ? "Dekor açık" : "Dekor Altın VIP");
 
         if (vipUpgradeButtonText != null)
         {
             Button vipButton = vipUpgradeButtonText.GetComponentInParent<Button>();
             bool maxed = vipLevel >= MaxVipLevel;
             int cost = GetVipUpgradeCost();
-            vipUpgradeButtonText.text = maxed ? "VIP MAX" : (gems >= cost ? "VIP " + (vipLevel + 1) + " - " + cost + " Gem" : cost + " Gem Gerekir");
+            vipUpgradeButtonText.text = maxed ? "VIP MAX" : (gems >= cost ? GetVipKitName(vipLevel + 1) + " - " + cost : cost + " Gerekir");
+            if (vipUpgradeGemIconImage != null)
+                vipUpgradeGemIconImage.gameObject.SetActive(!maxed);
             if (vipButton != null)
                 vipButton.interactable = !maxed && gems >= cost;
         }
@@ -4611,9 +4637,9 @@ public class GameManager : MonoBehaviour
         if (dailyTasksPanelText != null)
             dailyTasksPanelText.text = GetDailyTasksText();
 
-        UpdateDailyTaskButton(dailyTaskCoffeeButtonText, dailyCoffeeRewardClaimed, dailyCoffeeSold >= 20, "20 kahve sat", dailyCoffeeSold, 20, "Odul: 1 Gem");
-        UpdateDailyTaskButton(dailyTaskCustomerButtonText, dailyCustomerRewardClaimed, dailyCustomerSales >= 5, "5 musteriye satis yap", dailyCustomerSales, 5, "Odul: 1 Sandik");
-        UpdateDailyTaskButton(dailyTaskChestButtonText, dailyChestRewardClaimed, dailyChestsOpened >= 1, "1 sandik ac", dailyChestsOpened, 1, "Odul: 1 Boya Kutusu");
+        UpdateDailyTaskButton(dailyTaskCoffeeButtonText, dailyCoffeeRewardClaimed, dailyCoffeeSold >= 20, "20 kahve sat", dailyCoffeeSold, 20, "Ödül: 1 Elmas");
+        UpdateDailyTaskButton(dailyTaskCustomerButtonText, dailyCustomerRewardClaimed, dailyCustomerSales >= 5, "5 müşteriye satış yap", dailyCustomerSales, 5, "Ödül: 1 Sandık");
+        UpdateDailyTaskButton(dailyTaskChestButtonText, dailyChestRewardClaimed, dailyChestsOpened >= 1, "1 sandık aç", dailyChestsOpened, 1, "Ödül: 1 Boya Kutusu");
 
         if (dailyTasksPanel != null && dailyTasksPanel.activeSelf && lastOfflineCoins <= 0)
             dailyTasksPanel.transform.SetAsLastSibling();
@@ -5403,7 +5429,7 @@ public class GameManager : MonoBehaviour
 
         if (currentRoomIndex == 2)
         {
-            return vipRoomUnlocked ? "VIP Servis Odasi" : "Kilitli: VIP Servis Odasi";
+            return vipRoomUnlocked ? "VIP Servis Odası" : "Kilitli: VIP Servis Odası";
         }
 
         return "Baslangic Odasi";
@@ -5485,7 +5511,7 @@ public class GameManager : MonoBehaviour
         else
         {
             int shownProgress = Mathf.Min(progress, target);
-            buttonText.text = taskName + ": " + shownProgress + "/" + target + "\n" + rewardText + (ready ? " | Odulu Al" : "");
+            buttonText.text = taskName + ": " + shownProgress + "/" + target + "\n" + rewardText + (ready ? " | Ödülü Al" : "");
         }
 
         if (button != null)
@@ -5597,34 +5623,34 @@ public class GameManager : MonoBehaviour
         if (!firstTaskRewardClaimed)
         {
             int progress = Mathf.Min(totalCoffeeSold, 10);
-            return "Gorev\n10 kahve sat: " + progress + "/10\nOdul: 1 Gem + 25 XP";
+            return "Görev\n10 kahve sat: " + progress + "/10\nÖdül: 1 Elmas + 25 XP";
         }
 
         if (playerLevel >= 2 && !secondTaskRewardClaimed)
         {
             int progress = Mathf.Min(GetTotalMachineLevel(), 1);
-            return "Gorev\nHerhangi 1 Kahve Makinesi al: " + progress + "/1\nOdul: 2 Gem + 50 XP";
+            return "Görev\nHerhangi 1 Kahve Makinesi al: " + progress + "/1\nÖdül: 2 Elmas + 50 XP";
         }
 
         if (playerLevel >= 3 && !thirdTaskRewardClaimed)
         {
             int progress = Mathf.Min(customerSales, 5);
-            return "Gorev\n5 musteriye kahve sat: " + progress + "/5\nOdul: 2 Gem + 75 XP";
+            return "Görev\n5 müşteriye kahve sat: " + progress + "/5\nÖdül: 2 Elmas + 75 XP";
         }
 
         if (playerLevel >= 4 && !fourthTaskRewardClaimed)
         {
             int progress = Mathf.Min(GetTotalBaristaLevel(), 1);
-            return "Gorev\nHerhangi 1 Barista al: " + progress + "/1\nOdul: 3 Gem + 100 XP";
+            return "Görev\nHerhangi 1 Barista al: " + progress + "/1\nÖdül: 3 Elmas + 100 XP";
         }
 
         if (playerLevel >= 5 && !fifthTaskRewardClaimed)
         {
             int progress = Mathf.Min(vipCustomerSales, 3);
-            return "Gorev\n3 VIP musteriye satis yap: " + progress + "/3\nOdul: 5 Gem + 150 XP";
+            return "Görev\n3 VIP müşteriye satış yap: " + progress + "/3\nÖdül: 5 Elmas + 150 XP";
         }
 
-        return "Gorev\n\nYeni gorev yok";
+        return "Görev\n\nYeni görev yok";
     }
 
     private bool CanClaimDailyReward()
@@ -5663,10 +5689,10 @@ public class GameManager : MonoBehaviour
 
         if (chestReward <= 0)
         {
-            return gemReward + " Gem";
+            return gemReward + " Elmas";
         }
 
-        return gemReward + " Gem + " + chestReward + " Sandik";
+        return gemReward + " Elmas + " + chestReward + " Sandik";
     }
 
     private string GetDailyRewardWaitText()
@@ -6085,4 +6111,3 @@ public class CurrencyBarPartSelector : MonoBehaviour
 #endif
     }
 }
-
