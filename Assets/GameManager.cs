@@ -258,6 +258,7 @@ public class GameManager : MonoBehaviour
     private Sprite dailyTasksMenuIconSprite;
     private Sprite dailyRewardMenuIconSprite;
     private Sprite decorMenuIconSprite;
+    private Sprite notifyExclamationSprite;
     private Sprite warmWoodCafeSceneSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
     private readonly List<GameObject> cafePrototypeVisuals = new List<GameObject>();
@@ -2216,6 +2217,16 @@ public class GameManager : MonoBehaviour
         return decorMenuIconSprite;
     }
 
+    private Sprite GetNotifyExclamationSprite()
+    {
+        if (notifyExclamationSprite == null)
+        {
+            notifyExclamationSprite = LoadSpriteFromResources("Art/UI/notify_exclamation");
+        }
+
+        return notifyExclamationSprite;
+    }
+
     private Sprite GetWarmWoodCafeSceneSprite()
     {
         if (warmWoodCafeSceneSprite == null)
@@ -3502,10 +3513,13 @@ public class GameManager : MonoBehaviour
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = position;
-        rect.sizeDelta = new Vector2(26, 26);
+        rect.sizeDelta = new Vector2(32, 42);
 
         Image image = dotObject.GetComponent<Image>();
-        image.color = Color.red;
+        image.sprite = GetNotifyExclamationSprite();
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
         dotObject.SetActive(false);
         return image;
     }
@@ -3869,7 +3883,7 @@ public class GameManager : MonoBehaviour
             taskNotifyDot.gameObject.SetActive(shouldShowDot);
             if (shouldShowDot)
             {
-                Color dotColor = Color.red;
+                Color dotColor = Color.white;
                 dotColor.a = 0.35f + (Mathf.PingPong(Time.time * 2.5f, 1f) * 0.65f);
                 taskNotifyDot.color = dotColor;
             }
@@ -3881,7 +3895,7 @@ public class GameManager : MonoBehaviour
             dailyTasksNotifyDot.gameObject.SetActive(shouldShowDailyDot);
             if (shouldShowDailyDot)
             {
-                Color dotColor = Color.red;
+                Color dotColor = Color.white;
                 dotColor.a = 0.35f + (Mathf.PingPong(Time.time * 2.5f, 1f) * 0.65f);
                 dailyTasksNotifyDot.color = dotColor;
             }
