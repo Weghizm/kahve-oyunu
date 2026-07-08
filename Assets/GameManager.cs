@@ -198,6 +198,8 @@ public class GameManager : MonoBehaviour
     private readonly List<Image> vipLevelCardImages = new List<Image>();
     private readonly List<Image> vipLevelLockImages = new List<Image>();
     private readonly List<Image> vipLevelSelectImages = new List<Image>();
+    private readonly List<RectTransform> vipLevelButtonRects = new List<RectTransform>();
+    private readonly Dictionary<int, Sprite> vipCardSprites = new Dictionary<int, Sprite>();
     private TMP_Text passiveIncomePanelText;
     private GameObject coinInfoPopup;
     private GameObject offlinePanel;
@@ -2352,6 +2354,17 @@ public class GameManager : MonoBehaviour
         return vipLockIconSprite;
     }
 
+    private Sprite GetVipCardSprite(int level)
+    {
+        int safeLevel = Mathf.Clamp(level, 1, MaxVipLevel);
+        if (!vipCardSprites.ContainsKey(safeLevel))
+        {
+            vipCardSprites[safeLevel] = LoadSpriteFromResources("Art/UI/vip_card_" + safeLevel);
+        }
+
+        return vipCardSprites[safeLevel];
+    }
+
     private Sprite GetWarmWoodCafeSceneSprite()
     {
         if (warmWoodCafeSceneSprite == null)
@@ -3121,11 +3134,10 @@ public class GameManager : MonoBehaviour
         vipLevelCardImages.Clear();
         vipLevelLockImages.Clear();
         vipLevelSelectImages.Clear();
+        vipLevelButtonRects.Clear();
         for (int i = 1; i <= MaxVipLevel; i++)
         {
-            float x = 76f + ((i - 1) * 151f);
-            vipLevelCardTexts.Add(CreateVipLevelCard(vipPanel.transform, i, new Vector2(x, 18), true));
-            CreateVipCardHitArea(vipPanel.transform, i, new Vector2(-75f + ((i - 1) * 151f), 18f));
+            CreateVipCardButton(vipPanel.transform, i, new Vector2(-75f + ((i - 1) * 151f), 18f));
         }
 
         vipCoinBonusText = CreateVipBonusPill(vipPanel.transform, "Coin", "+0%", new Vector2(-420, -212), new Color(1f, 0.72f, 0.14f, 1f));
@@ -3185,6 +3197,49 @@ public class GameManager : MonoBehaviour
         button.transition = Selectable.Transition.None;
 
         Image selectGlow = CreatePanelStrip(hitObject.transform, "SelectedGlow", new Vector2(0, -133), new Vector2(112, 10), new Color(1f, 0.78f, 0.18f, 0f));
+        selectGlow.raycastTarget = false;
+        vipLevelSelectImages.Add(selectGlow);
+    }
+
+    private void CreateVipCardButton(Transform parent, int level, Vector2 position)
+    {
+        GameObject buttonObject = new GameObject("VipCardButton" + level, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+        buttonObject.transform.SetParent(parent, false);
+
+        RectTransform rect = buttonObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = new Vector2(148, 294);
+        vipLevelButtonRects.Add(rect);
+
+        Image image = buttonObject.GetComponent<Image>();
+        image.sprite = GetVipCardSprite(level);
+        image.color = Color.white;
+        image.preserveAspect = false;
+        image.raycastTarget = true;
+
+        Button button = buttonObject.GetComponent<Button>();
+        int selectedLevel = level;
+        button.onClick.AddListener(() => SelectVipPreviewLevel(selectedLevel));
+        button.transition = Selectable.Transition.None;
+
+        GameObject lockObject = new GameObject("LockIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        lockObject.transform.SetParent(buttonObject.transform, false);
+        RectTransform lockRect = lockObject.GetComponent<RectTransform>();
+        lockRect.anchorMin = new Vector2(0.5f, 0.5f);
+        lockRect.anchorMax = new Vector2(0.5f, 0.5f);
+        lockRect.anchoredPosition = new Vector2(0f, 86f);
+        lockRect.sizeDelta = new Vector2(42, 42);
+
+        Image lockImage = lockObject.GetComponent<Image>();
+        lockImage.sprite = GetVipLockIconSprite();
+        lockImage.color = Color.white;
+        lockImage.preserveAspect = true;
+        lockImage.raycastTarget = false;
+        vipLevelLockImages.Add(lockImage);
+
+        Image selectGlow = CreatePanelStrip(buttonObject.transform, "SelectedGlow", new Vector2(0, -154), new Vector2(112, 10), new Color(1f, 0.78f, 0.18f, 0f));
         selectGlow.raycastTarget = false;
         vipLevelSelectImages.Add(selectGlow);
     }
@@ -4441,10 +4496,11 @@ public class GameManager : MonoBehaviour
                 vipButton.interactable = !maxed && gems >= cost;
         }
 
-        for (int i = 0; i < vipLevelCardTexts.Count; i++)
+        for (int i = 0; i < MaxVipLevel; i++)
         {
             int cardLevel = i + 1;
-            vipLevelCardTexts[i].text = "";
+            if (i < vipLevelCardTexts.Count)
+                vipLevelCardTexts[i].text = "";
 
             if (i < vipLevelCardImages.Count)
             {
@@ -4475,6 +4531,17 @@ public class GameManager : MonoBehaviour
                 bool selected = selectedVipPreviewLevel == cardLevel;
                 float alpha = selected ? 0.46f + (Mathf.PingPong(Time.time * 2.4f, 1f) * 0.26f) : 0f;
                 vipLevelSelectImages[i].color = new Color(1f, 0.78f, 0.18f, alpha);
+            }
+
+            if (i < vipLevelButtonRects.Count)
+            {
+                bool selected = selectedVipPreviewLevel == cardLevel;
+                Vector2 basePosition = new Vector2(-75f + (i * 151f), 18f);
+                Vector2 targetPosition = selected ? basePosition + new Vector2(0f, -18f) : basePosition;
+                Vector3 targetScale = selected ? new Vector3(0.94f, 0.94f, 1f) : Vector3.one;
+                float t = Mathf.Clamp01(Time.deltaTime * 12f);
+                vipLevelButtonRects[i].anchoredPosition = Vector2.Lerp(vipLevelButtonRects[i].anchoredPosition, targetPosition, t);
+                vipLevelButtonRects[i].localScale = Vector3.Lerp(vipLevelButtonRects[i].localScale, targetScale, t);
             }
         }
 
@@ -6018,9 +6085,4 @@ public class CurrencyBarPartSelector : MonoBehaviour
 #endif
     }
 }
-
-
-
-
-
 
