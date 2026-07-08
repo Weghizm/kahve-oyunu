@@ -3210,7 +3210,7 @@ public class GameManager : MonoBehaviour
         TMP_Text menuLabel = CreateSceneLabel(parent, "MenuLabel", "MENU", new Vector2(-340, 172), new Vector2(110, 35), 19);
         TMP_Text customerSpotLabel = CreateSceneLabel(parent, "CustomerSpotLabel", "MUSTERI\nALANI", new Vector2(180, -252), new Vector2(165, 62), 16);
         Sprite cafeSceneSprite = GetWarmWoodCafeSceneSprite();
-        cafeSceneImage = CreateSceneBox(parent, "WarmWoodCafeScene", new Vector2(0, 0), new Vector2(1920, 1097), cafeSceneSprite != null ? Color.white : new Color(1f, 1f, 1f, 0f));
+        cafeSceneImage = CreateSceneBox(parent, "WarmWoodCafeScene", new Vector2(0, 20), new Vector2(1888, 1079), cafeSceneSprite != null ? Color.white : new Color(1f, 1f, 1f, 0f));
         cafeSceneImage.sprite = cafeSceneSprite;
         cafeSceneImage.preserveAspect = true;
         cafeSceneImage.raycastTarget = false;
