@@ -275,6 +275,7 @@ public class GameManager : MonoBehaviour
     private Sprite dailyRewardMenuIconSprite;
     private Sprite decorMenuIconSprite;
     private Sprite notifyExclamationSprite;
+    private Sprite adBoostIconSprite;
     private Sprite vipPanelBackgroundSprite;
     private Sprite vipLockIconSprite;
     private Sprite warmWoodCafeSceneSprite;
@@ -1487,19 +1488,20 @@ public class GameManager : MonoBehaviour
         CreateCustomerButton(gameFrame);
 
         CreateButton(gameFrame, "SellCoffeeButton", "SAT", new Vector2(0, -475), new Vector2(150, 68), SellCoffee, new Color(0.43f, 0.24f, 0.14f), 28);
-        adBoostButtonText = CreateButton(gameFrame, "AdBoostButton", "2x", new Vector2(850, 250), new Vector2(94, 94), WatchAdForBoost, new Color(0.18f, 0.38f, 0.82f), 24);
+        adBoostButtonText = CreateButton(gameFrame, "AdBoostButton", "", new Vector2(850, 250), new Vector2(112, 112), WatchAdForBoost, Color.white, 20);
+        ConfigureAdBoostButton(adBoostButtonText);
         CreateButton(gameFrame, "OpenTestPanelButton", "T", new Vector2(850, -415), new Vector2(82, 74), OpenTestPanel, new Color(0.20f, 0.20f, 0.20f), 26);
-        TMP_Text tasksButtonText = CreateButton(gameFrame, "TasksButton", "", new Vector2(-890, 310), new Vector2(112, 106), OpenTaskPanel, Color.white, 24);
+        TMP_Text tasksButtonText = CreateButton(gameFrame, "TasksButton", "", new Vector2(-890, 310), new Vector2(122, 116), OpenTaskPanel, Color.white, 24);
         ApplyButtonSprite(tasksButtonText, GetTasksMenuIconSprite());
-        taskNotifyDot = CreateNotifyDot(tasksButtonText.transform.parent, new Vector2(46, 43));
-        TMP_Text dailyTasksButtonText = CreateButton(gameFrame, "DailyTasksButton", "", new Vector2(-890, 185), new Vector2(112, 106), OpenDailyTasksPanel, Color.white, 24);
+        taskNotifyDot = CreateNotifyDot(tasksButtonText.transform.parent, new Vector2(51, 47));
+        TMP_Text dailyTasksButtonText = CreateButton(gameFrame, "DailyTasksButton", "", new Vector2(-890, 185), new Vector2(122, 116), OpenDailyTasksPanel, Color.white, 24);
         ApplyButtonSprite(dailyTasksButtonText, GetDailyTasksMenuIconSprite());
-        dailyTasksNotifyDot = CreateNotifyDot(dailyTasksButtonText.transform.parent, new Vector2(46, 43));
-        TMP_Text dailyRewardMenuButtonText = CreateButton(gameFrame, "DailyRewardButton", "", new Vector2(-890, 60), new Vector2(112, 106), OpenDailyRewardPanel, Color.white, 24);
+        dailyTasksNotifyDot = CreateNotifyDot(dailyTasksButtonText.transform.parent, new Vector2(51, 47));
+        TMP_Text dailyRewardMenuButtonText = CreateButton(gameFrame, "DailyRewardButton", "", new Vector2(-890, 60), new Vector2(122, 116), OpenDailyRewardPanel, Color.white, 24);
         ApplyButtonSprite(dailyRewardMenuButtonText, GetDailyRewardMenuIconSprite());
-        TMP_Text chestsButtonText = CreateButton(gameFrame, "ChestsButton", "", new Vector2(-890, -65), new Vector2(112, 106), OpenChestPanel, Color.white, 24);
+        TMP_Text chestsButtonText = CreateButton(gameFrame, "ChestsButton", "", new Vector2(-890, -65), new Vector2(122, 116), OpenChestPanel, Color.white, 24);
         ApplyButtonSprite(chestsButtonText, GetChestButtonSprite());
-        TMP_Text decorButtonText = CreateButton(gameFrame, "DecorButton", "", new Vector2(-890, -190), new Vector2(112, 106), OpenDecorPanel, Color.white, 19);
+        TMP_Text decorButtonText = CreateButton(gameFrame, "DecorButton", "", new Vector2(-890, -190), new Vector2(122, 116), OpenDecorPanel, Color.white, 19);
         ApplyButtonSprite(decorButtonText, GetDecorMenuIconSprite());
 
         coffeeUpgradeButtonText = CreateButton(gameFrame, "CoffeeUpgradeButton", "Kah", new Vector2(-165, -475), new Vector2(126, 68), OpenCoffeePanel, new Color(0.86f, 0.56f, 0.20f), 23);
@@ -2399,6 +2401,16 @@ public class GameManager : MonoBehaviour
         return notifyExclamationSprite;
     }
 
+    private Sprite GetAdBoostIconSprite()
+    {
+        if (adBoostIconSprite == null)
+        {
+            adBoostIconSprite = LoadSpriteFromResources("Art/UI/ad_boost_2x_icon");
+        }
+
+        return adBoostIconSprite;
+    }
+
     private Sprite GetVipPanelBackgroundSprite()
     {
         if (vipPanelBackgroundSprite == null)
@@ -2468,6 +2480,26 @@ public class GameManager : MonoBehaviour
         buttonImage.sprite = sprite;
         buttonImage.color = Color.white;
         buttonImage.preserveAspect = true;
+    }
+
+    private void ConfigureAdBoostButton(TMP_Text buttonText)
+    {
+        ApplyButtonSprite(buttonText, GetAdBoostIconSprite());
+        if (buttonText == null)
+        {
+            return;
+        }
+
+        RectTransform textRect = buttonText.rectTransform;
+        textRect.anchoredPosition = new Vector2(0f, -29f);
+        textRect.sizeDelta = new Vector2(84f, 30f);
+        buttonText.color = Color.white;
+        buttonText.fontStyle = FontStyles.Bold;
+        buttonText.alignment = TextAlignmentOptions.Center;
+        buttonText.enableAutoSizing = true;
+        buttonText.fontSizeMin = 12;
+        buttonText.fontSizeMax = 19;
+        buttonText.raycastTarget = false;
     }
 
     private void ConfigureVipHudButton(TMP_Text buttonText)
@@ -4486,11 +4518,11 @@ public class GameManager : MonoBehaviour
         if (adBoostButtonText != null)
         {
             if (bonusTimer >= MaxBoostSeconds)
-                adBoostButtonText.text = "2x\nMAX";
+                adBoostButtonText.text = "MAX";
             else if (bonusTimer > 0)
-                adBoostButtonText.text = "2x\n" + FormatCompactTime(bonusTimer);
+                adBoostButtonText.text = FormatCompactTime(bonusTimer);
             else
-                adBoostButtonText.text = "2x\nAD";
+                adBoostButtonText.text = "AD";
             Button adButton = adBoostButtonText.GetComponentInParent<Button>();
             if (adButton != null)
                 adButton.interactable = bonusTimer < MaxBoostSeconds;
