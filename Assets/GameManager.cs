@@ -2360,7 +2360,7 @@ public class GameManager : MonoBehaviour
         CreateWorkshopPanelBox(decorPanel.transform, "WorkshopPreviewPanel", new Vector2(-180, -34), new Vector2(748, 478), new Color(0.11f, 0.09f, 0.08f, 1f));
         CreateWorkshopPanelBox(decorPanel.transform, "WorkshopCraftPanel", new Vector2(395, -34), new Vector2(342, 478), new Color(0.11f, 0.09f, 0.08f, 1f));
 
-        TMP_Text previewTitle = CreateText(decorPanel.transform, "WorkshopPreviewTitle", "Dukkan Onizlemesi", new Vector2(-500, 178), new Vector2(300, 34), 21);
+        TMP_Text previewTitle = CreateText(decorPanel.transform, "WorkshopPreviewTitle", "Dukkan Onizlemesi", new Vector2(-370, 178), new Vector2(300, 34), 21);
         previewTitle.color = new Color(1f, 0.77f, 0.34f);
         previewTitle.alignment = TextAlignmentOptions.Left;
         previewTitle.fontStyle = FontStyles.Bold;
@@ -2381,7 +2381,7 @@ public class GameManager : MonoBehaviour
         afterLabel.color = new Color(1f, 0.77f, 0.34f);
         decorPreviewAfterSwatchImage = CreateWorkshopPanelBox(decorPanel.transform, "DecorAfterSwatch", new Vector2(92, -232), new Vector2(60, 38), new Color(1f, 0.72f, 0.84f, 1f));
 
-        TMP_Text craftTitle = CreateText(decorPanel.transform, "WorkshopCraftTitle", "Uretim Masasi", new Vector2(270, 178), new Vector2(230, 34), 21);
+        TMP_Text craftTitle = CreateText(decorPanel.transform, "WorkshopCraftTitle", "Uretim Masasi", new Vector2(340, 178), new Vector2(230, 34), 21);
         craftTitle.color = new Color(1f, 0.77f, 0.34f);
         craftTitle.alignment = TextAlignmentOptions.Left;
         craftTitle.fontStyle = FontStyles.Bold;
@@ -2403,7 +2403,7 @@ public class GameManager : MonoBehaviour
         decorDetailStatusText.alignment = TextAlignmentOptions.Left;
         decorDetailStatusText.fontStyle = FontStyles.Bold;
 
-        TMP_Text resourceTitle = CreateText(decorPanel.transform, "DecorResourcesTitle", "Kaynaklar", new Vector2(270, -78), new Vector2(220, 32), 20);
+        TMP_Text resourceTitle = CreateText(decorPanel.transform, "DecorResourcesTitle", "Kaynaklar", new Vector2(335, -78), new Vector2(220, 32), 20);
         resourceTitle.color = new Color(1f, 0.77f, 0.34f);
         resourceTitle.alignment = TextAlignmentOptions.Left;
         resourceTitle.fontStyle = FontStyles.Bold;
