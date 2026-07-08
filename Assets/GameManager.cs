@@ -253,6 +253,7 @@ public class GameManager : MonoBehaviour
     private Sprite levelBadgeSprite;
     private Sprite warmWoodCafeSceneSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
+    private readonly List<GameObject> cafePrototypeVisuals = new List<GameObject>();
 
     private float coins = 0;
     private int coinsPerClick = 1;
@@ -3208,31 +3209,54 @@ public class GameManager : MonoBehaviour
         TMP_Text menuLabel = CreateSceneLabel(parent, "MenuLabel", "MENU", new Vector2(-340, 172), new Vector2(110, 35), 19);
         TMP_Text customerSpotLabel = CreateSceneLabel(parent, "CustomerSpotLabel", "MUSTERI\nALANI", new Vector2(180, -252), new Vector2(165, 62), 16);
         Sprite cafeSceneSprite = GetWarmWoodCafeSceneSprite();
-        cafeSceneImage = CreateSceneBox(parent, "WarmWoodCafeScene", new Vector2(0, -4), new Vector2(1328, 760), cafeSceneSprite != null ? Color.white : new Color(1f, 1f, 1f, 0f));
+        cafeSceneImage = CreateSceneBox(parent, "WarmWoodCafeScene", new Vector2(0, 0), new Vector2(1920, 1097), cafeSceneSprite != null ? Color.white : new Color(1f, 1f, 1f, 0f));
         cafeSceneImage.sprite = cafeSceneSprite;
         cafeSceneImage.preserveAspect = true;
         cafeSceneImage.raycastTarget = false;
         roomLockOverlay = CreateSceneBox(parent, "RoomLockOverlay", new Vector2(0, -10), new Vector2(1700, 920), new Color(0.05f, 0.06f, 0.07f, 1f));
 
+        cafePrototypeVisuals.Clear();
+        cafePrototypeVisuals.Add(isoFloorShadowGraphic.gameObject);
+        cafePrototypeVisuals.Add(isoFloorGraphic.gameObject);
+        cafePrototypeVisuals.Add(isoBackWallGraphic.gameObject);
+        cafePrototypeVisuals.Add(isoLeftWallGraphic.gameObject);
+        cafePrototypeVisuals.Add(isoRightWallGraphic.gameObject);
+        cafePrototypeVisuals.Add(roomShadow.gameObject);
+        cafePrototypeVisuals.Add(floorPreviewImage.gameObject);
+        cafePrototypeVisuals.Add(backgroundTapImage.gameObject);
+        cafePrototypeVisuals.Add(leftWallImage.gameObject);
+        cafePrototypeVisuals.Add(rightWallImage.gameObject);
+        cafePrototypeVisuals.Add(backWallTopTrim.gameObject);
+        cafePrototypeVisuals.Add(backTrim.gameObject);
+        cafePrototypeVisuals.Add(leftTrim.gameObject);
+        cafePrototypeVisuals.Add(rightTrim.gameObject);
+        cafePrototypeVisuals.Add(leftCornerLine.gameObject);
+        cafePrototypeVisuals.Add(rightCornerLine.gameObject);
+        cafePrototypeVisuals.Add(floorBackEdge.gameObject);
+        cafePrototypeVisuals.Add(floorCenterLine.gameObject);
+        cafePrototypeVisuals.Add(floorLeftPerspectiveLine.gameObject);
+        cafePrototypeVisuals.Add(floorRightPerspectiveLine.gameObject);
+        cafePrototypeVisuals.Add(roomAccentStrip.gameObject);
+        cafePrototypeVisuals.Add(tablePreviewImage.gameObject);
+        cafePrototypeVisuals.Add(counterTop.gameObject);
+        cafePrototypeVisuals.Add(coffeeMachine.gameObject);
+        cafePrototypeVisuals.Add(machineTop.gameObject);
+        cafePrototypeVisuals.Add(cup.gameObject);
+        cafePrototypeVisuals.Add(door.gameObject);
+        cafePrototypeVisuals.Add(doorGlass.gameObject);
+        cafePrototypeVisuals.Add(window.gameObject);
+        cafePrototypeVisuals.Add(menuBoard.gameObject);
+        cafePrototypeVisuals.Add(plantPot.gameObject);
+        cafePrototypeVisuals.Add(plantLeaf.gameObject);
+        cafePrototypeVisuals.Add(customerSpot.gameObject);
+        cafePrototypeVisuals.Add(doorLabel.gameObject);
+        cafePrototypeVisuals.Add(counterLabel.gameObject);
+        cafePrototypeVisuals.Add(machineLabel.gameObject);
+        cafePrototypeVisuals.Add(menuLabel.gameObject);
+        cafePrototypeVisuals.Add(customerSpotLabel.gameObject);
+
         startingRoomVisuals.Clear();
         startingRoomVisuals.Add(cafeSceneImage.gameObject);
-        startingRoomVisuals.Add(tablePreviewImage.gameObject);
-        startingRoomVisuals.Add(counterTop.gameObject);
-        startingRoomVisuals.Add(coffeeMachine.gameObject);
-        startingRoomVisuals.Add(machineTop.gameObject);
-        startingRoomVisuals.Add(cup.gameObject);
-        startingRoomVisuals.Add(door.gameObject);
-        startingRoomVisuals.Add(doorGlass.gameObject);
-        startingRoomVisuals.Add(window.gameObject);
-        startingRoomVisuals.Add(menuBoard.gameObject);
-        startingRoomVisuals.Add(plantPot.gameObject);
-        startingRoomVisuals.Add(plantLeaf.gameObject);
-        startingRoomVisuals.Add(customerSpot.gameObject);
-        startingRoomVisuals.Add(doorLabel.gameObject);
-        startingRoomVisuals.Add(counterLabel.gameObject);
-        startingRoomVisuals.Add(machineLabel.gameObject);
-        startingRoomVisuals.Add(menuLabel.gameObject);
-        startingRoomVisuals.Add(customerSpotLabel.gameObject);
 
         roomShadow.raycastTarget = false;
         backWallTopTrim.raycastTarget = false;
@@ -4696,22 +4720,13 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        SetSceneGraphicActive(isoFloorShadowGraphic, !useCafeSceneImage);
-        SetSceneGraphicActive(isoFloorGraphic, !useCafeSceneImage);
-        SetSceneGraphicActive(isoBackWallGraphic, !useCafeSceneImage);
-        SetSceneGraphicActive(isoLeftWallGraphic, !useCafeSceneImage);
-        SetSceneGraphicActive(isoRightWallGraphic, !useCafeSceneImage);
-        SetSceneImageActive(backWallTopTrim, !useCafeSceneImage);
-        SetSceneImageActive(leftWallImage, !useCafeSceneImage);
-        SetSceneImageActive(rightWallImage, !useCafeSceneImage);
-        SetSceneImageActive(floorPreviewImage, !useCafeSceneImage);
-        SetSceneImageActive(leftCornerLine, !useCafeSceneImage);
-        SetSceneImageActive(rightCornerLine, !useCafeSceneImage);
-        SetSceneImageActive(floorBackEdge, !useCafeSceneImage);
-        SetSceneImageActive(floorCenterLine, !useCafeSceneImage);
-        SetSceneImageActive(floorLeftPerspectiveLine, !useCafeSceneImage);
-        SetSceneImageActive(floorRightPerspectiveLine, !useCafeSceneImage);
-        SetSceneImageActive(roomAccentStrip, !useCafeSceneImage);
+        for (int i = 0; i < cafePrototypeVisuals.Count; i++)
+        {
+            if (cafePrototypeVisuals[i] != null)
+            {
+                cafePrototypeVisuals[i].SetActive(!showStartingRoom || !useCafeSceneImage);
+            }
+        }
 
         SetSceneImageActive(productionConveyorVisual, currentRoomIndex == 1 && unlocked);
         SetSceneImageActive(productionMachineVisual, currentRoomIndex == 1 && unlocked);
