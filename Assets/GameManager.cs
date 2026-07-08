@@ -4515,7 +4515,7 @@ public class GameManager : MonoBehaviour
             Button vipButton = vipUpgradeButtonText.GetComponentInParent<Button>();
             bool maxed = vipLevel >= MaxVipLevel;
             int cost = GetVipUpgradeCost();
-            vipUpgradeButtonText.text = maxed ? "VIP MAX" : (gems >= cost ? GetVipKitName(vipLevel + 1) + " - " + cost : cost + " Gerekir");
+            vipUpgradeButtonText.text = maxed ? "VIP MAX" : "Aç: " + cost;
             if (vipUpgradeGemIconImage != null)
                 vipUpgradeGemIconImage.gameObject.SetActive(!maxed);
             if (vipButton != null)
