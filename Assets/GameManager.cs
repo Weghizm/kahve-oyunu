@@ -143,12 +143,24 @@ public class GameManager : MonoBehaviour
     private TMP_Text rareChestOpenButtonText;
     private TMP_Text luxuryChestOpenButtonText;
     private TMP_Text decorPanelText;
+    private TMP_Text decorDetailTitleText;
+    private TMP_Text decorDetailTypeText;
+    private TMP_Text decorDetailStatusText;
+    private Image decorDetailIconImage;
+    private Graphic decorPreviewBackWallImage;
+    private Graphic decorPreviewLeftWallImage;
+    private Graphic decorPreviewRightWallImage;
+    private Graphic decorPreviewFloorImage;
+    private Graphic decorPreviewTableTopImage;
+    private Image decorPreviewBeforeSwatchImage;
+    private Image decorPreviewAfterSwatchImage;
     private Image decorCostIconImage;
     private TMP_Text decorCostText;
     private Image decorStoragePaintIconImage;
     private TMP_Text decorStoragePaintText;
     private Image decorStorageWoodIconImage;
     private TMP_Text decorStorageWoodText;
+    private readonly List<TMP_Text> decorTabTexts = new List<TMP_Text>();
     private TMP_Text pinkWallButtonText;
     private TMP_Text mintWallButtonText;
     private TMP_Text creamFloorButtonText;
@@ -2322,64 +2334,122 @@ public class GameManager : MonoBehaviour
         RectTransform panelRect = decorPanel.GetComponent<RectTransform>();
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
-        panelRect.anchoredPosition = new Vector2(0, 15);
-        panelRect.sizeDelta = new Vector2(1020, 700);
+        panelRect.anchoredPosition = new Vector2(0, 0);
+        panelRect.sizeDelta = new Vector2(1365, 768);
 
         Image panelImage = decorPanel.GetComponent<Image>();
-        panelImage.color = new Color(0.12f, 0.10f, 0.09f, 1f);
+        panelImage.color = new Color(0.08f, 0.07f, 0.06f, 1f);
 
-        CreatePanelStrip(decorPanel.transform, "WorkshopTopLine", new Vector2(0, 324), new Vector2(930, 10), new Color(0.94f, 0.64f, 0.25f, 0.62f));
-        CreatePanelStrip(decorPanel.transform, "WorkshopLeftRail", new Vector2(-445, -12), new Vector2(8, 560), new Color(0.94f, 0.64f, 0.25f, 0.35f));
-        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopInfoBox", new Vector2(0, 154), new Vector2(820, 172), new Color(0.22f, 0.18f, 0.15f, 1f));
-        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopCardsBox", new Vector2(0, -28), new Vector2(840, 252), new Color(0.17f, 0.14f, 0.13f, 1f));
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopTopBar", new Vector2(0, 332), new Vector2(1318, 68), new Color(0.13f, 0.10f, 0.08f, 1f));
+        CreatePanelStrip(decorPanel.transform, "WorkshopTopGoldLine", new Vector2(0, 298), new Vector2(1320, 2), new Color(0.88f, 0.56f, 0.18f, 0.9f));
 
-        TMP_Text title = CreateText(decorPanel.transform, "DecorPanelTitle", "Atolye", new Vector2(0, 288), new Vector2(820, 56), 40);
+        TMP_Text title = CreateText(decorPanel.transform, "DecorPanelTitle", "ATOLYE", new Vector2(-584, 332), new Vector2(210, 58), 34);
         title.color = new Color(1f, 0.80f, 0.40f);
         title.fontStyle = FontStyles.Bold;
 
-        TMP_Text subtitle = CreateText(decorPanel.transform, "WorkshopSubtitle", "Dukkanda onizle, sonra uret ya da kullan", new Vector2(0, 250), new Vector2(760, 38), 20);
+        TMP_Text subtitle = CreateText(decorPanel.transform, "WorkshopSubtitle", "Dekoru sec, dukkanda onizle, sonra uret ya da kullan", new Vector2(-300, 332), new Vector2(520, 34), 17);
         subtitle.color = new Color(0.92f, 0.82f, 0.68f);
+        subtitle.alignment = TextAlignmentOptions.Left;
 
-        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(-8, 190), new Vector2(760, 74), 21);
+        decorTabTexts.Clear();
+        decorTabTexts.Add(CreateDecorTabButton("DecorWallTab", "Duvar", new Vector2(-430, 332), PreviewPinkWall, true));
+        decorTabTexts.Add(CreateDecorTabButton("DecorFloorTab", "Zemin", new Vector2(-318, 332), PreviewCreamFloor, false));
+        decorTabTexts.Add(CreateDecorTabButton("DecorTableTab", "Masa", new Vector2(-206, 332), PreviewRoseTable, false));
+        decorTabTexts.Add(CreateDecorTabButton("DecorShelfTab", "Raf", new Vector2(-94, 332), PreviewPinkWall, false));
+        decorTabTexts.Add(CreateDecorTabButton("DecorCounterTab", "Tezgah", new Vector2(18, 332), PreviewPinkWall, false));
+
+        CreateDecorResourcePill("DecorPaintStoragePill", GetCraftPaintIconSprite(), "x0", new Vector2(472, 332));
+        CreateDecorResourcePill("DecorWoodStoragePill", GetWoodIconSprite(), "x0", new Vector2(604, 332));
+
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopPreviewPanel", new Vector2(-220, -42), new Vector2(862, 556), new Color(0.11f, 0.09f, 0.08f, 1f));
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopCraftPanel", new Vector2(448, -42), new Vector2(392, 556), new Color(0.11f, 0.09f, 0.08f, 1f));
+
+        TMP_Text previewTitle = CreateText(decorPanel.transform, "WorkshopPreviewTitle", "Dukkan Parca Onizlemesi", new Vector2(-548, 214), new Vector2(360, 40), 22);
+        previewTitle.color = new Color(1f, 0.77f, 0.34f);
+        previewTitle.alignment = TextAlignmentOptions.Left;
+        previewTitle.fontStyle = FontStyles.Bold;
+
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopSceneFrame", new Vector2(-220, 18), new Vector2(806, 362), new Color(0.15f, 0.12f, 0.10f, 1f));
+        CreateDecorPreviewScene(decorPanel.transform, new Vector2(-220, 18));
+
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopSelectedPlate", new Vector2(-340, -250), new Vector2(482, 86), new Color(0.16f, 0.12f, 0.10f, 1f));
+        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(-340, -250), new Vector2(430, 66), 18);
         decorPanelText.color = new Color(0.96f, 0.91f, 0.82f);
-        decorPanelText.alignment = TextAlignmentOptions.TopLeft;
+        decorPanelText.alignment = TextAlignmentOptions.Left;
         decorPanelText.enableWordWrapping = true;
 
-        CreatePanelStrip(decorPanel.transform, "DecorResourceDivider", new Vector2(0, 128), new Vector2(740, 3), new Color(1f, 0.74f, 0.32f, 0.25f));
+        TMP_Text beforeLabel = CreateText(decorPanel.transform, "DecorBeforeLabel", "ONCE", new Vector2(18, -216), new Vector2(80, 24), 13);
+        beforeLabel.color = new Color(0.70f, 0.62f, 0.50f);
+        decorPreviewBeforeSwatchImage = CreateWorkshopPanelBox(decorPanel.transform, "DecorBeforeSwatch", new Vector2(18, -246), new Vector2(68, 44), new Color(0.70f, 0.82f, 0.78f, 1f));
+        TMP_Text afterLabel = CreateText(decorPanel.transform, "DecorAfterLabel", "SONRA", new Vector2(128, -216), new Vector2(80, 24), 13);
+        afterLabel.color = new Color(1f, 0.77f, 0.34f);
+        decorPreviewAfterSwatchImage = CreateWorkshopPanelBox(decorPanel.transform, "DecorAfterSwatch", new Vector2(128, -246), new Vector2(68, 44), new Color(1f, 0.72f, 0.84f, 1f));
 
-        decorCostIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorCostIcon", new Vector2(-260, 104), GetCraftPaintIconSprite());
-        decorCostText = CreateText(decorPanel.transform, "DecorCostText", "", new Vector2(-198, 104), new Vector2(120, 38), 19);
+        TMP_Text craftTitle = CreateText(decorPanel.transform, "WorkshopCraftTitle", "Uretim Masasi", new Vector2(300, 214), new Vector2(250, 40), 22);
+        craftTitle.color = new Color(1f, 0.77f, 0.34f);
+        craftTitle.alignment = TextAlignmentOptions.Left;
+        craftTitle.fontStyle = FontStyles.Bold;
+
+        CreateWorkshopPanelBox(decorPanel.transform, "DecorDetailIconFrame", new Vector2(340, 64), new Vector2(206, 206), new Color(0.07f, 0.06f, 0.055f, 1f));
+        decorDetailIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorDetailIcon", new Vector2(340, 64), null);
+        RectTransform detailIconRect = decorDetailIconImage.GetComponent<RectTransform>();
+        detailIconRect.sizeDelta = new Vector2(180, 180);
+
+        decorDetailTitleText = CreateText(decorPanel.transform, "DecorDetailTitle", "", new Vector2(558, 112), new Vector2(170, 34), 22);
+        decorDetailTitleText.color = new Color(1f, 0.93f, 0.82f);
+        decorDetailTitleText.alignment = TextAlignmentOptions.Left;
+        decorDetailTitleText.fontStyle = FontStyles.Bold;
+        decorDetailTypeText = CreateText(decorPanel.transform, "DecorDetailType", "", new Vector2(558, 78), new Vector2(170, 28), 16);
+        decorDetailTypeText.color = new Color(0.78f, 0.70f, 0.58f);
+        decorDetailTypeText.alignment = TextAlignmentOptions.Left;
+        decorDetailStatusText = CreateText(decorPanel.transform, "DecorDetailStatus", "", new Vector2(558, 44), new Vector2(170, 28), 18);
+        decorDetailStatusText.color = new Color(1f, 0.42f, 0.30f);
+        decorDetailStatusText.alignment = TextAlignmentOptions.Left;
+        decorDetailStatusText.fontStyle = FontStyles.Bold;
+
+        TMP_Text resourceTitle = CreateText(decorPanel.transform, "DecorResourcesTitle", "Kaynaklar", new Vector2(300, -90), new Vector2(250, 36), 22);
+        resourceTitle.color = new Color(1f, 0.77f, 0.34f);
+        resourceTitle.alignment = TextAlignmentOptions.Left;
+        resourceTitle.fontStyle = FontStyles.Bold;
+
+        CreateWorkshopPanelBox(decorPanel.transform, "DecorCostPlate", new Vector2(458, -142), new Vector2(326, 74), new Color(0.17f, 0.13f, 0.10f, 1f));
+        decorCostIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorCostIcon", new Vector2(318, -142), GetCraftPaintIconSprite());
+        decorCostText = CreateText(decorPanel.transform, "DecorCostText", "", new Vector2(452, -142), new Vector2(265, 42), 18);
         decorCostText.color = new Color(0.96f, 0.91f, 0.82f);
         decorCostText.alignment = TextAlignmentOptions.Left;
         decorCostText.fontStyle = FontStyles.Bold;
 
-        decorStoragePaintIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStoragePaintIcon", new Vector2(146, 104), GetCraftPaintIconSprite());
-        decorStoragePaintText = CreateText(decorPanel.transform, "DecorStoragePaintText", "", new Vector2(208, 104), new Vector2(90, 38), 19);
+        decorStoragePaintIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStoragePaintIcon", new Vector2(482, 332), GetCraftPaintIconSprite());
+        decorStoragePaintText = CreateText(decorPanel.transform, "DecorStoragePaintText", "", new Vector2(540, 332), new Vector2(90, 34), 18);
         decorStoragePaintText.color = new Color(0.96f, 0.91f, 0.82f);
         decorStoragePaintText.alignment = TextAlignmentOptions.Left;
         decorStoragePaintText.fontStyle = FontStyles.Bold;
 
-        decorStorageWoodIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStorageWoodIcon", new Vector2(324, 104), GetWoodIconSprite());
-        decorStorageWoodText = CreateText(decorPanel.transform, "DecorStorageWoodText", "", new Vector2(386, 104), new Vector2(90, 38), 19);
+        decorStorageWoodIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStorageWoodIcon", new Vector2(612, 332), GetWoodIconSprite());
+        decorStorageWoodText = CreateText(decorPanel.transform, "DecorStorageWoodText", "", new Vector2(670, 332), new Vector2(90, 34), 18);
         decorStorageWoodText.color = new Color(0.96f, 0.91f, 0.82f);
         decorStorageWoodText.alignment = TextAlignmentOptions.Left;
         decorStorageWoodText.fontStyle = FontStyles.Bold;
 
-        TMP_Text categoryLabel = CreateText(decorPanel.transform, "WorkshopCategoryLabel", "Dekor Kartlari", new Vector2(-320, 78), new Vector2(250, 32), 19);
-        categoryLabel.color = new Color(1f, 0.74f, 0.32f);
-        categoryLabel.fontStyle = FontStyles.Bold;
+        decorActionButtonText = CreateButton(decorPanel.transform, "DecorActionButton", "Uret", new Vector2(552, -250), new Vector2(148, 62), ConfirmDecorPreview, new Color(0.72f, 0.45f, 0.12f), 20);
+        CreateButton(decorPanel.transform, "DecorCloseButton", "Kapat", new Vector2(390, -250), new Vector2(156, 62), CloseDecorPanel, new Color(0.18f, 0.16f, 0.14f), 20);
 
-        pinkWallButtonText = CreateButton(decorPanel.transform, "PinkWallButton", "Pembe Duvar", new Vector2(-218, 20), new Vector2(370, 86), PreviewPinkWall, new Color(0.35f, 0.22f, 0.28f), 22);
-        mintWallButtonText = CreateButton(decorPanel.transform, "MintWallButton", "Mint Duvar", new Vector2(218, 20), new Vector2(370, 86), PreviewMintWall, new Color(0.20f, 0.34f, 0.30f), 22);
-        creamFloorButtonText = CreateButton(decorPanel.transform, "CreamFloorButton", "Krem Zemin", new Vector2(-218, -86), new Vector2(370, 86), PreviewCreamFloor, new Color(0.35f, 0.29f, 0.20f), 22);
-        roseTableButtonText = CreateButton(decorPanel.transform, "RoseTableButton", "Rose Masa", new Vector2(218, -86), new Vector2(370, 86), PreviewRoseTable, new Color(0.34f, 0.20f, 0.26f), 22);
+        CreateWorkshopPanelBox(decorPanel.transform, "DecorBottomRail", new Vector2(0, -338), new Vector2(1278, 62), new Color(0.10f, 0.08f, 0.07f, 1f));
+        TMP_Text setTitle = CreateText(decorPanel.transform, "DecorSetTitle", "Duvar Seti", new Vector2(-560, -338), new Vector2(170, 40), 22);
+        setTitle.color = new Color(1f, 0.77f, 0.34f);
+        setTitle.alignment = TextAlignmentOptions.Left;
+        setTitle.fontStyle = FontStyles.Bold;
+        pinkWallButtonText = CreateButton(decorPanel.transform, "PinkWallButton", "", new Vector2(-398, -338), new Vector2(62, 50), PreviewPinkWall, new Color(0.48f, 0.30f, 0.12f), 1);
+        mintWallButtonText = CreateButton(decorPanel.transform, "MintWallButton", "", new Vector2(-310, -338), new Vector2(62, 50), PreviewMintWall, new Color(0.17f, 0.14f, 0.12f), 1);
+        creamFloorButtonText = CreateButton(decorPanel.transform, "CreamFloorButton", "", new Vector2(-222, -338), new Vector2(62, 50), PreviewCreamFloor, new Color(0.17f, 0.14f, 0.12f), 1);
+        roseTableButtonText = CreateButton(decorPanel.transform, "RoseTableButton", "", new Vector2(-134, -338), new Vector2(62, 50), PreviewRoseTable, new Color(0.17f, 0.14f, 0.12f), 1);
         CreateDecorButtonIcon(pinkWallButtonText, GetDecorItemData(1));
         CreateDecorButtonIcon(mintWallButtonText, GetDecorItemData(2));
         CreateDecorButtonIcon(creamFloorButtonText, GetDecorItemData(3));
         CreateDecorButtonIcon(roseTableButtonText, GetDecorItemData(4));
-
-        decorActionButtonText = CreateButton(decorPanel.transform, "DecorActionButton", "Kullan", new Vector2(-175, -270), new Vector2(330, 68), ConfirmDecorPreview, new Color(0.27f, 0.54f, 0.34f), 24);
-        CreateButton(decorPanel.transform, "DecorCloseButton", "Kapat", new Vector2(190, -270), new Vector2(270, 68), CloseDecorPanel, new Color(0.18f, 0.17f, 0.16f), 24);
+        TMP_Text allSetText = CreateText(decorPanel.transform, "DecorAllSetText", "Tum seti gor", new Vector2(560, -338), new Vector2(160, 40), 18);
+        allSetText.color = new Color(1f, 0.77f, 0.34f);
+        allSetText.alignment = TextAlignmentOptions.Right;
 
         decorPanel.transform.SetAsLastSibling();
         decorPanel.SetActive(false);
@@ -2872,6 +2942,96 @@ public class GameManager : MonoBehaviour
         return image;
     }
 
+    private TMP_Text CreateDecorTabButton(string objectName, string label, Vector2 position, UnityEngine.Events.UnityAction action, bool active)
+    {
+        TMP_Text text = CreateButton(decorPanel.transform, objectName, label, position, new Vector2(96, 36), action, active ? new Color(0.56f, 0.34f, 0.10f, 1f) : new Color(0.12f, 0.10f, 0.08f, 1f), 18);
+        text.color = active ? new Color(1f, 0.95f, 0.84f) : new Color(0.70f, 0.62f, 0.50f);
+        text.fontStyle = FontStyles.Bold;
+        return text;
+    }
+
+    private void UpdateDecorTabs(DecorItemData item)
+    {
+        for (int i = 0; i < decorTabTexts.Count; i++)
+        {
+            TMP_Text tabText = decorTabTexts[i];
+            if (tabText == null)
+            {
+                continue;
+            }
+
+            bool active = false;
+            if (item != null)
+            {
+                active = (i == 0 && item.Slot == DecorSlot.Wall)
+                    || (i == 1 && item.Slot == DecorSlot.Floor)
+                    || (i == 2 && item.Slot == DecorSlot.Table);
+            }
+
+            tabText.color = active ? new Color(1f, 0.95f, 0.84f) : new Color(0.70f, 0.62f, 0.50f);
+
+            Image tabImage = tabText.GetComponentInParent<Image>();
+            if (tabImage != null)
+            {
+                tabImage.color = active ? new Color(0.56f, 0.34f, 0.10f, 1f) : new Color(0.12f, 0.10f, 0.08f, 1f);
+            }
+        }
+    }
+
+    private void CreateDecorResourcePill(string objectName, Sprite icon, string label, Vector2 position)
+    {
+        CreateWorkshopPanelBox(decorPanel.transform, objectName, position, new Vector2(104, 40), new Color(0.12f, 0.10f, 0.08f, 1f));
+        Image iconImage = CreateWorkshopResourceIcon(decorPanel.transform, objectName + "Icon", position + new Vector2(-32, 0), icon);
+        RectTransform iconRect = iconImage.GetComponent<RectTransform>();
+        if (iconRect != null)
+        {
+            iconRect.sizeDelta = new Vector2(32, 32);
+        }
+    }
+
+    private void CreateDecorPreviewScene(Transform parent, Vector2 center)
+    {
+        Vector2 offset = center;
+        decorPreviewBackWallImage = CreateSceneQuad(parent, "DecorPreviewBackWall",
+            offset + new Vector2(-306, 145),
+            offset + new Vector2(306, 145),
+            offset + new Vector2(242, -38),
+            offset + new Vector2(-242, -38),
+            GetWallColor());
+        decorPreviewLeftWallImage = CreateSceneQuad(parent, "DecorPreviewLeftWall",
+            offset + new Vector2(-306, 145),
+            offset + new Vector2(-242, -38),
+            offset + new Vector2(-242, -160),
+            offset + new Vector2(-362, -78),
+            ShadeColor(GetWallColor(), 0.84f));
+        decorPreviewRightWallImage = CreateSceneQuad(parent, "DecorPreviewRightWall",
+            offset + new Vector2(306, 145),
+            offset + new Vector2(242, -38),
+            offset + new Vector2(242, -160),
+            offset + new Vector2(362, -78),
+            ShadeColor(GetWallColor(), 0.78f));
+        decorPreviewFloorImage = CreateSceneQuad(parent, "DecorPreviewFloor",
+            offset + new Vector2(-242, -38),
+            offset + new Vector2(242, -38),
+            offset + new Vector2(362, -78),
+            offset + new Vector2(-362, -78),
+            GetFloorColor());
+
+        CreatePanelStrip(parent, "DecorPreviewWallTrim", offset + new Vector2(0, 104), new Vector2(510, 32), new Color(0.72f, 0.46f, 0.22f, 1f));
+        Image panelLine = CreateWorkshopPanelBox(parent, "DecorPreviewWallPanel", offset + new Vector2(0, 23), new Vector2(430, 58), new Color(1f, 0.73f, 0.84f, 0.34f));
+        panelLine.raycastTarget = false;
+        CreatePanelStrip(parent, "DecorPreviewPanelInner", offset + new Vector2(0, 23), new Vector2(385, 4), new Color(0.45f, 0.22f, 0.26f, 0.8f));
+
+        Image tableTop = CreateWorkshopPanelBox(parent, "DecorPreviewTableTop", offset + new Vector2(0, -98), new Vector2(170, 40), GetTableColor());
+        tableTop.raycastTarget = false;
+        tableTop.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        decorPreviewTableTopImage = tableTop;
+        Image tableLeg = CreateWorkshopPanelBox(parent, "DecorPreviewTableLeg", offset + new Vector2(0, -145), new Vector2(18, 60), new Color(0.20f, 0.14f, 0.11f, 1f));
+        tableLeg.raycastTarget = false;
+        Image tableShadow = CreateWorkshopPanelBox(parent, "DecorPreviewTableShadow", offset + new Vector2(0, -176), new Vector2(210, 32), new Color(0f, 0f, 0f, 0.22f));
+        tableShadow.raycastTarget = false;
+    }
+
     private Image CreateDecorButtonIcon(TMP_Text buttonText, DecorItemData item)
     {
         if (buttonText == null || item == null)
@@ -2886,14 +3046,17 @@ public class GameManager : MonoBehaviour
         }
 
         RectTransform textRect = buttonText.GetComponent<RectTransform>();
+        RectTransform buttonRect = buttonTransform.GetComponent<RectTransform>();
+        bool compactButton = buttonRect != null && buttonRect.sizeDelta.x <= 100f;
         if (textRect != null)
         {
-            textRect.anchoredPosition = new Vector2(46, 0);
-            textRect.sizeDelta = new Vector2(240, 76);
+            textRect.anchoredPosition = compactButton ? Vector2.zero : new Vector2(46, 0);
+            textRect.sizeDelta = compactButton ? new Vector2(1, 1) : new Vector2(240, 76);
         }
 
-        buttonText.fontSize = 18;
+        buttonText.fontSize = compactButton ? 1 : 18;
         buttonText.enableWordWrapping = true;
+        buttonText.raycastTarget = false;
 
         GameObject iconObject = new GameObject("DecorIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         iconObject.transform.SetParent(buttonTransform, false);
@@ -2901,8 +3064,8 @@ public class GameManager : MonoBehaviour
         RectTransform rect = iconObject.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = new Vector2(-130, 0);
-        rect.sizeDelta = new Vector2(74, 74);
+        rect.anchoredPosition = compactButton ? Vector2.zero : new Vector2(-130, 0);
+        rect.sizeDelta = compactButton ? new Vector2(52, 44) : new Vector2(74, 74);
 
         Image image = iconObject.GetComponent<Image>();
         image.sprite = GetDecorIconSprite(item);
@@ -3759,6 +3922,7 @@ public class GameManager : MonoBehaviour
                 + "\n" + GetPreviewDecorTypeText() + " | " + statusText
                 + "\n" + (previewUnlocked ? "Sahip olundu" : "Uretim icin kaynak gerekiyor");
 
+            UpdateDecorTabs(previewItem);
             UpdateDecorResourceRow(previewItem, previewUnlocked);
         }
 
@@ -3778,7 +3942,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                decorActionButtonText.text = canUnlock ? "Uret" : "Eksik: " + GetPreviewDecorCostText();
+                decorActionButtonText.text = "Uret";
             }
 
             if (actionButton != null)
@@ -3969,21 +4133,23 @@ public class GameManager : MonoBehaviour
         bool canUnlock = CanUnlockDecorItem(item);
 
         Button button = buttonText.GetComponentInParent<Button>();
+        RectTransform buttonRect = button != null ? button.GetComponent<RectTransform>() : null;
+        bool compactButton = buttonRect != null && buttonRect.sizeDelta.x <= 100f;
         if (selected)
         {
-            buttonText.text = item.DisplayName + "\nOnizleme";
+            buttonText.text = compactButton ? "" : item.DisplayName + "\nOnizleme";
         }
         else if (unlocked)
         {
-            buttonText.text = item.DisplayName + "\nAcik";
+            buttonText.text = compactButton ? "" : item.DisplayName + "\nAcik";
         }
         else if (canUnlock)
         {
-            buttonText.text = item.DisplayName + "\nUretilebilir";
+            buttonText.text = compactButton ? "" : item.DisplayName + "\nUretilebilir";
         }
         else
         {
-            buttonText.text = item.DisplayName + "\nKilitli";
+            buttonText.text = compactButton ? "" : item.DisplayName + "\nKilitli";
         }
 
         if (button != null)
@@ -3994,19 +4160,19 @@ public class GameManager : MonoBehaviour
             {
                 if (selected)
                 {
-                    buttonImage.color = new Color(0.86f, 0.58f, 0.18f, 1f);
+                    buttonImage.color = compactButton ? new Color(0.72f, 0.45f, 0.12f, 1f) : new Color(0.86f, 0.58f, 0.18f, 1f);
                 }
                 else if (unlocked)
                 {
-                    buttonImage.color = new Color(0.26f, 0.45f, 0.34f, 1f);
+                    buttonImage.color = compactButton ? new Color(0.18f, 0.14f, 0.10f, 1f) : new Color(0.26f, 0.45f, 0.34f, 1f);
                 }
                 else if (canUnlock)
                 {
-                    buttonImage.color = new Color(0.45f, 0.32f, 0.20f, 1f);
+                    buttonImage.color = compactButton ? new Color(0.18f, 0.14f, 0.10f, 1f) : new Color(0.45f, 0.32f, 0.20f, 1f);
                 }
                 else
                 {
-                    buttonImage.color = new Color(0.22f, 0.20f, 0.19f, 1f);
+                    buttonImage.color = compactButton ? new Color(0.10f, 0.08f, 0.07f, 1f) : new Color(0.22f, 0.20f, 0.19f, 1f);
                 }
             }
         }
@@ -4064,6 +4230,49 @@ public class GameManager : MonoBehaviour
         Color normalColor = new Color(0.96f, 0.91f, 0.82f, 1f);
         Color valueColor = hasEnough ? readyColor : missingColor;
 
+        if (decorDetailIconImage != null)
+        {
+            decorDetailIconImage.sprite = GetDecorIconSprite(item);
+            decorDetailIconImage.gameObject.SetActive(hasItem && decorDetailIconImage.sprite != null);
+        }
+
+        if (decorDetailTitleText != null)
+        {
+            decorDetailTitleText.text = hasItem ? item.DisplayName : "";
+        }
+
+        if (decorDetailTypeText != null)
+        {
+            decorDetailTypeText.text = hasItem ? "Dekor / " + GetPreviewDecorTypeText() : "";
+        }
+
+        if (decorDetailStatusText != null)
+        {
+            decorDetailStatusText.text = previewUnlocked ? "Acik" : "Kilitli";
+            decorDetailStatusText.color = previewUnlocked ? readyColor : missingColor;
+        }
+
+        Color wallColor = GetWallColor();
+        Color floorColor = GetFloorColor();
+        Color tableColor = GetTableColor();
+        if (decorPreviewBackWallImage != null) decorPreviewBackWallImage.color = wallColor;
+        if (decorPreviewLeftWallImage != null) decorPreviewLeftWallImage.color = ShadeColor(wallColor, 0.84f);
+        if (decorPreviewRightWallImage != null) decorPreviewRightWallImage.color = ShadeColor(wallColor, 0.78f);
+        if (decorPreviewFloorImage != null) decorPreviewFloorImage.color = floorColor;
+        if (decorPreviewTableTopImage != null) decorPreviewTableTopImage.color = tableColor;
+        if (decorPreviewBeforeSwatchImage != null)
+        {
+            if (hasItem && item.Slot == DecorSlot.Wall) decorPreviewBeforeSwatchImage.color = GetSelectedWallColor();
+            else if (hasItem && item.Slot == DecorSlot.Floor) decorPreviewBeforeSwatchImage.color = GetSelectedFloorColor();
+            else decorPreviewBeforeSwatchImage.color = GetSelectedTableColor();
+        }
+        if (decorPreviewAfterSwatchImage != null)
+        {
+            if (hasItem && item.Slot == DecorSlot.Wall) decorPreviewAfterSwatchImage.color = wallColor;
+            else if (hasItem && item.Slot == DecorSlot.Floor) decorPreviewAfterSwatchImage.color = floorColor;
+            else decorPreviewAfterSwatchImage.color = tableColor;
+        }
+
         if (decorCostIconImage != null)
         {
             decorCostIconImage.sprite = usesWood ? GetWoodIconSprite() : GetCraftPaintIconSprite();
@@ -4073,7 +4282,8 @@ public class GameManager : MonoBehaviour
 
         if (decorCostText != null)
         {
-            decorCostText.text = previewUnlocked ? "OK" : "x" + (hasItem ? item.CostAmount : 0);
+            string resourceName = usesWood ? "Tahta" : "Boya Kutusu";
+            decorCostText.text = previewUnlocked ? resourceName + " tamam" : resourceName + "     " + available + "/" + (hasItem ? item.CostAmount : 0);
             decorCostText.color = previewUnlocked ? readyColor : valueColor;
             decorCostText.gameObject.SetActive(hasItem);
         }
@@ -4349,6 +4559,24 @@ public class GameManager : MonoBehaviour
         return new Color(0.88f, 0.95f, 1f, 1f);
     }
 
+    private Color GetSelectedWallColor()
+    {
+        int wallStyle = selectedWallStyle;
+        if (wallStyle == 1)
+            return new Color(1f, 0.72f, 0.84f, 1f);
+
+        if (wallStyle == 2)
+            return new Color(0.70f, 0.92f, 0.84f, 1f);
+
+        if (currentRoomIndex == 1)
+            return new Color(0.66f, 0.72f, 0.76f, 1f);
+
+        if (currentRoomIndex == 2)
+            return new Color(0.76f, 0.70f, 0.82f, 1f);
+
+        return new Color(0.88f, 0.95f, 1f, 1f);
+    }
+
     private Color GetFloorColor()
     {
         int floorStyle = selectedFloorStyle;
@@ -4370,6 +4598,21 @@ public class GameManager : MonoBehaviour
         return new Color(0.64f, 0.50f, 0.38f, 1f);
     }
 
+    private Color GetSelectedFloorColor()
+    {
+        int floorStyle = selectedFloorStyle;
+        if (floorStyle == 1)
+            return new Color(0.86f, 0.74f, 0.55f, 1f);
+
+        if (currentRoomIndex == 1)
+            return new Color(0.42f, 0.46f, 0.48f, 1f);
+
+        if (currentRoomIndex == 2)
+            return new Color(0.50f, 0.42f, 0.56f, 1f);
+
+        return new Color(0.64f, 0.50f, 0.38f, 1f);
+    }
+
     private Color GetTableColor()
     {
         int tableStyle = selectedTableStyle;
@@ -4379,6 +4622,21 @@ public class GameManager : MonoBehaviour
             tableStyle = previewItem.StyleId;
         }
 
+        if (tableStyle == 1)
+            return new Color(0.86f, 0.38f, 0.54f, 1f);
+
+        if (currentRoomIndex == 1)
+            return new Color(0.26f, 0.30f, 0.34f, 1f);
+
+        if (currentRoomIndex == 2)
+            return new Color(0.24f, 0.18f, 0.28f, 1f);
+
+        return new Color(0.45f, 0.25f, 0.14f, 1f);
+    }
+
+    private Color GetSelectedTableColor()
+    {
+        int tableStyle = selectedTableStyle;
         if (tableStyle == 1)
             return new Color(0.86f, 0.38f, 0.54f, 1f);
 
