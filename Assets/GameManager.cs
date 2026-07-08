@@ -2347,19 +2347,15 @@ public class GameManager : MonoBehaviour
         title.color = new Color(1f, 0.80f, 0.40f);
         title.fontStyle = FontStyles.Bold;
 
-        TMP_Text subtitle = CreateText(decorPanel.transform, "WorkshopSubtitle", "Dekoru sec", new Vector2(-405, 304), new Vector2(120, 28), 14);
-        subtitle.color = new Color(0.92f, 0.82f, 0.68f);
-        subtitle.alignment = TextAlignmentOptions.Left;
-
         decorTabTexts.Clear();
-        decorTabTexts.Add(CreateDecorTabButton("DecorWallTab", "Duvar", new Vector2(-280, 304), PreviewPinkWall, true));
-        decorTabTexts.Add(CreateDecorTabButton("DecorFloorTab", "Zemin", new Vector2(-180, 304), PreviewCreamFloor, false));
-        decorTabTexts.Add(CreateDecorTabButton("DecorTableTab", "Masa", new Vector2(-80, 304), PreviewRoseTable, false));
-        decorTabTexts.Add(CreateDecorTabButton("DecorShelfTab", "Raf", new Vector2(20, 304), PreviewPinkWall, false));
-        decorTabTexts.Add(CreateDecorTabButton("DecorCounterTab", "Tezgah", new Vector2(120, 304), PreviewPinkWall, false));
+        decorTabTexts.Add(CreateDecorTabButton("DecorWallTab", "Duvar", new Vector2(-255, 304), PreviewPinkWall, true));
+        decorTabTexts.Add(CreateDecorTabButton("DecorFloorTab", "Zemin", new Vector2(-155, 304), PreviewCreamFloor, false));
+        decorTabTexts.Add(CreateDecorTabButton("DecorTableTab", "Masa", new Vector2(-55, 304), PreviewRoseTable, false));
+        decorTabTexts.Add(CreateDecorTabButton("DecorShelfTab", "Raf", new Vector2(45, 304), PreviewPinkWall, false));
+        decorTabTexts.Add(CreateDecorTabButton("DecorCounterTab", "Tezgah", new Vector2(145, 304), PreviewPinkWall, false));
 
-        CreateDecorResourcePill("DecorPaintStoragePill", GetCraftPaintIconSprite(), "x0", new Vector2(425, 304));
-        CreateDecorResourcePill("DecorWoodStoragePill", GetWoodIconSprite(), "x0", new Vector2(545, 304));
+        CreateDecorResourcePill("DecorPaintStoragePill", new Vector2(422, 304));
+        CreateDecorResourcePill("DecorWoodStoragePill", new Vector2(542, 304));
 
         CreateWorkshopPanelBox(decorPanel.transform, "WorkshopPreviewPanel", new Vector2(-180, -34), new Vector2(748, 478), new Color(0.11f, 0.09f, 0.08f, 1f));
         CreateWorkshopPanelBox(decorPanel.transform, "WorkshopCraftPanel", new Vector2(395, -34), new Vector2(342, 478), new Color(0.11f, 0.09f, 0.08f, 1f));
@@ -2413,20 +2409,35 @@ public class GameManager : MonoBehaviour
         resourceTitle.fontStyle = FontStyles.Bold;
 
         CreateWorkshopPanelBox(decorPanel.transform, "DecorCostPlate", new Vector2(410, -128), new Vector2(278, 64), new Color(0.17f, 0.13f, 0.10f, 1f));
-        decorCostIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorCostIcon", new Vector2(292, -128), GetCraftPaintIconSprite());
-        decorCostText = CreateText(decorPanel.transform, "DecorCostText", "", new Vector2(410, -128), new Vector2(220, 38), 16);
+        decorCostIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorCostIcon", new Vector2(300, -128), GetCraftPaintIconSprite());
+        RectTransform costIconRect = decorCostIconImage.GetComponent<RectTransform>();
+        if (costIconRect != null)
+        {
+            costIconRect.sizeDelta = new Vector2(38, 38);
+        }
+        decorCostText = CreateText(decorPanel.transform, "DecorCostText", "", new Vector2(430, -128), new Vector2(190, 38), 16);
         decorCostText.color = new Color(0.96f, 0.91f, 0.82f);
         decorCostText.alignment = TextAlignmentOptions.Left;
         decorCostText.fontStyle = FontStyles.Bold;
 
-        decorStoragePaintIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStoragePaintIcon", new Vector2(430, 304), GetCraftPaintIconSprite());
-        decorStoragePaintText = CreateText(decorPanel.transform, "DecorStoragePaintText", "", new Vector2(480, 304), new Vector2(80, 30), 16);
+        decorStoragePaintIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStoragePaintIcon", new Vector2(392, 304), GetCraftPaintIconSprite());
+        RectTransform storagePaintIconRect = decorStoragePaintIconImage.GetComponent<RectTransform>();
+        if (storagePaintIconRect != null)
+        {
+            storagePaintIconRect.sizeDelta = new Vector2(32, 32);
+        }
+        decorStoragePaintText = CreateText(decorPanel.transform, "DecorStoragePaintText", "", new Vector2(450, 304), new Vector2(70, 30), 16);
         decorStoragePaintText.color = new Color(0.96f, 0.91f, 0.82f);
         decorStoragePaintText.alignment = TextAlignmentOptions.Left;
         decorStoragePaintText.fontStyle = FontStyles.Bold;
 
-        decorStorageWoodIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStorageWoodIcon", new Vector2(550, 304), GetWoodIconSprite());
-        decorStorageWoodText = CreateText(decorPanel.transform, "DecorStorageWoodText", "", new Vector2(600, 304), new Vector2(80, 30), 16);
+        decorStorageWoodIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStorageWoodIcon", new Vector2(512, 304), GetWoodIconSprite());
+        RectTransform storageWoodIconRect = decorStorageWoodIconImage.GetComponent<RectTransform>();
+        if (storageWoodIconRect != null)
+        {
+            storageWoodIconRect.sizeDelta = new Vector2(32, 32);
+        }
+        decorStorageWoodText = CreateText(decorPanel.transform, "DecorStorageWoodText", "", new Vector2(570, 304), new Vector2(70, 30), 16);
         decorStorageWoodText.color = new Color(0.96f, 0.91f, 0.82f);
         decorStorageWoodText.alignment = TextAlignmentOptions.Left;
         decorStorageWoodText.fontStyle = FontStyles.Bold;
@@ -2978,15 +2989,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void CreateDecorResourcePill(string objectName, Sprite icon, string label, Vector2 position)
+    private void CreateDecorResourcePill(string objectName, Vector2 position)
     {
         CreateWorkshopPanelBox(decorPanel.transform, objectName, position, new Vector2(104, 40), new Color(0.12f, 0.10f, 0.08f, 1f));
-        Image iconImage = CreateWorkshopResourceIcon(decorPanel.transform, objectName + "Icon", position + new Vector2(-32, 0), icon);
-        RectTransform iconRect = iconImage.GetComponent<RectTransform>();
-        if (iconRect != null)
-        {
-            iconRect.sizeDelta = new Vector2(32, 32);
-        }
     }
 
     private void CreateDecorPreviewScene(Transform parent, Vector2 center)
