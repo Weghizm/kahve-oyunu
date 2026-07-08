@@ -184,6 +184,8 @@ public class GameManager : MonoBehaviour
     private TMP_Text customerButtonText;
     private TMP_Text vipBadgeText;
     private TMP_Text vipHudText;
+    private TMP_Text vipHudLevelText;
+    private Image vipHudIconImage;
     private TMP_Text vipPanelText;
     private TMP_Text vipUpgradeButtonText;
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
@@ -251,6 +253,7 @@ public class GameManager : MonoBehaviour
     private Sprite gemIconSprite;
     private Sprite woodIconSprite;
     private Sprite levelBadgeSprite;
+    private Sprite vipIconSprite;
     private Sprite warmWoodCafeSceneSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
     private readonly List<GameObject> cafePrototypeVisuals = new List<GameObject>();
@@ -1289,7 +1292,8 @@ public class GameManager : MonoBehaviour
         chestText = CreateText(gameFrame, "ChestText", "", new Vector2(-760, 456), new Vector2(260, 38), 20);
         chestText.gameObject.SetActive(false);
         xpText = CreateXpBar(gameFrame, new Vector2(220, 502), new Vector2(175, 42));
-        vipHudText = CreateButton(gameFrame, "VipHudButton", "VIP 0", new Vector2(430, 502), new Vector2(126, 42), OpenVipPanel, new Color(0.72f, 0.54f, 0.18f), 20);
+        vipHudText = CreateButton(gameFrame, "VipHudButton", "", new Vector2(430, 502), new Vector2(78, 78), OpenVipPanel, new Color(1f, 1f, 1f, 0f), 18);
+        ConfigureVipHudButton(vipHudText);
 
         CreateOfflinePanel(canvas.transform);
         CreateDailyRewardPanel(canvas.transform);
@@ -2154,6 +2158,16 @@ public class GameManager : MonoBehaviour
         return levelBadgeSprite;
     }
 
+    private Sprite GetVipIconSprite()
+    {
+        if (vipIconSprite == null)
+        {
+            vipIconSprite = LoadSpriteFromResources("Art/UI/vip_icon");
+        }
+
+        return vipIconSprite;
+    }
+
     private Sprite GetWarmWoodCafeSceneSprite()
     {
         if (warmWoodCafeSceneSprite == null)
@@ -2192,6 +2206,48 @@ public class GameManager : MonoBehaviour
         buttonImage.sprite = sprite;
         buttonImage.color = Color.white;
         buttonImage.preserveAspect = true;
+    }
+
+    private void ConfigureVipHudButton(TMP_Text buttonText)
+    {
+        if (buttonText == null)
+        {
+            return;
+        }
+
+        Transform buttonTransform = buttonText.transform.parent;
+        if (buttonTransform == null)
+        {
+            return;
+        }
+
+        Image buttonImage = buttonTransform.GetComponent<Image>();
+        if (buttonImage != null)
+        {
+            buttonImage.color = new Color(1f, 1f, 1f, 0f);
+        }
+
+        buttonText.text = "";
+        buttonText.raycastTarget = false;
+
+        GameObject iconObject = new GameObject("VipHudIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        iconObject.transform.SetParent(buttonTransform, false);
+        RectTransform iconRect = iconObject.GetComponent<RectTransform>();
+        iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+        iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+        iconRect.anchoredPosition = Vector2.zero;
+        iconRect.sizeDelta = new Vector2(78, 78);
+
+        vipHudIconImage = iconObject.GetComponent<Image>();
+        vipHudIconImage.sprite = GetVipIconSprite();
+        vipHudIconImage.color = Color.white;
+        vipHudIconImage.preserveAspect = true;
+        vipHudIconImage.raycastTarget = false;
+
+        vipHudLevelText = CreateText(buttonTransform, "VipHudLevelText", "", new Vector2(24, -26), new Vector2(32, 24), 15);
+        vipHudLevelText.color = Color.white;
+        vipHudLevelText.fontStyle = FontStyles.Bold;
+        vipHudLevelText.raycastTarget = false;
     }
 
     public void OpenDecorPanel()
@@ -3696,7 +3752,10 @@ public class GameManager : MonoBehaviour
             gemText.text = FormatResourceAmount(gems);
 
         if (vipHudText != null)
-            vipHudText.text = "VIP " + vipLevel;
+            vipHudText.text = "";
+
+        if (vipHudLevelText != null)
+            vipHudLevelText.text = vipLevel.ToString();
 
         if (chestText != null)
             chestText.gameObject.SetActive(false);
