@@ -254,6 +254,10 @@ public class GameManager : MonoBehaviour
     private Sprite woodIconSprite;
     private Sprite levelBadgeSprite;
     private Sprite vipIconSprite;
+    private Sprite tasksMenuIconSprite;
+    private Sprite dailyTasksMenuIconSprite;
+    private Sprite dailyRewardMenuIconSprite;
+    private Sprite decorMenuIconSprite;
     private Sprite warmWoodCafeSceneSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
     private readonly List<GameObject> cafePrototypeVisuals = new List<GameObject>();
@@ -1315,14 +1319,18 @@ public class GameManager : MonoBehaviour
         CreateButton(gameFrame, "SellCoffeeButton", "SAT", new Vector2(0, -482), new Vector2(124, 56), SellCoffee, new Color(0.43f, 0.24f, 0.14f), 23);
         adBoostButtonText = CreateButton(gameFrame, "AdBoostButton", "2x", new Vector2(850, 250), new Vector2(78, 78), WatchAdForBoost, new Color(0.18f, 0.38f, 0.82f), 20);
         CreateButton(gameFrame, "OpenTestPanelButton", "T", new Vector2(850, -420), new Vector2(70, 64), OpenTestPanel, new Color(0.20f, 0.20f, 0.20f), 22);
-        TMP_Text tasksButtonText = CreateButton(gameFrame, "TasksButton", "G", new Vector2(-890, 285), new Vector2(74, 70), OpenTaskPanel, new Color(0.36f, 0.24f, 0.62f), 24);
-        taskNotifyDot = CreateNotifyDot(tasksButtonText.transform.parent, new Vector2(30, 28));
-        TMP_Text dailyTasksButtonText = CreateButton(gameFrame, "DailyTasksButton", "D", new Vector2(-890, 195), new Vector2(74, 70), OpenDailyTasksPanel, new Color(0.28f, 0.45f, 0.78f), 24);
-        dailyTasksNotifyDot = CreateNotifyDot(dailyTasksButtonText.transform.parent, new Vector2(30, 28));
-        CreateButton(gameFrame, "DailyRewardButton", "O", new Vector2(-890, 105), new Vector2(74, 70), OpenDailyRewardPanel, new Color(0.84f, 0.38f, 0.22f), 24);
+        TMP_Text tasksButtonText = CreateButton(gameFrame, "TasksButton", "", new Vector2(-890, 285), new Vector2(82, 78), OpenTaskPanel, Color.white, 24);
+        ApplyButtonSprite(tasksButtonText, GetTasksMenuIconSprite());
+        taskNotifyDot = CreateNotifyDot(tasksButtonText.transform.parent, new Vector2(34, 31));
+        TMP_Text dailyTasksButtonText = CreateButton(gameFrame, "DailyTasksButton", "", new Vector2(-890, 195), new Vector2(82, 78), OpenDailyTasksPanel, Color.white, 24);
+        ApplyButtonSprite(dailyTasksButtonText, GetDailyTasksMenuIconSprite());
+        dailyTasksNotifyDot = CreateNotifyDot(dailyTasksButtonText.transform.parent, new Vector2(34, 31));
+        TMP_Text dailyRewardMenuButtonText = CreateButton(gameFrame, "DailyRewardButton", "", new Vector2(-890, 105), new Vector2(82, 78), OpenDailyRewardPanel, Color.white, 24);
+        ApplyButtonSprite(dailyRewardMenuButtonText, GetDailyRewardMenuIconSprite());
         TMP_Text chestsButtonText = CreateButton(gameFrame, "ChestsButton", "", new Vector2(-890, 15), new Vector2(82, 78), OpenChestPanel, Color.white, 24);
         ApplyButtonSprite(chestsButtonText, GetChestButtonSprite());
-        CreateButton(gameFrame, "DecorButton", "Dek", new Vector2(-890, -75), new Vector2(74, 70), OpenDecorPanel, new Color(0.72f, 0.30f, 0.50f), 19);
+        TMP_Text decorButtonText = CreateButton(gameFrame, "DecorButton", "", new Vector2(-890, -75), new Vector2(82, 78), OpenDecorPanel, Color.white, 19);
+        ApplyButtonSprite(decorButtonText, GetDecorMenuIconSprite());
 
         coffeeUpgradeButtonText = CreateButton(gameFrame, "CoffeeUpgradeButton", "Kah", new Vector2(-150, -482), new Vector2(104, 56), OpenCoffeePanel, new Color(0.86f, 0.56f, 0.20f), 19);
         coffeeUpgradeButton = coffeeUpgradeButtonText.GetComponentInParent<Button>();
@@ -2166,6 +2174,46 @@ public class GameManager : MonoBehaviour
         }
 
         return vipIconSprite;
+    }
+
+    private Sprite GetTasksMenuIconSprite()
+    {
+        if (tasksMenuIconSprite == null)
+        {
+            tasksMenuIconSprite = LoadSpriteFromResources("Art/UI/tasks_icon");
+        }
+
+        return tasksMenuIconSprite;
+    }
+
+    private Sprite GetDailyTasksMenuIconSprite()
+    {
+        if (dailyTasksMenuIconSprite == null)
+        {
+            dailyTasksMenuIconSprite = LoadSpriteFromResources("Art/UI/daily_tasks_icon");
+        }
+
+        return dailyTasksMenuIconSprite;
+    }
+
+    private Sprite GetDailyRewardMenuIconSprite()
+    {
+        if (dailyRewardMenuIconSprite == null)
+        {
+            dailyRewardMenuIconSprite = LoadSpriteFromResources("Art/UI/daily_reward_icon");
+        }
+
+        return dailyRewardMenuIconSprite;
+    }
+
+    private Sprite GetDecorMenuIconSprite()
+    {
+        if (decorMenuIconSprite == null)
+        {
+            decorMenuIconSprite = LoadSpriteFromResources("Art/UI/decor_menu_icon");
+        }
+
+        return decorMenuIconSprite;
     }
 
     private Sprite GetWarmWoodCafeSceneSprite()
