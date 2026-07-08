@@ -4687,6 +4687,7 @@ public class GameManager : MonoBehaviour
     {
         bool unlocked = IsCurrentRoomUnlocked();
         bool showStartingRoom = currentRoomIndex == 0;
+        bool useCafeSceneImage = showStartingRoom && cafeSceneImage != null && cafeSceneImage.sprite != null;
         for (int i = 0; i < startingRoomVisuals.Count; i++)
         {
             if (startingRoomVisuals[i] != null)
@@ -4694,6 +4695,23 @@ public class GameManager : MonoBehaviour
                 startingRoomVisuals[i].SetActive(showStartingRoom);
             }
         }
+
+        SetSceneGraphicActive(isoFloorShadowGraphic, !useCafeSceneImage);
+        SetSceneGraphicActive(isoFloorGraphic, !useCafeSceneImage);
+        SetSceneGraphicActive(isoBackWallGraphic, !useCafeSceneImage);
+        SetSceneGraphicActive(isoLeftWallGraphic, !useCafeSceneImage);
+        SetSceneGraphicActive(isoRightWallGraphic, !useCafeSceneImage);
+        SetSceneImageActive(backWallTopTrim, !useCafeSceneImage);
+        SetSceneImageActive(leftWallImage, !useCafeSceneImage);
+        SetSceneImageActive(rightWallImage, !useCafeSceneImage);
+        SetSceneImageActive(floorPreviewImage, !useCafeSceneImage);
+        SetSceneImageActive(leftCornerLine, !useCafeSceneImage);
+        SetSceneImageActive(rightCornerLine, !useCafeSceneImage);
+        SetSceneImageActive(floorBackEdge, !useCafeSceneImage);
+        SetSceneImageActive(floorCenterLine, !useCafeSceneImage);
+        SetSceneImageActive(floorLeftPerspectiveLine, !useCafeSceneImage);
+        SetSceneImageActive(floorRightPerspectiveLine, !useCafeSceneImage);
+        SetSceneImageActive(roomAccentStrip, !useCafeSceneImage);
 
         SetSceneImageActive(productionConveyorVisual, currentRoomIndex == 1 && unlocked);
         SetSceneImageActive(productionMachineVisual, currentRoomIndex == 1 && unlocked);
@@ -4732,6 +4750,14 @@ public class GameManager : MonoBehaviour
         if (image != null)
         {
             image.gameObject.SetActive(active);
+        }
+    }
+
+    private void SetSceneGraphicActive(Graphic graphic, bool active)
+    {
+        if (graphic != null)
+        {
+            graphic.gameObject.SetActive(active);
         }
     }
 
