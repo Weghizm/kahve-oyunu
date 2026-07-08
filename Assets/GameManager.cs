@@ -1131,6 +1131,11 @@ public class GameManager : MonoBehaviour
         return vipLevel < MaxVipLevel && gems >= GetVipUpgradeCost();
     }
 
+    private string GetVipBonusValueText(int percent)
+    {
+        return percent > 0 ? "+" + percent + "%" : "VIP al";
+    }
+
     private int GetVipUpgradeCost()
     {
         switch (vipLevel)
@@ -3214,13 +3219,13 @@ public class GameManager : MonoBehaviour
         Image dot = CreatePanelStrip(pill.transform, "Icon", new Vector2(-58, 2), new Vector2(44, 44), new Color(iconColor.r, iconColor.g, iconColor.b, 0f));
         dot.raycastTarget = false;
 
-        TMP_Text text = CreateText(pill.transform, "Text", title + "\n" + value, new Vector2(18, 6), new Vector2(112, 46), 15);
+        TMP_Text text = CreateText(pill.transform, "Text", title + "\n" + value, new Vector2(18, 5), new Vector2(116, 48), 16);
         text.color = new Color(0.42f, 0.22f, 0.08f, 1f);
         text.alignment = TextAlignmentOptions.Left;
         text.fontStyle = FontStyles.Bold;
         text.enableAutoSizing = true;
-        text.fontSizeMin = 12;
-        text.fontSizeMax = 15;
+        text.fontSizeMin = 11;
+        text.fontSizeMax = 16;
         return text;
     }
 
@@ -4372,16 +4377,16 @@ public class GameManager : MonoBehaviour
             vipLevelSummaryText.text = "VIP " + vipLevel + " / " + MaxVipLevel;
 
         if (vipCoinBonusText != null)
-            vipCoinBonusText.text = "Coin\n+" + GetVipCoinBonusPercent(vipLevel) + "%";
+            vipCoinBonusText.text = "Coin\n" + GetVipBonusValueText(GetVipCoinBonusPercent(vipLevel));
 
         if (vipXpBonusText != null)
-            vipXpBonusText.text = "XP\n+" + GetVipXpBonusPercent(vipLevel) + "%";
+            vipXpBonusText.text = "XP\n" + GetVipBonusValueText(GetVipXpBonusPercent(vipLevel));
 
         if (vipCoffeeBonusText != null)
-            vipCoffeeBonusText.text = "Musteri\n+" + GetVipPatienceBonusPercent(vipLevel) + "%";
+            vipCoffeeBonusText.text = "Musteri\n" + GetVipBonusValueText(GetVipPatienceBonusPercent(vipLevel));
 
         if (vipPassiveBonusText != null)
-            vipPassiveBonusText.text = "Pasif\n+" + GetVipPassiveBonusPercent(vipLevel) + "%";
+            vipPassiveBonusText.text = "Pasif\n" + GetVipBonusValueText(GetVipPassiveBonusPercent(vipLevel));
 
         if (vipDecorBonusText != null)
             vipDecorBonusText.text = "Dekor\n" + (vipLevel >= 3 ? "Acik" : "VIP 3");
