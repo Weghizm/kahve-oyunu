@@ -190,6 +190,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text vipUpgradeButtonText;
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
     private readonly List<Image> vipLevelCardImages = new List<Image>();
+    private readonly List<Image> vipLevelLockImages = new List<Image>();
     private TMP_Text passiveIncomePanelText;
     private GameObject coinInfoPopup;
     private GameObject offlinePanel;
@@ -261,6 +262,7 @@ public class GameManager : MonoBehaviour
     private Sprite decorMenuIconSprite;
     private Sprite notifyExclamationSprite;
     private Sprite vipPanelBackgroundSprite;
+    private Sprite vipLockIconSprite;
     private Sprite warmWoodCafeSceneSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
     private readonly List<GameObject> cafePrototypeVisuals = new List<GameObject>();
@@ -2265,6 +2267,16 @@ public class GameManager : MonoBehaviour
         return vipPanelBackgroundSprite;
     }
 
+    private Sprite GetVipLockIconSprite()
+    {
+        if (vipLockIconSprite == null)
+        {
+            vipLockIconSprite = LoadSpriteFromResources("Art/UI/vip_lock_icon");
+        }
+
+        return vipLockIconSprite;
+    }
+
     private Sprite GetWarmWoodCafeSceneSprite()
     {
         if (warmWoodCafeSceneSprite == null)
@@ -3028,6 +3040,7 @@ public class GameManager : MonoBehaviour
 
         vipLevelCardTexts.Clear();
         vipLevelCardImages.Clear();
+        vipLevelLockImages.Clear();
         for (int i = 1; i <= MaxVipLevel; i++)
         {
             float x = 76f + ((i - 1) * 151f);
@@ -3084,6 +3097,25 @@ public class GameManager : MonoBehaviour
         text.enableAutoSizing = true;
         text.fontSizeMin = textOnly ? 10 : 12;
         text.fontSizeMax = textOnly ? 15 : 17;
+
+        if (textOnly)
+        {
+            GameObject lockObject = new GameObject("LockIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            lockObject.transform.SetParent(cardObject.transform, false);
+            RectTransform lockRect = lockObject.GetComponent<RectTransform>();
+            lockRect.anchorMin = new Vector2(0.5f, 0.5f);
+            lockRect.anchorMax = new Vector2(0.5f, 0.5f);
+            lockRect.anchoredPosition = new Vector2(0, 54);
+            lockRect.sizeDelta = new Vector2(56, 56);
+
+            Image lockImage = lockObject.GetComponent<Image>();
+            lockImage.sprite = GetVipLockIconSprite();
+            lockImage.color = Color.white;
+            lockImage.preserveAspect = true;
+            lockImage.raycastTarget = false;
+            vipLevelLockImages.Add(lockImage);
+        }
+
         return text;
     }
 
@@ -4253,8 +4285,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < vipLevelCardTexts.Count; i++)
         {
             int cardLevel = i + 1;
-            vipLevelCardTexts[i].text = GetVipCardText(cardLevel);
-            vipLevelCardTexts[i].color = GetVipTierTextColor(cardLevel);
+            vipLevelCardTexts[i].text = "";
 
             if (i < vipLevelCardImages.Count)
             {
@@ -4271,6 +4302,13 @@ public class GameManager : MonoBehaviour
                 }
 
                 vipLevelCardImages[i].color = cardColor;
+            }
+
+            if (i < vipLevelLockImages.Count)
+            {
+                bool locked = vipLevel < cardLevel;
+                vipLevelLockImages[i].gameObject.SetActive(locked);
+                vipLevelLockImages[i].color = new Color(1f, 1f, 1f, locked ? 0.86f : 0f);
             }
         }
 
