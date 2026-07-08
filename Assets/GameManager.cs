@@ -2335,119 +2335,119 @@ public class GameManager : MonoBehaviour
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
         panelRect.anchoredPosition = new Vector2(0, 0);
-        panelRect.sizeDelta = new Vector2(1365, 768);
+        panelRect.sizeDelta = new Vector2(1220, 700);
 
         Image panelImage = decorPanel.GetComponent<Image>();
         panelImage.color = new Color(0.08f, 0.07f, 0.06f, 1f);
 
-        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopTopBar", new Vector2(0, 332), new Vector2(1318, 68), new Color(0.13f, 0.10f, 0.08f, 1f));
-        CreatePanelStrip(decorPanel.transform, "WorkshopTopGoldLine", new Vector2(0, 298), new Vector2(1320, 2), new Color(0.88f, 0.56f, 0.18f, 0.9f));
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopTopBar", new Vector2(0, 302), new Vector2(1170, 62), new Color(0.13f, 0.10f, 0.08f, 1f));
+        CreatePanelStrip(decorPanel.transform, "WorkshopTopGoldLine", new Vector2(0, 270), new Vector2(1172, 2), new Color(0.88f, 0.56f, 0.18f, 0.9f));
 
-        TMP_Text title = CreateText(decorPanel.transform, "DecorPanelTitle", "ATOLYE", new Vector2(-584, 332), new Vector2(210, 58), 34);
+        TMP_Text title = CreateText(decorPanel.transform, "DecorPanelTitle", "ATOLYE", new Vector2(-505, 304), new Vector2(170, 48), 31);
         title.color = new Color(1f, 0.80f, 0.40f);
         title.fontStyle = FontStyles.Bold;
 
-        TMP_Text subtitle = CreateText(decorPanel.transform, "WorkshopSubtitle", "Dekoru sec, dukkanda onizle, sonra uret ya da kullan", new Vector2(-300, 332), new Vector2(520, 34), 17);
+        TMP_Text subtitle = CreateText(decorPanel.transform, "WorkshopSubtitle", "Dekoru sec", new Vector2(-405, 304), new Vector2(120, 28), 14);
         subtitle.color = new Color(0.92f, 0.82f, 0.68f);
         subtitle.alignment = TextAlignmentOptions.Left;
 
         decorTabTexts.Clear();
-        decorTabTexts.Add(CreateDecorTabButton("DecorWallTab", "Duvar", new Vector2(-430, 332), PreviewPinkWall, true));
-        decorTabTexts.Add(CreateDecorTabButton("DecorFloorTab", "Zemin", new Vector2(-318, 332), PreviewCreamFloor, false));
-        decorTabTexts.Add(CreateDecorTabButton("DecorTableTab", "Masa", new Vector2(-206, 332), PreviewRoseTable, false));
-        decorTabTexts.Add(CreateDecorTabButton("DecorShelfTab", "Raf", new Vector2(-94, 332), PreviewPinkWall, false));
-        decorTabTexts.Add(CreateDecorTabButton("DecorCounterTab", "Tezgah", new Vector2(18, 332), PreviewPinkWall, false));
+        decorTabTexts.Add(CreateDecorTabButton("DecorWallTab", "Duvar", new Vector2(-280, 304), PreviewPinkWall, true));
+        decorTabTexts.Add(CreateDecorTabButton("DecorFloorTab", "Zemin", new Vector2(-180, 304), PreviewCreamFloor, false));
+        decorTabTexts.Add(CreateDecorTabButton("DecorTableTab", "Masa", new Vector2(-80, 304), PreviewRoseTable, false));
+        decorTabTexts.Add(CreateDecorTabButton("DecorShelfTab", "Raf", new Vector2(20, 304), PreviewPinkWall, false));
+        decorTabTexts.Add(CreateDecorTabButton("DecorCounterTab", "Tezgah", new Vector2(120, 304), PreviewPinkWall, false));
 
-        CreateDecorResourcePill("DecorPaintStoragePill", GetCraftPaintIconSprite(), "x0", new Vector2(472, 332));
-        CreateDecorResourcePill("DecorWoodStoragePill", GetWoodIconSprite(), "x0", new Vector2(604, 332));
+        CreateDecorResourcePill("DecorPaintStoragePill", GetCraftPaintIconSprite(), "x0", new Vector2(425, 304));
+        CreateDecorResourcePill("DecorWoodStoragePill", GetWoodIconSprite(), "x0", new Vector2(545, 304));
 
-        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopPreviewPanel", new Vector2(-220, -42), new Vector2(862, 556), new Color(0.11f, 0.09f, 0.08f, 1f));
-        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopCraftPanel", new Vector2(448, -42), new Vector2(392, 556), new Color(0.11f, 0.09f, 0.08f, 1f));
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopPreviewPanel", new Vector2(-180, -34), new Vector2(748, 478), new Color(0.11f, 0.09f, 0.08f, 1f));
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopCraftPanel", new Vector2(395, -34), new Vector2(342, 478), new Color(0.11f, 0.09f, 0.08f, 1f));
 
-        TMP_Text previewTitle = CreateText(decorPanel.transform, "WorkshopPreviewTitle", "Dukkan Parca Onizlemesi", new Vector2(-548, 214), new Vector2(360, 40), 22);
+        TMP_Text previewTitle = CreateText(decorPanel.transform, "WorkshopPreviewTitle", "Dukkan Onizlemesi", new Vector2(-500, 178), new Vector2(300, 34), 21);
         previewTitle.color = new Color(1f, 0.77f, 0.34f);
         previewTitle.alignment = TextAlignmentOptions.Left;
         previewTitle.fontStyle = FontStyles.Bold;
 
-        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopSceneFrame", new Vector2(-220, 18), new Vector2(806, 362), new Color(0.15f, 0.12f, 0.10f, 1f));
-        CreateDecorPreviewScene(decorPanel.transform, new Vector2(-220, 18));
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopSceneFrame", new Vector2(-180, 0), new Vector2(682, 304), new Color(0.15f, 0.12f, 0.10f, 1f));
+        CreateDecorPreviewScene(decorPanel.transform, new Vector2(-180, 0));
 
-        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopSelectedPlate", new Vector2(-340, -250), new Vector2(482, 86), new Color(0.16f, 0.12f, 0.10f, 1f));
-        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(-340, -250), new Vector2(430, 66), 18);
+        CreateWorkshopPanelBox(decorPanel.transform, "WorkshopSelectedPlate", new Vector2(-290, -230), new Vector2(420, 76), new Color(0.16f, 0.12f, 0.10f, 1f));
+        decorPanelText = CreateText(decorPanel.transform, "DecorPanelText", "", new Vector2(-290, -230), new Vector2(370, 58), 16);
         decorPanelText.color = new Color(0.96f, 0.91f, 0.82f);
         decorPanelText.alignment = TextAlignmentOptions.Left;
         decorPanelText.enableWordWrapping = true;
 
-        TMP_Text beforeLabel = CreateText(decorPanel.transform, "DecorBeforeLabel", "ONCE", new Vector2(18, -216), new Vector2(80, 24), 13);
+        TMP_Text beforeLabel = CreateText(decorPanel.transform, "DecorBeforeLabel", "ONCE", new Vector2(0, -206), new Vector2(76, 22), 12);
         beforeLabel.color = new Color(0.70f, 0.62f, 0.50f);
-        decorPreviewBeforeSwatchImage = CreateWorkshopPanelBox(decorPanel.transform, "DecorBeforeSwatch", new Vector2(18, -246), new Vector2(68, 44), new Color(0.70f, 0.82f, 0.78f, 1f));
-        TMP_Text afterLabel = CreateText(decorPanel.transform, "DecorAfterLabel", "SONRA", new Vector2(128, -216), new Vector2(80, 24), 13);
+        decorPreviewBeforeSwatchImage = CreateWorkshopPanelBox(decorPanel.transform, "DecorBeforeSwatch", new Vector2(0, -232), new Vector2(60, 38), new Color(0.70f, 0.82f, 0.78f, 1f));
+        TMP_Text afterLabel = CreateText(decorPanel.transform, "DecorAfterLabel", "SONRA", new Vector2(92, -206), new Vector2(76, 22), 12);
         afterLabel.color = new Color(1f, 0.77f, 0.34f);
-        decorPreviewAfterSwatchImage = CreateWorkshopPanelBox(decorPanel.transform, "DecorAfterSwatch", new Vector2(128, -246), new Vector2(68, 44), new Color(1f, 0.72f, 0.84f, 1f));
+        decorPreviewAfterSwatchImage = CreateWorkshopPanelBox(decorPanel.transform, "DecorAfterSwatch", new Vector2(92, -232), new Vector2(60, 38), new Color(1f, 0.72f, 0.84f, 1f));
 
-        TMP_Text craftTitle = CreateText(decorPanel.transform, "WorkshopCraftTitle", "Uretim Masasi", new Vector2(300, 214), new Vector2(250, 40), 22);
+        TMP_Text craftTitle = CreateText(decorPanel.transform, "WorkshopCraftTitle", "Uretim Masasi", new Vector2(270, 178), new Vector2(230, 34), 21);
         craftTitle.color = new Color(1f, 0.77f, 0.34f);
         craftTitle.alignment = TextAlignmentOptions.Left;
         craftTitle.fontStyle = FontStyles.Bold;
 
-        CreateWorkshopPanelBox(decorPanel.transform, "DecorDetailIconFrame", new Vector2(340, 64), new Vector2(206, 206), new Color(0.07f, 0.06f, 0.055f, 1f));
-        decorDetailIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorDetailIcon", new Vector2(340, 64), null);
+        CreateWorkshopPanelBox(decorPanel.transform, "DecorDetailIconFrame", new Vector2(315, 54), new Vector2(176, 176), new Color(0.09f, 0.075f, 0.065f, 1f));
+        decorDetailIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorDetailIcon", new Vector2(315, 54), null);
         RectTransform detailIconRect = decorDetailIconImage.GetComponent<RectTransform>();
-        detailIconRect.sizeDelta = new Vector2(180, 180);
+        detailIconRect.sizeDelta = new Vector2(152, 152);
 
-        decorDetailTitleText = CreateText(decorPanel.transform, "DecorDetailTitle", "", new Vector2(558, 112), new Vector2(170, 34), 22);
+        decorDetailTitleText = CreateText(decorPanel.transform, "DecorDetailTitle", "", new Vector2(490, 100), new Vector2(150, 32), 20);
         decorDetailTitleText.color = new Color(1f, 0.93f, 0.82f);
         decorDetailTitleText.alignment = TextAlignmentOptions.Left;
         decorDetailTitleText.fontStyle = FontStyles.Bold;
-        decorDetailTypeText = CreateText(decorPanel.transform, "DecorDetailType", "", new Vector2(558, 78), new Vector2(170, 28), 16);
+        decorDetailTypeText = CreateText(decorPanel.transform, "DecorDetailType", "", new Vector2(490, 68), new Vector2(150, 26), 15);
         decorDetailTypeText.color = new Color(0.78f, 0.70f, 0.58f);
         decorDetailTypeText.alignment = TextAlignmentOptions.Left;
-        decorDetailStatusText = CreateText(decorPanel.transform, "DecorDetailStatus", "", new Vector2(558, 44), new Vector2(170, 28), 18);
+        decorDetailStatusText = CreateText(decorPanel.transform, "DecorDetailStatus", "", new Vector2(490, 38), new Vector2(150, 26), 17);
         decorDetailStatusText.color = new Color(1f, 0.42f, 0.30f);
         decorDetailStatusText.alignment = TextAlignmentOptions.Left;
         decorDetailStatusText.fontStyle = FontStyles.Bold;
 
-        TMP_Text resourceTitle = CreateText(decorPanel.transform, "DecorResourcesTitle", "Kaynaklar", new Vector2(300, -90), new Vector2(250, 36), 22);
+        TMP_Text resourceTitle = CreateText(decorPanel.transform, "DecorResourcesTitle", "Kaynaklar", new Vector2(270, -78), new Vector2(220, 32), 20);
         resourceTitle.color = new Color(1f, 0.77f, 0.34f);
         resourceTitle.alignment = TextAlignmentOptions.Left;
         resourceTitle.fontStyle = FontStyles.Bold;
 
-        CreateWorkshopPanelBox(decorPanel.transform, "DecorCostPlate", new Vector2(458, -142), new Vector2(326, 74), new Color(0.17f, 0.13f, 0.10f, 1f));
-        decorCostIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorCostIcon", new Vector2(318, -142), GetCraftPaintIconSprite());
-        decorCostText = CreateText(decorPanel.transform, "DecorCostText", "", new Vector2(452, -142), new Vector2(265, 42), 18);
+        CreateWorkshopPanelBox(decorPanel.transform, "DecorCostPlate", new Vector2(410, -128), new Vector2(278, 64), new Color(0.17f, 0.13f, 0.10f, 1f));
+        decorCostIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorCostIcon", new Vector2(292, -128), GetCraftPaintIconSprite());
+        decorCostText = CreateText(decorPanel.transform, "DecorCostText", "", new Vector2(410, -128), new Vector2(220, 38), 16);
         decorCostText.color = new Color(0.96f, 0.91f, 0.82f);
         decorCostText.alignment = TextAlignmentOptions.Left;
         decorCostText.fontStyle = FontStyles.Bold;
 
-        decorStoragePaintIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStoragePaintIcon", new Vector2(482, 332), GetCraftPaintIconSprite());
-        decorStoragePaintText = CreateText(decorPanel.transform, "DecorStoragePaintText", "", new Vector2(540, 332), new Vector2(90, 34), 18);
+        decorStoragePaintIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStoragePaintIcon", new Vector2(430, 304), GetCraftPaintIconSprite());
+        decorStoragePaintText = CreateText(decorPanel.transform, "DecorStoragePaintText", "", new Vector2(480, 304), new Vector2(80, 30), 16);
         decorStoragePaintText.color = new Color(0.96f, 0.91f, 0.82f);
         decorStoragePaintText.alignment = TextAlignmentOptions.Left;
         decorStoragePaintText.fontStyle = FontStyles.Bold;
 
-        decorStorageWoodIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStorageWoodIcon", new Vector2(612, 332), GetWoodIconSprite());
-        decorStorageWoodText = CreateText(decorPanel.transform, "DecorStorageWoodText", "", new Vector2(670, 332), new Vector2(90, 34), 18);
+        decorStorageWoodIconImage = CreateWorkshopResourceIcon(decorPanel.transform, "DecorStorageWoodIcon", new Vector2(550, 304), GetWoodIconSprite());
+        decorStorageWoodText = CreateText(decorPanel.transform, "DecorStorageWoodText", "", new Vector2(600, 304), new Vector2(80, 30), 16);
         decorStorageWoodText.color = new Color(0.96f, 0.91f, 0.82f);
         decorStorageWoodText.alignment = TextAlignmentOptions.Left;
         decorStorageWoodText.fontStyle = FontStyles.Bold;
 
-        decorActionButtonText = CreateButton(decorPanel.transform, "DecorActionButton", "Uret", new Vector2(552, -250), new Vector2(148, 62), ConfirmDecorPreview, new Color(0.72f, 0.45f, 0.12f), 20);
-        CreateButton(decorPanel.transform, "DecorCloseButton", "Kapat", new Vector2(390, -250), new Vector2(156, 62), CloseDecorPanel, new Color(0.18f, 0.16f, 0.14f), 20);
+        decorActionButtonText = CreateButton(decorPanel.transform, "DecorActionButton", "Uret", new Vector2(482, -230), new Vector2(128, 54), ConfirmDecorPreview, new Color(0.72f, 0.45f, 0.12f), 18);
+        CreateButton(decorPanel.transform, "DecorCloseButton", "Kapat", new Vector2(340, -230), new Vector2(128, 54), CloseDecorPanel, new Color(0.18f, 0.16f, 0.14f), 18);
 
-        CreateWorkshopPanelBox(decorPanel.transform, "DecorBottomRail", new Vector2(0, -338), new Vector2(1278, 62), new Color(0.10f, 0.08f, 0.07f, 1f));
-        TMP_Text setTitle = CreateText(decorPanel.transform, "DecorSetTitle", "Duvar Seti", new Vector2(-560, -338), new Vector2(170, 40), 22);
+        CreateWorkshopPanelBox(decorPanel.transform, "DecorBottomRail", new Vector2(0, -306), new Vector2(1128, 58), new Color(0.10f, 0.08f, 0.07f, 1f));
+        TMP_Text setTitle = CreateText(decorPanel.transform, "DecorSetTitle", "Duvar Seti", new Vector2(-500, -306), new Vector2(150, 36), 20);
         setTitle.color = new Color(1f, 0.77f, 0.34f);
         setTitle.alignment = TextAlignmentOptions.Left;
         setTitle.fontStyle = FontStyles.Bold;
-        pinkWallButtonText = CreateButton(decorPanel.transform, "PinkWallButton", "", new Vector2(-398, -338), new Vector2(62, 50), PreviewPinkWall, new Color(0.48f, 0.30f, 0.12f), 1);
-        mintWallButtonText = CreateButton(decorPanel.transform, "MintWallButton", "", new Vector2(-310, -338), new Vector2(62, 50), PreviewMintWall, new Color(0.17f, 0.14f, 0.12f), 1);
-        creamFloorButtonText = CreateButton(decorPanel.transform, "CreamFloorButton", "", new Vector2(-222, -338), new Vector2(62, 50), PreviewCreamFloor, new Color(0.17f, 0.14f, 0.12f), 1);
-        roseTableButtonText = CreateButton(decorPanel.transform, "RoseTableButton", "", new Vector2(-134, -338), new Vector2(62, 50), PreviewRoseTable, new Color(0.17f, 0.14f, 0.12f), 1);
+        pinkWallButtonText = CreateButton(decorPanel.transform, "PinkWallButton", "", new Vector2(-360, -306), new Vector2(58, 46), PreviewPinkWall, new Color(0.48f, 0.30f, 0.12f), 1);
+        mintWallButtonText = CreateButton(decorPanel.transform, "MintWallButton", "", new Vector2(-276, -306), new Vector2(58, 46), PreviewMintWall, new Color(0.17f, 0.14f, 0.12f), 1);
+        creamFloorButtonText = CreateButton(decorPanel.transform, "CreamFloorButton", "", new Vector2(-192, -306), new Vector2(58, 46), PreviewCreamFloor, new Color(0.17f, 0.14f, 0.12f), 1);
+        roseTableButtonText = CreateButton(decorPanel.transform, "RoseTableButton", "", new Vector2(-108, -306), new Vector2(58, 46), PreviewRoseTable, new Color(0.17f, 0.14f, 0.12f), 1);
         CreateDecorButtonIcon(pinkWallButtonText, GetDecorItemData(1));
         CreateDecorButtonIcon(mintWallButtonText, GetDecorItemData(2));
         CreateDecorButtonIcon(creamFloorButtonText, GetDecorItemData(3));
         CreateDecorButtonIcon(roseTableButtonText, GetDecorItemData(4));
-        TMP_Text allSetText = CreateText(decorPanel.transform, "DecorAllSetText", "Tum seti gor", new Vector2(560, -338), new Vector2(160, 40), 18);
+        TMP_Text allSetText = CreateText(decorPanel.transform, "DecorAllSetText", "Tum seti gor", new Vector2(480, -306), new Vector2(150, 36), 16);
         allSetText.color = new Color(1f, 0.77f, 0.34f);
         allSetText.alignment = TextAlignmentOptions.Right;
 
@@ -2993,42 +2993,42 @@ public class GameManager : MonoBehaviour
     {
         Vector2 offset = center;
         decorPreviewBackWallImage = CreateSceneQuad(parent, "DecorPreviewBackWall",
-            offset + new Vector2(-306, 145),
-            offset + new Vector2(306, 145),
-            offset + new Vector2(242, -38),
-            offset + new Vector2(-242, -38),
+            offset + new Vector2(-255, 118),
+            offset + new Vector2(255, 118),
+            offset + new Vector2(214, -34),
+            offset + new Vector2(-214, -34),
             GetWallColor());
         decorPreviewLeftWallImage = CreateSceneQuad(parent, "DecorPreviewLeftWall",
-            offset + new Vector2(-306, 145),
-            offset + new Vector2(-242, -38),
-            offset + new Vector2(-242, -160),
-            offset + new Vector2(-362, -78),
+            offset + new Vector2(-255, 118),
+            offset + new Vector2(-214, -34),
+            offset + new Vector2(-214, -118),
+            offset + new Vector2(-286, -78),
             ShadeColor(GetWallColor(), 0.84f));
         decorPreviewRightWallImage = CreateSceneQuad(parent, "DecorPreviewRightWall",
-            offset + new Vector2(306, 145),
-            offset + new Vector2(242, -38),
-            offset + new Vector2(242, -160),
-            offset + new Vector2(362, -78),
+            offset + new Vector2(255, 118),
+            offset + new Vector2(214, -34),
+            offset + new Vector2(214, -118),
+            offset + new Vector2(286, -78),
             ShadeColor(GetWallColor(), 0.78f));
         decorPreviewFloorImage = CreateSceneQuad(parent, "DecorPreviewFloor",
-            offset + new Vector2(-242, -38),
-            offset + new Vector2(242, -38),
-            offset + new Vector2(362, -78),
-            offset + new Vector2(-362, -78),
+            offset + new Vector2(-214, -34),
+            offset + new Vector2(214, -34),
+            offset + new Vector2(286, -78),
+            offset + new Vector2(-286, -78),
             GetFloorColor());
 
-        CreatePanelStrip(parent, "DecorPreviewWallTrim", offset + new Vector2(0, 104), new Vector2(510, 32), new Color(0.72f, 0.46f, 0.22f, 1f));
-        Image panelLine = CreateWorkshopPanelBox(parent, "DecorPreviewWallPanel", offset + new Vector2(0, 23), new Vector2(430, 58), new Color(1f, 0.73f, 0.84f, 0.34f));
+        CreatePanelStrip(parent, "DecorPreviewWallTrim", offset + new Vector2(0, 86), new Vector2(400, 22), new Color(0.70f, 0.43f, 0.20f, 0.95f));
+        Image panelLine = CreateWorkshopPanelBox(parent, "DecorPreviewWallPanel", offset + new Vector2(0, 22), new Vector2(330, 46), new Color(1f, 0.78f, 0.88f, 0.22f));
         panelLine.raycastTarget = false;
-        CreatePanelStrip(parent, "DecorPreviewPanelInner", offset + new Vector2(0, 23), new Vector2(385, 4), new Color(0.45f, 0.22f, 0.26f, 0.8f));
+        CreatePanelStrip(parent, "DecorPreviewPanelInner", offset + new Vector2(0, 22), new Vector2(270, 3), new Color(0.45f, 0.22f, 0.26f, 0.55f));
 
-        Image tableTop = CreateWorkshopPanelBox(parent, "DecorPreviewTableTop", offset + new Vector2(0, -98), new Vector2(170, 40), GetTableColor());
+        Image tableTop = CreateWorkshopPanelBox(parent, "DecorPreviewTableTop", offset + new Vector2(0, -88), new Vector2(152, 34), GetTableColor());
         tableTop.raycastTarget = false;
         tableTop.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
         decorPreviewTableTopImage = tableTop;
-        Image tableLeg = CreateWorkshopPanelBox(parent, "DecorPreviewTableLeg", offset + new Vector2(0, -145), new Vector2(18, 60), new Color(0.20f, 0.14f, 0.11f, 1f));
+        Image tableLeg = CreateWorkshopPanelBox(parent, "DecorPreviewTableLeg", offset + new Vector2(0, -126), new Vector2(16, 48), new Color(0.20f, 0.14f, 0.11f, 1f));
         tableLeg.raycastTarget = false;
-        Image tableShadow = CreateWorkshopPanelBox(parent, "DecorPreviewTableShadow", offset + new Vector2(0, -176), new Vector2(210, 32), new Color(0f, 0f, 0f, 0.22f));
+        Image tableShadow = CreateWorkshopPanelBox(parent, "DecorPreviewTableShadow", offset + new Vector2(0, -152), new Vector2(188, 24), new Color(0f, 0f, 0f, 0.18f));
         tableShadow.raycastTarget = false;
     }
 
