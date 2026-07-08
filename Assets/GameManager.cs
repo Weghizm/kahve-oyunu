@@ -198,6 +198,8 @@ public class GameManager : MonoBehaviour
     private readonly List<Image> vipLevelCardImages = new List<Image>();
     private readonly List<Image> vipLevelLockImages = new List<Image>();
     private readonly List<Image> vipLevelSelectImages = new List<Image>();
+    private readonly List<Image> vipLevelPressedShadeImages = new List<Image>();
+    private readonly List<Image> vipLevelPressedShadowImages = new List<Image>();
     private TMP_Text passiveIncomePanelText;
     private GameObject coinInfoPopup;
     private GameObject offlinePanel;
@@ -3121,6 +3123,8 @@ public class GameManager : MonoBehaviour
         vipLevelCardImages.Clear();
         vipLevelLockImages.Clear();
         vipLevelSelectImages.Clear();
+        vipLevelPressedShadeImages.Clear();
+        vipLevelPressedShadowImages.Clear();
         for (int i = 1; i <= MaxVipLevel; i++)
         {
             float x = 76f + ((i - 1) * 151f);
@@ -3183,6 +3187,14 @@ public class GameManager : MonoBehaviour
         int selectedLevel = level;
         button.onClick.AddListener(() => SelectVipPreviewLevel(selectedLevel));
         button.transition = Selectable.Transition.None;
+
+        Image pressedShade = CreatePanelStrip(hitObject.transform, "PressedShade", new Vector2(0, -6), new Vector2(118, 226), new Color(0.07f, 0.04f, 0.02f, 0f));
+        pressedShade.raycastTarget = false;
+        vipLevelPressedShadeImages.Add(pressedShade);
+
+        Image pressedShadow = CreatePanelStrip(hitObject.transform, "PressedShadow", new Vector2(0, 114), new Vector2(108, 12), new Color(0.03f, 0.02f, 0.01f, 0f));
+        pressedShadow.raycastTarget = false;
+        vipLevelPressedShadowImages.Add(pressedShadow);
 
         Image selectGlow = CreatePanelStrip(hitObject.transform, "SelectedGlow", new Vector2(0, -133), new Vector2(112, 10), new Color(1f, 0.78f, 0.18f, 0f));
         selectGlow.raycastTarget = false;
@@ -4475,6 +4487,12 @@ public class GameManager : MonoBehaviour
                 bool selected = selectedVipPreviewLevel == cardLevel;
                 float alpha = selected ? 0.46f + (Mathf.PingPong(Time.time * 2.4f, 1f) * 0.26f) : 0f;
                 vipLevelSelectImages[i].color = new Color(1f, 0.78f, 0.18f, alpha);
+
+                if (i < vipLevelPressedShadeImages.Count)
+                    vipLevelPressedShadeImages[i].color = new Color(0.07f, 0.04f, 0.02f, selected ? 0.13f : 0f);
+
+                if (i < vipLevelPressedShadowImages.Count)
+                    vipLevelPressedShadowImages[i].color = new Color(0.03f, 0.02f, 0.01f, selected ? 0.28f : 0f);
             }
         }
 
