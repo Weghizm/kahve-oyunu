@@ -85,6 +85,8 @@ public class GameManager : MonoBehaviour
     private const float MaxOfflineEarningsSeconds = 60f * 60f * 4f;
     private const float CustomerSpawnSeconds = 8f;
     private const float CustomerVisibleSeconds = 12f;
+    private const float BaseBaristaAutoServeSeconds = 4.2f;
+    private const float FastBaristaAutoServeSeconds = 2.6f;
     private const int UpgradeMaxLevel = 30;
     private const int NextTierRequiredLevel = 20;
     private const float UpgradeCostGrowth = 1.25f;
@@ -312,6 +314,7 @@ public class GameManager : MonoBehaviour
     private float offerVisibleTimer = 0;
     private float customerSpawnTimer = 5f;
     private float customerVisibleTimer = 0;
+    private float baristaAutoServeTimer = 0;
     private string currentCustomerName = "Musteri";
     private int currentCustomerCoinMultiplier = 2;
     private int currentCustomerXpReward = 1;
@@ -390,6 +393,7 @@ public class GameManager : MonoBehaviour
         UpdateBoostTimer();
         UpdateOfferTimers();
         UpdateCustomerTimers();
+        UpdateBaristaAutoService();
         RefreshDailyTasksIfNeeded();
 
         if (coinsPerSecond > 0)
@@ -470,6 +474,36 @@ public class GameManager : MonoBehaviour
         {
             SpawnCustomer();
         }
+    }
+
+    private void UpdateBaristaAutoService()
+    {
+        if (!HasBaristaUnlocked() || customerVisibleTimer <= 0)
+        {
+            baristaAutoServeTimer = 0;
+            return;
+        }
+
+        baristaAutoServeTimer += Time.deltaTime;
+        if (baristaAutoServeTimer < GetBaristaAutoServeSeconds())
+        {
+            return;
+        }
+
+        baristaAutoServeTimer = 0;
+        SellCoffeeToCustomer();
+    }
+
+    private bool HasBaristaUnlocked()
+    {
+        return GetTotalBaristaLevel() > 0;
+    }
+
+    private float GetBaristaAutoServeSeconds()
+    {
+        int totalBaristaLevel = Mathf.Clamp(GetTotalBaristaLevel(), 1, UpgradeMaxLevel * 3);
+        float speedRatio = Mathf.Clamp01((totalBaristaLevel - 1) / 18f);
+        return Mathf.Lerp(BaseBaristaAutoServeSeconds, FastBaristaAutoServeSeconds, speedRatio);
     }
 
     private void SpawnCustomer()
@@ -727,6 +761,7 @@ public class GameManager : MonoBehaviour
         offerVisibleTimer = 0;
         customerSpawnTimer = 5f;
         customerVisibleTimer = 0;
+        baristaAutoServeTimer = 0;
         if (offlinePanel != null) offlinePanel.SetActive(false);
         if (dailyRewardPanel != null) dailyRewardPanel.SetActive(false);
         if (chestPanel != null) chestPanel.SetActive(false);
@@ -4531,7 +4566,7 @@ public class GameManager : MonoBehaviour
         }
 
         if (offlineText != null)
-            offlineText.text = "Sen yokken\n" + lastOfflineCoins + " coin kazandin\nOffline kazanc: pasif gelirin 1/3'u, en fazla 4 saat";
+            offlineText.text = "Barista çalıştı\nSen yokken " + lastOfflineCoins + " coin kazandın\nOffline kazanç: pasif gelirin 1/3'ü, en fazla 4 saat";
 
         if (dailyRewardPanelText != null)
             dailyRewardPanelText.text = GetDailyRewardText();
@@ -4848,7 +4883,9 @@ public class GameManager : MonoBehaviour
             bool maxed = baristaUpgradeLevel >= UpgradeMaxLevel;
             juniorBaristaButtonText.text = maxed
                 ? "Barista Lv." + baristaUpgradeLevel + "/" + UpgradeMaxLevel + "\nMAX"
-                : "Barista Lv." + baristaUpgradeLevel + "/" + UpgradeMaxLevel + "\n+" + JuniorBaristaIncomeGain + "/sn | " + baristaUpgradeCost + " coin";
+                : baristaUpgradeLevel <= 0
+                    ? "Barista Al\nOtomatik servis + offline kazanç | " + baristaUpgradeCost + " coin"
+                    : "Barista Lv." + baristaUpgradeLevel + "/" + UpgradeMaxLevel + "\n+" + JuniorBaristaIncomeGain + "/sn | " + baristaUpgradeCost + " coin | " + GetBaristaAutoServeSeconds().ToString("0.#") + " sn";
             Button button = juniorBaristaButtonText.GetComponentInParent<Button>();
             if (button != null)
                 button.interactable = !maxed && coins >= baristaUpgradeCost;
@@ -6088,6 +6125,11 @@ public class GameManager : MonoBehaviour
 
     private void ApplyOfflineEarnings()
     {
+        if (!HasBaristaUnlocked())
+        {
+            return;
+        }
+
         string lastSaveValue = PlayerPrefs.GetString("lastSaveUtc", "");
         if (string.IsNullOrEmpty(lastSaveValue) || !long.TryParse(lastSaveValue, out long ticks))
         {
