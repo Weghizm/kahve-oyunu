@@ -3125,6 +3125,7 @@ public class GameManager : MonoBehaviour
         vipLevelSummaryText.color = new Color(1f, 0.88f, 0.47f, 1f);
         vipLevelSummaryText.fontStyle = FontStyles.Bold;
         vipLevelSummaryText.alignment = TextAlignmentOptions.Right;
+        vipLevelSummaryText.gameObject.SetActive(false);
         vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-405, 72), new Vector2(310, 140), 18);
         vipPanelText.color = new Color(0.32f, 0.17f, 0.06f, 1f);
         vipPanelText.alignment = TextAlignmentOptions.TopLeft;
@@ -3165,7 +3166,7 @@ public class GameManager : MonoBehaviour
         RectTransform rect = iconObject.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = new Vector2(98f, 0f);
+        rect.anchoredPosition = new Vector2(64f, 0f);
         rect.sizeDelta = new Vector2(42f, 42f);
 
         Image image = iconObject.GetComponent<Image>();
@@ -4490,7 +4491,7 @@ public class GameManager : MonoBehaviour
             vipPanelText.text = GetVipPanelText();
 
         if (vipLevelSummaryText != null)
-            vipLevelSummaryText.text = "VIP " + vipLevel + " / " + MaxVipLevel;
+            vipLevelSummaryText.gameObject.SetActive(false);
 
         int shownVipLevel = Mathf.Clamp(selectedVipPreviewLevel, 1, MaxVipLevel);
         string shownVipName = GetVipTierName(shownVipLevel);
