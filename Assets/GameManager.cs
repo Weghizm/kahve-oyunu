@@ -186,6 +186,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text vipHudLevelText;
     private Image vipHudIconImage;
     private TMP_Text vipPanelText;
+    private TMP_Text vipLevelSummaryText;
     private TMP_Text vipUpgradeButtonText;
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
     private readonly List<Image> vipLevelCardImages = new List<Image>();
@@ -259,6 +260,7 @@ public class GameManager : MonoBehaviour
     private Sprite dailyRewardMenuIconSprite;
     private Sprite decorMenuIconSprite;
     private Sprite notifyExclamationSprite;
+    private Sprite vipPanelBackgroundSprite;
     private Sprite warmWoodCafeSceneSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
     private readonly List<GameObject> cafePrototypeVisuals = new List<GameObject>();
@@ -1148,11 +1150,16 @@ public class GameManager : MonoBehaviour
 
     private string GetVipPanelText()
     {
-        return "VIP " + vipLevel + "/" + MaxVipLevel
-            + "\n" + GetVipKitName(vipLevel)
-            + "\nCoin +" + Mathf.RoundToInt((GetVipCoinMultiplier() - 1f) * 100f) + "%"
+        if (vipLevel <= 0)
+        {
+            return "VIP Uyelik yok\nIlk paketi acarak bonuslari baslat.";
+        }
+
+        return "Aktif Paket\n"
+            + GetVipKitName(vipLevel)
+            + "\n\nCoin +" + Mathf.RoundToInt((GetVipCoinMultiplier() - 1f) * 100f) + "%"
             + "   XP +" + Mathf.RoundToInt((GetVipXpMultiplier() - 1f) * 100f) + "%"
-            + "   Pasif +" + Mathf.RoundToInt((GetVipPassiveIncomeMultiplier() - 1f) * 100f) + "%"
+            + "\nPasif +" + Mathf.RoundToInt((GetVipPassiveIncomeMultiplier() - 1f) * 100f) + "%"
             + "   Bekleme +" + Mathf.RoundToInt((GetVipCustomerPatienceMultiplier() - 1f) * 100f) + "%";
     }
 
@@ -1165,7 +1172,6 @@ public class GameManager : MonoBehaviour
         }
 
         return "VIP " + level
-            + "\n" + GetVipTierName(level)
             + "\n" + state
             + "\n\n" + GetVipLevelBonusLine(level);
     }
@@ -2251,6 +2257,16 @@ public class GameManager : MonoBehaviour
         return notifyExclamationSprite;
     }
 
+    private Sprite GetVipPanelBackgroundSprite()
+    {
+        if (vipPanelBackgroundSprite == null)
+        {
+            vipPanelBackgroundSprite = LoadSpriteFromResources("Art/UI/vip_panel_background");
+        }
+
+        return vipPanelBackgroundSprite;
+    }
+
     private Sprite GetWarmWoodCafeSceneSprite()
     {
         if (warmWoodCafeSceneSprite == null)
@@ -2989,50 +3005,56 @@ public class GameManager : MonoBehaviour
         RectTransform panelRect = vipPanel.GetComponent<RectTransform>();
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
-        panelRect.anchoredPosition = new Vector2(0, 18);
-        panelRect.sizeDelta = new Vector2(1040, 700);
+        panelRect.anchoredPosition = new Vector2(0, 0);
+        panelRect.sizeDelta = new Vector2(1320, 742);
 
         Image panelImage = vipPanel.GetComponent<Image>();
-        panelImage.color = new Color(0.08f, 0.07f, 0.10f, 0.98f);
+        panelImage.sprite = GetVipPanelBackgroundSprite();
+        panelImage.color = Color.white;
+        panelImage.preserveAspect = true;
 
-        CreatePanelStrip(vipPanel.transform, "VipPanelTopGlow", new Vector2(0, 326), new Vector2(960, 18), new Color(1f, 0.74f, 0.22f, 0.42f));
-
-        TMP_Text title = CreateText(vipPanel.transform, "VipPanelTitle", "VIP Kulubu", new Vector2(0, 286), new Vector2(820, 54), 40);
-        title.color = new Color(1f, 0.83f, 0.26f);
+        TMP_Text title = CreateText(vipPanel.transform, "VipPanelTitle", "VIP Kulubu", new Vector2(-415, 166), new Vector2(320, 44), 32);
+        title.color = new Color(0.40f, 0.20f, 0.05f, 1f);
         title.fontStyle = FontStyles.Bold;
+        title.alignment = TextAlignmentOptions.Left;
 
-        GameObject activeCard = new GameObject("VipActiveMembershipCard", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        activeCard.transform.SetParent(vipPanel.transform, false);
-        RectTransform activeRect = activeCard.GetComponent<RectTransform>();
-        activeRect.anchorMin = new Vector2(0.5f, 0.5f);
-        activeRect.anchorMax = new Vector2(0.5f, 0.5f);
-        activeRect.anchoredPosition = new Vector2(0, 192);
-        activeRect.sizeDelta = new Vector2(760, 132);
-        activeCard.GetComponent<Image>().color = new Color(0.18f, 0.13f, 0.19f, 0.98f);
-
-        CreatePanelStrip(activeCard.transform, "VipActiveGoldStrip", new Vector2(0, 52), new Vector2(700, 8), new Color(1f, 0.74f, 0.22f, 0.78f));
-
-        vipPanelText = CreateText(activeCard.transform, "VipPanelText", "", new Vector2(0, -4), new Vector2(700, 104), 24);
-        vipPanelText.color = new Color(1f, 0.93f, 0.78f, 1f);
-        vipPanelText.alignment = TextAlignmentOptions.Center;
+        vipLevelSummaryText = CreateText(vipPanel.transform, "VipLevelSummary", "", new Vector2(392, 166), new Vector2(220, 38), 24);
+        vipLevelSummaryText.color = new Color(1f, 0.88f, 0.47f, 1f);
+        vipLevelSummaryText.fontStyle = FontStyles.Bold;
+        vipLevelSummaryText.alignment = TextAlignmentOptions.Right;
+        vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-384, 60), new Vector2(390, 190), 22);
+        vipPanelText.color = new Color(0.32f, 0.17f, 0.06f, 1f);
+        vipPanelText.alignment = TextAlignmentOptions.TopLeft;
         vipPanelText.enableWordWrapping = true;
+        vipPanelText.fontStyle = FontStyles.Bold;
 
         vipLevelCardTexts.Clear();
         vipLevelCardImages.Clear();
         for (int i = 1; i <= MaxVipLevel; i++)
         {
-            float x = -400f + ((i - 1) * 200f);
-            vipLevelCardTexts.Add(CreateVipLevelCard(vipPanel.transform, i, new Vector2(x, -55)));
+            float x = 76f + ((i - 1) * 151f);
+            vipLevelCardTexts.Add(CreateVipLevelCard(vipPanel.transform, i, new Vector2(x, 26), true));
         }
 
-        vipUpgradeButtonText = CreateButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(-190, -304), new Vector2(360, 70), UpgradeVipLevel, new Color(0.86f, 0.58f, 0.16f), 26);
-        CreateButton(vipPanel.transform, "VipCloseButton", "Kapat", new Vector2(230, -304), new Vector2(300, 70), CloseVipPanel, new Color(0.18f, 0.17f, 0.20f), 26);
+        CreateVipBonusPill(vipPanel.transform, "Coin", "+20%", new Vector2(-420, -238), new Color(1f, 0.72f, 0.14f, 1f));
+        CreateVipBonusPill(vipPanel.transform, "XP", "+15%", new Vector2(-200, -238), new Color(0.35f, 0.55f, 1f, 1f));
+        CreateVipBonusPill(vipPanel.transform, "Kahve", "+20%", new Vector2(22, -238), new Color(0.28f, 0.70f, 0.42f, 1f));
+        CreateVipBonusPill(vipPanel.transform, "Pasif", "+20%", new Vector2(244, -238), new Color(0.92f, 0.24f, 0.32f, 1f));
+        CreateVipBonusPill(vipPanel.transform, "Dekor", "Kit", new Vector2(466, -238), new Color(0.18f, 0.74f, 0.82f, 1f));
+
+        vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -330), new Vector2(340, 74), UpgradeVipLevel, 26, new Color(0.42f, 0.22f, 0.04f, 1f));
+        CreateInvisibleButton(vipPanel.transform, "VipCloseButton", new Vector2(592, 309), new Vector2(92, 92), CloseVipPanel);
 
         vipPanel.transform.SetAsLastSibling();
         vipPanel.SetActive(false);
     }
 
     private TMP_Text CreateVipLevelCard(Transform parent, int level, Vector2 position)
+    {
+        return CreateVipLevelCard(parent, level, position, false);
+    }
+
+    private TMP_Text CreateVipLevelCard(Transform parent, int level, Vector2 position, bool textOnly)
     {
         GameObject cardObject = new GameObject("VipLevelCard" + level, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         cardObject.transform.SetParent(parent, false);
@@ -3041,20 +3063,53 @@ public class GameManager : MonoBehaviour
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = position;
-        rect.sizeDelta = new Vector2(178, 330);
+        rect.sizeDelta = textOnly ? new Vector2(118, 250) : new Vector2(178, 330);
 
         Image image = cardObject.GetComponent<Image>();
-        image.color = GetVipTierColor(level);
-        vipLevelCardImages.Add(image);
+        image.color = textOnly ? new Color(1f, 1f, 1f, 0f) : GetVipTierColor(level);
+        image.raycastTarget = false;
+        if (!textOnly)
+        {
+            vipLevelCardImages.Add(image);
+        }
 
-        CreatePanelStrip(cardObject.transform, "TopShine", new Vector2(0, 144), new Vector2(146, 8), new Color(1f, 1f, 1f, 0.18f));
+        if (!textOnly)
+        {
+            CreatePanelStrip(cardObject.transform, "TopShine", new Vector2(0, 144), new Vector2(146, 8), new Color(1f, 1f, 1f, 0.18f));
+        }
 
-        TMP_Text text = CreateText(cardObject.transform, "Text", "", new Vector2(0, -8), new Vector2(148, 286), 17);
-        text.color = GetVipTierTextColor(level);
+        TMP_Text text = CreateText(cardObject.transform, "Text", "", textOnly ? new Vector2(0, -8) : new Vector2(0, -8), textOnly ? new Vector2(106, 210) : new Vector2(148, 286), textOnly ? 15 : 17);
+        text.color = textOnly ? Color.white : GetVipTierTextColor(level);
         text.alignment = TextAlignmentOptions.Center;
         text.enableWordWrapping = true;
         text.fontStyle = FontStyles.Bold;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = textOnly ? 10 : 12;
+        text.fontSizeMax = textOnly ? 15 : 17;
         return text;
+    }
+
+    private void CreateVipBonusPill(Transform parent, string title, string value, Vector2 position, Color iconColor)
+    {
+        GameObject pill = new GameObject("VipBonus" + title, typeof(RectTransform));
+        pill.transform.SetParent(parent, false);
+
+        RectTransform rect = pill.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = new Vector2(168, 72);
+
+        Image dot = CreatePanelStrip(pill.transform, "Icon", new Vector2(-58, 2), new Vector2(44, 44), new Color(iconColor.r, iconColor.g, iconColor.b, 0f));
+        dot.raycastTarget = false;
+
+        TMP_Text text = CreateText(pill.transform, "Text", title + "\n" + value, new Vector2(12, -1), new Vector2(118, 58), 17);
+        text.color = new Color(0.42f, 0.22f, 0.08f, 1f);
+        text.alignment = TextAlignmentOptions.Left;
+        text.fontStyle = FontStyles.Bold;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = 12;
+        text.fontSizeMax = 17;
     }
 
     private Image CreatePanelStrip(Transform parent, string name, Vector2 position, Vector2 size, Color color)
@@ -3843,6 +3898,53 @@ public class GameManager : MonoBehaviour
         hitArea.transform.SetAsLastSibling();
     }
 
+    private TMP_Text CreateTransparentButton(Transform parent, string objectName, string label, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action, float fontSize, Color textColor)
+    {
+        GameObject buttonObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+        buttonObject.transform.SetParent(parent, false);
+
+        RectTransform rect = buttonObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = buttonObject.GetComponent<Image>();
+        image.color = new Color(1f, 1f, 1f, 0.001f);
+
+        Button button = buttonObject.GetComponent<Button>();
+        button.targetGraphic = image;
+        button.onClick.AddListener(action);
+
+        TMP_Text text = CreateText(buttonObject.transform, "Text", label, Vector2.zero, size, fontSize);
+        text.color = textColor;
+        text.fontStyle = FontStyles.Bold;
+        text.raycastTarget = false;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = Mathf.Max(12, fontSize - 8);
+        text.fontSizeMax = fontSize;
+        return text;
+    }
+
+    private void CreateInvisibleButton(Transform parent, string objectName, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action)
+    {
+        GameObject buttonObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+        buttonObject.transform.SetParent(parent, false);
+
+        RectTransform rect = buttonObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = buttonObject.GetComponent<Image>();
+        image.color = new Color(1f, 1f, 1f, 0.001f);
+
+        Button button = buttonObject.GetComponent<Button>();
+        button.targetGraphic = image;
+        button.onClick.AddListener(action);
+    }
+
     private TMP_Text CreateButton(Transform parent, string objectName, string label, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action, Color color, float fontSize)
     {
         GameObject buttonObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
@@ -4137,12 +4239,15 @@ public class GameManager : MonoBehaviour
         if (vipPanelText != null)
             vipPanelText.text = GetVipPanelText();
 
+        if (vipLevelSummaryText != null)
+            vipLevelSummaryText.text = "VIP " + vipLevel + " / " + MaxVipLevel;
+
         if (vipUpgradeButtonText != null)
         {
             Button vipButton = vipUpgradeButtonText.GetComponentInParent<Button>();
             bool maxed = vipLevel >= MaxVipLevel;
             int cost = GetVipUpgradeCost();
-            vipUpgradeButtonText.text = maxed ? "VIP MAX" : "VIP " + (vipLevel + 1) + " Al\n" + cost + " Gem";
+            vipUpgradeButtonText.text = maxed ? "VIP MAX" : "VIP " + (vipLevel + 1) + " - " + cost + " Gem";
             if (vipButton != null)
                 vipButton.interactable = !maxed && gems >= cost;
         }
