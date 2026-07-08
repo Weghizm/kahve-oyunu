@@ -201,6 +201,8 @@ public class GameManager : MonoBehaviour
     private readonly List<Image> vipLevelSelectImages = new List<Image>();
     private readonly List<RectTransform> vipLevelButtonRects = new List<RectTransform>();
     private readonly Dictionary<int, Sprite> vipCardSprites = new Dictionary<int, Sprite>();
+    private int vipUnlockFlashLevel = 0;
+    private float vipUnlockFlashEndTime = 0f;
     private TMP_Text passiveIncomePanelText;
     private GameObject coinInfoPopup;
     private GameObject offlinePanel;
@@ -647,6 +649,8 @@ public class GameManager : MonoBehaviour
         gems -= cost;
         vipLevel++;
         selectedVipPreviewLevel = 0;
+        vipUnlockFlashLevel = vipLevel;
+        vipUnlockFlashEndTime = Time.time + 1.25f;
         UpdateUI();
         SaveGame();
     }
@@ -3159,6 +3163,7 @@ public class GameManager : MonoBehaviour
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
         vipUpgradeButtonText.rectTransform.anchoredPosition = new Vector2(-18f, 0f);
         vipUpgradeButtonText.rectTransform.sizeDelta = new Vector2(260f, 62f);
+        AttachPressAnimator(vipUpgradeButtonText.transform.parent as RectTransform, new Vector2(0f, -6f), 0.96f);
         vipUpgradeGemIconImage = CreateVipUpgradeGemIcon(vipUpgradeButtonText.transform.parent);
         CreateInvisibleButton(vipPanel.transform, "VipCloseButton", new Vector2(592, 309), new Vector2(92, 92), CloseVipPanel);
 
@@ -3203,6 +3208,17 @@ public class GameManager : MonoBehaviour
         image.preserveAspect = true;
         image.raycastTarget = false;
         return image;
+    }
+
+    private void AttachPressAnimator(RectTransform target, Vector2 pressedOffset, float pressedScale)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        PressAnimator animator = target.gameObject.AddComponent<PressAnimator>();
+        animator.Bind(target, pressedOffset, pressedScale);
     }
 
     private TMP_Text CreateVipLevelCard(Transform parent, int level, Vector2 position)
@@ -4584,16 +4600,22 @@ public class GameManager : MonoBehaviour
             if (i < vipLevelSelectImages.Count)
             {
                 bool selected = selectedVipPreviewLevel == cardLevel;
+                bool unlockFlash = vipUnlockFlashLevel == cardLevel && Time.time < vipUnlockFlashEndTime;
                 float alpha = selected ? 0.46f + (Mathf.PingPong(Time.time * 2.4f, 1f) * 0.26f) : 0f;
+                if (unlockFlash)
+                    alpha = Mathf.Max(alpha, 0.62f + (Mathf.PingPong(Time.time * 7.5f, 1f) * 0.30f));
                 vipLevelSelectImages[i].color = new Color(1f, 0.78f, 0.18f, alpha);
             }
 
             if (i < vipLevelButtonRects.Count)
             {
                 bool selected = selectedVipPreviewLevel == cardLevel;
+                bool unlockFlash = vipUnlockFlashLevel == cardLevel && Time.time < vipUnlockFlashEndTime;
                 Vector2 basePosition = new Vector2(-75f + (i * 151f), 18f);
                 Vector2 targetPosition = selected ? basePosition + new Vector2(0f, -18f) : basePosition;
                 Vector3 targetScale = selected ? new Vector3(0.94f, 0.94f, 1f) : Vector3.one;
+                if (unlockFlash && !selected)
+                    targetScale = Vector3.one * (1f + Mathf.Sin(Time.time * 22f) * 0.018f);
                 float t = Mathf.Clamp01(Time.deltaTime * 12f);
                 vipLevelButtonRects[i].anchoredPosition = Vector2.Lerp(vipLevelButtonRects[i].anchoredPosition, targetPosition, t);
                 vipLevelButtonRects[i].localScale = Vector3.Lerp(vipLevelButtonRects[i].localScale, targetScale, t);
@@ -6138,5 +6160,69 @@ public class CurrencyBarPartSelector : MonoBehaviour
             Selection.activeGameObject = parentBar;
         }
 #endif
+    }
+}
+
+public class PressAnimator : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler, IPointerClickHandler
+{
+    private RectTransform target;
+    private Vector2 restPosition;
+    private Vector2 pressedPosition;
+    private Vector3 restScale = Vector3.one;
+    private Vector3 pressedScale = Vector3.one;
+    private bool isPressed;
+    private bool clickPulse;
+    private float clickPulseEndTime;
+
+    public void Bind(RectTransform newTarget, Vector2 pressedOffset, float newPressedScale)
+    {
+        target = newTarget;
+        restPosition = target.anchoredPosition;
+        pressedPosition = restPosition + pressedOffset;
+        restScale = target.localScale;
+        pressedScale = restScale * newPressedScale;
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        isPressed = true;
+        clickPulse = false;
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        isPressed = false;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        isPressed = false;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        clickPulse = true;
+        clickPulseEndTime = Time.unscaledTime + 0.12f;
+    }
+
+    private void Update()
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        if (clickPulse && Time.unscaledTime >= clickPulseEndTime)
+        {
+            clickPulse = false;
+        }
+
+        float pulse = clickPulse ? 0.018f * Mathf.Sin((clickPulseEndTime - Time.unscaledTime) * 70f) : 0f;
+        Vector2 targetPosition = isPressed ? pressedPosition : restPosition;
+        Vector3 targetScale = isPressed ? pressedScale : restScale * (1f + Mathf.Max(0f, pulse));
+        float t = Mathf.Clamp01(Time.unscaledDeltaTime * 18f);
+
+        target.anchoredPosition = Vector2.Lerp(target.anchoredPosition, targetPosition, t);
+        target.localScale = Vector3.Lerp(target.localScale, targetScale, t);
     }
 }
