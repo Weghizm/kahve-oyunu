@@ -1152,15 +1152,14 @@ public class GameManager : MonoBehaviour
     {
         if (vipLevel <= 0)
         {
-            return "VIP Uyelik yok\nIlk paketi acarak bonuslari baslat.";
+            return "VIP yok\nIlk paketi acarak\nbonuslari baslat.";
         }
 
         return "Aktif Paket\n"
             + GetVipKitName(vipLevel)
-            + "\n\nCoin +" + Mathf.RoundToInt((GetVipCoinMultiplier() - 1f) * 100f) + "%"
-            + "   XP +" + Mathf.RoundToInt((GetVipXpMultiplier() - 1f) * 100f) + "%"
-            + "\nPasif +" + Mathf.RoundToInt((GetVipPassiveIncomeMultiplier() - 1f) * 100f) + "%"
-            + "   Bekleme +" + Mathf.RoundToInt((GetVipCustomerPatienceMultiplier() - 1f) * 100f) + "%";
+            + "\nCoin +" + Mathf.RoundToInt((GetVipCoinMultiplier() - 1f) * 100f) + "%"
+            + "  XP +" + Mathf.RoundToInt((GetVipXpMultiplier() - 1f) * 100f) + "%"
+            + "\nPasif +" + Mathf.RoundToInt((GetVipPassiveIncomeMultiplier() - 1f) * 100f) + "%";
     }
 
     private string GetVipCardText(int level)
@@ -1172,8 +1171,7 @@ public class GameManager : MonoBehaviour
         }
 
         return "VIP " + level
-            + "\n" + state
-            + "\n\n" + GetVipLevelBonusLine(level);
+            + "\n" + state;
     }
 
     public void BuyCoffeeUpgrade()
@@ -1327,7 +1325,7 @@ public class GameManager : MonoBehaviour
         chestText = CreateText(gameFrame, "ChestText", "", new Vector2(-760, 456), new Vector2(260, 38), 20);
         chestText.gameObject.SetActive(false);
         xpText = CreateXpBar(gameFrame, new Vector2(245, 500), new Vector2(220, 52));
-        vipHudText = CreateButton(gameFrame, "VipHudButton", "", new Vector2(-890, -315), new Vector2(112, 112), OpenVipPanel, new Color(1f, 1f, 1f, 0f), 18);
+        vipHudText = CreateButton(gameFrame, "VipHudButton", "", new Vector2(-890, -315), new Vector2(132, 132), OpenVipPanel, new Color(1f, 1f, 1f, 0f), 18);
         ConfigureVipHudButton(vipHudText);
 
         CreateOfflinePanel(canvas.transform);
@@ -2335,7 +2333,7 @@ public class GameManager : MonoBehaviour
         iconRect.anchorMin = new Vector2(0.5f, 0.5f);
         iconRect.anchorMax = new Vector2(0.5f, 0.5f);
         iconRect.anchoredPosition = Vector2.zero;
-        iconRect.sizeDelta = new Vector2(92, 92);
+        iconRect.sizeDelta = new Vector2(124, 124);
 
         vipHudIconImage = iconObject.GetComponent<Image>();
         vipHudIconImage.sprite = GetVipIconSprite();
@@ -3013,16 +3011,16 @@ public class GameManager : MonoBehaviour
         panelImage.color = Color.white;
         panelImage.preserveAspect = true;
 
-        TMP_Text title = CreateText(vipPanel.transform, "VipPanelTitle", "VIP Kulubu", new Vector2(-415, 166), new Vector2(320, 44), 32);
+        TMP_Text title = CreateText(vipPanel.transform, "VipPanelTitle", "", new Vector2(-415, 166), new Vector2(320, 44), 32);
         title.color = new Color(0.40f, 0.20f, 0.05f, 1f);
         title.fontStyle = FontStyles.Bold;
         title.alignment = TextAlignmentOptions.Left;
 
-        vipLevelSummaryText = CreateText(vipPanel.transform, "VipLevelSummary", "", new Vector2(392, 166), new Vector2(220, 38), 24);
+        vipLevelSummaryText = CreateText(vipPanel.transform, "VipLevelSummary", "", new Vector2(392, 214), new Vector2(190, 32), 18);
         vipLevelSummaryText.color = new Color(1f, 0.88f, 0.47f, 1f);
         vipLevelSummaryText.fontStyle = FontStyles.Bold;
         vipLevelSummaryText.alignment = TextAlignmentOptions.Right;
-        vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-384, 60), new Vector2(390, 190), 22);
+        vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-405, 72), new Vector2(310, 140), 18);
         vipPanelText.color = new Color(0.32f, 0.17f, 0.06f, 1f);
         vipPanelText.alignment = TextAlignmentOptions.TopLeft;
         vipPanelText.enableWordWrapping = true;
@@ -3033,16 +3031,16 @@ public class GameManager : MonoBehaviour
         for (int i = 1; i <= MaxVipLevel; i++)
         {
             float x = 76f + ((i - 1) * 151f);
-            vipLevelCardTexts.Add(CreateVipLevelCard(vipPanel.transform, i, new Vector2(x, 26), true));
+            vipLevelCardTexts.Add(CreateVipLevelCard(vipPanel.transform, i, new Vector2(x, 18), true));
         }
 
-        CreateVipBonusPill(vipPanel.transform, "Coin", "+20%", new Vector2(-420, -238), new Color(1f, 0.72f, 0.14f, 1f));
-        CreateVipBonusPill(vipPanel.transform, "XP", "+15%", new Vector2(-200, -238), new Color(0.35f, 0.55f, 1f, 1f));
-        CreateVipBonusPill(vipPanel.transform, "Kahve", "+20%", new Vector2(22, -238), new Color(0.28f, 0.70f, 0.42f, 1f));
-        CreateVipBonusPill(vipPanel.transform, "Pasif", "+20%", new Vector2(244, -238), new Color(0.92f, 0.24f, 0.32f, 1f));
-        CreateVipBonusPill(vipPanel.transform, "Dekor", "Kit", new Vector2(466, -238), new Color(0.18f, 0.74f, 0.82f, 1f));
+        CreateVipBonusPill(vipPanel.transform, "Coin", "+20%", new Vector2(-420, -212), new Color(1f, 0.72f, 0.14f, 1f));
+        CreateVipBonusPill(vipPanel.transform, "XP", "+15%", new Vector2(-200, -212), new Color(0.35f, 0.55f, 1f, 1f));
+        CreateVipBonusPill(vipPanel.transform, "Kahve", "+20%", new Vector2(22, -212), new Color(0.28f, 0.70f, 0.42f, 1f));
+        CreateVipBonusPill(vipPanel.transform, "Pasif", "+20%", new Vector2(244, -212), new Color(0.92f, 0.24f, 0.32f, 1f));
+        CreateVipBonusPill(vipPanel.transform, "Dekor", "Kit", new Vector2(466, -212), new Color(0.18f, 0.74f, 0.82f, 1f));
 
-        vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -330), new Vector2(340, 74), UpgradeVipLevel, 26, new Color(0.42f, 0.22f, 0.04f, 1f));
+        vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
         CreateInvisibleButton(vipPanel.transform, "VipCloseButton", new Vector2(592, 309), new Vector2(92, 92), CloseVipPanel);
 
         vipPanel.transform.SetAsLastSibling();
@@ -3103,13 +3101,13 @@ public class GameManager : MonoBehaviour
         Image dot = CreatePanelStrip(pill.transform, "Icon", new Vector2(-58, 2), new Vector2(44, 44), new Color(iconColor.r, iconColor.g, iconColor.b, 0f));
         dot.raycastTarget = false;
 
-        TMP_Text text = CreateText(pill.transform, "Text", title + "\n" + value, new Vector2(12, -1), new Vector2(118, 58), 17);
+        TMP_Text text = CreateText(pill.transform, "Text", title + "\n" + value, new Vector2(18, 6), new Vector2(112, 46), 15);
         text.color = new Color(0.42f, 0.22f, 0.08f, 1f);
         text.alignment = TextAlignmentOptions.Left;
         text.fontStyle = FontStyles.Bold;
         text.enableAutoSizing = true;
         text.fontSizeMin = 12;
-        text.fontSizeMax = 17;
+        text.fontSizeMax = 15;
     }
 
     private Image CreatePanelStrip(Transform parent, string name, Vector2 position, Vector2 size, Color color)
