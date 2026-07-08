@@ -119,8 +119,7 @@ public class GameManager : MonoBehaviour
     private const int MaxVipLevel = 5;
 
     private TMP_Text coinText;
-    private TMP_Text tapPowerText;
-    private TMP_Text autoIncomeText;
+    private TMP_Text coinInfoPopupText;
     private TMP_Text activeBoostText;
     private TMP_Text customerStatsText;
     private TMP_Text gemText;
@@ -191,6 +190,7 @@ public class GameManager : MonoBehaviour
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
     private readonly List<Image> vipLevelCardImages = new List<Image>();
     private TMP_Text passiveIncomePanelText;
+    private GameObject coinInfoPopup;
     private GameObject offlinePanel;
     private GameObject dailyRewardPanel;
     private GameObject chestPanel;
@@ -703,6 +703,7 @@ public class GameManager : MonoBehaviour
         if (machinePanel != null) machinePanel.SetActive(false);
         if (baristaPanel != null) baristaPanel.SetActive(false);
         if (passiveIncomePanel != null) passiveIncomePanel.SetActive(false);
+        if (coinInfoPopup != null) coinInfoPopup.SetActive(false);
         if (vipPanel != null) vipPanel.SetActive(false);
         if (customerButtonObject != null) customerButtonObject.SetActive(false);
         if (vipBadgeObject != null) vipBadgeObject.SetActive(false);
@@ -843,6 +844,30 @@ public class GameManager : MonoBehaviour
         if (passiveIncomePanel != null)
         {
             passiveIncomePanel.SetActive(false);
+        }
+    }
+
+    public void ToggleCoinInfoPopup()
+    {
+        if (coinInfoPopup == null)
+        {
+            return;
+        }
+
+        bool shouldOpen = !coinInfoPopup.activeSelf;
+        coinInfoPopup.SetActive(shouldOpen);
+        if (shouldOpen)
+        {
+            coinInfoPopup.transform.SetAsLastSibling();
+            UpdateUI();
+        }
+    }
+
+    public void CloseCoinInfoPopup()
+    {
+        if (coinInfoPopup != null)
+        {
+            coinInfoPopup.SetActive(false);
         }
     }
 
@@ -1287,9 +1312,8 @@ public class GameManager : MonoBehaviour
         roomUnlockButtonText = CreateButton(gameFrame, "RoomUnlockButton", "", new Vector2(0, -382), new Vector2(380, 46), UnlockCurrentRoom, new Color(0.22f, 0.48f, 0.40f), 19);
 
         coinText = CreateResourceBar(gameFrame, "CoinBar", GetCoinIconSprite(), new Vector2(-245, 500), new Vector2(220, 52), new Color(0.28f, 0.15f, 0.05f, 0.93f), new Color(0.96f, 0.69f, 0.19f, 1f), 29, 1f);
-        tapPowerText = CreateText(gameFrame, "TapPowerText", "Kahve Ucreti: 1", new Vector2(0, 463), new Vector2(480, 36), 22);
-        autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Pasif Gelir: 0", new Vector2(0, 431), new Vector2(480, 36), 22);
-        MakeTextClickable(autoIncomeText, OpenPassiveIncomePanel);
+        MakeResourceBarClickable(coinText, ToggleCoinInfoPopup);
+        CreateCoinInfoPopup(gameFrame, new Vector2(-245, 433));
         activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
         customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
         customerStatsText.gameObject.SetActive(false);
@@ -3600,6 +3624,46 @@ public class GameManager : MonoBehaviour
         return amountText;
     }
 
+    private void CreateCoinInfoPopup(Transform parent, Vector2 position)
+    {
+        coinInfoPopup = new GameObject("CoinInfoPopup", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        coinInfoPopup.transform.SetParent(parent, false);
+
+        RectTransform panelRect = coinInfoPopup.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = position;
+        panelRect.sizeDelta = new Vector2(270, 82);
+
+        Image panelImage = coinInfoPopup.GetComponent<Image>();
+        panelImage.sprite = CreateResourceBarBackgroundSprite(panelRect.sizeDelta, new Color(0.22f, 0.12f, 0.05f, 0.96f), new Color(0.96f, 0.69f, 0.19f, 1f));
+        panelImage.color = Color.white;
+
+        GameObject connectorObject = new GameObject("Connector", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        connectorObject.transform.SetParent(coinInfoPopup.transform, false);
+        RectTransform connectorRect = connectorObject.GetComponent<RectTransform>();
+        connectorRect.anchorMin = new Vector2(0.5f, 1f);
+        connectorRect.anchorMax = new Vector2(0.5f, 1f);
+        connectorRect.pivot = new Vector2(0.5f, 0f);
+        connectorRect.anchoredPosition = new Vector2(0, -2);
+        connectorRect.sizeDelta = new Vector2(92, 12);
+        Image connectorImage = connectorObject.GetComponent<Image>();
+        connectorImage.color = new Color(0.22f, 0.12f, 0.05f, 0.96f);
+        connectorImage.raycastTarget = false;
+
+        coinInfoPopupText = CreateText(coinInfoPopup.transform, "CoinInfoText", "", new Vector2(0, -2), new Vector2(236, 62), 22);
+        coinInfoPopupText.color = Color.white;
+        coinInfoPopupText.fontStyle = FontStyles.Bold;
+        coinInfoPopupText.alignment = TextAlignmentOptions.Center;
+        coinInfoPopupText.enableAutoSizing = true;
+        coinInfoPopupText.fontSizeMin = 16;
+        coinInfoPopupText.fontSizeMax = 22;
+        coinInfoPopupText.raycastTarget = false;
+
+        coinInfoPopup.transform.SetAsLastSibling();
+        coinInfoPopup.SetActive(false);
+    }
+
     private TMP_Text CreateXpBar(Transform parent, Vector2 position, Vector2 size)
     {
         GameObject barObject = new GameObject("XpBar", typeof(RectTransform));
@@ -3749,6 +3813,36 @@ public class GameManager : MonoBehaviour
         button.onClick.AddListener(action);
     }
 
+    private void MakeResourceBarClickable(TMP_Text barText, UnityEngine.Events.UnityAction action)
+    {
+        if (barText == null)
+        {
+            return;
+        }
+
+        Transform barTransform = barText.transform.parent != null ? barText.transform.parent.parent : null;
+        if (barTransform == null)
+        {
+            return;
+        }
+
+        GameObject hitArea = new GameObject("TapArea", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+        hitArea.transform.SetParent(barTransform, false);
+        RectTransform hitRect = hitArea.GetComponent<RectTransform>();
+        hitRect.anchorMin = new Vector2(0.5f, 0.5f);
+        hitRect.anchorMax = new Vector2(0.5f, 0.5f);
+        hitRect.anchoredPosition = Vector2.zero;
+        hitRect.sizeDelta = barTransform.GetComponent<RectTransform>() != null ? barTransform.GetComponent<RectTransform>().sizeDelta : new Vector2(220, 52);
+
+        Image hitImage = hitArea.GetComponent<Image>();
+        hitImage.color = new Color(1f, 1f, 1f, 0.001f);
+
+        Button button = hitArea.GetComponent<Button>();
+        button.targetGraphic = hitImage;
+        button.onClick.AddListener(action);
+        hitArea.transform.SetAsLastSibling();
+    }
+
     private TMP_Text CreateButton(Transform parent, string objectName, string label, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action, Color color, float fontSize)
     {
         GameObject buttonObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
@@ -3796,11 +3890,8 @@ public class GameManager : MonoBehaviour
         if (coinText != null)
             coinText.text = FormatResourceAmount(Mathf.FloorToInt(coins));
 
-        if (tapPowerText != null)
-            tapPowerText.text = "Kahve Ucreti: " + GetCurrentTapPower();
-
-        if (autoIncomeText != null)
-            autoIncomeText.text = "Pasif Gelir: " + GetCurrentPassiveIncome().ToString("0.#");
+        if (coinInfoPopupText != null)
+            coinInfoPopupText.text = "Kahve Ucreti: " + GetCurrentTapPower() + "\nPasif Gelir: " + GetCurrentPassiveIncome().ToString("0.#") + " / sn";
 
         if (passiveIncomePanelText != null)
             passiveIncomePanelText.text = GetPassiveIncomeBreakdownText();
