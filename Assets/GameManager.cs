@@ -3074,22 +3074,19 @@ public class GameManager : MonoBehaviour
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = position;
-        rect.sizeDelta = textOnly ? new Vector2(132, 262) : new Vector2(178, 330);
+        rect.sizeDelta = textOnly ? new Vector2(118, 250) : new Vector2(178, 330);
 
         Image image = cardObject.GetComponent<Image>();
-        image.sprite = textOnly ? CreateResourceBarBackgroundSprite(rect.sizeDelta, GetVipTierColor(level), new Color(1f, 0.82f, 0.36f, 0.55f)) : null;
-        image.color = textOnly ? new Color(1f, 1f, 1f, 0.64f) : GetVipTierColor(level);
+        image.color = textOnly ? new Color(1f, 1f, 1f, 0f) : GetVipTierColor(level);
         image.raycastTarget = false;
-        vipLevelCardImages.Add(image);
+        if (!textOnly)
+        {
+            vipLevelCardImages.Add(image);
+        }
 
         if (!textOnly)
         {
             CreatePanelStrip(cardObject.transform, "TopShine", new Vector2(0, 144), new Vector2(146, 8), new Color(1f, 1f, 1f, 0.18f));
-        }
-        else
-        {
-            CreatePanelStrip(cardObject.transform, "TopGem", new Vector2(0, 134), new Vector2(26, 26), new Color(1f, 0.82f, 0.30f, 0.65f));
-            CreatePanelStrip(cardObject.transform, "GiftBase", new Vector2(0, -102), new Vector2(38, 30), new Color(1f, 0.70f, 0.24f, 0.48f));
         }
 
         TMP_Text text = CreateText(cardObject.transform, "Text", "", textOnly ? new Vector2(0, -8) : new Vector2(0, -8), textOnly ? new Vector2(106, 210) : new Vector2(148, 286), textOnly ? 15 : 17);
@@ -3108,8 +3105,8 @@ public class GameManager : MonoBehaviour
             RectTransform lockRect = lockObject.GetComponent<RectTransform>();
             lockRect.anchorMin = new Vector2(0.5f, 0.5f);
             lockRect.anchorMax = new Vector2(0.5f, 0.5f);
-            lockRect.anchoredPosition = new Vector2(0, 70);
-            lockRect.sizeDelta = new Vector2(46, 46);
+            lockRect.anchoredPosition = new Vector2(0, 92);
+            lockRect.sizeDelta = new Vector2(42, 42);
 
             Image lockImage = lockObject.GetComponent<Image>();
             lockImage.sprite = GetVipLockIconSprite();
@@ -4311,7 +4308,7 @@ public class GameManager : MonoBehaviour
             {
                 bool locked = vipLevel < cardLevel;
                 vipLevelLockImages[i].gameObject.SetActive(locked);
-            vipLevelLockImages[i].color = new Color(1f, 1f, 1f, locked ? 0.62f : 0f);
+                vipLevelLockImages[i].color = new Color(1f, 1f, 1f, locked ? 0.62f : 0f);
             }
         }
 
