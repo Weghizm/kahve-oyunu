@@ -1090,6 +1090,19 @@ public class GameManager : MonoBehaviour
         return text;
     }
 
+    private string GetCoinInfoPopupText()
+    {
+        string boostText = bonusTimer > 0 ? "Aktif (" + FormatCompactTime(bonusTimer) + ")" : "Kapalı";
+        string vipText = vipLevel > 0
+            ? "+" + GetVipCoinBonusPercent(vipLevel) + "% coin, +" + GetVipPassiveBonusPercent(vipLevel) + "% pasif"
+            : "Yok";
+
+        return "Kahve Ücreti  +" + GetCurrentTapPower() + " coin"
+            + "\nPasif Gelir  " + GetCurrentPassiveIncome().ToString("0.#") + " / sn"
+            + "\nVIP Etkisi  " + vipText
+            + "\n2x Reklam  " + boostText;
+    }
+
     private float GetVipCoinMultiplier()
     {
         return GetVipCoinMultiplier(vipLevel);
@@ -1407,8 +1420,9 @@ public class GameManager : MonoBehaviour
 
         coinText = CreateResourceBar(gameFrame, "CoinBar", GetCoinIconSprite(), new Vector2(-245, 500), new Vector2(220, 52), new Color(0.28f, 0.15f, 0.05f, 0.93f), new Color(0.96f, 0.69f, 0.19f, 1f), 29, 1f);
         MakeResourceBarClickable(coinText, ToggleCoinInfoPopup);
-        CreateCoinInfoPopup(gameFrame, new Vector2(-245, 433));
+        CreateCoinInfoPopup(gameFrame, new Vector2(-245, 399));
         activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
+        activeBoostText.gameObject.SetActive(false);
         customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
         customerStatsText.gameObject.SetActive(false);
         gemText = CreateResourceBar(gameFrame, "GemBar", GetGemIconSprite(), new Vector2(0, 500), new Vector2(220, 52), new Color(0.04f, 0.15f, 0.22f, 0.93f), new Color(0.22f, 0.81f, 1f, 1f), 29, 1.18f);
@@ -3966,7 +3980,7 @@ public class GameManager : MonoBehaviour
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
         panelRect.anchoredPosition = position;
-        panelRect.sizeDelta = new Vector2(270, 82);
+        panelRect.sizeDelta = new Vector2(340, 150);
 
         Image panelImage = coinInfoPopup.GetComponent<Image>();
         panelImage.sprite = CreateResourceBarBackgroundSprite(panelRect.sizeDelta, new Color(0.22f, 0.12f, 0.05f, 0.96f), new Color(0.96f, 0.69f, 0.19f, 1f));
@@ -3979,18 +3993,18 @@ public class GameManager : MonoBehaviour
         connectorRect.anchorMax = new Vector2(0.5f, 1f);
         connectorRect.pivot = new Vector2(0.5f, 0f);
         connectorRect.anchoredPosition = new Vector2(0, -2);
-        connectorRect.sizeDelta = new Vector2(92, 12);
+        connectorRect.sizeDelta = new Vector2(118, 14);
         Image connectorImage = connectorObject.GetComponent<Image>();
         connectorImage.color = new Color(0.22f, 0.12f, 0.05f, 0.96f);
         connectorImage.raycastTarget = false;
 
-        coinInfoPopupText = CreateText(coinInfoPopup.transform, "CoinInfoText", "", new Vector2(0, -2), new Vector2(236, 62), 22);
-        coinInfoPopupText.color = Color.white;
+        coinInfoPopupText = CreateText(coinInfoPopup.transform, "CoinInfoText", "", new Vector2(0, -8), new Vector2(302, 116), 19);
+        coinInfoPopupText.color = new Color(1f, 0.94f, 0.78f, 1f);
         coinInfoPopupText.fontStyle = FontStyles.Bold;
-        coinInfoPopupText.alignment = TextAlignmentOptions.Center;
+        coinInfoPopupText.alignment = TextAlignmentOptions.Left;
         coinInfoPopupText.enableAutoSizing = true;
-        coinInfoPopupText.fontSizeMin = 16;
-        coinInfoPopupText.fontSizeMax = 22;
+        coinInfoPopupText.fontSizeMin = 14;
+        coinInfoPopupText.fontSizeMax = 19;
         coinInfoPopupText.raycastTarget = false;
 
         coinInfoPopup.transform.SetAsLastSibling();
@@ -4271,14 +4285,15 @@ public class GameManager : MonoBehaviour
             coinText.text = FormatResourceAmount(Mathf.FloorToInt(coins));
 
         if (coinInfoPopupText != null)
-            coinInfoPopupText.text = "Kahve Ücreti: " + GetCurrentTapPower() + "\nPasif Gelir: " + GetCurrentPassiveIncome().ToString("0.#") + " / sn";
+            coinInfoPopupText.text = GetCoinInfoPopupText();
 
         if (passiveIncomePanelText != null)
             passiveIncomePanelText.text = GetPassiveIncomeBreakdownText();
 
         if (activeBoostText != null)
         {
-            activeBoostText.text = bonusTimer > 0 ? "2x COIN AKTIF: " + FormatTime(bonusTimer) : "";
+            activeBoostText.text = "";
+            activeBoostText.gameObject.SetActive(false);
             activeBoostText.color = new Color(0.02f, 0.18f, 0.82f);
         }
 
