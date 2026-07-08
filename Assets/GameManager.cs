@@ -1273,13 +1273,13 @@ public class GameManager : MonoBehaviour
 
         roomNameText = CreateText(gameFrame, "RoomNameText", "", new Vector2(0, -330), new Vector2(520, 42), 24);
         roomNameText.gameObject.SetActive(false);
-        CreateButton(gameFrame, "PreviousRoomButton", "<", new Vector2(-735, -105), new Vector2(58, 86), PreviousRoom, new Color(0.25f, 0.32f, 0.38f), 30);
-        CreateButton(gameFrame, "NextRoomButton", ">", new Vector2(735, -105), new Vector2(58, 86), NextRoom, new Color(0.25f, 0.32f, 0.38f), 30);
+        CreateButton(gameFrame, "PreviousRoomButton", "<", new Vector2(-805, -95), new Vector2(54, 76), PreviousRoom, new Color(0.25f, 0.32f, 0.38f), 28);
+        CreateButton(gameFrame, "NextRoomButton", ">", new Vector2(805, -95), new Vector2(54, 76), NextRoom, new Color(0.25f, 0.32f, 0.38f), 28);
         roomUnlockButtonText = CreateButton(gameFrame, "RoomUnlockButton", "", new Vector2(0, -382), new Vector2(380, 46), UnlockCurrentRoom, new Color(0.22f, 0.48f, 0.40f), 19);
 
         coinText = CreateResourceBar(gameFrame, "CoinBar", GetCoinIconSprite(), new Vector2(-190, 502), new Vector2(175, 42), new Color(0.28f, 0.15f, 0.05f, 0.93f), new Color(0.96f, 0.69f, 0.19f, 1f), 24, 1f);
-        tapPowerText = CreateText(gameFrame, "TapPowerText", "Kahve Ucreti: 1", new Vector2(0, 456), new Vector2(460, 38), 22);
-        autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Pasif Gelir: 0", new Vector2(0, 418), new Vector2(460, 38), 22);
+        tapPowerText = CreateText(gameFrame, "TapPowerText", "Kahve Ucreti: 1", new Vector2(0, 470), new Vector2(420, 32), 18);
+        autoIncomeText = CreateText(gameFrame, "AutoIncomeText", "Pasif Gelir: 0", new Vector2(0, 442), new Vector2(420, 32), 18);
         MakeTextClickable(autoIncomeText, OpenPassiveIncomePanel);
         activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
         customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
@@ -3208,7 +3208,7 @@ public class GameManager : MonoBehaviour
         TMP_Text menuLabel = CreateSceneLabel(parent, "MenuLabel", "MENU", new Vector2(-340, 172), new Vector2(110, 35), 19);
         TMP_Text customerSpotLabel = CreateSceneLabel(parent, "CustomerSpotLabel", "MUSTERI\nALANI", new Vector2(180, -252), new Vector2(165, 62), 16);
         Sprite cafeSceneSprite = GetWarmWoodCafeSceneSprite();
-        cafeSceneImage = CreateSceneBox(parent, "WarmWoodCafeScene", new Vector2(0, -18), new Vector2(1420, 812), cafeSceneSprite != null ? Color.white : new Color(1f, 1f, 1f, 0f));
+        cafeSceneImage = CreateSceneBox(parent, "WarmWoodCafeScene", new Vector2(0, -4), new Vector2(1328, 760), cafeSceneSprite != null ? Color.white : new Color(1f, 1f, 1f, 0f));
         cafeSceneImage.sprite = cafeSceneSprite;
         cafeSceneImage.preserveAspect = true;
         cafeSceneImage.raycastTarget = false;
