@@ -3065,6 +3065,24 @@ public class GameManager : MonoBehaviour
         return CreateVipLevelCard(parent, level, position, false);
     }
 
+    private Vector2 GetVipLockPanelPosition(int level)
+    {
+        switch (level)
+        {
+            case 1:
+            case 2:
+                return new Vector2(-151.9f, 99.8f);
+            case 3:
+                return new Vector2(-147.7f, 101.4f);
+            case 4:
+                return new Vector2(-149.7f, 98.3f);
+            case 5:
+                return new Vector2(-159.4f, 96.7f);
+            default:
+                return new Vector2(0f, 92f);
+        }
+    }
+
     private TMP_Text CreateVipLevelCard(Transform parent, int level, Vector2 position, bool textOnly)
     {
         GameObject cardObject = new GameObject("VipLevelCard" + level, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -3105,7 +3123,7 @@ public class GameManager : MonoBehaviour
             RectTransform lockRect = lockObject.GetComponent<RectTransform>();
             lockRect.anchorMin = new Vector2(0.5f, 0.5f);
             lockRect.anchorMax = new Vector2(0.5f, 0.5f);
-            lockRect.anchoredPosition = new Vector2(0, 92);
+            lockRect.anchoredPosition = GetVipLockPanelPosition(level) - position;
             lockRect.sizeDelta = new Vector2(42, 42);
 
             Image lockImage = lockObject.GetComponent<Image>();
