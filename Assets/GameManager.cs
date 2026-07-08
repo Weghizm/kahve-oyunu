@@ -3125,6 +3125,7 @@ public class GameManager : MonoBehaviour
         {
             float x = 76f + ((i - 1) * 151f);
             vipLevelCardTexts.Add(CreateVipLevelCard(vipPanel.transform, i, new Vector2(x, 18), true));
+            CreateVipCardHitArea(vipPanel.transform, i, new Vector2(-75f + ((i - 1) * 151f), 18f));
         }
 
         vipCoinBonusText = CreateVipBonusPill(vipPanel.transform, "Coin", "+0%", new Vector2(-420, -212), new Color(1f, 0.72f, 0.14f, 1f));
@@ -3163,6 +3164,31 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void CreateVipCardHitArea(Transform parent, int level, Vector2 position)
+    {
+        GameObject hitObject = new GameObject("VipCardHitArea" + level, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+        hitObject.transform.SetParent(parent, false);
+
+        RectTransform rect = hitObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = new Vector2(132, 270);
+
+        Image image = hitObject.GetComponent<Image>();
+        image.color = new Color(1f, 1f, 1f, 0f);
+        image.raycastTarget = true;
+
+        Button button = hitObject.GetComponent<Button>();
+        int selectedLevel = level;
+        button.onClick.AddListener(() => SelectVipPreviewLevel(selectedLevel));
+        button.transition = Selectable.Transition.None;
+
+        Image selectGlow = CreatePanelStrip(hitObject.transform, "SelectedGlow", new Vector2(0, -133), new Vector2(112, 10), new Color(1f, 0.78f, 0.18f, 0f));
+        selectGlow.raycastTarget = false;
+        vipLevelSelectImages.Add(selectGlow);
+    }
+
     private TMP_Text CreateVipLevelCard(Transform parent, int level, Vector2 position, bool textOnly)
     {
         GameObject cardObject = new GameObject("VipLevelCard" + level, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -3176,21 +3202,7 @@ public class GameManager : MonoBehaviour
 
         Image image = cardObject.GetComponent<Image>();
         image.color = textOnly ? new Color(1f, 1f, 1f, 0f) : GetVipTierColor(level);
-        image.raycastTarget = textOnly;
-        if (textOnly)
-        {
-            Button button = cardObject.AddComponent<Button>();
-            int selectedLevel = level;
-            button.onClick.AddListener(() => SelectVipPreviewLevel(selectedLevel));
-            button.transition = Selectable.Transition.None;
-        }
-
-        if (textOnly)
-        {
-            Image selectGlow = CreatePanelStrip(cardObject.transform, "SelectedGlow", new Vector2(0, -124), new Vector2(104, 10), new Color(1f, 0.78f, 0.18f, 0f));
-            selectGlow.raycastTarget = false;
-            vipLevelSelectImages.Add(selectGlow);
-        }
+        image.raycastTarget = false;
         if (!textOnly)
         {
             vipLevelCardImages.Add(image);
