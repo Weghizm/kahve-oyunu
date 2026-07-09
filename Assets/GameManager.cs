@@ -3826,7 +3826,7 @@ public class GameManager : MonoBehaviour
         cafeSceneImage.sprite = cafeSceneSprite;
         cafeSceneImage.preserveAspect = true;
         cafeSceneImage.raycastTarget = false;
-        coffeeMachineLockedPlaceholderImage = CreateSceneBox(parent, "CoffeeMachineLockedPlaceholder", new Vector2(-275f, 168.4247f), new Vector2(220f, 195f), Color.white);
+        coffeeMachineLockedPlaceholderImage = CreateSceneBox(parent, "CoffeeMachineLockedPlaceholder", new Vector2(-245f, 168f), new Vector2(205f, 185f), Color.white);
         coffeeMachineLockedPlaceholderImage.sprite = GetCoffeeMachineLockedPlaceholderSprite();
         coffeeMachineLockedPlaceholderImage.preserveAspect = true;
         coffeeMachineLockedPlaceholderImage.raycastTarget = false;
