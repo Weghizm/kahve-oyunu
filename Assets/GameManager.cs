@@ -3707,7 +3707,7 @@ public class GameManager : MonoBehaviour
         float sceneScale = GetResponsiveCafeSceneScale(parent);
         Vector2 sceneOffset = new Vector2(0f, -5f);
         cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeePackagesHotspot", sceneOffset + (new Vector2(565, 385) * sceneScale), new Vector2(240, 135) * sceneScale, OpenCoffeePanel));
-        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeeMachineHotspot", sceneOffset + (new Vector2(-430, 185) * sceneScale), new Vector2(285, 215) * sceneScale, OpenMachinePanel));
+        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeeMachineHotspot", new Vector2(-296.57f, 168.4247f), new Vector2(236.87f, 214.1495f), OpenMachinePanel));
         cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "BaristaCounterHotspot", sceneOffset + (new Vector2(330, 150) * sceneScale), new Vector2(250, 190) * sceneScale, OpenBaristaPanel));
     }
 
