@@ -5548,7 +5548,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        SetSceneImageActive(coffeeMachineLockedPlaceholderImage, showStartingRoom && unlocked && machineUpgradeLevel <= 0);
+        SetSceneImageActive(coffeeMachineLockedPlaceholderImage, false);
 
         SetSceneImageActive(productionConveyorVisual, currentRoomIndex == 1 && unlocked);
         SetSceneImageActive(productionMachineVisual, currentRoomIndex == 1 && unlocked);
