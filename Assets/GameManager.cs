@@ -3706,9 +3706,9 @@ public class GameManager : MonoBehaviour
         cafeObjectHotspots.Clear();
         float sceneScale = GetResponsiveCafeSceneScale(parent);
         Vector2 sceneOffset = new Vector2(0f, -5f);
-        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeePackagesHotspot", sceneOffset + (new Vector2(565, 385) * sceneScale), new Vector2(390, 230) * sceneScale, OpenCoffeePanel));
-        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeeMachineHotspot", sceneOffset + (new Vector2(-430, 185) * sceneScale), new Vector2(430, 330) * sceneScale, OpenMachinePanel));
-        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "BaristaCounterHotspot", sceneOffset + (new Vector2(330, 150) * sceneScale), new Vector2(390, 300) * sceneScale, OpenBaristaPanel));
+        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeePackagesHotspot", sceneOffset + (new Vector2(565, 385) * sceneScale), new Vector2(240, 135) * sceneScale, OpenCoffeePanel));
+        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeeMachineHotspot", sceneOffset + (new Vector2(-430, 185) * sceneScale), new Vector2(285, 215) * sceneScale, OpenMachinePanel));
+        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "BaristaCounterHotspot", sceneOffset + (new Vector2(330, 150) * sceneScale), new Vector2(250, 190) * sceneScale, OpenBaristaPanel));
     }
 
     private GameObject CreateCafeObjectHotspot(Transform parent, string objectName, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action)
