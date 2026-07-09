@@ -3319,6 +3319,21 @@ public class GameManager : MonoBehaviour
         animator.Bind(target, pressedOffset, pressedScale);
     }
 
+#if UNITY_EDITOR
+    private void AttachEditorDragProbe(Image image, string label)
+    {
+        if (image == null)
+        {
+            return;
+        }
+
+        image.raycastTarget = true;
+        RectTransform rect = image.GetComponent<RectTransform>();
+        EditorDragProbe probe = image.gameObject.AddComponent<EditorDragProbe>();
+        probe.Bind(rect, label);
+    }
+#endif
+
     private TMP_Text CreateVipLevelCard(Transform parent, int level, Vector2 position)
     {
         return CreateVipLevelCard(parent, level, position, false);
@@ -3830,6 +3845,9 @@ public class GameManager : MonoBehaviour
         coffeeMachineLockedPlaceholderImage.sprite = GetCoffeeMachineLockedPlaceholderSprite();
         coffeeMachineLockedPlaceholderImage.preserveAspect = true;
         coffeeMachineLockedPlaceholderImage.raycastTarget = false;
+#if UNITY_EDITOR
+        AttachEditorDragProbe(coffeeMachineLockedPlaceholderImage, "CoffeeMachineLockedPlaceholder");
+#endif
         roomLockOverlay = CreateSceneBox(parent, "RoomLockOverlay", new Vector2(0, -10), new Vector2(1700, 920), new Color(0.05f, 0.06f, 0.07f, 1f));
 
         cafePrototypeVisuals.Clear();
@@ -6388,3 +6406,56 @@ public class PressAnimator : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         target.localScale = Vector3.Lerp(target.localScale, targetScale, t);
     }
 }
+
+#if UNITY_EDITOR
+public class EditorDragProbe : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+{
+    private RectTransform target;
+    private RectTransform parentRect;
+    private Vector2 pointerStartPosition;
+    private Vector2 startPosition;
+    private string probeLabel;
+
+    public void Bind(RectTransform rectTransform, string label)
+    {
+        target = rectTransform;
+        parentRect = target != null ? target.parent as RectTransform : null;
+        probeLabel = label;
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (target == null || parentRect == null)
+        {
+            return;
+        }
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, eventData.position, eventData.pressEventCamera, out pointerStartPosition);
+        startPosition = target.anchoredPosition;
+        target.SetAsLastSibling();
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (target == null || parentRect == null)
+        {
+            return;
+        }
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, eventData.position, eventData.pressEventCamera, out Vector2 currentPointerPosition);
+        target.anchoredPosition = startPosition + (currentPointerPosition - pointerStartPosition);
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        Vector2 pos = target.anchoredPosition;
+        Vector2 size = target.sizeDelta;
+        Debug.Log(probeLabel + " position: new Vector2(" + pos.x.ToString("0.####") + "f, " + pos.y.ToString("0.####") + "f), size: new Vector2(" + size.x.ToString("0.####") + "f, " + size.y.ToString("0.####") + "f)");
+    }
+}
+#endif
