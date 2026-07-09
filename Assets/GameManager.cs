@@ -252,6 +252,7 @@ public class GameManager : MonoBehaviour
     private IsoQuadGraphic isoFloorShadowGraphic;
     private Image productionMachineVisual;
     private Image productionConveyorVisual;
+    private Image coffeeMachineLockedPlaceholderImage;
     private Image vipCounterVisual;
     private Image vipRugVisual;
     private Image vipPlantVisual;
@@ -279,6 +280,7 @@ public class GameManager : MonoBehaviour
     private Sprite vipPanelBackgroundSprite;
     private Sprite vipLockIconSprite;
     private Sprite warmWoodCafeSceneSprite;
+    private Sprite coffeeMachineLockedPlaceholderSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
     private readonly List<GameObject> cafeObjectHotspots = new List<GameObject>();
     private readonly List<GameObject> cafePrototypeVisuals = new List<GameObject>();
@@ -2452,6 +2454,16 @@ public class GameManager : MonoBehaviour
         return warmWoodCafeSceneSprite;
     }
 
+    private Sprite GetCoffeeMachineLockedPlaceholderSprite()
+    {
+        if (coffeeMachineLockedPlaceholderSprite == null)
+        {
+            coffeeMachineLockedPlaceholderSprite = LoadSpriteFromResources("Art/SceneObjects/coffee_machine_locked_placeholder");
+        }
+
+        return coffeeMachineLockedPlaceholderSprite;
+    }
+
     private Sprite LoadSpriteFromResources(string path)
     {
         Texture2D texture = Resources.Load<Texture2D>(path);
@@ -3814,6 +3826,10 @@ public class GameManager : MonoBehaviour
         cafeSceneImage.sprite = cafeSceneSprite;
         cafeSceneImage.preserveAspect = true;
         cafeSceneImage.raycastTarget = false;
+        coffeeMachineLockedPlaceholderImage = CreateSceneBox(parent, "CoffeeMachineLockedPlaceholder", new Vector2(-425, 175), new Vector2(355, 314), Color.white);
+        coffeeMachineLockedPlaceholderImage.sprite = GetCoffeeMachineLockedPlaceholderSprite();
+        coffeeMachineLockedPlaceholderImage.preserveAspect = true;
+        coffeeMachineLockedPlaceholderImage.raycastTarget = false;
         roomLockOverlay = CreateSceneBox(parent, "RoomLockOverlay", new Vector2(0, -10), new Vector2(1700, 920), new Color(0.05f, 0.06f, 0.07f, 1f));
 
         cafePrototypeVisuals.Clear();
@@ -3858,6 +3874,7 @@ public class GameManager : MonoBehaviour
 
         startingRoomVisuals.Clear();
         startingRoomVisuals.Add(cafeSceneImage.gameObject);
+        startingRoomVisuals.Add(coffeeMachineLockedPlaceholderImage.gameObject);
 
         roomShadow.raycastTarget = false;
         backWallTopTrim.raycastTarget = false;
@@ -5530,6 +5547,8 @@ public class GameManager : MonoBehaviour
                 cafeObjectHotspots[i].SetActive(showStartingRoom && unlocked);
             }
         }
+
+        SetSceneImageActive(coffeeMachineLockedPlaceholderImage, showStartingRoom && unlocked && machineUpgradeLevel <= 0);
 
         SetSceneImageActive(productionConveyorVisual, currentRoomIndex == 1 && unlocked);
         SetSceneImageActive(productionMachineVisual, currentRoomIndex == 1 && unlocked);
