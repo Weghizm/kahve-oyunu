@@ -253,6 +253,9 @@ public class GameManager : MonoBehaviour
     private IsoQuadGraphic isoFloorShadowGraphic;
     private Image productionMachineVisual;
     private Image productionConveyorVisual;
+    private Image baristaSceneImage;
+    private Image baristaLockedSceneImage;
+    private Image baristaCounterForegroundImage;
     private Image coffeeMachineSceneImage;
     private Image coffeeMachineLockedPlaceholderImage;
     private Image vipCounterVisual;
@@ -285,6 +288,9 @@ public class GameManager : MonoBehaviour
     private Sprite warmWoodCafeSceneNoMachineSprite;
     private Sprite coffeeMachineSceneSprite;
     private Sprite coffeeMachineLockedPlaceholderSprite;
+    private Sprite baristaSceneSprite;
+    private Sprite baristaLockedPlaceholderSprite;
+    private Sprite baristaCounterForegroundSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
     private readonly List<GameObject> cafeObjectHotspots = new List<GameObject>();
     private readonly List<GameObject> cafePrototypeVisuals = new List<GameObject>();
@@ -2498,6 +2504,36 @@ public class GameManager : MonoBehaviour
         return coffeeMachineLockedPlaceholderSprite;
     }
 
+    private Sprite GetBaristaSceneSprite()
+    {
+        if (baristaSceneSprite == null)
+        {
+            baristaSceneSprite = LoadSpriteFromResources("Art/SceneObjects/barista_unlocked");
+        }
+
+        return baristaSceneSprite;
+    }
+
+    private Sprite GetBaristaLockedPlaceholderSprite()
+    {
+        if (baristaLockedPlaceholderSprite == null)
+        {
+            baristaLockedPlaceholderSprite = LoadSpriteFromResources("Art/SceneObjects/barista_locked_placeholder");
+        }
+
+        return baristaLockedPlaceholderSprite;
+    }
+
+    private Sprite GetBaristaCounterForegroundSprite()
+    {
+        if (baristaCounterForegroundSprite == null)
+        {
+            baristaCounterForegroundSprite = LoadSpriteFromResources("Art/SceneObjects/barista_counter_foreground");
+        }
+
+        return baristaCounterForegroundSprite;
+    }
+
     private Sprite LoadSpriteFromResources(string path)
     {
         Texture2D texture = Resources.Load<Texture2D>(path);
@@ -3769,8 +3805,6 @@ public class GameManager : MonoBehaviour
     private void CreateCafeObjectHotspots(Transform parent)
     {
         cafeObjectHotspots.Clear();
-        float sceneScale = GetResponsiveCafeSceneScale(parent);
-        Vector2 sceneOffset = new Vector2(0f, -5f);
         cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeePackagesHotspot", new Vector2(312.4f, 365.85f), new Vector2(244.8f, 137.7f), OpenCoffeePanel));
         cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeeMachineHotspot", new Vector2(-296.57f, 168.4247f), new Vector2(236.87f, 214.1495f), OpenMachinePanel));
         cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "BaristaCounterHotspot", new Vector2(-48.10552f, 178.6f), new Vector2(158.7888f, 193.8f), OpenBaristaPanel));
@@ -3880,6 +3914,21 @@ public class GameManager : MonoBehaviour
         cafeSceneImage.preserveAspect = true;
         cafeSceneImage.raycastTarget = false;
 
+        baristaLockedSceneImage = CreateSceneBox(parent, "BaristaLockedPlaceholder", new Vector2(-48.10552f, 203f), new Vector2(176.8f, 340f), Color.white);
+        baristaLockedSceneImage.sprite = GetBaristaLockedPlaceholderSprite();
+        baristaLockedSceneImage.preserveAspect = true;
+        baristaLockedSceneImage.raycastTarget = false;
+
+        baristaSceneImage = CreateSceneBox(parent, "BaristaSceneSprite", new Vector2(-48.10552f, 203f), new Vector2(174.5f, 340f), Color.white);
+        baristaSceneImage.sprite = GetBaristaSceneSprite();
+        baristaSceneImage.preserveAspect = true;
+        baristaSceneImage.raycastTarget = false;
+
+        baristaCounterForegroundImage = CreateSceneBox(parent, "BaristaCounterForeground", new Vector2(-130.9856f, 48.7943f), new Vector2(813.0144f, 214.5455f), Color.white);
+        baristaCounterForegroundImage.sprite = GetBaristaCounterForegroundSprite();
+        baristaCounterForegroundImage.preserveAspect = true;
+        baristaCounterForegroundImage.raycastTarget = false;
+
         coffeeMachineSceneImage = CreateSceneBox(parent, "CoffeeMachineSceneSprite", new Vector2(-287.378f, 181.4737f), new Vector2(217.933f, 287.9426f), Color.white);
         coffeeMachineSceneImage.sprite = GetCoffeeMachineSceneSprite();
         coffeeMachineSceneImage.preserveAspect = true;
@@ -3936,6 +3985,9 @@ public class GameManager : MonoBehaviour
 
         startingRoomVisuals.Clear();
         startingRoomVisuals.Add(cafeSceneImage.gameObject);
+        startingRoomVisuals.Add(baristaLockedSceneImage.gameObject);
+        startingRoomVisuals.Add(baristaSceneImage.gameObject);
+        startingRoomVisuals.Add(baristaCounterForegroundImage.gameObject);
         startingRoomVisuals.Add(coffeeMachineSceneImage.gameObject);
         startingRoomVisuals.Add(coffeeMachineLockedPlaceholderImage.gameObject);
 
@@ -3953,6 +4005,9 @@ public class GameManager : MonoBehaviour
         floorLeftPerspectiveLine.raycastTarget = false;
         floorRightPerspectiveLine.raycastTarget = false;
         roomAccentStrip.raycastTarget = false;
+        baristaLockedSceneImage.raycastTarget = false;
+        baristaSceneImage.raycastTarget = false;
+        baristaCounterForegroundImage.raycastTarget = false;
         coffeeMachineSceneImage.raycastTarget = false;
         counterTop.raycastTarget = false;
         door.raycastTarget = false;
@@ -5615,6 +5670,9 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        SetSceneImageActive(baristaLockedSceneImage, showStartingRoom && unlocked && !HasBaristaUnlocked());
+        SetSceneImageActive(baristaSceneImage, showStartingRoom && unlocked && HasBaristaUnlocked());
+        SetSceneImageActive(baristaCounterForegroundImage, showStartingRoom && unlocked);
         SetSceneImageActive(coffeeMachineSceneImage, showStartingRoom && unlocked && machineUpgradeLevel > 0);
         SetSceneImageActive(coffeeMachineLockedPlaceholderImage, showStartingRoom && unlocked && machineUpgradeLevel <= 0);
 
