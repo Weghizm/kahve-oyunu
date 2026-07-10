@@ -204,6 +204,7 @@ public class GameManager : MonoBehaviour
     private readonly List<Image> vipLevelLockImages = new List<Image>();
     private readonly List<Image> vipLevelSelectImages = new List<Image>();
     private readonly List<RectTransform> vipLevelButtonRects = new List<RectTransform>();
+    private readonly List<TMP_Text> vipLevelStarTexts = new List<TMP_Text>();
     private readonly Dictionary<int, Sprite> vipCardSprites = new Dictionary<int, Sprite>();
     private int vipUnlockFlashLevel = 0;
     private float vipUnlockFlashEndTime = 0f;
@@ -3448,6 +3449,7 @@ public class GameManager : MonoBehaviour
         vipLevelLockImages.Clear();
         vipLevelSelectImages.Clear();
         vipLevelButtonRects.Clear();
+        vipLevelStarTexts.Clear();
         for (int i = 1; i <= MaxVipLevel; i++)
         {
             CreateVipCardButton(vipPanel.transform, i, new Vector2(-75f + ((i - 1) * 151f), 38f));
@@ -3649,6 +3651,14 @@ public class GameManager : MonoBehaviour
         lockImage.preserveAspect = true;
         lockImage.raycastTarget = false;
         vipLevelLockImages.Add(lockImage);
+
+        TMP_Text starText = CreateText(buttonObject.transform, "BottomStar", "\u2605", new Vector2(0f, -126f), new Vector2(54f, 38f), 28);
+        starText.color = new Color(1f, 0.80f, 0.22f, 1f);
+        starText.alignment = TextAlignmentOptions.Center;
+        starText.fontStyle = FontStyles.Bold;
+        starText.raycastTarget = false;
+        starText.transform.SetAsLastSibling();
+        vipLevelStarTexts.Add(starText);
 
         Image selectGlow = CreatePanelStrip(buttonObject.transform, "SelectedGlow", new Vector2(0, -154), new Vector2(112, 10), new Color(1f, 0.78f, 0.18f, 0f));
         selectGlow.raycastTarget = false;
@@ -5176,6 +5186,18 @@ public class GameManager : MonoBehaviour
                 if (unlockFlash)
                     alpha = Mathf.Max(alpha, 0.62f + (Mathf.PingPong(Time.time * 7.5f, 1f) * 0.30f));
                 vipLevelSelectImages[i].color = new Color(1f, 0.78f, 0.18f, alpha);
+            }
+
+            if (i < vipLevelStarTexts.Count)
+            {
+                bool selected = selectedVipPreviewLevel == cardLevel;
+                Color starColor = vipLevel < cardLevel
+                    ? new Color(0.98f, 0.90f, 0.72f, 0.72f)
+                    : new Color(1f, 0.82f, 0.18f, 1f);
+                if (selected)
+                    starColor = new Color(1f, 0.92f, 0.30f, 1f);
+
+                vipLevelStarTexts[i].color = starColor;
             }
 
             if (i < vipLevelButtonRects.Count)
