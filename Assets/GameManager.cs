@@ -3488,10 +3488,10 @@ public class GameManager : MonoBehaviour
         StylePopupTitle(title, 32);
 
         vipInfoPanelText = CreateText(vipInfoPanel.transform, "VipInfoText", "", new Vector2(0, 30), new Vector2(710, 250), 24);
-        vipInfoPanelText.text = "VIP paketleri kalici bonus verir."
-            + "\nCoin, XP, musteri suresi ve pasif gelir artar."
-            + "\nVIP 3 ile indirim acilir."
-            + "\nIndirim kahve, makine ve barista gelistirmelerinde gecerlidir.";
+        vipInfoPanelText.text = "Vip paketleri kalıcı bonuslar verir."
+            + "\nCoin, XP, Müşterilerin sabrı ve pasif gelir artar."
+            + "\nGold Vip ile birlikte kalıcı yüzdelik indirimler kazanırsınız"
+            + "\nBu indirim yalnızca oyun içi geliştirmelerde geçerlidir.";
         StylePopupBodyText(vipInfoPanelText, 18, 24, TextAlignmentOptions.Center);
 
         StylePopupButton(CreateButton(vipInfoPanel.transform, "VipInfoCloseButton", "Tamam", new Vector2(0, -170), new Vector2(300, 72), CloseVipInfoPanel, new Color(0.40f, 0.20f, 0.54f), 28), new Color(0.40f, 0.20f, 0.54f), 28);
