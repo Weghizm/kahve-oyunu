@@ -3918,11 +3918,17 @@ public class GameManager : MonoBehaviour
         baristaLockedSceneImage.sprite = GetBaristaLockedPlaceholderSprite();
         baristaLockedSceneImage.preserveAspect = true;
         baristaLockedSceneImage.raycastTarget = false;
+#if UNITY_EDITOR
+        AttachEditorDragProbe(baristaLockedSceneImage, "BaristaLockedPlaceholder");
+#endif
 
         baristaSceneImage = CreateSceneBox(parent, "BaristaSceneSprite", new Vector2(-48.10552f, 203f), new Vector2(174.5f, 340f), Color.white);
         baristaSceneImage.sprite = GetBaristaSceneSprite();
         baristaSceneImage.preserveAspect = true;
         baristaSceneImage.raycastTarget = false;
+#if UNITY_EDITOR
+        AttachEditorDragProbe(baristaSceneImage, "BaristaSceneSprite");
+#endif
 
         baristaCounterForegroundImage = CreateSceneBox(parent, "BaristaCounterForeground", new Vector2(-130.9856f, 48.7943f), new Vector2(813.0144f, 214.5455f), Color.white);
         baristaCounterForegroundImage.sprite = GetBaristaCounterForegroundSprite();
@@ -4005,8 +4011,6 @@ public class GameManager : MonoBehaviour
         floorLeftPerspectiveLine.raycastTarget = false;
         floorRightPerspectiveLine.raycastTarget = false;
         roomAccentStrip.raycastTarget = false;
-        baristaLockedSceneImage.raycastTarget = false;
-        baristaSceneImage.raycastTarget = false;
         baristaCounterForegroundImage.raycastTarget = false;
         coffeeMachineSceneImage.raycastTarget = false;
         counterTop.raycastTarget = false;
