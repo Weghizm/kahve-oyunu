@@ -4716,7 +4716,7 @@ public class GameManager : MonoBehaviour
             if (bonusTimer >= MaxBoostSeconds)
                 adBoostButtonText.text = "MAX";
             else if (bonusTimer > 0)
-                adBoostButtonText.text = FormatCompactTime(bonusTimer);
+                adBoostButtonText.text = "AKTIF";
             else
                 adBoostButtonText.text = "AD";
             Button adButton = adBoostButtonText.GetComponentInParent<Button>();
