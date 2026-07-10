@@ -3457,7 +3457,7 @@ public class GameManager : MonoBehaviour
         vipXpBonusText = CreateVipBonusPill(vipPanel.transform, "XP", "+0%", new Vector2(-200f, -212f), new Vector2(3.4f, -25f), new Vector2(90.661f, 48f), new Color(0.35f, 0.55f, 1f, 1f));
         vipCoffeeBonusText = CreateVipBonusPill(vipPanel.transform, "Müşteri", "+0%", new Vector2(22f, -212f), new Vector2(33.4f, -25f), new Vector2(121.3214f, 48f), new Color(0.28f, 0.70f, 0.42f, 1f));
         vipPassiveBonusText = CreateVipBonusPill(vipPanel.transform, "Pasif", "+0%", new Vector2(244f, -212f), new Vector2(50.6f, -27f), new Vector2(121.3214f, 48f), new Color(0.92f, 0.24f, 0.32f, 1f));
-        vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "İndirim", "Lv.3", Vector2.zero, new Vector2(504f, -243f), new Vector2(168f, 72f), new Color(0.86f, 0.36f, 0.18f, 1f));
+        vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "İndirim", "Lv.3", Vector2.zero, new Vector2(551.1f, -237f), new Vector2(168f, 72f), new Color(0.86f, 0.36f, 0.18f, 1f));
 
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
         vipUpgradeButtonText.rectTransform.anchoredPosition = new Vector2(-18f, 0f);
