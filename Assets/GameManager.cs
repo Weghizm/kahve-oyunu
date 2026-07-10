@@ -2473,7 +2473,7 @@ public class GameManager : MonoBehaviour
     {
         if (vipPanelBackgroundSprite == null)
         {
-            vipPanelBackgroundSprite = LoadSpriteFromResources("Art/UI/vip_panel_background");
+            vipPanelBackgroundSprite = LoadSpriteFromResources("Art/UI/vip_panel_background_clean");
         }
 
         return vipPanelBackgroundSprite;
