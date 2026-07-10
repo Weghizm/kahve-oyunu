@@ -1687,14 +1687,13 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 40);
         panelRect.sizeDelta = new Vector2(860, 390);
 
-        Image panelImage = offlinePanel.GetComponent<Image>();
-        panelImage.color = new Color(1f, 0.96f, 0.82f, 0.96f);
+        StylePopupPanel(offlinePanel, panelRect.sizeDelta, new Color(1f, 0.94f, 0.78f, 0.98f), new Color(0.56f, 0.30f, 0.10f, 1f));
 
-        offlineText = CreateText(offlinePanel.transform, "OfflineText", "", new Vector2(0, 95), new Vector2(760, 150), 42);
-        offlineText.color = Color.black;
+        offlineText = CreateText(offlinePanel.transform, "OfflineText", "", new Vector2(0, 82), new Vector2(760, 170), 34);
+        StylePopupBodyText(offlineText, 22, 34, TextAlignmentOptions.Center);
 
-        CreateButton(offlinePanel.transform, "OfflineCollectButton", "Topla", new Vector2(-220, -105), new Vector2(360, 100), CloseOfflinePanel, new Color(0.20f, 0.55f, 0.36f), 34);
-        CreateButton(offlinePanel.transform, "OfflineDoubleButton", "2x Topla", new Vector2(220, -105), new Vector2(360, 100), CollectOfflineDouble, new Color(0.18f, 0.38f, 0.82f), 34);
+        StylePopupButton(CreateButton(offlinePanel.transform, "OfflineCollectButton", "Topla", new Vector2(-220, -118), new Vector2(360, 92), CloseOfflinePanel, new Color(0.20f, 0.55f, 0.36f), 31), new Color(0.20f, 0.55f, 0.36f), 31);
+        StylePopupButton(CreateButton(offlinePanel.transform, "OfflineDoubleButton", "2x Topla", new Vector2(220, -118), new Vector2(360, 92), CollectOfflineDouble, new Color(0.18f, 0.38f, 0.82f), 31), new Color(0.18f, 0.38f, 0.82f), 31);
         offlinePanel.transform.SetAsLastSibling();
         offlinePanel.SetActive(false);
     }
@@ -1762,17 +1761,16 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 25);
         panelRect.sizeDelta = new Vector2(900, 650);
 
-        Image panelImage = dailyRewardPanel.GetComponent<Image>();
-        panelImage.color = new Color(1f, 0.91f, 0.84f, 0.98f);
+        StylePopupPanel(dailyRewardPanel, panelRect.sizeDelta, new Color(1f, 0.92f, 0.78f, 0.98f), new Color(0.72f, 0.36f, 0.16f, 1f));
 
         TMP_Text title = CreateText(dailyRewardPanel.transform, "DailyRewardTitle", "Günlük Giriş Ödülü", new Vector2(0, 270), new Vector2(820, 70), 42);
-        title.color = Color.black;
+        StylePopupTitle(title, 34);
 
         dailyRewardPanelText = CreateText(dailyRewardPanel.transform, "DailyRewardText", "", new Vector2(0, 65), new Vector2(790, 330), 28);
-        dailyRewardPanelText.color = Color.black;
+        StylePopupBodyText(dailyRewardPanelText, 19, 27, TextAlignmentOptions.TopLeft);
 
-        dailyRewardButtonText = CreateButton(dailyRewardPanel.transform, "DailyRewardClaimButton", "Ödülü Al", new Vector2(-190, -225), new Vector2(360, 85), ClaimDailyReward, new Color(0.84f, 0.38f, 0.22f), 32);
-        CreateButton(dailyRewardPanel.transform, "DailyRewardCloseButton", "Kapat", new Vector2(230, -225), new Vector2(300, 85), CloseDailyRewardPanel, new Color(0.20f, 0.20f, 0.20f), 30);
+        dailyRewardButtonText = StylePopupButton(CreateButton(dailyRewardPanel.transform, "DailyRewardClaimButton", "Ödülü Al", new Vector2(-190, -225), new Vector2(360, 82), ClaimDailyReward, new Color(0.84f, 0.38f, 0.22f), 30), new Color(0.84f, 0.38f, 0.22f), 30);
+        StylePopupButton(CreateButton(dailyRewardPanel.transform, "DailyRewardCloseButton", "Kapat", new Vector2(230, -225), new Vector2(300, 82), CloseDailyRewardPanel, new Color(0.20f, 0.20f, 0.20f), 28), new Color(0.20f, 0.20f, 0.20f), 28);
 
         dailyRewardPanel.transform.SetAsLastSibling();
         dailyRewardPanel.SetActive(false);
@@ -2151,24 +2149,18 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 25);
         panelRect.sizeDelta = new Vector2(980, 620);
 
-        Image panelImage = chestPanel.GetComponent<Image>();
-        panelImage.color = new Color(0.98f, 0.91f, 0.78f, 0.98f);
+        StylePopupPanel(chestPanel, panelRect.sizeDelta, new Color(0.98f, 0.89f, 0.70f, 0.98f), new Color(0.58f, 0.32f, 0.12f, 1f));
 
-        TMP_Text title = CreateText(chestPanel.transform, "ChestPanelTitle", "Sandiklar", new Vector2(0, 260), new Vector2(900, 64), 40);
-        title.color = Color.black;
+        TMP_Text title = CreateText(chestPanel.transform, "ChestPanelTitle", "Sandiklar", new Vector2(0, 260), new Vector2(900, 64), 38);
+        StylePopupTitle(title, 34);
 
-        chestPanelText = CreateText(chestPanel.transform, "ChestPanelText", "", new Vector2(0, 55), new Vector2(900, 350), 19);
-        chestPanelText.color = Color.black;
-        chestPanelText.alignment = TextAlignmentOptions.TopLeft;
-        chestPanelText.enableWordWrapping = true;
-        chestPanelText.enableAutoSizing = true;
-        chestPanelText.fontSizeMin = 13;
-        chestPanelText.fontSizeMax = 19;
+        chestPanelText = CreateText(chestPanel.transform, "ChestPanelText", "", new Vector2(0, 45), new Vector2(850, 330), 20);
+        StylePopupBodyText(chestPanelText, 14, 20, TextAlignmentOptions.TopLeft);
 
-        chestOpenButtonText = CreateButton(chestPanel.transform, "ChestOpenButton", "Siradan", new Vector2(-330, -250), new Vector2(190, 72), OpenChest, new Color(0.64f, 0.36f, 0.16f), 23);
-        rareChestOpenButtonText = CreateButton(chestPanel.transform, "RareChestOpenButton", "Nadir", new Vector2(-110, -250), new Vector2(190, 72), OpenRareChest, new Color(0.30f, 0.42f, 0.68f), 23);
-        luxuryChestOpenButtonText = CreateButton(chestPanel.transform, "LuxuryChestOpenButton", "Ozel", new Vector2(110, -250), new Vector2(190, 72), OpenLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 23);
-        CreateButton(chestPanel.transform, "ChestCloseButton", "Kapat", new Vector2(330, -250), new Vector2(190, 72), CloseChestPanel, new Color(0.20f, 0.20f, 0.20f), 23);
+        chestOpenButtonText = StylePopupButton(CreateButton(chestPanel.transform, "ChestOpenButton", "Siradan", new Vector2(-330, -250), new Vector2(190, 70), OpenChest, new Color(0.64f, 0.36f, 0.16f), 22), new Color(0.64f, 0.36f, 0.16f), 22);
+        rareChestOpenButtonText = StylePopupButton(CreateButton(chestPanel.transform, "RareChestOpenButton", "Nadir", new Vector2(-110, -250), new Vector2(190, 70), OpenRareChest, new Color(0.30f, 0.42f, 0.68f), 22), new Color(0.30f, 0.42f, 0.68f), 22);
+        luxuryChestOpenButtonText = StylePopupButton(CreateButton(chestPanel.transform, "LuxuryChestOpenButton", "Ozel", new Vector2(110, -250), new Vector2(190, 70), OpenLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 22), new Color(0.72f, 0.54f, 0.22f), 22);
+        StylePopupButton(CreateButton(chestPanel.transform, "ChestCloseButton", "Kapat", new Vector2(330, -250), new Vector2(190, 70), CloseChestPanel, new Color(0.20f, 0.20f, 0.20f), 22), new Color(0.20f, 0.20f, 0.20f), 22);
 
         chestPanel.transform.SetAsLastSibling();
         chestPanel.SetActive(false);
@@ -2185,11 +2177,10 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 15);
         panelRect.sizeDelta = new Vector2(560, 500);
 
-        Image panelImage = chestRewardPanel.GetComponent<Image>();
-        panelImage.color = new Color(0.98f, 0.94f, 0.84f, 0.99f);
+        StylePopupPanel(chestRewardPanel, panelRect.sizeDelta, new Color(0.98f, 0.92f, 0.78f, 0.99f), new Color(0.62f, 0.42f, 0.16f, 1f));
 
         chestRewardTitleText = CreateText(chestRewardPanel.transform, "ChestRewardTitle", "Sandık Ödülü", new Vector2(0, 205), new Vector2(500, 60), 38);
-        chestRewardTitleText.color = Color.black;
+        StylePopupTitle(chestRewardTitleText, 30);
 
         GameObject iconObject = new GameObject("ChestRewardIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         iconObject.transform.SetParent(chestRewardPanel.transform, false);
@@ -2203,10 +2194,9 @@ public class GameManager : MonoBehaviour
         chestRewardIconImage.color = Color.white;
 
         chestRewardText = CreateText(chestRewardPanel.transform, "ChestRewardText", "", new Vector2(0, -105), new Vector2(500, 110), 28);
-        chestRewardText.color = Color.black;
-        chestRewardText.enableWordWrapping = true;
+        StylePopupBodyText(chestRewardText, 20, 27, TextAlignmentOptions.Center);
 
-        CreateButton(chestRewardPanel.transform, "ChestRewardCloseButton", "Tamam", new Vector2(0, -210), new Vector2(260, 72), CloseChestRewardPanel, new Color(0.22f, 0.48f, 0.40f), 28);
+        StylePopupButton(CreateButton(chestRewardPanel.transform, "ChestRewardCloseButton", "Tamam", new Vector2(0, -210), new Vector2(260, 70), CloseChestRewardPanel, new Color(0.22f, 0.48f, 0.40f), 27), new Color(0.22f, 0.48f, 0.40f), 27);
 
         chestRewardPanel.transform.SetAsLastSibling();
         chestRewardPanel.SetActive(false);
@@ -3198,20 +3188,19 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 25);
         panelRect.sizeDelta = new Vector2(900, 620);
 
-        Image panelImage = dailyTasksPanel.GetComponent<Image>();
-        panelImage.color = new Color(0.88f, 0.94f, 1f, 0.98f);
+        StylePopupPanel(dailyTasksPanel, panelRect.sizeDelta, new Color(0.90f, 0.94f, 0.84f, 0.98f), new Color(0.24f, 0.44f, 0.30f, 1f));
 
-        TMP_Text title = CreateText(dailyTasksPanel.transform, "DailyTasksTitle", "Günlük Görevler", new Vector2(0, 250), new Vector2(780, 70), 42);
-        title.color = Color.black;
+        TMP_Text title = CreateText(dailyTasksPanel.transform, "DailyTasksTitle", "Günlük Görevler", new Vector2(0, 250), new Vector2(780, 70), 38);
+        StylePopupTitle(title, 34);
 
         dailyTasksPanelText = CreateText(dailyTasksPanel.transform, "DailyTasksText", "", new Vector2(0, 140), new Vector2(780, 130), 27);
-        dailyTasksPanelText.color = Color.black;
+        StylePopupBodyText(dailyTasksPanelText, 19, 27, TextAlignmentOptions.Center);
 
-        dailyTaskCoffeeButtonText = CreateButton(dailyTasksPanel.transform, "DailyCoffeeTaskButton", "Ödülü Al", new Vector2(0, 35), new Vector2(720, 70), ClaimDailyCoffeeTask, new Color(0.28f, 0.45f, 0.78f), 24);
-        dailyTaskCustomerButtonText = CreateButton(dailyTasksPanel.transform, "DailyCustomerTaskButton", "Ödülü Al", new Vector2(0, -55), new Vector2(720, 70), ClaimDailyCustomerTask, new Color(0.18f, 0.58f, 0.32f), 24);
-        dailyTaskChestButtonText = CreateButton(dailyTasksPanel.transform, "DailyChestTaskButton", "Ödülü Al", new Vector2(0, -145), new Vector2(720, 70), ClaimDailyChestTask, new Color(0.64f, 0.36f, 0.16f), 24);
+        dailyTaskCoffeeButtonText = StylePopupButton(CreateButton(dailyTasksPanel.transform, "DailyCoffeeTaskButton", "Ödülü Al", new Vector2(0, 35), new Vector2(720, 70), ClaimDailyCoffeeTask, new Color(0.28f, 0.45f, 0.78f), 24), new Color(0.28f, 0.45f, 0.78f), 24);
+        dailyTaskCustomerButtonText = StylePopupButton(CreateButton(dailyTasksPanel.transform, "DailyCustomerTaskButton", "Ödülü Al", new Vector2(0, -55), new Vector2(720, 70), ClaimDailyCustomerTask, new Color(0.18f, 0.58f, 0.32f), 24), new Color(0.18f, 0.58f, 0.32f), 24);
+        dailyTaskChestButtonText = StylePopupButton(CreateButton(dailyTasksPanel.transform, "DailyChestTaskButton", "Ödülü Al", new Vector2(0, -145), new Vector2(720, 70), ClaimDailyChestTask, new Color(0.64f, 0.36f, 0.16f), 24), new Color(0.64f, 0.36f, 0.16f), 24);
 
-        CreateButton(dailyTasksPanel.transform, "DailyTasksCloseButton", "Kapat", new Vector2(0, -255), new Vector2(300, 70), CloseDailyTasksPanel, new Color(0.20f, 0.20f, 0.20f), 28);
+        StylePopupButton(CreateButton(dailyTasksPanel.transform, "DailyTasksCloseButton", "Kapat", new Vector2(0, -255), new Vector2(300, 70), CloseDailyTasksPanel, new Color(0.20f, 0.20f, 0.20f), 27), new Color(0.20f, 0.20f, 0.20f), 27);
 
         dailyTasksPanel.transform.SetAsLastSibling();
         dailyTasksPanel.SetActive(false);
@@ -3231,14 +3220,13 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 40);
         panelRect.sizeDelta = new Vector2(880, 460);
 
-        Image panelImage = taskPanel.GetComponent<Image>();
-        panelImage.color = new Color(0.96f, 0.92f, 1f, 0.97f);
+        StylePopupPanel(taskPanel, panelRect.sizeDelta, new Color(0.94f, 0.88f, 1f, 0.98f), new Color(0.38f, 0.25f, 0.58f, 1f));
 
-        taskPanelText = CreateText(taskPanel.transform, "TaskPanelText", "", new Vector2(0, 100), new Vector2(780, 210), 34);
-        taskPanelText.color = Color.black;
+        taskPanelText = CreateText(taskPanel.transform, "TaskPanelText", "", new Vector2(0, 72), new Vector2(780, 230), 31);
+        StylePopupBodyText(taskPanelText, 20, 31, TextAlignmentOptions.Center);
 
-        taskRewardButtonText = CreateButton(taskPanel.transform, "TaskRewardButton", "Ödülü Al", new Vector2(0, -105), new Vector2(420, 95), ClaimTaskReward, new Color(0.36f, 0.24f, 0.62f), 34);
-        CreateButton(taskPanel.transform, "TaskCloseButton", "Kapat", new Vector2(0, -210), new Vector2(300, 70), CloseTaskPanel, new Color(0.20f, 0.20f, 0.20f), 28);
+        taskRewardButtonText = StylePopupButton(CreateButton(taskPanel.transform, "TaskRewardButton", "Ödülü Al", new Vector2(0, -112), new Vector2(420, 86), ClaimTaskReward, new Color(0.36f, 0.24f, 0.62f), 31), new Color(0.36f, 0.24f, 0.62f), 31);
+        StylePopupButton(CreateButton(taskPanel.transform, "TaskCloseButton", "Kapat", new Vector2(0, -205), new Vector2(300, 68), CloseTaskPanel, new Color(0.20f, 0.20f, 0.20f), 26), new Color(0.20f, 0.20f, 0.20f), 26);
 
         taskPanel.transform.SetAsLastSibling();
         taskPanel.SetActive(false);
@@ -3255,17 +3243,16 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 15);
         panelRect.sizeDelta = new Vector2(900, 660);
 
-        Image panelImage = coffeePanel.GetComponent<Image>();
-        panelImage.color = new Color(1f, 0.94f, 0.82f, 0.98f);
+        StylePopupPanel(coffeePanel, panelRect.sizeDelta, new Color(1f, 0.92f, 0.74f, 0.98f), new Color(0.70f, 0.42f, 0.14f, 1f));
 
-        TMP_Text title = CreateText(coffeePanel.transform, "CoffeePanelTitle", "Kahve Cesitleri", new Vector2(0, 270), new Vector2(780, 70), 42);
-        title.color = Color.black;
+        TMP_Text title = CreateText(coffeePanel.transform, "CoffeePanelTitle", "Kahve Cesitleri", new Vector2(0, 270), new Vector2(780, 70), 38);
+        StylePopupTitle(title, 34);
 
-        basicCoffeeButtonText = CreateButton(coffeePanel.transform, "BasicCoffeeButton", "Daha Iyi Kahve", new Vector2(0, 150), new Vector2(760, 95), BuyCoffeeUpgrade, new Color(0.86f, 0.56f, 0.20f), 27);
-        premiumCoffeeButtonText = CreateButton(coffeePanel.transform, "PremiumCoffeeButton", "Premium Cekirdek", new Vector2(0, 35), new Vector2(760, 95), BuyPremiumCoffee, new Color(0.62f, 0.36f, 0.18f), 27);
-        signatureCoffeeButtonText = CreateButton(coffeePanel.transform, "SignatureCoffeeButton", "Ozel Harman", new Vector2(0, -80), new Vector2(760, 95), BuySignatureCoffee, new Color(0.48f, 0.22f, 0.42f), 27);
+        basicCoffeeButtonText = StylePopupButton(CreateButton(coffeePanel.transform, "BasicCoffeeButton", "Daha Iyi Kahve", new Vector2(0, 150), new Vector2(760, 92), BuyCoffeeUpgrade, new Color(0.86f, 0.56f, 0.20f), 25), new Color(0.86f, 0.56f, 0.20f), 25);
+        premiumCoffeeButtonText = StylePopupButton(CreateButton(coffeePanel.transform, "PremiumCoffeeButton", "Premium Cekirdek", new Vector2(0, 35), new Vector2(760, 92), BuyPremiumCoffee, new Color(0.62f, 0.36f, 0.18f), 25), new Color(0.62f, 0.36f, 0.18f), 25);
+        signatureCoffeeButtonText = StylePopupButton(CreateButton(coffeePanel.transform, "SignatureCoffeeButton", "Ozel Harman", new Vector2(0, -80), new Vector2(760, 92), BuySignatureCoffee, new Color(0.48f, 0.22f, 0.42f), 25), new Color(0.48f, 0.22f, 0.42f), 25);
 
-        CreateButton(coffeePanel.transform, "CoffeeCloseButton", "Kapat", new Vector2(0, -245), new Vector2(300, 70), CloseCoffeePanel, new Color(0.20f, 0.20f, 0.20f), 28);
+        StylePopupButton(CreateButton(coffeePanel.transform, "CoffeeCloseButton", "Kapat", new Vector2(0, -245), new Vector2(300, 70), CloseCoffeePanel, new Color(0.20f, 0.20f, 0.20f), 27), new Color(0.20f, 0.20f, 0.20f), 27);
 
         coffeePanel.transform.SetAsLastSibling();
         coffeePanel.SetActive(false);
@@ -3282,17 +3269,16 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 15);
         panelRect.sizeDelta = new Vector2(900, 660);
 
-        Image panelImage = machinePanel.GetComponent<Image>();
-        panelImage.color = new Color(0.88f, 0.97f, 0.94f, 0.98f);
+        StylePopupPanel(machinePanel, panelRect.sizeDelta, new Color(0.86f, 0.95f, 0.90f, 0.98f), new Color(0.20f, 0.50f, 0.44f, 1f));
 
-        TMP_Text title = CreateText(machinePanel.transform, "MachinePanelTitle", "Kahve Makineleri", new Vector2(0, 270), new Vector2(780, 70), 42);
-        title.color = Color.black;
+        TMP_Text title = CreateText(machinePanel.transform, "MachinePanelTitle", "Kahve Makineleri", new Vector2(0, 270), new Vector2(780, 70), 38);
+        StylePopupTitle(title, 34);
 
-        basicMachineButtonText = CreateButton(machinePanel.transform, "BasicMachineButton", "Basit Kahve Makinesi", new Vector2(0, 150), new Vector2(760, 95), BuyMachineUpgrade, new Color(0.20f, 0.55f, 0.48f), 27);
-        espressoMachineButtonText = CreateButton(machinePanel.transform, "EspressoMachineButton", "Espresso Makinesi", new Vector2(0, 35), new Vector2(760, 95), BuyEspressoMachine, new Color(0.30f, 0.42f, 0.68f), 27);
-        premiumMachineButtonText = CreateButton(machinePanel.transform, "PremiumMachineButton", "Premium Makine", new Vector2(0, -80), new Vector2(760, 95), BuyPremiumMachine, new Color(0.62f, 0.42f, 0.18f), 27);
+        basicMachineButtonText = StylePopupButton(CreateButton(machinePanel.transform, "BasicMachineButton", "Basit Kahve Makinesi", new Vector2(0, 150), new Vector2(760, 92), BuyMachineUpgrade, new Color(0.20f, 0.55f, 0.48f), 25), new Color(0.20f, 0.55f, 0.48f), 25);
+        espressoMachineButtonText = StylePopupButton(CreateButton(machinePanel.transform, "EspressoMachineButton", "Espresso Makinesi", new Vector2(0, 35), new Vector2(760, 92), BuyEspressoMachine, new Color(0.30f, 0.42f, 0.68f), 25), new Color(0.30f, 0.42f, 0.68f), 25);
+        premiumMachineButtonText = StylePopupButton(CreateButton(machinePanel.transform, "PremiumMachineButton", "Premium Makine", new Vector2(0, -80), new Vector2(760, 92), BuyPremiumMachine, new Color(0.62f, 0.42f, 0.18f), 25), new Color(0.62f, 0.42f, 0.18f), 25);
 
-        CreateButton(machinePanel.transform, "MachineCloseButton", "Kapat", new Vector2(0, -245), new Vector2(300, 70), CloseMachinePanel, new Color(0.20f, 0.20f, 0.20f), 28);
+        StylePopupButton(CreateButton(machinePanel.transform, "MachineCloseButton", "Kapat", new Vector2(0, -245), new Vector2(300, 70), CloseMachinePanel, new Color(0.20f, 0.20f, 0.20f), 27), new Color(0.20f, 0.20f, 0.20f), 27);
 
         machinePanel.transform.SetAsLastSibling();
         machinePanel.SetActive(false);
@@ -3309,21 +3295,19 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 15);
         panelRect.sizeDelta = new Vector2(900, 660);
 
-        Image panelImage = baristaPanel.GetComponent<Image>();
-        panelImage.color = new Color(0.94f, 0.88f, 1f, 0.98f);
+        StylePopupPanel(baristaPanel, panelRect.sizeDelta, new Color(0.94f, 0.88f, 1f, 0.98f), new Color(0.46f, 0.28f, 0.62f, 1f));
 
-        TMP_Text title = CreateText(baristaPanel.transform, "BaristaPanelTitle", "Baristalar", new Vector2(0, 270), new Vector2(780, 70), 42);
-        title.color = Color.black;
+        TMP_Text title = CreateText(baristaPanel.transform, "BaristaPanelTitle", "Baristalar", new Vector2(0, 270), new Vector2(780, 70), 38);
+        StylePopupTitle(title, 34);
 
         baristaStatusText = CreateText(baristaPanel.transform, "BaristaStatusText", "", new Vector2(0, 218), new Vector2(760, 42), 21);
-        baristaStatusText.color = new Color(0.12f, 0.10f, 0.08f);
-        baristaStatusText.alignment = TextAlignmentOptions.Center;
+        StylePopupBodyText(baristaStatusText, 14, 20, TextAlignmentOptions.Center);
 
-        juniorBaristaButtonText = CreateButton(baristaPanel.transform, "JuniorBaristaButton", "Barista", new Vector2(0, 150), new Vector2(760, 95), BuyBaristaUpgrade, new Color(0.54f, 0.32f, 0.72f), 27);
-        seniorBaristaButtonText = CreateButton(baristaPanel.transform, "SeniorBaristaButton", "Usta Barista", new Vector2(0, 35), new Vector2(760, 95), BuySeniorBarista, new Color(0.34f, 0.42f, 0.78f), 27);
-        masterBaristaButtonText = CreateButton(baristaPanel.transform, "MasterBaristaButton", "Sef Barista", new Vector2(0, -80), new Vector2(760, 95), BuyMasterBarista, new Color(0.62f, 0.30f, 0.50f), 27);
+        juniorBaristaButtonText = StylePopupButton(CreateButton(baristaPanel.transform, "JuniorBaristaButton", "Barista", new Vector2(0, 150), new Vector2(760, 92), BuyBaristaUpgrade, new Color(0.54f, 0.32f, 0.72f), 25), new Color(0.54f, 0.32f, 0.72f), 25);
+        seniorBaristaButtonText = StylePopupButton(CreateButton(baristaPanel.transform, "SeniorBaristaButton", "Usta Barista", new Vector2(0, 35), new Vector2(760, 92), BuySeniorBarista, new Color(0.34f, 0.42f, 0.78f), 25), new Color(0.34f, 0.42f, 0.78f), 25);
+        masterBaristaButtonText = StylePopupButton(CreateButton(baristaPanel.transform, "MasterBaristaButton", "Sef Barista", new Vector2(0, -80), new Vector2(760, 92), BuyMasterBarista, new Color(0.62f, 0.30f, 0.50f), 25), new Color(0.62f, 0.30f, 0.50f), 25);
 
-        CreateButton(baristaPanel.transform, "BaristaCloseButton", "Kapat", new Vector2(0, -245), new Vector2(300, 70), CloseBaristaPanel, new Color(0.20f, 0.20f, 0.20f), 28);
+        StylePopupButton(CreateButton(baristaPanel.transform, "BaristaCloseButton", "Kapat", new Vector2(0, -245), new Vector2(300, 70), CloseBaristaPanel, new Color(0.20f, 0.20f, 0.20f), 27), new Color(0.20f, 0.20f, 0.20f), 27);
 
         baristaPanel.transform.SetAsLastSibling();
         baristaPanel.SetActive(false);
@@ -3340,18 +3324,15 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 35);
         panelRect.sizeDelta = new Vector2(760, 520);
 
-        Image panelImage = passiveIncomePanel.GetComponent<Image>();
-        panelImage.color = new Color(0.94f, 0.97f, 1f, 0.98f);
+        StylePopupPanel(passiveIncomePanel, panelRect.sizeDelta, new Color(0.90f, 0.95f, 1f, 0.98f), new Color(0.24f, 0.38f, 0.66f, 1f));
 
-        TMP_Text title = CreateText(passiveIncomePanel.transform, "PassiveIncomeTitle", "Pasif Gelir Detayi", new Vector2(0, 205), new Vector2(700, 60), 38);
-        title.color = Color.black;
+        TMP_Text title = CreateText(passiveIncomePanel.transform, "PassiveIncomeTitle", "Pasif Gelir Detayi", new Vector2(0, 205), new Vector2(700, 60), 34);
+        StylePopupTitle(title, 30);
 
         passiveIncomePanelText = CreateText(passiveIncomePanel.transform, "PassiveIncomeText", "", new Vector2(0, 20), new Vector2(680, 300), 27);
-        passiveIncomePanelText.color = Color.black;
-        passiveIncomePanelText.alignment = TextAlignmentOptions.TopLeft;
-        passiveIncomePanelText.enableWordWrapping = true;
+        StylePopupBodyText(passiveIncomePanelText, 17, 25, TextAlignmentOptions.TopLeft);
 
-        CreateButton(passiveIncomePanel.transform, "PassiveIncomeCloseButton", "Kapat", new Vector2(0, -220), new Vector2(280, 72), ClosePassiveIncomePanel, new Color(0.20f, 0.20f, 0.20f), 28);
+        StylePopupButton(CreateButton(passiveIncomePanel.transform, "PassiveIncomeCloseButton", "Kapat", new Vector2(0, -220), new Vector2(280, 70), ClosePassiveIncomePanel, new Color(0.20f, 0.20f, 0.20f), 27), new Color(0.20f, 0.20f, 0.20f), 27);
 
         passiveIncomePanel.transform.SetAsLastSibling();
         passiveIncomePanel.SetActive(false);
@@ -3830,6 +3811,123 @@ public class GameManager : MonoBehaviour
         return image;
     }
 
+    private void StylePopupPanel(GameObject panelObject, Vector2 size, Color fillColor, Color accentColor)
+    {
+        Image panelImage = panelObject.GetComponent<Image>();
+        panelImage.sprite = CreateRoundedRectSprite(size, fillColor, new Color(0.18f, 0.10f, 0.05f, 1f), 18, 6);
+        panelImage.color = Color.white;
+
+        CreatePanelStrip(panelObject.transform, "PopupTopShadow", new Vector2(0, (size.y * 0.5f) - 16f), new Vector2(size.x - 36f, 10f), new Color(1f, 1f, 1f, 0.12f));
+        CreatePanelStrip(panelObject.transform, "PopupHeader", new Vector2(0, (size.y * 0.5f) - 52f), new Vector2(size.x - 56f, 70f), accentColor);
+        CreatePanelStrip(panelObject.transform, "PopupHeaderLine", new Vector2(0, (size.y * 0.5f) - 89f), new Vector2(size.x - 70f, 4f), new Color(1f, 0.78f, 0.34f, 0.85f));
+    }
+
+    private void StylePopupTitle(TMP_Text title, float maxSize)
+    {
+        title.color = new Color(1f, 0.94f, 0.78f, 1f);
+        title.fontStyle = FontStyles.Bold;
+        title.enableAutoSizing = true;
+        title.fontSizeMin = 20;
+        title.fontSizeMax = maxSize;
+        title.enableWordWrapping = false;
+        title.overflowMode = TextOverflowModes.Ellipsis;
+        title.outlineColor = new Color(0.12f, 0.06f, 0.02f, 0.9f);
+        title.outlineWidth = 0.08f;
+    }
+
+    private void StylePopupBodyText(TMP_Text text, float minSize, float maxSize, TextAlignmentOptions alignment)
+    {
+        text.color = new Color(0.16f, 0.10f, 0.06f, 1f);
+        text.alignment = alignment;
+        text.enableWordWrapping = true;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = minSize;
+        text.fontSizeMax = maxSize;
+    }
+
+    private TMP_Text StylePopupButton(TMP_Text labelText, Color fillColor, float maxSize)
+    {
+        Image image = labelText.GetComponentInParent<Image>();
+        RectTransform rect = labelText.GetComponentInParent<RectTransform>();
+        if (image != null && rect != null)
+        {
+            image.sprite = CreateRoundedRectSprite(rect.sizeDelta, fillColor, ShadeColor(fillColor, 0.55f), 14, 4);
+            image.color = Color.white;
+        }
+
+        labelText.color = Color.white;
+        labelText.fontStyle = FontStyles.Bold;
+        labelText.enableAutoSizing = true;
+        labelText.fontSizeMin = 13;
+        labelText.fontSizeMax = maxSize;
+        labelText.enableWordWrapping = true;
+        labelText.outlineColor = new Color(0f, 0f, 0f, 0.45f);
+        labelText.outlineWidth = 0.08f;
+        return labelText;
+    }
+
+    private Sprite CreateRoundedRectSprite(Vector2 size, Color fillColor, Color borderColor, int cornerRadius, int border)
+    {
+        int width = Mathf.Max(24, Mathf.RoundToInt(size.x));
+        int height = Mathf.Max(24, Mathf.RoundToInt(size.y));
+        int radius = Mathf.Clamp(cornerRadius, 0, Mathf.Min(width, height) / 2);
+        int borderSize = Mathf.Clamp(border, 0, Mathf.Min(width, height) / 3);
+        Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        texture.filterMode = FilterMode.Bilinear;
+        texture.wrapMode = TextureWrapMode.Clamp;
+
+        Color clear = new Color(0f, 0f, 0f, 0f);
+        int innerWidth = width - (borderSize * 2);
+        int innerHeight = height - (borderSize * 2);
+        int innerRadius = Mathf.Max(0, radius - borderSize);
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                Color pixel = clear;
+                if (IsInsideRoundedRectPixel(x, y, width, height, radius))
+                {
+                    pixel = borderColor;
+                }
+
+                if (IsInsideRoundedRectPixel(x - borderSize, y - borderSize, innerWidth, innerHeight, innerRadius))
+                {
+                    pixel = fillColor;
+                }
+
+                texture.SetPixel(x, y, pixel);
+            }
+        }
+
+        texture.Apply();
+        return Sprite.Create(texture, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 100f);
+    }
+
+    private bool IsInsideRoundedRectPixel(int x, int y, int width, int height, int radius)
+    {
+        if (x < 0 || y < 0 || x >= width || y >= height)
+        {
+            return false;
+        }
+
+        int left = radius;
+        int right = width - radius - 1;
+        int bottom = radius;
+        int top = height - radius - 1;
+
+        if ((x >= left && x <= right) || (y >= bottom && y <= top))
+        {
+            return true;
+        }
+
+        int centerX = x < left ? left : right;
+        int centerY = y < bottom ? bottom : top;
+        int dx = x - centerX;
+        int dy = y - centerY;
+        return dx * dx + dy * dy <= radius * radius;
+    }
+
     private void CreateTimedOfferButton(Transform parent)
     {
         offerButtonText = CreateButton(parent, "TimedOfferButton", "2x\n60", new Vector2(350, 245), new Vector2(104, 104), OpenTimedOfferPanel, new Color(0.18f, 0.38f, 0.82f), 22);
@@ -3848,13 +3946,15 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 40);
         panelRect.sizeDelta = new Vector2(860, 390);
 
-        Image panelImage = offerPanel.GetComponent<Image>();
-        panelImage.color = new Color(0.90f, 0.94f, 1f, 0.97f);
+        StylePopupPanel(offerPanel, panelRect.sizeDelta, new Color(0.90f, 0.94f, 1f, 0.98f), new Color(0.18f, 0.38f, 0.82f, 1f));
 
-        offerPanelText = CreateText(offerPanel.transform, "TimedOfferText", "5 dakikaligina\n2x coin kazan", new Vector2(0, 95), new Vector2(760, 150), 42);
-        offerPanelText.color = Color.black;
+        TMP_Text title = CreateText(offerPanel.transform, "TimedOfferTitle", "2x Coin", new Vector2(0, 145), new Vector2(760, 64), 38);
+        StylePopupTitle(title, 34);
 
-        CreateButton(offerPanel.transform, "TimedOfferWatchButton", "Izle", new Vector2(0, -105), new Vector2(420, 100), WatchTimedOfferAd, new Color(0.18f, 0.38f, 0.82f), 38);
+        offerPanelText = CreateText(offerPanel.transform, "TimedOfferText", "5 dakikaligina\n2x coin kazan", new Vector2(0, 42), new Vector2(760, 135), 34);
+        StylePopupBodyText(offerPanelText, 22, 34, TextAlignmentOptions.Center);
+
+        StylePopupButton(CreateButton(offerPanel.transform, "TimedOfferWatchButton", "Izle", new Vector2(0, -120), new Vector2(420, 92), WatchTimedOfferAd, new Color(0.18f, 0.38f, 0.82f), 34), new Color(0.18f, 0.38f, 0.82f), 34);
         offerPanel.transform.SetAsLastSibling();
         offerPanel.SetActive(false);
     }
@@ -3870,19 +3970,16 @@ public class GameManager : MonoBehaviour
         panelRect.anchoredPosition = new Vector2(0, 40);
         panelRect.sizeDelta = new Vector2(860, 430);
 
-        Image panelImage = adBoostConfirmPanel.GetComponent<Image>();
-        panelImage.color = new Color(0.92f, 0.95f, 1f, 0.98f);
+        StylePopupPanel(adBoostConfirmPanel, panelRect.sizeDelta, new Color(0.90f, 0.94f, 1f, 0.98f), new Color(0.18f, 0.38f, 0.82f, 1f));
 
-        TMP_Text title = CreateText(adBoostConfirmPanel.transform, "AdBoostConfirmTitle", "2x Coin", new Vector2(0, 145), new Vector2(760, 70), 44);
-        title.color = new Color(0.08f, 0.12f, 0.22f);
-        title.fontStyle = FontStyles.Bold;
+        TMP_Text title = CreateText(adBoostConfirmPanel.transform, "AdBoostConfirmTitle", "2x Coin", new Vector2(0, 160), new Vector2(760, 70), 40);
+        StylePopupTitle(title, 35);
 
-        TMP_Text message = CreateText(adBoostConfirmPanel.transform, "AdBoostConfirmText", "Reklam izleyerek\n5 dakikalik 2x coin kazanmak\nister misiniz?", new Vector2(0, 35), new Vector2(760, 150), 30);
-        message.color = Color.black;
-        message.alignment = TextAlignmentOptions.Center;
+        TMP_Text message = CreateText(adBoostConfirmPanel.transform, "AdBoostConfirmText", "Reklam izleyerek\n5 dakikalik 2x coin kazanmak\nister misiniz?", new Vector2(0, 38), new Vector2(760, 150), 28);
+        StylePopupBodyText(message, 20, 28, TextAlignmentOptions.Center);
 
-        CreateButton(adBoostConfirmPanel.transform, "AdBoostConfirmWatchButton", "Izle", new Vector2(-150, -145), new Vector2(260, 82), ConfirmAdBoostReward, new Color(0.18f, 0.38f, 0.82f), 32);
-        CreateButton(adBoostConfirmPanel.transform, "AdBoostConfirmCancelButton", "Vazgec", new Vector2(170, -145), new Vector2(260, 82), CloseAdBoostConfirmPanel, new Color(0.20f, 0.20f, 0.20f), 30);
+        StylePopupButton(CreateButton(adBoostConfirmPanel.transform, "AdBoostConfirmWatchButton", "Izle", new Vector2(-150, -145), new Vector2(260, 78), ConfirmAdBoostReward, new Color(0.18f, 0.38f, 0.82f), 30), new Color(0.18f, 0.38f, 0.82f), 30);
+        StylePopupButton(CreateButton(adBoostConfirmPanel.transform, "AdBoostConfirmCancelButton", "Vazgec", new Vector2(170, -145), new Vector2(260, 78), CloseAdBoostConfirmPanel, new Color(0.20f, 0.20f, 0.20f), 28), new Color(0.20f, 0.20f, 0.20f), 28);
 
         adBoostConfirmPanel.transform.SetAsLastSibling();
         adBoostConfirmPanel.SetActive(false);
