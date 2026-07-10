@@ -252,6 +252,7 @@ public class GameManager : MonoBehaviour
     private IsoQuadGraphic isoFloorShadowGraphic;
     private Image productionMachineVisual;
     private Image productionConveyorVisual;
+    private Image coffeeMachineSceneImage;
     private Image coffeeMachineLockedPlaceholderImage;
     private Image vipCounterVisual;
     private Image vipRugVisual;
@@ -280,6 +281,8 @@ public class GameManager : MonoBehaviour
     private Sprite vipPanelBackgroundSprite;
     private Sprite vipLockIconSprite;
     private Sprite warmWoodCafeSceneSprite;
+    private Sprite warmWoodCafeSceneNoMachineSprite;
+    private Sprite coffeeMachineSceneSprite;
     private Sprite coffeeMachineLockedPlaceholderSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
     private readonly List<GameObject> cafeObjectHotspots = new List<GameObject>();
@@ -2454,6 +2457,26 @@ public class GameManager : MonoBehaviour
         return warmWoodCafeSceneSprite;
     }
 
+    private Sprite GetWarmWoodCafeSceneNoMachineSprite()
+    {
+        if (warmWoodCafeSceneNoMachineSprite == null)
+        {
+            warmWoodCafeSceneNoMachineSprite = LoadSpriteFromResources("Art/CafeScenes/warm_wood_cafe_scene_no_machine");
+        }
+
+        return warmWoodCafeSceneNoMachineSprite != null ? warmWoodCafeSceneNoMachineSprite : GetWarmWoodCafeSceneSprite();
+    }
+
+    private Sprite GetCoffeeMachineSceneSprite()
+    {
+        if (coffeeMachineSceneSprite == null)
+        {
+            coffeeMachineSceneSprite = LoadSpriteFromResources("Art/SceneObjects/coffee_machine_scene_sprite");
+        }
+
+        return coffeeMachineSceneSprite;
+    }
+
     private Sprite GetCoffeeMachineLockedPlaceholderSprite()
     {
         if (coffeeMachineLockedPlaceholderSprite == null)
@@ -3836,11 +3859,17 @@ public class GameManager : MonoBehaviour
         TMP_Text machineLabel = CreateSceneLabel(parent, "MachineLabel", "MAKINE", new Vector2(40, 116), new Vector2(112, 36), 14);
         TMP_Text menuLabel = CreateSceneLabel(parent, "MenuLabel", "MENU", new Vector2(-340, 172), new Vector2(110, 35), 19);
         TMP_Text customerSpotLabel = CreateSceneLabel(parent, "CustomerSpotLabel", "MUSTERI\nALANI", new Vector2(180, -252), new Vector2(165, 62), 16);
-        Sprite cafeSceneSprite = GetWarmWoodCafeSceneSprite();
+        Sprite cafeSceneSprite = GetWarmWoodCafeSceneNoMachineSprite();
         cafeSceneImage = CreateSceneBox(parent, "WarmWoodCafeScene", new Vector2(0, 20), new Vector2(1888, 1079), cafeSceneSprite != null ? Color.white : new Color(1f, 1f, 1f, 0f));
         cafeSceneImage.sprite = cafeSceneSprite;
         cafeSceneImage.preserveAspect = true;
         cafeSceneImage.raycastTarget = false;
+
+        coffeeMachineSceneImage = CreateSceneBox(parent, "CoffeeMachineSceneSprite", new Vector2(-287.378f, 181.4737f), new Vector2(217.933f, 287.9426f), Color.white);
+        coffeeMachineSceneImage.sprite = GetCoffeeMachineSceneSprite();
+        coffeeMachineSceneImage.preserveAspect = true;
+        coffeeMachineSceneImage.raycastTarget = false;
+
         coffeeMachineLockedPlaceholderImage = CreateSceneBox(parent, "CoffeeMachineLockedPlaceholder", new Vector2(-294.5363f, 164.3574f), new Vector2(216.5335f, 206.0149f), Color.white);
         coffeeMachineLockedPlaceholderImage.sprite = GetCoffeeMachineLockedPlaceholderSprite();
         coffeeMachineLockedPlaceholderImage.preserveAspect = true;
@@ -3892,6 +3921,7 @@ public class GameManager : MonoBehaviour
 
         startingRoomVisuals.Clear();
         startingRoomVisuals.Add(cafeSceneImage.gameObject);
+        startingRoomVisuals.Add(coffeeMachineSceneImage.gameObject);
         startingRoomVisuals.Add(coffeeMachineLockedPlaceholderImage.gameObject);
 
         roomShadow.raycastTarget = false;
@@ -3908,6 +3938,7 @@ public class GameManager : MonoBehaviour
         floorLeftPerspectiveLine.raycastTarget = false;
         floorRightPerspectiveLine.raycastTarget = false;
         roomAccentStrip.raycastTarget = false;
+        coffeeMachineSceneImage.raycastTarget = false;
         counterTop.raycastTarget = false;
         door.raycastTarget = false;
         doorGlass.raycastTarget = false;
@@ -5566,6 +5597,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        SetSceneImageActive(coffeeMachineSceneImage, showStartingRoom && unlocked && machineUpgradeLevel > 0);
         SetSceneImageActive(coffeeMachineLockedPlaceholderImage, showStartingRoom && unlocked && machineUpgradeLevel <= 0);
 
         SetSceneImageActive(productionConveyorVisual, currentRoomIndex == 1 && unlocked);
