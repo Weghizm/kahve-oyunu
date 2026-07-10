@@ -197,6 +197,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text vipCoffeeBonusText;
     private TMP_Text vipPassiveBonusText;
     private TMP_Text vipDecorBonusText;
+    private TMP_Text vipInfoPanelText;
     private Image vipUpgradeGemIconImage;
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
     private readonly List<Image> vipLevelCardImages = new List<Image>();
@@ -206,6 +207,7 @@ public class GameManager : MonoBehaviour
     private readonly Dictionary<int, Sprite> vipCardSprites = new Dictionary<int, Sprite>();
     private int vipUnlockFlashLevel = 0;
     private float vipUnlockFlashEndTime = 0f;
+    private bool vipInfoSeen = false;
     private TMP_Text passiveIncomePanelText;
     private GameObject coinInfoPopup;
     private GameObject offlinePanel;
@@ -226,6 +228,7 @@ public class GameManager : MonoBehaviour
     private GameObject customerButtonObject;
     private GameObject vipBadgeObject;
     private GameObject vipPanel;
+    private GameObject vipInfoPanel;
     private TMP_Text coffeeUpgradeButtonText;
     private TMP_Text machineUpgradeButtonText;
     private TMP_Text baristaUpgradeButtonText;
@@ -670,7 +673,32 @@ public class GameManager : MonoBehaviour
         selectedVipPreviewLevel = 0;
         vipPanel.SetActive(true);
         vipPanel.transform.SetAsLastSibling();
+        if (!vipInfoSeen)
+        {
+            vipInfoSeen = true;
+            ShowVipInfoPanel();
+            SaveGame();
+        }
         UpdateUI();
+    }
+
+    public void CloseVipInfoPanel()
+    {
+        if (vipInfoPanel != null)
+        {
+            vipInfoPanel.SetActive(false);
+        }
+    }
+
+    private void ShowVipInfoPanel()
+    {
+        if (vipInfoPanel == null)
+        {
+            return;
+        }
+
+        vipInfoPanel.SetActive(true);
+        vipInfoPanel.transform.SetAsLastSibling();
     }
 
     public void SelectVipPreviewLevel(int level)
@@ -759,6 +787,7 @@ public class GameManager : MonoBehaviour
         productionRoomUnlocked = false;
         vipRoomUnlocked = false;
         vipLevel = 0;
+        vipInfoSeen = false;
         xp = 0;
         playerLevel = 1;
         dailyRewardDay = 0;
@@ -801,6 +830,7 @@ public class GameManager : MonoBehaviour
         if (passiveIncomePanel != null) passiveIncomePanel.SetActive(false);
         if (coinInfoPopup != null) coinInfoPopup.SetActive(false);
         if (vipPanel != null) vipPanel.SetActive(false);
+        if (vipInfoPanel != null) vipInfoPanel.SetActive(false);
         if (customerButtonObject != null) customerButtonObject.SetActive(false);
         if (vipBadgeObject != null) vipBadgeObject.SetActive(false);
         UpdateUI();
@@ -1257,6 +1287,34 @@ public class GameManager : MonoBehaviour
         return Mathf.RoundToInt((GetVipCustomerPatienceMultiplier(level) - 1f) * 100f);
     }
 
+    private int GetVipUpgradeDiscountPercent(int level)
+    {
+        int safeLevel = Mathf.Clamp(level, 0, MaxVipLevel);
+        if (safeLevel < 3)
+        {
+            return 0;
+        }
+
+        return (safeLevel - 2) * 5;
+    }
+
+    private int GetDiscountedUpgradeCost(int baseCost)
+    {
+        int discountPercent = GetVipUpgradeDiscountPercent(vipLevel);
+        if (discountPercent <= 0)
+        {
+            return baseCost;
+        }
+
+        return Mathf.Max(1, Mathf.CeilToInt(baseCost * (1f - (discountPercent / 100f))));
+    }
+
+    private string GetVipDiscountBonusText(int level)
+    {
+        int discountPercent = GetVipUpgradeDiscountPercent(level);
+        return discountPercent > 0 ? "-" + discountPercent + "%" : "Lv.3";
+    }
+
     private bool CanUpgradeVipLevel()
     {
         return vipLevel < MaxVipLevel && gems >= GetVipUpgradeCost();
@@ -1333,7 +1391,8 @@ public class GameManager : MonoBehaviour
 
         return "+" + GetVipCoinBonusPercent(level) + "% coin"
             + "\n+" + GetVipXpBonusPercent(level) + "% XP"
-            + "\n+" + GetVipPassiveBonusPercent(level) + "% pasif";
+            + "\n+" + GetVipPassiveBonusPercent(level) + "% pasif"
+            + "\n" + (GetVipUpgradeDiscountPercent(level) > 0 ? "-" + GetVipUpgradeDiscountPercent(level) + "% indirim" : "Indirim Lv.3");
     }
 
     private string GetVipPanelText()
@@ -1350,12 +1409,14 @@ public class GameManager : MonoBehaviour
             return "Aktif Paket\n"
                 + GetVipKitName(vipLevel)
                 + "\nCoin +" + GetVipCoinBonusPercent(vipLevel) + "%  XP +" + GetVipXpBonusPercent(vipLevel) + "%"
+                + "\nIndirim " + GetVipDiscountBonusText(vipLevel)
                 + "\nVIP MAX";
         }
 
         return "Aktif Paket\n"
             + GetVipKitName(vipLevel)
             + "\nCoin +" + GetVipCoinBonusPercent(vipLevel) + "%  XP +" + GetVipXpBonusPercent(vipLevel) + "%"
+            + "\nIndirim " + GetVipDiscountBonusText(vipLevel)
             + "\nSonraki: " + GetVipKitName(vipLevel + 1) + " / " + GetVipUpgradeCost() + " Elmas";
     }
 
@@ -1373,9 +1434,10 @@ public class GameManager : MonoBehaviour
 
     public void BuyCoffeeUpgrade()
     {
-        if (coffeeUpgradeLevel >= UpgradeMaxLevel || coins < coffeeUpgradeCost) return;
+        int cost = GetDiscountedUpgradeCost(coffeeUpgradeCost);
+        if (coffeeUpgradeLevel >= UpgradeMaxLevel || coins < cost) return;
 
-        coins -= coffeeUpgradeCost;
+        coins -= cost;
         coffeeUpgradeLevel++;
         coinsPerClick += BasicCoffeeTapGain;
         coffeeUpgradeCost = Mathf.CeilToInt(coffeeUpgradeCost * UpgradeCostGrowth);
@@ -1385,9 +1447,10 @@ public class GameManager : MonoBehaviour
 
     public void BuyPremiumCoffee()
     {
-        if (premiumCoffeeLevel >= UpgradeMaxLevel || playerLevel < PremiumTierUnlockLevel || coffeeUpgradeLevel < NextTierRequiredLevel || coins < premiumCoffeeCost) return;
+        int cost = GetDiscountedUpgradeCost(premiumCoffeeCost);
+        if (premiumCoffeeLevel >= UpgradeMaxLevel || playerLevel < PremiumTierUnlockLevel || coffeeUpgradeLevel < NextTierRequiredLevel || coins < cost) return;
 
-        coins -= premiumCoffeeCost;
+        coins -= cost;
         premiumCoffeeLevel++;
         coinsPerClick += PremiumCoffeeTapGain;
         premiumCoffeeCost = Mathf.CeilToInt(premiumCoffeeCost * UpgradeCostGrowth);
@@ -1397,9 +1460,10 @@ public class GameManager : MonoBehaviour
 
     public void BuySignatureCoffee()
     {
-        if (signatureCoffeeLevel >= UpgradeMaxLevel || playerLevel < SignatureTierUnlockLevel || premiumCoffeeLevel < NextTierRequiredLevel || coins < signatureCoffeeCost) return;
+        int cost = GetDiscountedUpgradeCost(signatureCoffeeCost);
+        if (signatureCoffeeLevel >= UpgradeMaxLevel || playerLevel < SignatureTierUnlockLevel || premiumCoffeeLevel < NextTierRequiredLevel || coins < cost) return;
 
-        coins -= signatureCoffeeCost;
+        coins -= cost;
         signatureCoffeeLevel++;
         coinsPerClick += SignatureCoffeeTapGain;
         signatureCoffeeCost = Mathf.CeilToInt(signatureCoffeeCost * UpgradeCostGrowth);
@@ -1409,9 +1473,10 @@ public class GameManager : MonoBehaviour
 
     public void BuyMachineUpgrade()
     {
-        if (machineUpgradeLevel >= UpgradeMaxLevel || coins < machineUpgradeCost) return;
+        int cost = GetDiscountedUpgradeCost(machineUpgradeCost);
+        if (machineUpgradeLevel >= UpgradeMaxLevel || coins < cost) return;
 
-        coins -= machineUpgradeCost;
+        coins -= cost;
         machineUpgradeLevel++;
         coinsPerSecond += BasicMachineIncomeGain;
         machineUpgradeCost = Mathf.CeilToInt(machineUpgradeCost * UpgradeCostGrowth);
@@ -1421,9 +1486,10 @@ public class GameManager : MonoBehaviour
 
     public void BuyEspressoMachine()
     {
-        if (espressoMachineLevel >= UpgradeMaxLevel || playerLevel < PremiumTierUnlockLevel || machineUpgradeLevel < NextTierRequiredLevel || coins < espressoMachineCost) return;
+        int cost = GetDiscountedUpgradeCost(espressoMachineCost);
+        if (espressoMachineLevel >= UpgradeMaxLevel || playerLevel < PremiumTierUnlockLevel || machineUpgradeLevel < NextTierRequiredLevel || coins < cost) return;
 
-        coins -= espressoMachineCost;
+        coins -= cost;
         espressoMachineLevel++;
         coinsPerSecond += EspressoMachineIncomeGain;
         espressoMachineCost = Mathf.CeilToInt(espressoMachineCost * UpgradeCostGrowth);
@@ -1433,9 +1499,10 @@ public class GameManager : MonoBehaviour
 
     public void BuyPremiumMachine()
     {
-        if (premiumMachineLevel >= UpgradeMaxLevel || playerLevel < SignatureTierUnlockLevel || espressoMachineLevel < NextTierRequiredLevel || coins < premiumMachineCost) return;
+        int cost = GetDiscountedUpgradeCost(premiumMachineCost);
+        if (premiumMachineLevel >= UpgradeMaxLevel || playerLevel < SignatureTierUnlockLevel || espressoMachineLevel < NextTierRequiredLevel || coins < cost) return;
 
-        coins -= premiumMachineCost;
+        coins -= cost;
         premiumMachineLevel++;
         coinsPerSecond += PremiumMachineIncomeGain;
         premiumMachineCost = Mathf.CeilToInt(premiumMachineCost * UpgradeCostGrowth);
@@ -1445,9 +1512,10 @@ public class GameManager : MonoBehaviour
 
     public void BuyBaristaUpgrade()
     {
-        if (baristaUpgradeLevel >= UpgradeMaxLevel || coins < baristaUpgradeCost) return;
+        int cost = GetDiscountedUpgradeCost(baristaUpgradeCost);
+        if (baristaUpgradeLevel >= UpgradeMaxLevel || coins < cost) return;
 
-        coins -= baristaUpgradeCost;
+        coins -= cost;
         baristaUpgradeLevel++;
         coinsPerSecond += JuniorBaristaIncomeGain;
         baristaUpgradeCost = Mathf.CeilToInt(baristaUpgradeCost * UpgradeCostGrowth);
@@ -1457,9 +1525,10 @@ public class GameManager : MonoBehaviour
 
     public void BuySeniorBarista()
     {
-        if (seniorBaristaLevel >= UpgradeMaxLevel || playerLevel < SeniorBaristaUnlockLevel || baristaUpgradeLevel < NextTierRequiredLevel || coins < seniorBaristaCost) return;
+        int cost = GetDiscountedUpgradeCost(seniorBaristaCost);
+        if (seniorBaristaLevel >= UpgradeMaxLevel || playerLevel < SeniorBaristaUnlockLevel || baristaUpgradeLevel < NextTierRequiredLevel || coins < cost) return;
 
-        coins -= seniorBaristaCost;
+        coins -= cost;
         seniorBaristaLevel++;
         coinsPerSecond += SeniorBaristaIncomeGain;
         seniorBaristaCost = Mathf.CeilToInt(seniorBaristaCost * UpgradeCostGrowth);
@@ -1469,9 +1538,10 @@ public class GameManager : MonoBehaviour
 
     public void BuyMasterBarista()
     {
-        if (masterBaristaLevel >= UpgradeMaxLevel || playerLevel < MasterBaristaUnlockLevel || seniorBaristaLevel < NextTierRequiredLevel || coins < masterBaristaCost) return;
+        int cost = GetDiscountedUpgradeCost(masterBaristaCost);
+        if (masterBaristaLevel >= UpgradeMaxLevel || playerLevel < MasterBaristaUnlockLevel || seniorBaristaLevel < NextTierRequiredLevel || coins < cost) return;
 
-        coins -= masterBaristaCost;
+        coins -= cost;
         masterBaristaLevel++;
         coinsPerSecond += MasterBaristaIncomeGain;
         masterBaristaCost = Mathf.CeilToInt(masterBaristaCost * UpgradeCostGrowth);
@@ -1540,6 +1610,7 @@ public class GameManager : MonoBehaviour
         CreateBaristaPanel(canvas.transform);
         CreatePassiveIncomePanel(canvas.transform);
         CreateVipPanel(canvas.transform);
+        CreateVipInfoPanel(canvas.transform);
         CreateTimedOfferButton(gameFrame);
         CreateTimedOfferPanel(canvas.transform);
         CreateAdBoostConfirmPanel(canvas.transform);
@@ -3386,7 +3457,8 @@ public class GameManager : MonoBehaviour
         vipXpBonusText = CreateVipBonusPill(vipPanel.transform, "XP", "+0%", new Vector2(-200, -212), new Color(0.35f, 0.55f, 1f, 1f));
         vipCoffeeBonusText = CreateVipBonusPill(vipPanel.transform, "Musteri", "+0%", new Vector2(22, -212), new Color(0.28f, 0.70f, 0.42f, 1f));
         vipPassiveBonusText = CreateVipBonusPill(vipPanel.transform, "Pasif", "+0%", new Vector2(244, -212), new Color(0.92f, 0.24f, 0.32f, 1f));
-        vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "Dekor", "Kilitli", new Vector2(466, -212), new Color(0.18f, 0.74f, 0.82f, 1f));
+        vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "Indirim", "Lv.3", new Vector2(466, -212), new Color(0.86f, 0.36f, 0.18f, 1f));
+        CreateVipDiscountIconOverlay(vipPanel.transform, new Vector2(408, -210));
 
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
         vipUpgradeButtonText.rectTransform.anchoredPosition = new Vector2(-18f, 0f);
@@ -3397,6 +3469,53 @@ public class GameManager : MonoBehaviour
 
         vipPanel.transform.SetAsLastSibling();
         vipPanel.SetActive(false);
+    }
+
+    private void CreateVipInfoPanel(Transform parent)
+    {
+        vipInfoPanel = new GameObject("VipInfoPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        vipInfoPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = vipInfoPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 30);
+        panelRect.sizeDelta = new Vector2(820, 500);
+
+        StylePopupPanel(vipInfoPanel, panelRect.sizeDelta, new Color(1f, 0.91f, 0.76f, 0.98f), new Color(0.40f, 0.20f, 0.54f, 1f));
+
+        TMP_Text title = CreateText(vipInfoPanel.transform, "VipInfoTitle", "VIP Bonuslari", new Vector2(0, 190), new Vector2(720, 60), 36);
+        StylePopupTitle(title, 32);
+
+        vipInfoPanelText = CreateText(vipInfoPanel.transform, "VipInfoText", "", new Vector2(0, 30), new Vector2(710, 250), 24);
+        vipInfoPanelText.text = "VIP paketleri kalici bonus verir."
+            + "\nCoin, XP, musteri suresi ve pasif gelir artar."
+            + "\nVIP 3 ile indirim acilir."
+            + "\nIndirim kahve, makine ve barista gelistirmelerinde gecerlidir.";
+        StylePopupBodyText(vipInfoPanelText, 18, 24, TextAlignmentOptions.Center);
+
+        StylePopupButton(CreateButton(vipInfoPanel.transform, "VipInfoCloseButton", "Tamam", new Vector2(0, -170), new Vector2(300, 72), CloseVipInfoPanel, new Color(0.40f, 0.20f, 0.54f), 28), new Color(0.40f, 0.20f, 0.54f), 28);
+
+        vipInfoPanel.transform.SetAsLastSibling();
+        vipInfoPanel.SetActive(false);
+    }
+
+    private void CreateVipDiscountIconOverlay(Transform parent, Vector2 position)
+    {
+        Image cover = CreatePanelStrip(parent, "VipDiscountIconCover", position, new Vector2(78, 58), new Color(0.96f, 0.78f, 0.47f, 1f));
+        cover.sprite = CreateRoundedRectSprite(new Vector2(78, 58), new Color(0.96f, 0.78f, 0.47f, 1f), new Color(0.58f, 0.24f, 0.08f, 1f), 12, 3);
+        cover.raycastTarget = false;
+
+        Image icon = CreatePanelStrip(parent, "VipDiscountIcon", position, new Vector2(54, 54), new Color(0.86f, 0.24f, 0.20f, 1f));
+        icon.sprite = CreateRoundedRectSprite(new Vector2(54, 54), new Color(0.86f, 0.24f, 0.20f, 1f), new Color(0.44f, 0.08f, 0.07f, 1f), 14, 4);
+        icon.raycastTarget = false;
+
+        TMP_Text percent = CreateText(icon.transform, "Text", "%", Vector2.zero, new Vector2(54, 54), 30);
+        percent.color = new Color(1f, 0.93f, 0.78f, 1f);
+        percent.fontStyle = FontStyles.Bold;
+        percent.raycastTarget = false;
+        percent.outlineColor = new Color(0.25f, 0.04f, 0.04f, 0.8f);
+        percent.outlineWidth = 0.08f;
     }
 
     private void CreateVipPanelClearSelectionArea(Transform parent)
@@ -4901,6 +5020,7 @@ public class GameManager : MonoBehaviour
                 || (decorPanel != null && decorPanel.activeSelf)
                 || (testPanel != null && testPanel.activeSelf)
                 || (vipPanel != null && vipPanel.activeSelf)
+                || (vipInfoPanel != null && vipInfoPanel.activeSelf)
                 || (dailyTasksPanel != null && dailyTasksPanel.activeSelf)
                 || (offerPanel != null && offerPanel.activeSelf)
                 || (adBoostConfirmPanel != null && adBoostConfirmPanel.activeSelf);
@@ -5023,7 +5143,7 @@ public class GameManager : MonoBehaviour
             vipPassiveBonusText.text = shownVipName + "\nPasif " + GetVipBonusValueText(GetVipPassiveBonusPercent(shownVipLevel));
 
         if (vipDecorBonusText != null)
-            vipDecorBonusText.text = shownVipName + "\n" + (shownVipLevel >= 3 ? "Dekor açık" : "Dekor Altın VIP");
+            vipDecorBonusText.text = shownVipName + "\nIndirim " + GetVipDiscountBonusText(shownVipLevel);
 
         if (vipUpgradeButtonText != null)
         {
@@ -5094,6 +5214,9 @@ public class GameManager : MonoBehaviour
 
         if (vipPanel != null && vipPanel.activeSelf && lastOfflineCoins <= 0)
             vipPanel.transform.SetAsLastSibling();
+
+        if (vipInfoPanel != null && vipInfoPanel.activeSelf && lastOfflineCoins <= 0)
+            vipInfoPanel.transform.SetAsLastSibling();
 
         if (decorPanelText != null)
         {
@@ -5173,40 +5296,43 @@ public class GameManager : MonoBehaviour
         if (basicCoffeeButtonText != null)
         {
             bool maxed = coffeeUpgradeLevel >= UpgradeMaxLevel;
+            int shownCost = GetDiscountedUpgradeCost(coffeeUpgradeCost);
             basicCoffeeButtonText.text = maxed
                 ? "Daha Iyi Kahve Lv." + coffeeUpgradeLevel + "/" + UpgradeMaxLevel + "\nMAX"
-                : "Daha Iyi Kahve Lv." + coffeeUpgradeLevel + "/" + UpgradeMaxLevel + "\n+" + BasicCoffeeTapGain + " tiklama | " + coffeeUpgradeCost + " coin";
+                : "Daha Iyi Kahve Lv." + coffeeUpgradeLevel + "/" + UpgradeMaxLevel + "\n+" + BasicCoffeeTapGain + " tiklama | " + shownCost + " coin";
             Button button = basicCoffeeButtonText.GetComponentInParent<Button>();
             if (button != null)
-                button.interactable = !maxed && coins >= coffeeUpgradeCost;
+                button.interactable = !maxed && coins >= shownCost;
         }
 
         if (premiumCoffeeButtonText != null)
         {
             bool unlocked = playerLevel >= PremiumTierUnlockLevel && coffeeUpgradeLevel >= NextTierRequiredLevel;
             bool maxed = premiumCoffeeLevel >= UpgradeMaxLevel;
+            int shownCost = GetDiscountedUpgradeCost(premiumCoffeeCost);
             premiumCoffeeButtonText.text = !unlocked
                 ? "Premium Cekirdek\nKilitli: Lv." + PremiumTierUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
                 : maxed
                     ? "Premium Cekirdek Lv." + premiumCoffeeLevel + "/" + UpgradeMaxLevel + "\nMAX"
-                    : "Premium Cekirdek Lv." + premiumCoffeeLevel + "/" + UpgradeMaxLevel + "\n+" + PremiumCoffeeTapGain + " tiklama | " + premiumCoffeeCost + " coin";
+                    : "Premium Cekirdek Lv." + premiumCoffeeLevel + "/" + UpgradeMaxLevel + "\n+" + PremiumCoffeeTapGain + " tiklama | " + shownCost + " coin";
             Button button = premiumCoffeeButtonText.GetComponentInParent<Button>();
             if (button != null)
-                button.interactable = unlocked && !maxed && coins >= premiumCoffeeCost;
+                button.interactable = unlocked && !maxed && coins >= shownCost;
         }
 
         if (signatureCoffeeButtonText != null)
         {
             bool unlocked = playerLevel >= SignatureTierUnlockLevel && premiumCoffeeLevel >= NextTierRequiredLevel;
             bool maxed = signatureCoffeeLevel >= UpgradeMaxLevel;
+            int shownCost = GetDiscountedUpgradeCost(signatureCoffeeCost);
             signatureCoffeeButtonText.text = !unlocked
                 ? "Ozel Harman\nKilitli: Lv." + SignatureTierUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
                 : maxed
                     ? "Ozel Harman Lv." + signatureCoffeeLevel + "/" + UpgradeMaxLevel + "\nMAX"
-                    : "Ozel Harman Lv." + signatureCoffeeLevel + "/" + UpgradeMaxLevel + "\n+" + SignatureCoffeeTapGain + " tiklama | " + signatureCoffeeCost + " coin";
+                    : "Ozel Harman Lv." + signatureCoffeeLevel + "/" + UpgradeMaxLevel + "\n+" + SignatureCoffeeTapGain + " tiklama | " + shownCost + " coin";
             Button button = signatureCoffeeButtonText.GetComponentInParent<Button>();
             if (button != null)
-                button.interactable = unlocked && !maxed && coins >= signatureCoffeeCost;
+                button.interactable = unlocked && !maxed && coins >= shownCost;
         }
 
         if (machineUpgradeButtonText != null)
@@ -5215,40 +5341,43 @@ public class GameManager : MonoBehaviour
         if (basicMachineButtonText != null)
         {
             bool maxed = machineUpgradeLevel >= UpgradeMaxLevel;
+            int shownCost = GetDiscountedUpgradeCost(machineUpgradeCost);
             basicMachineButtonText.text = maxed
                 ? "Basit Kahve Makinesi Lv." + machineUpgradeLevel + "/" + UpgradeMaxLevel + "\nMAX"
-                : "Basit Kahve Makinesi Lv." + machineUpgradeLevel + "/" + UpgradeMaxLevel + "\n+" + BasicMachineIncomeGain + "/sn | " + machineUpgradeCost + " coin";
+                : "Basit Kahve Makinesi Lv." + machineUpgradeLevel + "/" + UpgradeMaxLevel + "\n+" + BasicMachineIncomeGain + "/sn | " + shownCost + " coin";
             Button button = basicMachineButtonText.GetComponentInParent<Button>();
             if (button != null)
-                button.interactable = !maxed && coins >= machineUpgradeCost;
+                button.interactable = !maxed && coins >= shownCost;
         }
 
         if (espressoMachineButtonText != null)
         {
             bool unlocked = playerLevel >= PremiumTierUnlockLevel && machineUpgradeLevel >= NextTierRequiredLevel;
             bool maxed = espressoMachineLevel >= UpgradeMaxLevel;
+            int shownCost = GetDiscountedUpgradeCost(espressoMachineCost);
             espressoMachineButtonText.text = !unlocked
                 ? "Espresso Makinesi\nKilitli: Lv." + PremiumTierUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
                 : maxed
                     ? "Espresso Makinesi Lv." + espressoMachineLevel + "/" + UpgradeMaxLevel + "\nMAX"
-                    : "Espresso Makinesi Lv." + espressoMachineLevel + "/" + UpgradeMaxLevel + "\n+" + EspressoMachineIncomeGain + "/sn | " + espressoMachineCost + " coin";
+                    : "Espresso Makinesi Lv." + espressoMachineLevel + "/" + UpgradeMaxLevel + "\n+" + EspressoMachineIncomeGain + "/sn | " + shownCost + " coin";
             Button button = espressoMachineButtonText.GetComponentInParent<Button>();
             if (button != null)
-                button.interactable = unlocked && !maxed && coins >= espressoMachineCost;
+                button.interactable = unlocked && !maxed && coins >= shownCost;
         }
 
         if (premiumMachineButtonText != null)
         {
             bool unlocked = playerLevel >= SignatureTierUnlockLevel && espressoMachineLevel >= NextTierRequiredLevel;
             bool maxed = premiumMachineLevel >= UpgradeMaxLevel;
+            int shownCost = GetDiscountedUpgradeCost(premiumMachineCost);
             premiumMachineButtonText.text = !unlocked
                 ? "Premium Makine\nKilitli: Lv." + SignatureTierUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
                 : maxed
                     ? "Premium Makine Lv." + premiumMachineLevel + "/" + UpgradeMaxLevel + "\nMAX"
-                    : "Premium Makine Lv." + premiumMachineLevel + "/" + UpgradeMaxLevel + "\n+" + PremiumMachineIncomeGain + "/sn | " + premiumMachineCost + " coin";
+                    : "Premium Makine Lv." + premiumMachineLevel + "/" + UpgradeMaxLevel + "\n+" + PremiumMachineIncomeGain + "/sn | " + shownCost + " coin";
             Button button = premiumMachineButtonText.GetComponentInParent<Button>();
             if (button != null)
-                button.interactable = unlocked && !maxed && coins >= premiumMachineCost;
+                button.interactable = unlocked && !maxed && coins >= shownCost;
         }
 
         if (baristaUpgradeButtonText != null)
@@ -5260,42 +5389,45 @@ public class GameManager : MonoBehaviour
         if (juniorBaristaButtonText != null)
         {
             bool maxed = baristaUpgradeLevel >= UpgradeMaxLevel;
+            int shownCost = GetDiscountedUpgradeCost(baristaUpgradeCost);
             juniorBaristaButtonText.text = maxed
                 ? "Barista Lv." + baristaUpgradeLevel + "/" + UpgradeMaxLevel + "\nMAX"
                 : baristaUpgradeLevel <= 0
-                    ? "Barista Al\nOtomatik servis + offline kazanç | " + baristaUpgradeCost + " coin"
-                    : "Barista Lv." + baristaUpgradeLevel + "/" + UpgradeMaxLevel + "\n+" + JuniorBaristaIncomeGain + "/sn | " + baristaUpgradeCost + " coin | " + GetBaristaAutoServeSeconds().ToString("0.#") + " sn";
+                    ? "Barista Al\nOtomatik servis + offline kazanç | " + shownCost + " coin"
+                    : "Barista Lv." + baristaUpgradeLevel + "/" + UpgradeMaxLevel + "\n+" + JuniorBaristaIncomeGain + "/sn | " + shownCost + " coin | " + GetBaristaAutoServeSeconds().ToString("0.#") + " sn";
             Button button = juniorBaristaButtonText.GetComponentInParent<Button>();
             if (button != null)
-                button.interactable = !maxed && coins >= baristaUpgradeCost;
+                button.interactable = !maxed && coins >= shownCost;
         }
 
         if (seniorBaristaButtonText != null)
         {
             bool unlocked = playerLevel >= SeniorBaristaUnlockLevel && baristaUpgradeLevel >= NextTierRequiredLevel;
             bool maxed = seniorBaristaLevel >= UpgradeMaxLevel;
+            int shownCost = GetDiscountedUpgradeCost(seniorBaristaCost);
             seniorBaristaButtonText.text = !unlocked
                 ? "Usta Barista\nKilitli: Lv." + SeniorBaristaUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
                 : maxed
                     ? "Usta Barista Lv." + seniorBaristaLevel + "/" + UpgradeMaxLevel + "\nMAX"
-                    : "Usta Barista Lv." + seniorBaristaLevel + "/" + UpgradeMaxLevel + "\n+" + SeniorBaristaIncomeGain + "/sn | " + seniorBaristaCost + " coin";
+                    : "Usta Barista Lv." + seniorBaristaLevel + "/" + UpgradeMaxLevel + "\n+" + SeniorBaristaIncomeGain + "/sn | " + shownCost + " coin";
             Button button = seniorBaristaButtonText.GetComponentInParent<Button>();
             if (button != null)
-                button.interactable = unlocked && !maxed && coins >= seniorBaristaCost;
+                button.interactable = unlocked && !maxed && coins >= shownCost;
         }
 
         if (masterBaristaButtonText != null)
         {
             bool unlocked = playerLevel >= MasterBaristaUnlockLevel && seniorBaristaLevel >= NextTierRequiredLevel;
             bool maxed = masterBaristaLevel >= UpgradeMaxLevel;
+            int shownCost = GetDiscountedUpgradeCost(masterBaristaCost);
             masterBaristaButtonText.text = !unlocked
                 ? "Sef Barista\nKilitli: Lv." + MasterBaristaUnlockLevel + " + onceki Lv." + NextTierRequiredLevel
                 : maxed
                     ? "Sef Barista Lv." + masterBaristaLevel + "/" + UpgradeMaxLevel + "\nMAX"
-                    : "Sef Barista Lv." + masterBaristaLevel + "/" + UpgradeMaxLevel + "\n+" + MasterBaristaIncomeGain + "/sn | " + masterBaristaCost + " coin";
+                    : "Sef Barista Lv." + masterBaristaLevel + "/" + UpgradeMaxLevel + "\n+" + MasterBaristaIncomeGain + "/sn | " + shownCost + " coin";
             Button button = masterBaristaButtonText.GetComponentInParent<Button>();
             if (button != null)
-                button.interactable = unlocked && !maxed && coins >= masterBaristaCost;
+                button.interactable = unlocked && !maxed && coins >= shownCost;
         }
 
         if (coffeeUpgradeButton != null)
@@ -6406,6 +6538,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("productionRoomUnlocked", productionRoomUnlocked ? 1 : 0);
         PlayerPrefs.SetInt("vipRoomUnlocked", vipRoomUnlocked ? 1 : 0);
         PlayerPrefs.SetInt("vipLevel", vipLevel);
+        PlayerPrefs.SetInt("vipInfoSeen", vipInfoSeen ? 1 : 0);
         PlayerPrefs.SetInt("xp", xp);
         PlayerPrefs.SetInt("playerLevel", playerLevel);
         PlayerPrefs.SetInt("dailyRewardDay", dailyRewardDay);
@@ -6476,6 +6609,7 @@ public class GameManager : MonoBehaviour
         productionRoomUnlocked = PlayerPrefs.GetInt("productionRoomUnlocked", 0) == 1;
         vipRoomUnlocked = PlayerPrefs.GetInt("vipRoomUnlocked", 0) == 1;
         vipLevel = Mathf.Clamp(PlayerPrefs.GetInt("vipLevel", 0), 0, MaxVipLevel);
+        vipInfoSeen = PlayerPrefs.GetInt("vipInfoSeen", 0) == 1;
         if (selectedWallStyle == 1 && !pinkWallUnlocked) selectedWallStyle = 0;
         if (selectedWallStyle == 2 && !mintWallUnlocked) selectedWallStyle = 0;
         if (selectedFloorStyle == 1 && !creamFloorUnlocked) selectedFloorStyle = 0;
