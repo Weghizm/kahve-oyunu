@@ -4008,7 +4008,7 @@ public class GameManager : MonoBehaviour
         cafeObjectHotspots.Clear();
         cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeePackagesHotspot", new Vector2(312.4f, 365.85f), new Vector2(244.8f, 137.7f), OpenCoffeePanel));
         cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "CoffeeMachineHotspot", new Vector2(-296.57f, 168.4247f), new Vector2(236.87f, 214.1495f), OpenMachinePanel));
-        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "BaristaCounterHotspot", new Vector2(-48.10552f, 178.6f), new Vector2(158.7888f, 193.8f), OpenBaristaPanel));
+        cafeObjectHotspots.Add(CreateCafeObjectHotspot(parent, "BaristaCounterHotspot", new Vector2(-48.988f, 224.85f), new Vector2(172.02f, 286.3f), OpenBaristaPanel));
     }
 
     private GameObject CreateCafeObjectHotspot(Transform parent, string objectName, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action)
