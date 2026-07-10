@@ -204,8 +204,9 @@ public class GameManager : MonoBehaviour
     private readonly List<Image> vipLevelLockImages = new List<Image>();
     private readonly List<Image> vipLevelSelectImages = new List<Image>();
     private readonly List<RectTransform> vipLevelButtonRects = new List<RectTransform>();
-    private readonly List<TMP_Text> vipLevelStarTexts = new List<TMP_Text>();
+    private readonly List<Image> vipLevelStarImages = new List<Image>();
     private readonly Dictionary<int, Sprite> vipCardSprites = new Dictionary<int, Sprite>();
+    private Sprite vipCardStarSprite;
     private int vipUnlockFlashLevel = 0;
     private float vipUnlockFlashEndTime = 0f;
     private bool vipInfoSeen = false;
@@ -3449,7 +3450,7 @@ public class GameManager : MonoBehaviour
         vipLevelLockImages.Clear();
         vipLevelSelectImages.Clear();
         vipLevelButtonRects.Clear();
-        vipLevelStarTexts.Clear();
+        vipLevelStarImages.Clear();
         for (int i = 1; i <= MaxVipLevel; i++)
         {
             CreateVipCardButton(vipPanel.transform, i, new Vector2(-75f + ((i - 1) * 151f), 38f));
@@ -3652,13 +3653,21 @@ public class GameManager : MonoBehaviour
         lockImage.raycastTarget = false;
         vipLevelLockImages.Add(lockImage);
 
-        TMP_Text starText = CreateText(buttonObject.transform, "BottomStar", "\u2605", new Vector2(0f, -126f), new Vector2(54f, 38f), 28);
-        starText.color = new Color(1f, 0.80f, 0.22f, 1f);
-        starText.alignment = TextAlignmentOptions.Center;
-        starText.fontStyle = FontStyles.Bold;
-        starText.raycastTarget = false;
-        starText.transform.SetAsLastSibling();
-        vipLevelStarTexts.Add(starText);
+        GameObject starObject = new GameObject("BottomStar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        starObject.transform.SetParent(buttonObject.transform, false);
+        RectTransform starRect = starObject.GetComponent<RectTransform>();
+        starRect.anchorMin = new Vector2(0.5f, 0.5f);
+        starRect.anchorMax = new Vector2(0.5f, 0.5f);
+        starRect.anchoredPosition = new Vector2(0f, -124f);
+        starRect.sizeDelta = new Vector2(30f, 30f);
+
+        Image starImage = starObject.GetComponent<Image>();
+        starImage.sprite = GetVipCardStarSprite();
+        starImage.color = new Color(1f, 0.80f, 0.22f, 1f);
+        starImage.preserveAspect = true;
+        starImage.raycastTarget = false;
+        starObject.transform.SetAsLastSibling();
+        vipLevelStarImages.Add(starImage);
 
         Image selectGlow = CreatePanelStrip(buttonObject.transform, "SelectedGlow", new Vector2(0, -154), new Vector2(112, 10), new Color(1f, 0.78f, 0.18f, 0f));
         selectGlow.raycastTarget = false;
@@ -4012,6 +4021,71 @@ public class GameManager : MonoBehaviour
 
         texture.Apply();
         return Sprite.Create(texture, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 100f);
+    }
+
+    private Sprite GetVipCardStarSprite()
+    {
+        if (vipCardStarSprite == null)
+            vipCardStarSprite = CreateStarSprite(64, new Color(1f, 0.82f, 0.18f, 1f), new Color(0.34f, 0.16f, 0.03f, 1f));
+
+        return vipCardStarSprite;
+    }
+
+    private Sprite CreateStarSprite(int size, Color fillColor, Color borderColor)
+    {
+        Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        texture.filterMode = FilterMode.Bilinear;
+        texture.wrapMode = TextureWrapMode.Clamp;
+
+        Vector2 center = new Vector2((size - 1) * 0.5f, (size - 1) * 0.5f);
+        Vector2[] outerStar = BuildStarPoints(center, size * 0.45f, size * 0.19f);
+        Vector2[] innerStar = BuildStarPoints(center, size * 0.35f, size * 0.14f);
+        Color clear = new Color(0f, 0f, 0f, 0f);
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                Vector2 point = new Vector2(x, y);
+                Color pixel = clear;
+                if (IsPointInPolygon(point, outerStar))
+                    pixel = borderColor;
+                if (IsPointInPolygon(point, innerStar))
+                    pixel = fillColor;
+
+                texture.SetPixel(x, y, pixel);
+            }
+        }
+
+        texture.Apply();
+        return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
+    }
+
+    private Vector2[] BuildStarPoints(Vector2 center, float outerRadius, float innerRadius)
+    {
+        Vector2[] points = new Vector2[10];
+        for (int i = 0; i < points.Length; i++)
+        {
+            float radius = i % 2 == 0 ? outerRadius : innerRadius;
+            float angle = Mathf.Deg2Rad * (-90f + (i * 36f));
+            points[i] = center + new Vector2(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius);
+        }
+
+        return points;
+    }
+
+    private bool IsPointInPolygon(Vector2 point, Vector2[] polygon)
+    {
+        bool inside = false;
+        for (int i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
+        {
+            bool intersects = ((polygon[i].y > point.y) != (polygon[j].y > point.y))
+                && (point.x < ((polygon[j].x - polygon[i].x) * (point.y - polygon[i].y) / (polygon[j].y - polygon[i].y)) + polygon[i].x);
+            if (intersects)
+                inside = !inside;
+        }
+
+        return inside;
     }
 
     private bool IsInsideRoundedRectPixel(int x, int y, int width, int height, int radius)
@@ -5188,7 +5262,7 @@ public class GameManager : MonoBehaviour
                 vipLevelSelectImages[i].color = new Color(1f, 0.78f, 0.18f, alpha);
             }
 
-            if (i < vipLevelStarTexts.Count)
+            if (i < vipLevelStarImages.Count)
             {
                 bool selected = selectedVipPreviewLevel == cardLevel;
                 Color starColor = vipLevel < cardLevel
@@ -5197,7 +5271,7 @@ public class GameManager : MonoBehaviour
                 if (selected)
                     starColor = new Color(1f, 0.92f, 0.30f, 1f);
 
-                vipLevelStarTexts[i].color = starColor;
+                vipLevelStarImages[i].color = starColor;
             }
 
             if (i < vipLevelButtonRects.Count)
