@@ -282,6 +282,7 @@ public class GameManager : MonoBehaviour
     private Sprite decorMenuIconSprite;
     private Sprite notifyExclamationSprite;
     private Sprite adBoostIconSprite;
+    private Sprite adBoostTimerBadgeSprite;
     private Sprite vipPanelBackgroundSprite;
     private Sprite vipLockIconSprite;
     private Sprite warmWoodCafeSceneSprite;
@@ -1510,7 +1511,7 @@ public class GameManager : MonoBehaviour
         CreateCustomerButton(gameFrame);
 
         CreateButton(gameFrame, "SellCoffeeButton", "SAT", new Vector2(0, -475), new Vector2(150, 68), SellCoffee, new Color(0.43f, 0.24f, 0.14f), 28);
-        adBoostButtonText = CreateButton(gameFrame, "AdBoostButton", "", new Vector2(850, 250), new Vector2(112, 112), WatchAdForBoost, Color.white, 20);
+        adBoostButtonText = CreateButton(gameFrame, "AdBoostButton", "", new Vector2(850, 250), new Vector2(128, 148), WatchAdForBoost, new Color(1f, 1f, 1f, 0.01f), 20);
         ConfigureAdBoostButton(adBoostButtonText);
         CreateButton(gameFrame, "OpenTestPanelButton", "T", new Vector2(850, -415), new Vector2(82, 74), OpenTestPanel, new Color(0.20f, 0.20f, 0.20f), 26);
         TMP_Text tasksButtonText = CreateButton(gameFrame, "TasksButton", "", new Vector2(-890, 310), new Vector2(122, 116), OpenTaskPanel, Color.white, 24);
@@ -2433,6 +2434,16 @@ public class GameManager : MonoBehaviour
         return adBoostIconSprite;
     }
 
+    private Sprite GetAdBoostTimerBadgeSprite()
+    {
+        if (adBoostTimerBadgeSprite == null)
+        {
+            adBoostTimerBadgeSprite = LoadSpriteFromResources("Art/UI/ad_boost_timer_badge");
+        }
+
+        return adBoostTimerBadgeSprite;
+    }
+
     private Sprite GetVipPanelBackgroundSprite()
     {
         if (vipPanelBackgroundSprite == null)
@@ -2566,22 +2577,65 @@ public class GameManager : MonoBehaviour
 
     private void ConfigureAdBoostButton(TMP_Text buttonText)
     {
-        ApplyButtonSprite(buttonText, GetAdBoostIconSprite());
         if (buttonText == null)
         {
             return;
         }
 
+        Transform buttonTransform = buttonText.transform.parent;
+        if (buttonTransform != null)
+        {
+            Image buttonImage = buttonTransform.GetComponent<Image>();
+            if (buttonImage != null)
+            {
+                buttonImage.sprite = null;
+                buttonImage.color = new Color(1f, 1f, 1f, 0.01f);
+            }
+
+            GameObject iconObject = new GameObject("AdBoostIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            iconObject.transform.SetParent(buttonTransform, false);
+
+            RectTransform iconRect = iconObject.GetComponent<RectTransform>();
+            iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+            iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+            iconRect.anchoredPosition = new Vector2(0f, 14f);
+            iconRect.sizeDelta = new Vector2(112f, 112f);
+
+            Image iconImage = iconObject.GetComponent<Image>();
+            iconImage.sprite = GetAdBoostIconSprite();
+            iconImage.color = Color.white;
+            iconImage.preserveAspect = true;
+            iconImage.raycastTarget = false;
+
+            GameObject badgeObject = new GameObject("AdBoostTimerBadge", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            badgeObject.transform.SetParent(buttonTransform, false);
+
+            RectTransform badgeRect = badgeObject.GetComponent<RectTransform>();
+            badgeRect.anchorMin = new Vector2(0.5f, 0.5f);
+            badgeRect.anchorMax = new Vector2(0.5f, 0.5f);
+            badgeRect.anchoredPosition = new Vector2(0f, -59f);
+            badgeRect.sizeDelta = new Vector2(106f, 32f);
+
+            Image badgeImage = badgeObject.GetComponent<Image>();
+            badgeImage.sprite = GetAdBoostTimerBadgeSprite();
+            badgeImage.color = Color.white;
+            badgeImage.preserveAspect = true;
+            badgeImage.raycastTarget = false;
+        }
+
         RectTransform textRect = buttonText.rectTransform;
-        textRect.anchoredPosition = new Vector2(0f, -29f);
-        textRect.sizeDelta = new Vector2(84f, 30f);
-        buttonText.color = Color.white;
+        textRect.anchoredPosition = new Vector2(0f, -59f);
+        textRect.sizeDelta = new Vector2(104f, 28f);
+        buttonText.color = new Color(1f, 0.93f, 0.66f);
         buttonText.fontStyle = FontStyles.Bold;
         buttonText.alignment = TextAlignmentOptions.Center;
         buttonText.enableAutoSizing = true;
-        buttonText.fontSizeMin = 12;
-        buttonText.fontSizeMax = 19;
+        buttonText.fontSizeMin = 13;
+        buttonText.fontSizeMax = 20;
+        buttonText.outlineColor = new Color(0.04f, 0.08f, 0.16f, 0.95f);
+        buttonText.outlineWidth = 0.22f;
         buttonText.raycastTarget = false;
+        buttonText.transform.SetAsLastSibling();
     }
 
     private void ConfigureVipHudButton(TMP_Text buttonText)
