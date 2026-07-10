@@ -3477,7 +3477,7 @@ public class GameManager : MonoBehaviour
         vipCoinBonusText = CreateVipBonusPill(vipPanel.transform, "Coin", "+0%", new Vector2(-420f, -212f), new Vector2(-11.651f, -27f), new Vector2(90.661f, 48f), new Color(1f, 0.72f, 0.14f, 1f));
         vipXpBonusText = CreateVipBonusPill(vipPanel.transform, "XP", "+0%", new Vector2(-200f, -212f), new Vector2(3.4f, -25f), new Vector2(90.661f, 48f), new Color(0.35f, 0.55f, 1f, 1f));
         vipCoffeeBonusText = CreateVipBonusPill(vipPanel.transform, "Müşteri", "+0%", new Vector2(22f, -212f), new Vector2(33.4f, -25f), new Vector2(121.3214f, 48f), new Color(0.28f, 0.70f, 0.42f, 1f));
-        vipPassiveBonusText = CreateVipBonusPill(vipPanel.transform, "Pasif", "+0%", new Vector2(244f, -212f), new Vector2(50.6f, -27f), new Vector2(121.3214f, 48f), new Color(0.92f, 0.24f, 0.32f, 1f));
+        vipPassiveBonusText = CreateVipBonusPill(vipPanel.transform, "Pasif Gelir", "+0%", new Vector2(244f, -212f), new Vector2(50.6f, -27f), new Vector2(121.3214f, 48f), new Color(0.92f, 0.24f, 0.32f, 1f));
         vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "İndirim", "Lv.3", Vector2.zero, new Vector2(551.1f, -237f), new Vector2(168f, 72f), new Color(0.86f, 0.36f, 0.18f, 1f));
 
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
@@ -5162,7 +5162,7 @@ public class GameManager : MonoBehaviour
             vipCoffeeBonusText.text = shownVipName + "\nMüşteri " + GetVipBonusValueText(GetVipPatienceBonusPercent(shownVipLevel));
 
         if (vipPassiveBonusText != null)
-            vipPassiveBonusText.text = shownVipName + "\nPasif " + GetVipBonusValueText(GetVipPassiveBonusPercent(shownVipLevel));
+            vipPassiveBonusText.text = shownVipName + "\nPasif Gelir " + GetVipBonusValueText(GetVipPassiveBonusPercent(shownVipLevel));
 
         if (vipDecorBonusText != null)
             vipDecorBonusText.text = shownVipName + "\nİndirim " + GetVipDiscountBonusText(shownVipLevel);
