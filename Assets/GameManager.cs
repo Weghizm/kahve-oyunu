@@ -173,6 +173,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text basicMachineButtonText;
     private TMP_Text espressoMachineButtonText;
     private TMP_Text premiumMachineButtonText;
+    private TMP_Text baristaStatusText;
     private TMP_Text juniorBaristaButtonText;
     private TMP_Text seniorBaristaButtonText;
     private TMP_Text masterBaristaButtonText;
@@ -510,6 +511,16 @@ public class GameManager : MonoBehaviour
         int totalBaristaLevel = Mathf.Clamp(GetTotalBaristaLevel(), 1, UpgradeMaxLevel * 3);
         float speedRatio = Mathf.Clamp01((totalBaristaLevel - 1) / 18f);
         return Mathf.Lerp(BaseBaristaAutoServeSeconds, FastBaristaAutoServeSeconds, speedRatio);
+    }
+
+    private string GetBaristaStatusText()
+    {
+        if (!HasBaristaUnlocked())
+        {
+            return "Barista alininca gelen musterilere otomatik servis yapar ve offline kazanc baslar.";
+        }
+
+        return "Otomatik servis aktif: yaklasik " + GetBaristaAutoServeSeconds().ToString("0.#") + " sn | Offline kazanc aktif";
     }
 
     private void SpawnCustomer()
@@ -3193,6 +3204,10 @@ public class GameManager : MonoBehaviour
         TMP_Text title = CreateText(baristaPanel.transform, "BaristaPanelTitle", "Baristalar", new Vector2(0, 270), new Vector2(780, 70), 42);
         title.color = Color.black;
 
+        baristaStatusText = CreateText(baristaPanel.transform, "BaristaStatusText", "", new Vector2(0, 218), new Vector2(760, 42), 21);
+        baristaStatusText.color = new Color(0.12f, 0.10f, 0.08f);
+        baristaStatusText.alignment = TextAlignmentOptions.Center;
+
         juniorBaristaButtonText = CreateButton(baristaPanel.transform, "JuniorBaristaButton", "Barista", new Vector2(0, 150), new Vector2(760, 95), BuyBaristaUpgrade, new Color(0.54f, 0.32f, 0.72f), 27);
         seniorBaristaButtonText = CreateButton(baristaPanel.transform, "SeniorBaristaButton", "Usta Barista", new Vector2(0, 35), new Vector2(760, 95), BuySeniorBarista, new Color(0.34f, 0.42f, 0.78f), 27);
         masterBaristaButtonText = CreateButton(baristaPanel.transform, "MasterBaristaButton", "Sef Barista", new Vector2(0, -80), new Vector2(760, 95), BuyMasterBarista, new Color(0.62f, 0.30f, 0.50f), 27);
@@ -4977,6 +4992,9 @@ public class GameManager : MonoBehaviour
 
         if (baristaUpgradeButtonText != null)
             baristaUpgradeButtonText.text = "Bar";
+
+        if (baristaStatusText != null)
+            baristaStatusText.text = GetBaristaStatusText();
 
         if (juniorBaristaButtonText != null)
         {
