@@ -2544,7 +2544,7 @@ public class GameManager : MonoBehaviour
     {
         if (vipPanelBackgroundSprite == null)
         {
-            vipPanelBackgroundSprite = LoadSpriteFromResources("Art/UI/vip_panel_background_clean");
+            vipPanelBackgroundSprite = LoadSpriteFromResources("Art/UI/vip_panel_background_discount");
         }
 
         return vipPanelBackgroundSprite;
@@ -3458,7 +3458,6 @@ public class GameManager : MonoBehaviour
         vipCoffeeBonusText = CreateVipBonusPill(vipPanel.transform, "Musteri", "+0%", new Vector2(22, -212), new Color(0.28f, 0.70f, 0.42f, 1f));
         vipPassiveBonusText = CreateVipBonusPill(vipPanel.transform, "Pasif", "+0%", new Vector2(244, -212), new Color(0.92f, 0.24f, 0.32f, 1f));
         vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "Indirim", "Lv.3", new Vector2(466, -212), new Color(0.86f, 0.36f, 0.18f, 1f));
-        CreateVipDiscountIcon(vipPanel.transform, new Vector2(408, -210));
 
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
         vipUpgradeButtonText.rectTransform.anchoredPosition = new Vector2(-18f, 0f);
@@ -3498,27 +3497,6 @@ public class GameManager : MonoBehaviour
 
         vipInfoPanel.transform.SetAsLastSibling();
         vipInfoPanel.SetActive(false);
-    }
-
-    private void CreateVipDiscountIcon(Transform parent, Vector2 position)
-    {
-        Sprite panelSprite = GetVipPanelBackgroundSprite();
-        if (panelSprite == null)
-        {
-            return;
-        }
-
-        Rect panelRect = panelSprite.textureRect;
-        Rect passiveIconRect = new Rect(
-            panelRect.x + (panelRect.width * (960f / 1643f)),
-            panelRect.y + (panelRect.height * (85f / 910f)),
-            panelRect.width * (118f / 1643f),
-            panelRect.height * (120f / 910f));
-        Sprite passiveIconSprite = Sprite.Create(panelSprite.texture, passiveIconRect, new Vector2(0.5f, 0.5f), panelSprite.pixelsPerUnit);
-
-        Image icon = CreatePanelStrip(parent, "VipDiscountIcon", position, new Vector2(96, 96), Color.white);
-        icon.sprite = passiveIconSprite;
-        icon.raycastTarget = false;
     }
 
     private void CreateVipPanelClearSelectionArea(Transform parent)
