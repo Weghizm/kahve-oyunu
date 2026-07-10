@@ -222,6 +222,7 @@ public class GameManager : MonoBehaviour
     private GameObject passiveIncomePanel;
     private GameObject offerButtonObject;
     private GameObject offerPanel;
+    private GameObject adBoostConfirmPanel;
     private GameObject customerButtonObject;
     private GameObject vipBadgeObject;
     private GameObject vipPanel;
@@ -793,6 +794,7 @@ public class GameManager : MonoBehaviour
         if (testPanel != null) testPanel.SetActive(false);
         if (dailyTasksPanel != null) dailyTasksPanel.SetActive(false);
         if (offerPanel != null) offerPanel.SetActive(false);
+        if (adBoostConfirmPanel != null) adBoostConfirmPanel.SetActive(false);
         if (coffeePanel != null) coffeePanel.SetActive(false);
         if (machinePanel != null) machinePanel.SetActive(false);
         if (baristaPanel != null) baristaPanel.SetActive(false);
@@ -806,6 +808,38 @@ public class GameManager : MonoBehaviour
     }
 
     public void WatchAdForBoost()
+    {
+        if (bonusTimer >= MaxBoostSeconds)
+        {
+            return;
+        }
+
+        if (adBoostConfirmPanel == null)
+        {
+            GrantAdBoostReward();
+            return;
+        }
+
+        adBoostConfirmPanel.SetActive(true);
+        adBoostConfirmPanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void CloseAdBoostConfirmPanel()
+    {
+        if (adBoostConfirmPanel != null)
+        {
+            adBoostConfirmPanel.SetActive(false);
+        }
+    }
+
+    public void ConfirmAdBoostReward()
+    {
+        CloseAdBoostConfirmPanel();
+        GrantAdBoostReward();
+    }
+
+    private void GrantAdBoostReward()
     {
         bonusTimer = Mathf.Min(MaxBoostSeconds, bonusTimer + RewardBoostSeconds);
         incomeMultiplier = bonusTimer > 0 ? 2f : 1f;
@@ -827,7 +861,7 @@ public class GameManager : MonoBehaviour
 
     public void WatchTimedOfferAd()
     {
-        WatchAdForBoost();
+        GrantAdBoostReward();
         offerVisibleTimer = 0;
         offerCooldownTimer = OfferCooldownSeconds;
 
@@ -1508,6 +1542,7 @@ public class GameManager : MonoBehaviour
         CreateVipPanel(canvas.transform);
         CreateTimedOfferButton(gameFrame);
         CreateTimedOfferPanel(canvas.transform);
+        CreateAdBoostConfirmPanel(canvas.transform);
         CreateCustomerButton(gameFrame);
 
         CreateButton(gameFrame, "SellCoffeeButton", "SAT", new Vector2(0, -475), new Vector2(150, 68), SellCoffee, new Color(0.43f, 0.24f, 0.14f), 28);
@@ -2588,24 +2623,10 @@ public class GameManager : MonoBehaviour
             Image buttonImage = buttonTransform.GetComponent<Image>();
             if (buttonImage != null)
             {
-                buttonImage.sprite = null;
-                buttonImage.color = new Color(1f, 1f, 1f, 0.01f);
+                buttonImage.sprite = GetAdBoostIconSprite();
+                buttonImage.color = Color.white;
+                buttonImage.preserveAspect = true;
             }
-
-            GameObject iconObject = new GameObject("AdBoostIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            iconObject.transform.SetParent(buttonTransform, false);
-
-            RectTransform iconRect = iconObject.GetComponent<RectTransform>();
-            iconRect.anchorMin = new Vector2(0.5f, 0.5f);
-            iconRect.anchorMax = new Vector2(0.5f, 0.5f);
-            iconRect.anchoredPosition = new Vector2(0f, 14f);
-            iconRect.sizeDelta = new Vector2(112f, 112f);
-
-            Image iconImage = iconObject.GetComponent<Image>();
-            iconImage.sprite = GetAdBoostIconSprite();
-            iconImage.color = Color.white;
-            iconImage.preserveAspect = true;
-            iconImage.raycastTarget = false;
 
             GameObject badgeObject = new GameObject("AdBoostTimerBadge", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             badgeObject.transform.SetParent(buttonTransform, false);
@@ -3838,6 +3859,35 @@ public class GameManager : MonoBehaviour
         offerPanel.SetActive(false);
     }
 
+    private void CreateAdBoostConfirmPanel(Transform parent)
+    {
+        adBoostConfirmPanel = new GameObject("AdBoostConfirmPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        adBoostConfirmPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = adBoostConfirmPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0, 40);
+        panelRect.sizeDelta = new Vector2(860, 430);
+
+        Image panelImage = adBoostConfirmPanel.GetComponent<Image>();
+        panelImage.color = new Color(0.92f, 0.95f, 1f, 0.98f);
+
+        TMP_Text title = CreateText(adBoostConfirmPanel.transform, "AdBoostConfirmTitle", "2x Coin", new Vector2(0, 145), new Vector2(760, 70), 44);
+        title.color = new Color(0.08f, 0.12f, 0.22f);
+        title.fontStyle = FontStyles.Bold;
+
+        TMP_Text message = CreateText(adBoostConfirmPanel.transform, "AdBoostConfirmText", "Reklam izleyerek\n5 dakikalik 2x coin kazanmak\nister misiniz?", new Vector2(0, 35), new Vector2(760, 150), 30);
+        message.color = Color.black;
+        message.alignment = TextAlignmentOptions.Center;
+
+        CreateButton(adBoostConfirmPanel.transform, "AdBoostConfirmWatchButton", "Izle", new Vector2(-150, -145), new Vector2(260, 82), ConfirmAdBoostReward, new Color(0.18f, 0.38f, 0.82f), 32);
+        CreateButton(adBoostConfirmPanel.transform, "AdBoostConfirmCancelButton", "Vazgec", new Vector2(170, -145), new Vector2(260, 82), CloseAdBoostConfirmPanel, new Color(0.20f, 0.20f, 0.20f), 30);
+
+        adBoostConfirmPanel.transform.SetAsLastSibling();
+        adBoostConfirmPanel.SetActive(false);
+    }
+
     private void CreateBackgroundTapArea(Transform parent)
     {
         GameObject tapArea = new GameObject("BackgroundTapArea", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
@@ -4755,7 +4805,8 @@ public class GameManager : MonoBehaviour
                 || (testPanel != null && testPanel.activeSelf)
                 || (vipPanel != null && vipPanel.activeSelf)
                 || (dailyTasksPanel != null && dailyTasksPanel.activeSelf)
-                || (offerPanel != null && offerPanel.activeSelf);
+                || (offerPanel != null && offerPanel.activeSelf)
+                || (adBoostConfirmPanel != null && adBoostConfirmPanel.activeSelf);
             if (showCustomerInCurrentRoom && !panelIsOpen)
             {
                 customerButtonObject.transform.SetAsLastSibling();
