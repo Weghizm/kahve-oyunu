@@ -3914,12 +3914,12 @@ public class GameManager : MonoBehaviour
         cafeSceneImage.preserveAspect = true;
         cafeSceneImage.raycastTarget = false;
 
-        baristaLockedSceneImage = CreateSceneBox(parent, "BaristaLockedPlaceholder", new Vector2(-48.10552f, 160f), new Vector2(176.8f, 340f), Color.white);
+        baristaLockedSceneImage = CreateSceneBox(parent, "BaristaLockedPlaceholder", new Vector2(-48.10552f, 203f), new Vector2(176.8f, 340f), Color.white);
         baristaLockedSceneImage.sprite = GetBaristaLockedPlaceholderSprite();
         baristaLockedSceneImage.preserveAspect = true;
         baristaLockedSceneImage.raycastTarget = false;
 
-        baristaSceneImage = CreateSceneBox(parent, "BaristaSceneSprite", new Vector2(-48.10552f, 160f), new Vector2(174.5f, 340f), Color.white);
+        baristaSceneImage = CreateSceneBox(parent, "BaristaSceneSprite", new Vector2(-48.10552f, 203f), new Vector2(174.5f, 340f), Color.white);
         baristaSceneImage.sprite = GetBaristaSceneSprite();
         baristaSceneImage.preserveAspect = true;
         baristaSceneImage.raycastTarget = false;
