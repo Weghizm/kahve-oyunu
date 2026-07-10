@@ -3930,7 +3930,7 @@ public class GameManager : MonoBehaviour
         AttachEditorDragProbe(baristaSceneImage, "BaristaSceneSprite");
 #endif
 
-        baristaCounterForegroundImage = CreateSceneBox(parent, "BaristaCounterForeground", new Vector2(-130.9856f, 48.7943f), new Vector2(813.0144f, 214.5455f), Color.white);
+        baristaCounterForegroundImage = CreateSceneBox(parent, "BaristaCounterForeground", new Vector2(-130.9856f, -30.2488f), new Vector2(813.0144f, 304.8804f), Color.white);
         baristaCounterForegroundImage.sprite = GetBaristaCounterForegroundSprite();
         baristaCounterForegroundImage.preserveAspect = true;
         baristaCounterForegroundImage.raycastTarget = false;
