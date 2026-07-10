@@ -204,6 +204,7 @@ public class GameManager : MonoBehaviour
     private readonly List<Image> vipLevelLockImages = new List<Image>();
     private readonly List<Image> vipLevelSelectImages = new List<Image>();
     private readonly List<Image> vipLevelBottomStarImages = new List<Image>();
+    private readonly List<RectTransform> vipLevelBottomStarRects = new List<RectTransform>();
     private readonly List<RectTransform> vipLevelButtonRects = new List<RectTransform>();
     private readonly Dictionary<int, Sprite> vipCardSprites = new Dictionary<int, Sprite>();
     private readonly Dictionary<int, Sprite> vipCardBottomStarSprites = new Dictionary<int, Sprite>();
@@ -3461,10 +3462,16 @@ public class GameManager : MonoBehaviour
         vipLevelLockImages.Clear();
         vipLevelSelectImages.Clear();
         vipLevelBottomStarImages.Clear();
+        vipLevelBottomStarRects.Clear();
         vipLevelButtonRects.Clear();
         for (int i = 1; i <= MaxVipLevel; i++)
         {
             CreateVipCardButton(vipPanel.transform, i, new Vector2(-75f + ((i - 1) * 151f), 18f));
+        }
+
+        for (int i = 1; i <= MaxVipLevel; i++)
+        {
+            CreateVipCardBottomStarOverlay(vipPanel.transform, i, new Vector2(-75f + ((i - 1) * 151f), -89f));
         }
 
         vipCoinBonusText = CreateVipBonusPill(vipPanel.transform, "Coin", "+0%", new Vector2(-420f, -212f), new Vector2(-11.651f, -27f), new Vector2(90.661f, 48f), new Color(1f, 0.72f, 0.14f, 1f));
@@ -3667,13 +3674,16 @@ public class GameManager : MonoBehaviour
         Image selectGlow = CreatePanelStrip(buttonObject.transform, "SelectedGlow", new Vector2(0, -154), new Vector2(112, 10), new Color(1f, 0.78f, 0.18f, 0f));
         selectGlow.raycastTarget = false;
         vipLevelSelectImages.Add(selectGlow);
+    }
 
-        GameObject bottomStarObject = new GameObject("BottomStar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        bottomStarObject.transform.SetParent(buttonObject.transform, false);
+    private void CreateVipCardBottomStarOverlay(Transform parent, int level, Vector2 position)
+    {
+        GameObject bottomStarObject = new GameObject("VipCardBottomStar" + level, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        bottomStarObject.transform.SetParent(parent, false);
         RectTransform bottomStarRect = bottomStarObject.GetComponent<RectTransform>();
         bottomStarRect.anchorMin = new Vector2(0.5f, 0.5f);
         bottomStarRect.anchorMax = new Vector2(0.5f, 0.5f);
-        bottomStarRect.anchoredPosition = new Vector2(0f, -107f);
+        bottomStarRect.anchoredPosition = position;
         bottomStarRect.sizeDelta = new Vector2(78f, 34f);
 
         Image bottomStarImage = bottomStarObject.GetComponent<Image>();
@@ -3683,6 +3693,7 @@ public class GameManager : MonoBehaviour
         bottomStarImage.raycastTarget = false;
         bottomStarObject.transform.SetAsLastSibling();
         vipLevelBottomStarImages.Add(bottomStarImage);
+        vipLevelBottomStarRects.Add(bottomStarRect);
     }
 
     private TMP_Text CreateVipLevelCard(Transform parent, int level, Vector2 position, bool textOnly)
@@ -5220,6 +5231,14 @@ public class GameManager : MonoBehaviour
                 float t = Mathf.Clamp01(Time.deltaTime * 12f);
                 vipLevelButtonRects[i].anchoredPosition = Vector2.Lerp(vipLevelButtonRects[i].anchoredPosition, targetPosition, t);
                 vipLevelButtonRects[i].localScale = Vector3.Lerp(vipLevelButtonRects[i].localScale, targetScale, t);
+
+                if (i < vipLevelBottomStarRects.Count)
+                {
+                    RectTransform starRect = vipLevelBottomStarRects[i];
+                    starRect.anchoredPosition = Vector2.Lerp(starRect.anchoredPosition, targetPosition + new Vector2(0f, -107f), t);
+                    starRect.localScale = Vector3.Lerp(starRect.localScale, targetScale, t);
+                    starRect.SetAsLastSibling();
+                }
             }
         }
 
