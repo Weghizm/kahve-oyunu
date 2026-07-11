@@ -161,9 +161,9 @@ public class GameManager : MonoBehaviour
         new Color(0.92f, 0.24f, 0.32f, 1f));
 
     private static readonly VipBonusSlotLayout VipDiscountBonusLayout = new VipBonusSlotLayout(
-        Vector2.zero,
-        new Vector2(551.1f, -237f),
-        new Vector2(168f, 72f),
+        new Vector2(466f, -212f),
+        new Vector2(36.1f, -24f),
+        new Vector2(121.3214f, 48f),
         new Color(0.86f, 0.36f, 0.18f, 1f));
 
     private static readonly Vector2 VipUpgradeButtonPosition = new Vector2(0.6f, -302.4f);
@@ -260,8 +260,6 @@ public class GameManager : MonoBehaviour
     private readonly List<Image> vipLevelBottomStarImages = new List<Image>();
     private readonly List<RectTransform> vipLevelBottomStarRects = new List<RectTransform>();
     private readonly List<RectTransform> vipLevelButtonRects = new List<RectTransform>();
-    private readonly Dictionary<int, Sprite> vipCardSprites = new Dictionary<int, Sprite>();
-    private readonly Dictionary<int, Sprite> vipCardBottomStarSprites = new Dictionary<int, Sprite>();
     private int vipUnlockFlashLevel = 0;
     private float vipUnlockFlashEndTime = 0f;
     private bool vipInfoSeen = false;
@@ -344,8 +342,6 @@ public class GameManager : MonoBehaviour
     private Sprite notifyExclamationSprite;
     private Sprite adBoostIconSprite;
     private Sprite adBoostTimerBadgeSprite;
-    private Sprite vipPanelBackgroundSprite;
-    private Sprite vipLockIconSprite;
     private Sprite warmWoodCafeSceneSprite;
     private Sprite warmWoodCafeSceneNoMachineSprite;
     private Sprite coffeeMachineSceneSprite;
@@ -2602,48 +2598,6 @@ public class GameManager : MonoBehaviour
         return adBoostTimerBadgeSprite;
     }
 
-    private Sprite GetVipPanelBackgroundSprite()
-    {
-        if (vipPanelBackgroundSprite == null)
-        {
-            vipPanelBackgroundSprite = LoadSpriteFromResources("Art/UI/vip_panel_background_passive_icon");
-        }
-
-        return vipPanelBackgroundSprite;
-    }
-
-    private Sprite GetVipLockIconSprite()
-    {
-        if (vipLockIconSprite == null)
-        {
-            vipLockIconSprite = LoadSpriteFromResources("Art/UI/vip_lock_icon");
-        }
-
-        return vipLockIconSprite;
-    }
-
-    private Sprite GetVipCardSprite(int level)
-    {
-        int safeLevel = Mathf.Clamp(level, 1, MaxVipLevel);
-        if (!vipCardSprites.ContainsKey(safeLevel))
-        {
-            vipCardSprites[safeLevel] = LoadSpriteFromResources("Art/UI/vip_card_" + safeLevel);
-        }
-
-        return vipCardSprites[safeLevel];
-    }
-
-    private Sprite GetVipCardBottomStarSprite(int level)
-    {
-        int safeLevel = Mathf.Clamp(level, 1, MaxVipLevel);
-        if (!vipCardBottomStarSprites.ContainsKey(safeLevel))
-        {
-            vipCardBottomStarSprites[safeLevel] = LoadSpriteFromResources("Art/UI/vip_card_bottom_star_" + safeLevel);
-        }
-
-        return vipCardBottomStarSprites[safeLevel];
-    }
-
     private Sprite GetWarmWoodCafeSceneSprite()
     {
         if (warmWoodCafeSceneSprite == null)
@@ -3528,15 +3482,11 @@ public class GameManager : MonoBehaviour
         panelRect.sizeDelta = new Vector2(1320, 724);
 
         Image panelImage = vipPanel.GetComponent<Image>();
-        panelImage.sprite = GetVipPanelBackgroundSprite();
+        panelImage.sprite = CreateRoundedRectSprite(panelRect.sizeDelta, new Color(0.23f, 0.11f, 0.035f, 0.98f), new Color(0.95f, 0.62f, 0.18f, 1f), 34, 8);
         panelImage.color = Color.white;
-        panelImage.preserveAspect = true;
+        panelImage.preserveAspect = false;
 
-        TMP_Text title = CreateText(vipPanel.transform, "VipPanelTitle", "", new Vector2(-415, 166), new Vector2(320, 44), 32);
-        ApplyVipFont(title);
-        title.color = new Color(0.40f, 0.20f, 0.05f, 1f);
-        title.fontStyle = FontStyles.Bold;
-        title.alignment = TextAlignmentOptions.Left;
+        CreateEditableVipPanelFrame(vipPanel.transform);
 
         vipLevelSummaryText = CreateText(vipPanel.transform, "VipLevelSummary", "", new Vector2(392, 214), new Vector2(190, 32), 18);
         ApplyVipFont(vipLevelSummaryText);
@@ -3591,6 +3541,32 @@ public class GameManager : MonoBehaviour
 
         vipPanel.transform.SetAsLastSibling();
         vipPanel.SetActive(false);
+    }
+
+    private void CreateEditableVipPanelFrame(Transform parent)
+    {
+        CreateEditableBox(parent, "VipTopRibbon", new Vector2(0f, 270f), new Vector2(820f, 70f), new Color(0.46f, 0.08f, 0.34f, 1f), new Color(0.98f, 0.64f, 0.16f, 1f), 12, 4);
+
+        TMP_Text title = CreateText(parent, "VipPanelTitle", "VIP", new Vector2(0f, 282f), new Vector2(260f, 64f), 42);
+        ApplyVipFont(title);
+        title.color = new Color(1f, 0.83f, 0.28f, 1f);
+        title.fontStyle = FontStyles.Bold;
+        title.alignment = TextAlignmentOptions.Center;
+        title.raycastTarget = false;
+
+        CreateEditableBox(parent, "VipLeftInfoArea", new Vector2(-410f, 54f), new Vector2(430f, 346f), new Color(0.98f, 0.78f, 0.48f, 1f), new Color(0.89f, 0.50f, 0.13f, 1f), 24, 5);
+        CreateEditableBox(parent, "VipCardArea", new Vector2(250f, 54f), new Vector2(720f, 346f), new Color(0.16f, 0.075f, 0.03f, 0.96f), new Color(0.64f, 0.34f, 0.11f, 1f), 22, 4);
+        CreateEditableBox(parent, "VipBonusArea", new Vector2(0f, -214f), new Vector2(1180f, 108f), new Color(0.97f, 0.78f, 0.49f, 1f), new Color(0.90f, 0.53f, 0.16f, 1f), 18, 4);
+        CreateEditableBox(parent, "VipUpgradeButtonArt", VipUpgradeButtonPosition, VipUpgradeButtonSize, new Color(0.95f, 0.58f, 0.05f, 1f), new Color(0.48f, 0.22f, 0.02f, 1f), 16, 4);
+    }
+
+    private Image CreateEditableBox(Transform parent, string name, Vector2 position, Vector2 size, Color fillColor, Color borderColor, int radius, int border)
+    {
+        Image box = CreatePanelStrip(parent, name, position, size, Color.white);
+        box.sprite = CreateRoundedRectSprite(size, fillColor, borderColor, radius, border);
+        box.color = Color.white;
+        box.raycastTarget = false;
+        return box;
     }
 
     private void CreateVipInfoPanel(Transform parent)
@@ -3654,12 +3630,16 @@ public class GameManager : MonoBehaviour
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = VipUpgradeGemIconPosition;
         rect.sizeDelta = VipUpgradeGemIconSize;
+        rect.localRotation = Quaternion.Euler(0f, 0f, 45f);
 
         Image image = iconObject.GetComponent<Image>();
-        image.sprite = GetGemIconSprite();
+        image.sprite = CreateRoundedRectSprite(VipUpgradeGemIconSize, new Color(0.15f, 0.82f, 1f, 1f), new Color(0.02f, 0.32f, 0.58f, 1f), 8, 3);
         image.color = Color.white;
-        image.preserveAspect = true;
+        image.preserveAspect = false;
         image.raycastTarget = false;
+
+        TMP_Text gemText = CreateText(iconObject.transform, "Text", "", Vector2.zero, new Vector2(30f, 30f), 1);
+        gemText.raycastTarget = false;
         return image;
     }
 
@@ -3704,29 +3684,6 @@ public class GameManager : MonoBehaviour
     }
 #endif
 
-    private TMP_Text CreateVipLevelCard(Transform parent, int level, Vector2 position)
-    {
-        return CreateVipLevelCard(parent, level, position, false);
-    }
-
-    private Vector2 GetVipLockPosition(int level)
-    {
-        switch (level)
-        {
-            case 1:
-            case 2:
-                return new Vector2(-151.9f, 99.8f);
-            case 3:
-                return new Vector2(-147.7f, 101.4f);
-            case 4:
-                return new Vector2(-149.7f, 98.3f);
-            case 5:
-                return new Vector2(-159.4f, 96.7f);
-            default:
-                return new Vector2(0f, 92f);
-        }
-    }
-
     private Vector2 GetVipCardButtonLockPosition(int level)
     {
         switch (level)
@@ -3744,31 +3701,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void CreateVipCardHitArea(Transform parent, int level, Vector2 position)
-    {
-        GameObject hitObject = new GameObject("VipCardHitArea" + level, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
-        hitObject.transform.SetParent(parent, false);
-
-        RectTransform rect = hitObject.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = position;
-        rect.sizeDelta = new Vector2(132, 270);
-
-        Image image = hitObject.GetComponent<Image>();
-        image.color = new Color(1f, 1f, 1f, 0f);
-        image.raycastTarget = true;
-
-        Button button = hitObject.GetComponent<Button>();
-        int selectedLevel = level;
-        button.onClick.AddListener(() => SelectVipPreviewLevel(selectedLevel));
-        button.transition = Selectable.Transition.None;
-
-        Image selectGlow = CreatePanelStrip(hitObject.transform, "SelectedGlow", new Vector2(0, -133), new Vector2(112, 10), new Color(1f, 0.78f, 0.18f, 0f));
-        selectGlow.raycastTarget = false;
-        vipLevelSelectImages.Add(selectGlow);
-    }
-
     private void CreateVipCardButton(Transform parent, int level, Vector2 position)
     {
         GameObject buttonObject = new GameObject("VipCardButton" + level, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
@@ -3782,15 +3714,28 @@ public class GameManager : MonoBehaviour
         vipLevelButtonRects.Add(rect);
 
         Image image = buttonObject.GetComponent<Image>();
-        image.sprite = GetVipCardSprite(level);
+        image.sprite = CreateRoundedRectSprite(rect.sizeDelta, GetVipTierColor(level), new Color(0.95f, 0.70f, 0.22f, 1f), 16, 4);
         image.color = Color.white;
         image.preserveAspect = false;
         image.raycastTarget = true;
+        vipLevelCardImages.Add(image);
 
         Button button = buttonObject.GetComponent<Button>();
         int selectedLevel = level;
         button.onClick.AddListener(() => SelectVipPreviewLevel(selectedLevel));
         button.transition = Selectable.Transition.None;
+
+        TMP_Text cardText = CreateText(buttonObject.transform, "Text", "", new Vector2(0f, -18f), new Vector2(128f, 208f), 15);
+        ApplyVipFont(cardText);
+        cardText.color = GetVipTierTextColor(level);
+        cardText.alignment = TextAlignmentOptions.Center;
+        cardText.enableWordWrapping = true;
+        cardText.fontStyle = FontStyles.Bold;
+        cardText.enableAutoSizing = true;
+        cardText.fontSizeMin = 10;
+        cardText.fontSizeMax = 15;
+        cardText.raycastTarget = false;
+        vipLevelCardTexts.Add(cardText);
 
         GameObject lockObject = new GameObject("LockIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         lockObject.transform.SetParent(buttonObject.transform, false);
@@ -3801,11 +3746,18 @@ public class GameManager : MonoBehaviour
         lockRect.sizeDelta = new Vector2(42, 42);
 
         Image lockImage = lockObject.GetComponent<Image>();
-        lockImage.sprite = GetVipLockIconSprite();
+        lockImage.sprite = CreateRoundedRectSprite(lockRect.sizeDelta, new Color(0.08f, 0.06f, 0.04f, 0.92f), new Color(1f, 0.76f, 0.22f, 1f), 10, 3);
         lockImage.color = Color.white;
         lockImage.preserveAspect = true;
         lockImage.raycastTarget = false;
         vipLevelLockImages.Add(lockImage);
+
+        TMP_Text lockText = CreateText(lockObject.transform, "Text", "K", Vector2.zero, lockRect.sizeDelta, 18);
+        ApplyVipFont(lockText);
+        lockText.color = new Color(1f, 0.82f, 0.28f, 1f);
+        lockText.fontStyle = FontStyles.Bold;
+        lockText.alignment = TextAlignmentOptions.Center;
+        lockText.raycastTarget = false;
 
         Image selectGlow = CreatePanelStrip(buttonObject.transform, "SelectedGlow", new Vector2(0, -154), new Vector2(112, 10), new Color(1f, 0.78f, 0.18f, 0f));
         selectGlow.raycastTarget = false;
@@ -3823,73 +3775,26 @@ public class GameManager : MonoBehaviour
         bottomStarRect.sizeDelta = new Vector2(78f, 34f);
 
         Image bottomStarImage = bottomStarObject.GetComponent<Image>();
-        bottomStarImage.sprite = GetVipCardBottomStarSprite(level);
+        bottomStarImage.sprite = CreateRoundedRectSprite(bottomStarRect.sizeDelta, new Color(0.96f, 0.58f, 0.08f, 1f), new Color(0.50f, 0.22f, 0.02f, 1f), 10, 2);
         bottomStarImage.color = Color.white;
         bottomStarImage.preserveAspect = true;
         bottomStarImage.raycastTarget = false;
+
+        TMP_Text starText = CreateText(bottomStarObject.transform, "Text", "★", Vector2.zero, bottomStarRect.sizeDelta, 24);
+        ApplyVipFont(starText);
+        starText.color = new Color(1f, 0.90f, 0.36f, 1f);
+        starText.fontStyle = FontStyles.Bold;
+        starText.alignment = TextAlignmentOptions.Center;
+        starText.raycastTarget = false;
+
         bottomStarObject.transform.SetAsLastSibling();
         vipLevelBottomStarImages.Add(bottomStarImage);
         vipLevelBottomStarRects.Add(bottomStarRect);
     }
 
-    private TMP_Text CreateVipLevelCard(Transform parent, int level, Vector2 position, bool textOnly)
-    {
-        GameObject cardObject = new GameObject("VipLevelCard" + level, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        cardObject.transform.SetParent(parent, false);
-
-        RectTransform rect = cardObject.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = position;
-        rect.sizeDelta = textOnly ? new Vector2(118, 250) : new Vector2(178, 330);
-
-        Image image = cardObject.GetComponent<Image>();
-        image.color = textOnly ? new Color(1f, 1f, 1f, 0f) : GetVipTierColor(level);
-        image.raycastTarget = false;
-        if (!textOnly)
-        {
-            vipLevelCardImages.Add(image);
-        }
-
-        if (!textOnly)
-        {
-            CreatePanelStrip(cardObject.transform, "TopShine", new Vector2(0, 144), new Vector2(146, 8), new Color(1f, 1f, 1f, 0.18f));
-        }
-
-        TMP_Text text = CreateText(cardObject.transform, "Text", "", textOnly ? new Vector2(0, -8) : new Vector2(0, -8), textOnly ? new Vector2(106, 210) : new Vector2(148, 286), textOnly ? 15 : 17);
-        ApplyVipFont(text);
-        text.color = textOnly ? Color.white : GetVipTierTextColor(level);
-        text.alignment = TextAlignmentOptions.Center;
-        text.enableWordWrapping = true;
-        text.fontStyle = FontStyles.Bold;
-        text.enableAutoSizing = true;
-        text.fontSizeMin = textOnly ? 10 : 12;
-        text.fontSizeMax = textOnly ? 15 : 17;
-
-        if (textOnly)
-        {
-            GameObject lockObject = new GameObject("LockIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            lockObject.transform.SetParent(cardObject.transform, false);
-            RectTransform lockRect = lockObject.GetComponent<RectTransform>();
-            lockRect.anchorMin = new Vector2(0.5f, 0.5f);
-            lockRect.anchorMax = new Vector2(0.5f, 0.5f);
-            lockRect.anchoredPosition = GetVipLockPosition(level);
-            lockRect.sizeDelta = new Vector2(42, 42);
-
-            Image lockImage = lockObject.GetComponent<Image>();
-            lockImage.sprite = GetVipLockIconSprite();
-            lockImage.color = Color.white;
-            lockImage.preserveAspect = true;
-            lockImage.raycastTarget = false;
-            vipLevelLockImages.Add(lockImage);
-        }
-
-        return text;
-    }
-
     private TMP_Text CreateVipBonusPill(Transform parent, string title, string value, VipBonusSlotLayout layout)
     {
-        GameObject pill = new GameObject("VipBonus" + title, typeof(RectTransform));
+        GameObject pill = new GameObject("VipBonus" + title, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         pill.transform.SetParent(parent, false);
 
         RectTransform rect = pill.GetComponent<RectTransform>();
@@ -3898,8 +3803,22 @@ public class GameManager : MonoBehaviour
         rect.anchoredPosition = layout.PillPosition;
         rect.sizeDelta = new Vector2(168, 72);
 
-        Image dot = CreatePanelStrip(pill.transform, "Icon", new Vector2(-58, 2), new Vector2(44, 44), new Color(layout.AccentColor.r, layout.AccentColor.g, layout.AccentColor.b, 0f));
-        dot.raycastTarget = false;
+        Image background = pill.GetComponent<Image>();
+        background.sprite = CreateRoundedRectSprite(rect.sizeDelta, new Color(0.96f, 0.70f, 0.38f, 0.34f), new Color(0.86f, 0.48f, 0.15f, 0.62f), 10, 2);
+        background.color = Color.white;
+        background.raycastTarget = false;
+
+        Image icon = CreatePanelStrip(pill.transform, "Icon", new Vector2(-58, 2), new Vector2(44, 44), Color.white);
+        icon.sprite = CreateRoundedRectSprite(new Vector2(44, 44), layout.AccentColor, ShadeColor(layout.AccentColor, 0.55f), 14, 3);
+        icon.color = Color.white;
+        icon.raycastTarget = false;
+
+        TMP_Text iconText = CreateText(icon.transform, "Text", GetVipBonusIconLabel(title), Vector2.zero, new Vector2(42, 42), 18);
+        ApplyVipFont(iconText);
+        iconText.color = Color.white;
+        iconText.fontStyle = FontStyles.Bold;
+        iconText.alignment = TextAlignmentOptions.Center;
+        iconText.raycastTarget = false;
 
         TMP_Text text = CreateText(pill.transform, "Text", title + "\n" + value, layout.TextPosition, layout.TextSize, 16);
         ApplyVipFont(text);
@@ -3910,6 +3829,21 @@ public class GameManager : MonoBehaviour
         text.fontSizeMin = 11;
         text.fontSizeMax = 16;
         return text;
+    }
+
+    private string GetVipBonusIconLabel(string title)
+    {
+        if (title == "Coin")
+            return "C";
+        if (title == "XP")
+            return "XP";
+        if (title.Contains("M"))
+            return "♥";
+        if (title.Contains("Pasif"))
+            return "P";
+        if (title.Contains("ndirim"))
+            return "%";
+        return "+";
     }
 
     private Image CreatePanelStrip(Transform parent, string name, Vector2 position, Vector2 size, Color color)
@@ -5321,7 +5255,7 @@ public class GameManager : MonoBehaviour
         {
             int cardLevel = i + 1;
             if (i < vipLevelCardTexts.Count)
-                vipLevelCardTexts[i].text = "";
+                vipLevelCardTexts[i].text = GetVipCardText(cardLevel);
 
             if (i < vipLevelCardImages.Count)
             {
