@@ -1369,7 +1369,7 @@ public class GameManager : MonoBehaviour
     private string GetVipDiscountBonusText(int level)
     {
         int discountPercent = GetVipUpgradeDiscountPercent(level);
-        return discountPercent > 0 ? "-" + discountPercent + "%" : "Lv.3";
+        return discountPercent > 0 ? "-" + discountPercent + "%" : "Kilitli";
     }
 
     private bool CanUpgradeVipLevel()
@@ -1449,7 +1449,7 @@ public class GameManager : MonoBehaviour
         return "+" + GetVipCoinBonusPercent(level) + "% coin"
             + "\n+" + GetVipXpBonusPercent(level) + "% XP"
             + "\n+" + GetVipPassiveBonusPercent(level) + "% pasif"
-            + "\n" + (GetVipUpgradeDiscountPercent(level) > 0 ? "-" + GetVipUpgradeDiscountPercent(level) + "% indirim" : "Indirim Lv.3");
+            + "\n" + (GetVipUpgradeDiscountPercent(level) > 0 ? "-" + GetVipUpgradeDiscountPercent(level) + "% indirim" : "İndirim Kilitli");
     }
 
     private string GetVipPanelText()
@@ -3568,7 +3568,7 @@ public class GameManager : MonoBehaviour
         vipXpBonusText = CreateVipBonusPill(vipPanel.transform, "XP", "+0%", VipXpBonusLayout);
         vipCoffeeBonusText = CreateVipBonusPill(vipPanel.transform, "Müşteri", "+0%", VipCustomerBonusLayout);
         vipPassiveBonusText = CreateVipBonusPill(vipPanel.transform, "Pasif Gelir", "+0%", VipPassiveBonusLayout);
-        vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "İndirim", "Lv.3", VipDiscountBonusLayout);
+        vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "İndirim", "Kilitli", VipDiscountBonusLayout);
 
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", VipUpgradeButtonPosition, VipUpgradeButtonSize, UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
         ApplyVipFont(vipUpgradeButtonText);
