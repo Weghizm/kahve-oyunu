@@ -120,6 +120,52 @@ public class GameManager : MonoBehaviour
     private const int VipRoomUnlockCost = 25000;
     private const int MaxVipLevel = 5;
 
+    private readonly struct VipBonusSlotLayout
+    {
+        public readonly Vector2 PillPosition;
+        public readonly Vector2 TextPosition;
+        public readonly Vector2 TextSize;
+        public readonly Color AccentColor;
+
+        public VipBonusSlotLayout(Vector2 pillPosition, Vector2 textPosition, Vector2 textSize, Color accentColor)
+        {
+            PillPosition = pillPosition;
+            TextPosition = textPosition;
+            TextSize = textSize;
+            AccentColor = accentColor;
+        }
+    }
+
+    private static readonly VipBonusSlotLayout VipCoinBonusLayout = new VipBonusSlotLayout(
+        new Vector2(-420f, -212f),
+        new Vector2(-11.651f, -27f),
+        new Vector2(90.661f, 48f),
+        new Color(1f, 0.72f, 0.14f, 1f));
+
+    private static readonly VipBonusSlotLayout VipXpBonusLayout = new VipBonusSlotLayout(
+        new Vector2(-200f, -212f),
+        new Vector2(3.4f, -25f),
+        new Vector2(90.661f, 48f),
+        new Color(0.35f, 0.55f, 1f, 1f));
+
+    private static readonly VipBonusSlotLayout VipCustomerBonusLayout = new VipBonusSlotLayout(
+        new Vector2(22f, -212f),
+        new Vector2(33.4f, -25f),
+        new Vector2(121.3214f, 48f),
+        new Color(0.28f, 0.70f, 0.42f, 1f));
+
+    private static readonly VipBonusSlotLayout VipPassiveBonusLayout = new VipBonusSlotLayout(
+        new Vector2(244f, -212f),
+        new Vector2(36.1f, -24f),
+        new Vector2(121.3214f, 48f),
+        new Color(0.92f, 0.24f, 0.32f, 1f));
+
+    private static readonly VipBonusSlotLayout VipDiscountBonusLayout = new VipBonusSlotLayout(
+        Vector2.zero,
+        new Vector2(551.1f, -237f),
+        new Vector2(168f, 72f),
+        new Color(0.86f, 0.36f, 0.18f, 1f));
+
     private TMP_Text coinText;
     private TMP_Text coinInfoPopupText;
     private TMP_Text activeBoostText;
@@ -3474,11 +3520,11 @@ public class GameManager : MonoBehaviour
             CreateVipCardBottomStarOverlay(vipPanel.transform, i, new Vector2(-75f + ((i - 1) * 151f), -89f));
         }
 
-        vipCoinBonusText = CreateVipBonusPill(vipPanel.transform, "Coin", "+0%", new Vector2(-420f, -212f), new Vector2(-11.651f, -27f), new Vector2(90.661f, 48f), new Color(1f, 0.72f, 0.14f, 1f));
-        vipXpBonusText = CreateVipBonusPill(vipPanel.transform, "XP", "+0%", new Vector2(-200f, -212f), new Vector2(3.4f, -25f), new Vector2(90.661f, 48f), new Color(0.35f, 0.55f, 1f, 1f));
-        vipCoffeeBonusText = CreateVipBonusPill(vipPanel.transform, "Müşteri", "+0%", new Vector2(22f, -212f), new Vector2(33.4f, -25f), new Vector2(121.3214f, 48f), new Color(0.28f, 0.70f, 0.42f, 1f));
-        vipPassiveBonusText = CreateVipBonusPill(vipPanel.transform, "Pasif Gelir", "+0%", new Vector2(244f, -212f), new Vector2(36.1f, -24f), new Vector2(121.3214f, 48f), new Color(0.92f, 0.24f, 0.32f, 1f));
-        vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "İndirim", "Lv.3", Vector2.zero, new Vector2(551.1f, -237f), new Vector2(168f, 72f), new Color(0.86f, 0.36f, 0.18f, 1f));
+        vipCoinBonusText = CreateVipBonusPill(vipPanel.transform, "Coin", "+0%", VipCoinBonusLayout);
+        vipXpBonusText = CreateVipBonusPill(vipPanel.transform, "XP", "+0%", VipXpBonusLayout);
+        vipCoffeeBonusText = CreateVipBonusPill(vipPanel.transform, "Müşteri", "+0%", VipCustomerBonusLayout);
+        vipPassiveBonusText = CreateVipBonusPill(vipPanel.transform, "Pasif Gelir", "+0%", VipPassiveBonusLayout);
+        vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "İndirim", "Lv.3", VipDiscountBonusLayout);
 
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
         vipUpgradeButtonText.rectTransform.anchoredPosition = new Vector2(-18f, 0f);
@@ -3750,7 +3796,7 @@ public class GameManager : MonoBehaviour
         return text;
     }
 
-    private TMP_Text CreateVipBonusPill(Transform parent, string title, string value, Vector2 position, Vector2 textPosition, Vector2 textSize, Color iconColor)
+    private TMP_Text CreateVipBonusPill(Transform parent, string title, string value, VipBonusSlotLayout layout)
     {
         GameObject pill = new GameObject("VipBonus" + title, typeof(RectTransform));
         pill.transform.SetParent(parent, false);
@@ -3758,13 +3804,13 @@ public class GameManager : MonoBehaviour
         RectTransform rect = pill.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = position;
+        rect.anchoredPosition = layout.PillPosition;
         rect.sizeDelta = new Vector2(168, 72);
 
-        Image dot = CreatePanelStrip(pill.transform, "Icon", new Vector2(-58, 2), new Vector2(44, 44), new Color(iconColor.r, iconColor.g, iconColor.b, 0f));
+        Image dot = CreatePanelStrip(pill.transform, "Icon", new Vector2(-58, 2), new Vector2(44, 44), new Color(layout.AccentColor.r, layout.AccentColor.g, layout.AccentColor.b, 0f));
         dot.raycastTarget = false;
 
-        TMP_Text text = CreateText(pill.transform, "Text", title + "\n" + value, textPosition, textSize, 16);
+        TMP_Text text = CreateText(pill.transform, "Text", title + "\n" + value, layout.TextPosition, layout.TextSize, 16);
         text.color = new Color(0.42f, 0.22f, 0.08f, 1f);
         text.alignment = TextAlignmentOptions.Left;
         text.fontStyle = FontStyles.Bold;
