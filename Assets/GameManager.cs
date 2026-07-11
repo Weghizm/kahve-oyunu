@@ -3659,7 +3659,13 @@ public class GameManager : MonoBehaviour
         switch (level)
         {
             case 1:
+            case 2:
+            case 4:
                 return new Vector2(0f, 97.8f);
+            case 3:
+                return new Vector2(3.7f, 97.8f);
+            case 5:
+                return new Vector2(-8f, 97.8f);
             default:
                 return new Vector2(0f, 86f);
         }
