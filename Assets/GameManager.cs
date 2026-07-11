@@ -3654,6 +3654,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private Vector2 GetVipCardButtonLockPosition(int level)
+    {
+        switch (level)
+        {
+            case 1:
+                return new Vector2(0f, 97.8f);
+            default:
+                return new Vector2(0f, 86f);
+        }
+    }
+
     private void CreateVipCardHitArea(Transform parent, int level, Vector2 position)
     {
         GameObject hitObject = new GameObject("VipCardHitArea" + level, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
@@ -3707,7 +3718,7 @@ public class GameManager : MonoBehaviour
         RectTransform lockRect = lockObject.GetComponent<RectTransform>();
         lockRect.anchorMin = new Vector2(0.5f, 0.5f);
         lockRect.anchorMax = new Vector2(0.5f, 0.5f);
-        lockRect.anchoredPosition = new Vector2(0f, 86f);
+        lockRect.anchoredPosition = GetVipCardButtonLockPosition(level);
         lockRect.sizeDelta = new Vector2(42, 42);
 
         Image lockImage = lockObject.GetComponent<Image>();
