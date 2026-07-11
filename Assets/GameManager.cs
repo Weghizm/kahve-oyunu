@@ -3536,6 +3536,9 @@ public class GameManager : MonoBehaviour
         vipUpgradeButtonText.rectTransform.sizeDelta = VipUpgradeButtonTextSize;
         AttachPressAnimator(vipUpgradeButtonText.transform.parent as RectTransform, new Vector2(0f, -6f), 0.96f);
         vipUpgradeGemIconImage = CreateVipUpgradeGemIcon(vipUpgradeButtonText.transform.parent);
+#if UNITY_EDITOR
+        AttachEditorDragProbe(vipUpgradeButtonText.transform.parent as RectTransform, "VipUpgradeButton");
+#endif
         CreateInvisibleButton(vipPanel.transform, "VipCloseButton", new Vector2(592, 309), new Vector2(92, 92), CloseVipPanel);
 
         vipPanel.transform.SetAsLastSibling();
@@ -3629,9 +3632,24 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        image.raycastTarget = true;
         RectTransform rect = image.GetComponent<RectTransform>();
-        EditorDragProbe probe = image.gameObject.AddComponent<EditorDragProbe>();
+        AttachEditorDragProbe(rect, label);
+    }
+
+    private void AttachEditorDragProbe(RectTransform rect, string label)
+    {
+        if (rect == null)
+        {
+            return;
+        }
+
+        Image image = rect.GetComponent<Image>();
+        if (image != null)
+        {
+            image.raycastTarget = true;
+        }
+
+        EditorDragProbe probe = rect.gameObject.AddComponent<EditorDragProbe>();
         probe.Bind(rect, label);
     }
 #endif
@@ -6893,6 +6911,7 @@ public class PressAnimator : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 {
     private RectTransform target;
     private Vector2 restPosition;
+    private Vector2 pressedOffset;
     private Vector2 pressedPosition;
     private Vector3 restScale = Vector3.one;
     private Vector3 pressedScale = Vector3.one;
@@ -6904,9 +6923,22 @@ public class PressAnimator : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     {
         target = newTarget;
         restPosition = target.anchoredPosition;
-        pressedPosition = restPosition + pressedOffset;
+        this.pressedOffset = pressedOffset;
+        pressedPosition = restPosition + this.pressedOffset;
         restScale = target.localScale;
         pressedScale = restScale * newPressedScale;
+    }
+
+    public void CaptureCurrentAsRestPosition()
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        restPosition = target.anchoredPosition;
+        pressedPosition = restPosition + pressedOffset;
+        restScale = target.localScale;
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -6958,6 +6990,7 @@ public class EditorDragProbe : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 {
     private RectTransform target;
     private RectTransform parentRect;
+    private PressAnimator pressAnimator;
     private Vector2 pointerStartPosition;
     private Vector2 startPosition;
     private string probeLabel;
@@ -6966,6 +6999,7 @@ public class EditorDragProbe : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         target = rectTransform;
         parentRect = target != null ? target.parent as RectTransform : null;
+        pressAnimator = target != null ? target.GetComponent<PressAnimator>() : null;
         probeLabel = label;
     }
 
@@ -6978,6 +7012,11 @@ public class EditorDragProbe : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, eventData.position, eventData.pressEventCamera, out pointerStartPosition);
         startPosition = target.anchoredPosition;
+        if (pressAnimator != null)
+        {
+            pressAnimator.enabled = false;
+        }
+
         target.SetAsLastSibling();
     }
 
@@ -7002,6 +7041,11 @@ public class EditorDragProbe : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         Vector2 pos = target.anchoredPosition;
         Vector2 size = target.sizeDelta;
         Debug.Log(probeLabel + " position: new Vector2(" + pos.x.ToString("0.####") + "f, " + pos.y.ToString("0.####") + "f), size: new Vector2(" + size.x.ToString("0.####") + "f, " + size.y.ToString("0.####") + "f)");
+        if (pressAnimator != null)
+        {
+            pressAnimator.CaptureCurrentAsRestPosition();
+            pressAnimator.enabled = true;
+        }
     }
 }
 #endif
