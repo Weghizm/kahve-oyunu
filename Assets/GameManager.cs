@@ -3594,28 +3594,13 @@ public class GameManager : MonoBehaviour
         CreateVipPanelPiece(parent, "VipPanelPiece01", "vip_panel_piece_0_1", new Rect(610f, 0f, 470f, 190f), sourceWidth, sourceHeight, scale);
         CreateVipPanelPiece(parent, "VipPanelPiece02", "vip_panel_piece_0_2", new Rect(1080f, 0f, 566f, 190f), sourceWidth, sourceHeight, scale);
 
-        CreateVipPanelLeftInfoPieces(parent, sourceWidth, sourceHeight, scale);
+        CreateVipPanelPiece(parent, "VipPanelPiece10", "vip_panel_piece_1_0", new Rect(0f, 190f, 610f, 510f), sourceWidth, sourceHeight, scale);
         CreateVipPanelPiece(parent, "VipPanelPiece11", "vip_panel_piece_1_1", new Rect(610f, 190f, 470f, 510f), sourceWidth, sourceHeight, scale);
         CreateVipPanelPiece(parent, "VipPanelPiece12", "vip_panel_piece_1_2", new Rect(1080f, 190f, 566f, 510f), sourceWidth, sourceHeight, scale);
 
         CreateVipPanelPiece(parent, "VipPanelPiece20", "vip_panel_piece_2_0", new Rect(0f, 700f, 610f, 216f), sourceWidth, sourceHeight, scale);
         CreateVipPanelPiece(parent, "VipPanelPiece21", "vip_panel_piece_2_1", new Rect(610f, 700f, 470f, 216f), sourceWidth, sourceHeight, scale);
         CreateVipPanelPiece(parent, "VipPanelPiece22", "vip_panel_piece_2_2", new Rect(1080f, 700f, 566f, 216f), sourceWidth, sourceHeight, scale);
-    }
-
-    private void CreateVipPanelLeftInfoPieces(Transform parent, float sourceWidth, float sourceHeight, float scale)
-    {
-        CreateVipPanelPiece(parent, "VipPanelLeft00", "LeftInfo/vip_panel_left_0_0", new Rect(0f, 190f, 110f, 160f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelLeft01", "LeftInfo/vip_panel_left_0_1", new Rect(110f, 190f, 120f, 160f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelLeft02", "LeftInfo/vip_panel_left_0_2", new Rect(230f, 190f, 380f, 160f), sourceWidth, sourceHeight, scale);
-
-        CreateVipPanelPiece(parent, "VipPanelLeft10", "LeftInfo/vip_panel_left_1_0", new Rect(0f, 350f, 110f, 190f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelLeft11", "LeftInfo/vip_panel_left_1_1", new Rect(110f, 350f, 120f, 190f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelLeft12", "LeftInfo/vip_panel_left_1_2", new Rect(230f, 350f, 380f, 190f), sourceWidth, sourceHeight, scale);
-
-        CreateVipPanelPiece(parent, "VipPanelLeft20", "LeftInfo/vip_panel_left_2_0", new Rect(0f, 540f, 110f, 160f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelLeft21", "LeftInfo/vip_panel_left_2_1", new Rect(110f, 540f, 120f, 160f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelLeft22", "LeftInfo/vip_panel_left_2_2", new Rect(230f, 540f, 380f, 160f), sourceWidth, sourceHeight, scale);
     }
 
     private void CreateVipPanelPiece(Transform parent, string objectName, string spriteName, Rect sourceRect, float sourceWidth, float sourceHeight, float scale)
