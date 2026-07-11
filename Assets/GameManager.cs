@@ -3544,6 +3544,9 @@ public class GameManager : MonoBehaviour
         vipLevelSummaryText.fontStyle = FontStyles.Bold;
         vipLevelSummaryText.alignment = TextAlignmentOptions.Right;
         vipLevelSummaryText.gameObject.SetActive(false);
+
+        CreateVipSummaryStripeCovers(vipPanel.transform);
+
         vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-352, 76), new Vector2(365, 116), 15);
         ApplyVipFont(vipPanelText);
         vipPanelText.color = new Color(0.32f, 0.17f, 0.06f, 1f);
@@ -3591,6 +3594,21 @@ public class GameManager : MonoBehaviour
 
         vipPanel.transform.SetAsLastSibling();
         vipPanel.SetActive(false);
+    }
+
+    private void CreateVipSummaryStripeCovers(Transform parent)
+    {
+        Color parchment = new Color(0.98f, 0.78f, 0.47f, 0.96f);
+        CreateVipSummaryStripeCover(parent, "VipSummaryTopStripeCover", new Vector2(-360f, 106f), new Vector2(330f, 116f), parchment);
+        CreateVipSummaryStripeCover(parent, "VipSummaryListStripeCover", new Vector2(-340f, 32f), new Vector2(400f, 104f), parchment);
+    }
+
+    private void CreateVipSummaryStripeCover(Transform parent, string name, Vector2 position, Vector2 size, Color color)
+    {
+        Image cover = CreatePanelStrip(parent, name, position, size, Color.white);
+        cover.sprite = CreateRoundedRectSprite(size, color, color, 18, 0);
+        cover.color = Color.white;
+        cover.raycastTarget = false;
     }
 
     private void CreateVipInfoPanel(Transform parent)
