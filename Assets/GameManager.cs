@@ -166,9 +166,11 @@ public class GameManager : MonoBehaviour
         new Vector2(168f, 72f),
         new Color(0.86f, 0.36f, 0.18f, 1f));
 
+    private static readonly Vector2 VipUpgradeButtonPosition = new Vector2(0.6f, -302.4f);
+    private static readonly Vector2 VipUpgradeButtonSize = new Vector2(146.8112f, 62f);
     private static readonly Vector2 VipUpgradeButtonTextPosition = new Vector2(-18f, -9f);
-    private static readonly Vector2 VipUpgradeButtonTextSize = new Vector2(260f, 62f);
-    private static readonly Vector2 VipUpgradeGemIconPosition = new Vector2(64f, -9f);
+    private static readonly Vector2 VipUpgradeButtonTextSize = new Vector2(146.8112f, 62f);
+    private static readonly Vector2 VipUpgradeGemIconPosition = new Vector2(32f, -9f);
     private static readonly Vector2 VipUpgradeGemIconSize = new Vector2(42f, 42f);
 
     private TMP_Text coinText;
@@ -3531,7 +3533,7 @@ public class GameManager : MonoBehaviour
         vipPassiveBonusText = CreateVipBonusPill(vipPanel.transform, "Pasif Gelir", "+0%", VipPassiveBonusLayout);
         vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "İndirim", "Lv.3", VipDiscountBonusLayout);
 
-        vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
+        vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", VipUpgradeButtonPosition, VipUpgradeButtonSize, UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
         vipUpgradeButtonText.rectTransform.anchoredPosition = VipUpgradeButtonTextPosition;
         vipUpgradeButtonText.rectTransform.sizeDelta = VipUpgradeButtonTextSize;
         vipUpgradeGemIconImage = CreateVipUpgradeGemIcon(vipUpgradeButtonText.transform.parent);
