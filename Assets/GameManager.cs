@@ -3532,12 +3532,6 @@ public class GameManager : MonoBehaviour
         panelImage.color = Color.white;
         panelImage.preserveAspect = true;
 
-        TMP_Text title = CreateText(vipPanel.transform, "VipPanelTitle", "", new Vector2(-415, 166), new Vector2(320, 44), 32);
-        ApplyVipFont(title);
-        title.color = new Color(0.40f, 0.20f, 0.05f, 1f);
-        title.fontStyle = FontStyles.Bold;
-        title.alignment = TextAlignmentOptions.Left;
-
         vipLevelSummaryText = CreateText(vipPanel.transform, "VipLevelSummary", "", new Vector2(392, 214), new Vector2(190, 32), 18);
         ApplyVipFont(vipLevelSummaryText);
         vipLevelSummaryText.color = new Color(1f, 0.88f, 0.47f, 1f);
@@ -3545,9 +3539,9 @@ public class GameManager : MonoBehaviour
         vipLevelSummaryText.alignment = TextAlignmentOptions.Right;
         vipLevelSummaryText.gameObject.SetActive(false);
 
-        CreateVipSummaryStripeCovers(vipPanel.transform);
+        CreateVipLeftInfoCard(vipPanel.transform);
 
-        vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-352, 76), new Vector2(365, 116), 15);
+        vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-382, 112), new Vector2(280, 126), 15);
         ApplyVipFont(vipPanelText);
         vipPanelText.color = new Color(0.32f, 0.17f, 0.06f, 1f);
         vipPanelText.alignment = TextAlignmentOptions.TopLeft;
@@ -3596,19 +3590,42 @@ public class GameManager : MonoBehaviour
         vipPanel.SetActive(false);
     }
 
-    private void CreateVipSummaryStripeCovers(Transform parent)
+    private void CreateVipLeftInfoCard(Transform parent)
     {
-        Color parchment = new Color(0.98f, 0.78f, 0.47f, 0.96f);
-        CreateVipSummaryStripeCover(parent, "VipSummaryTopStripeCover", new Vector2(-360f, 106f), new Vector2(330f, 116f), parchment);
-        CreateVipSummaryStripeCover(parent, "VipSummaryListStripeCover", new Vector2(-340f, 32f), new Vector2(400f, 104f), parchment);
+        Vector2 cardSize = new Vector2(430f, 318f);
+        Image card = CreatePanelStrip(parent, "VipLeftInfoCard", new Vector2(-420f, 48f), cardSize, Color.white);
+        card.sprite = CreateRoundedRectSprite(cardSize, new Color(0.98f, 0.80f, 0.50f, 0.98f), new Color(0.72f, 0.38f, 0.10f, 1f), 22, 5);
+        card.color = Color.white;
+        card.raycastTarget = false;
+
+        Vector2 badgeSize = new Vector2(78f, 96f);
+        Image badge = CreatePanelStrip(parent, "VipLeftInfoBadge", new Vector2(-542f, 140f), badgeSize, Color.white);
+        badge.sprite = CreateRoundedRectSprite(badgeSize, new Color(0.48f, 0.08f, 0.42f, 1f), new Color(1f, 0.72f, 0.18f, 1f), 12, 4);
+        badge.color = Color.white;
+        badge.raycastTarget = false;
+
+        TMP_Text badgeText = CreateText(parent, "VipLeftInfoBadgeText", "VIP", new Vector2(-542f, 132f), new Vector2(72f, 34f), 19);
+        ApplyVipFont(badgeText);
+        badgeText.color = new Color(1f, 0.84f, 0.24f, 1f);
+        badgeText.fontStyle = FontStyles.Bold;
+        badgeText.alignment = TextAlignmentOptions.Center;
+        badgeText.raycastTarget = false;
+
+        CreateVipProgressPreview(parent);
     }
 
-    private void CreateVipSummaryStripeCover(Transform parent, string name, Vector2 position, Vector2 size, Color color)
+    private void CreateVipProgressPreview(Transform parent)
     {
-        Image cover = CreatePanelStrip(parent, name, position, size, Color.white);
-        cover.sprite = CreateRoundedRectSprite(size, color, color, 18, 0);
-        cover.color = Color.white;
-        cover.raycastTarget = false;
+        Vector2 barSize = new Vector2(338f, 28f);
+        Image barBack = CreatePanelStrip(parent, "VipInfoProgressBack", new Vector2(-414f, -118f), barSize, Color.white);
+        barBack.sprite = CreateRoundedRectSprite(barSize, new Color(0.27f, 0.13f, 0.04f, 1f), new Color(0.16f, 0.08f, 0.02f, 1f), 12, 3);
+        barBack.color = Color.white;
+        barBack.raycastTarget = false;
+
+        Image barFill = CreatePanelStrip(parent, "VipInfoProgressFill", new Vector2(-500f, -118f), new Vector2(166f, 18f), Color.white);
+        barFill.sprite = CreateRoundedRectSprite(new Vector2(166f, 18f), new Color(0.72f, 0.10f, 0.62f, 1f), new Color(0.95f, 0.55f, 0.95f, 1f), 9, 2);
+        barFill.color = Color.white;
+        barFill.raycastTarget = false;
     }
 
     private void CreateVipInfoPanel(Transform parent)
