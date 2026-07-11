@@ -1681,7 +1681,7 @@ public class GameManager : MonoBehaviour
         CreateCustomerButton(gameFrame);
 
         CreateButton(gameFrame, "SellCoffeeButton", "SAT", new Vector2(0, -475), new Vector2(150, 68), SellCoffee, new Color(0.43f, 0.24f, 0.14f), 28);
-        adBoostButtonText = CreateButton(gameFrame, "AdBoostButton", "", new Vector2(850, 250), new Vector2(128, 148), WatchAdForBoost, new Color(1f, 1f, 1f, 0.01f), 20);
+        adBoostButtonText = CreateButton(gameFrame, "AdBoostButton", "", new Vector2(850, 214), new Vector2(144, 216), WatchAdForBoost, new Color(1f, 1f, 1f, 0.01f), 20);
         ConfigureAdBoostButton(adBoostButtonText);
         CreateButton(gameFrame, "OpenTestPanelButton", "T", new Vector2(850, -415), new Vector2(82, 74), OpenTestPanel, new Color(0.20f, 0.20f, 0.20f), 26);
         TMP_Text tasksButtonText = CreateButton(gameFrame, "TasksButton", "", new Vector2(-890, 310), new Vector2(122, 116), OpenTaskPanel, Color.white, 24);
@@ -2800,14 +2800,14 @@ public class GameManager : MonoBehaviour
         }
 
         RectTransform textRect = buttonText.rectTransform;
-        textRect.anchoredPosition = new Vector2(0f, -42f);
-        textRect.sizeDelta = new Vector2(112f, 30f);
+        textRect.anchoredPosition = new Vector2(0f, -78f);
+        textRect.sizeDelta = new Vector2(110f, 30f);
         buttonText.color = new Color(0.27f, 0.12f, 0.035f, 1f);
         buttonText.fontStyle = FontStyles.Bold;
         buttonText.alignment = TextAlignmentOptions.Center;
         buttonText.enableAutoSizing = true;
         buttonText.fontSizeMin = 13;
-        buttonText.fontSizeMax = 18;
+        buttonText.fontSizeMax = 20;
         buttonText.outlineColor = new Color(1f, 0.83f, 0.44f, 0.55f);
         buttonText.outlineWidth = 0.08f;
         buttonText.raycastTarget = false;
