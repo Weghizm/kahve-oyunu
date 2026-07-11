@@ -168,9 +168,9 @@ public class GameManager : MonoBehaviour
 
     private static readonly Vector2 VipUpgradeButtonPosition = new Vector2(0.6f, -302.4f);
     private static readonly Vector2 VipUpgradeButtonSize = new Vector2(146.8112f, 62f);
-    private static readonly Vector2 VipUpgradeButtonTextPosition = new Vector2(-18f, -9f);
-    private static readonly Vector2 VipUpgradeButtonTextSize = new Vector2(146.8112f, 62f);
-    private static readonly Vector2 VipUpgradeGemIconPosition = new Vector2(32f, -9f);
+    private static readonly Vector2 VipUpgradeButtonTextPosition = new Vector2(-27f, -9f);
+    private static readonly Vector2 VipUpgradeButtonTextSize = new Vector2(104f, 62f);
+    private static readonly Vector2 VipUpgradeGemIconPosition = new Vector2(49f, -9f);
     private static readonly Vector2 VipUpgradeGemIconSize = new Vector2(42f, 42f);
 
     private TMP_Text coinText;
@@ -3582,6 +3582,8 @@ public class GameManager : MonoBehaviour
         ApplyVipFont(vipUpgradeButtonText);
         vipUpgradeButtonText.rectTransform.anchoredPosition = VipUpgradeButtonTextPosition;
         vipUpgradeButtonText.rectTransform.sizeDelta = VipUpgradeButtonTextSize;
+        vipUpgradeButtonText.fontSizeMax = 20f;
+        vipUpgradeButtonText.fontSizeMin = 12f;
         vipUpgradeGemIconImage = CreateVipUpgradeGemIcon(vipUpgradeButtonText.transform.parent);
         AttachPressAnimator(vipUpgradeButtonText.transform.parent as RectTransform, new Vector2(0f, -6f), 0.96f);
         CreateInvisibleButton(vipPanel.transform, "VipCloseButton", new Vector2(592, 309), new Vector2(92, 92), CloseVipPanel);
