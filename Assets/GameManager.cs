@@ -2800,7 +2800,7 @@ public class GameManager : MonoBehaviour
         }
 
         RectTransform textRect = buttonText.rectTransform;
-        textRect.anchoredPosition = new Vector2(0f, -54f);
+        textRect.anchoredPosition = new Vector2(0f, -42f);
         textRect.sizeDelta = new Vector2(112f, 30f);
         buttonText.color = new Color(0.27f, 0.12f, 0.035f, 1f);
         buttonText.fontStyle = FontStyles.Bold;
