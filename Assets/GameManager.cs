@@ -3534,10 +3534,11 @@ public class GameManager : MonoBehaviour
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
         vipUpgradeButtonText.rectTransform.anchoredPosition = VipUpgradeButtonTextPosition;
         vipUpgradeButtonText.rectTransform.sizeDelta = VipUpgradeButtonTextSize;
-        AttachPressAnimator(vipUpgradeButtonText.transform.parent as RectTransform, new Vector2(0f, -6f), 0.96f);
         vipUpgradeGemIconImage = CreateVipUpgradeGemIcon(vipUpgradeButtonText.transform.parent);
 #if UNITY_EDITOR
         AttachEditorDragProbe(vipUpgradeButtonText.transform.parent as RectTransform, "VipUpgradeButton");
+#else
+        AttachPressAnimator(vipUpgradeButtonText.transform.parent as RectTransform, new Vector2(0f, -6f), 0.96f);
 #endif
         CreateInvisibleButton(vipPanel.transform, "VipCloseButton", new Vector2(592, 309), new Vector2(92, 92), CloseVipPanel);
 
