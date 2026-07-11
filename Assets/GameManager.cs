@@ -2588,7 +2588,7 @@ public class GameManager : MonoBehaviour
     {
         if (adBoostIconSprite == null)
         {
-            adBoostIconSprite = LoadSpriteFromResources("Art/UI/ad_boost_2x_wood");
+            adBoostIconSprite = LoadSpriteFromResources("Art/UI/ad_boost_2x_icon");
         }
 
         return adBoostIconSprite;
@@ -2797,19 +2797,33 @@ public class GameManager : MonoBehaviour
                 buttonImage.preserveAspect = true;
             }
 
+            GameObject badgeObject = new GameObject("AdBoostTimerBadge", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            badgeObject.transform.SetParent(buttonTransform, false);
+
+            RectTransform badgeRect = badgeObject.GetComponent<RectTransform>();
+            badgeRect.anchorMin = new Vector2(0.5f, 0.5f);
+            badgeRect.anchorMax = new Vector2(0.5f, 0.5f);
+            badgeRect.anchoredPosition = new Vector2(0f, -59f);
+            badgeRect.sizeDelta = new Vector2(106f, 32f);
+
+            Image badgeImage = badgeObject.GetComponent<Image>();
+            badgeImage.sprite = GetAdBoostTimerBadgeSprite();
+            badgeImage.color = Color.white;
+            badgeImage.preserveAspect = true;
+            badgeImage.raycastTarget = false;
         }
 
         RectTransform textRect = buttonText.rectTransform;
-        textRect.anchoredPosition = new Vector2(0f, -54f);
-        textRect.sizeDelta = new Vector2(112f, 30f);
-        buttonText.color = new Color(0.27f, 0.12f, 0.035f, 1f);
+        textRect.anchoredPosition = new Vector2(0f, -59f);
+        textRect.sizeDelta = new Vector2(104f, 28f);
+        buttonText.color = new Color(1f, 0.93f, 0.66f);
         buttonText.fontStyle = FontStyles.Bold;
         buttonText.alignment = TextAlignmentOptions.Center;
         buttonText.enableAutoSizing = true;
         buttonText.fontSizeMin = 13;
-        buttonText.fontSizeMax = 21;
-        buttonText.outlineColor = new Color(1f, 0.83f, 0.44f, 0.55f);
-        buttonText.outlineWidth = 0.08f;
+        buttonText.fontSizeMax = 20;
+        buttonText.outlineColor = new Color(0.04f, 0.08f, 0.16f, 0.95f);
+        buttonText.outlineWidth = 0.22f;
         buttonText.raycastTarget = false;
         buttonText.transform.SetAsLastSibling();
     }
@@ -5127,9 +5141,9 @@ public class GameManager : MonoBehaviour
             if (bonusTimer >= MaxBoostSeconds)
                 adBoostButtonText.text = "MAX";
             else if (bonusTimer > 0)
-                adBoostButtonText.text = FormatTime(bonusTimer);
+                adBoostButtonText.text = "AKTIF";
             else
-                adBoostButtonText.text = "İZLE";
+                adBoostButtonText.text = "AD";
             Button adButton = adBoostButtonText.GetComponentInParent<Button>();
             if (adButton != null)
                 adButton.interactable = bonusTimer < MaxBoostSeconds;
