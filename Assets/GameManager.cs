@@ -2807,7 +2807,7 @@ public class GameManager : MonoBehaviour
         buttonText.alignment = TextAlignmentOptions.Center;
         buttonText.enableAutoSizing = true;
         buttonText.fontSizeMin = 13;
-        buttonText.fontSizeMax = 21;
+        buttonText.fontSizeMax = 18;
         buttonText.outlineColor = new Color(1f, 0.83f, 0.44f, 0.55f);
         buttonText.outlineWidth = 0.08f;
         buttonText.raycastTarget = false;
