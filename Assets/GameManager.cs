@@ -344,6 +344,7 @@ public class GameManager : MonoBehaviour
     private Sprite notifyExclamationSprite;
     private Sprite adBoostIconSprite;
     private Sprite adBoostTimerBadgeSprite;
+    private Sprite vipPanelBackgroundSprite;
     private Sprite vipLockIconSprite;
     private Sprite warmWoodCafeSceneSprite;
     private Sprite warmWoodCafeSceneNoMachineSprite;
@@ -2601,6 +2602,16 @@ public class GameManager : MonoBehaviour
         return adBoostTimerBadgeSprite;
     }
 
+    private Sprite GetVipPanelBackgroundSprite()
+    {
+        if (vipPanelBackgroundSprite == null)
+        {
+            vipPanelBackgroundSprite = LoadSpriteFromResources("Art/UI/vip_panel_background_passive_icon");
+        }
+
+        return vipPanelBackgroundSprite;
+    }
+
     private Sprite GetVipLockIconSprite()
     {
         if (vipLockIconSprite == null)
@@ -3517,10 +3528,9 @@ public class GameManager : MonoBehaviour
         panelRect.sizeDelta = new Vector2(1320, 724);
 
         Image panelImage = vipPanel.GetComponent<Image>();
-        panelImage.color = new Color(1f, 1f, 1f, 0f);
-        panelImage.raycastTarget = false;
-
-        CreateVipPanelPieces(vipPanel.transform);
+        panelImage.sprite = GetVipPanelBackgroundSprite();
+        panelImage.color = Color.white;
+        panelImage.preserveAspect = true;
 
         TMP_Text title = CreateText(vipPanel.transform, "VipPanelTitle", "", new Vector2(-415, 166), new Vector2(320, 44), 32);
         ApplyVipFont(title);
@@ -3581,46 +3591,6 @@ public class GameManager : MonoBehaviour
 
         vipPanel.transform.SetAsLastSibling();
         vipPanel.SetActive(false);
-    }
-
-    private void CreateVipPanelPieces(Transform parent)
-    {
-        const float sourceWidth = 1646f;
-        const float sourceHeight = 916f;
-        const float displayHeight = 724f;
-        float scale = displayHeight / sourceHeight;
-
-        CreateVipPanelPiece(parent, "VipPanelPiece00", "vip_panel_piece_0_0", new Rect(0f, 0f, 610f, 190f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelPiece01", "vip_panel_piece_0_1", new Rect(610f, 0f, 470f, 190f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelPiece02", "vip_panel_piece_0_2", new Rect(1080f, 0f, 566f, 190f), sourceWidth, sourceHeight, scale);
-
-        CreateVipPanelPiece(parent, "VipPanelPiece10", "vip_panel_piece_1_0", new Rect(0f, 190f, 610f, 510f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelPiece11", "vip_panel_piece_1_1", new Rect(610f, 190f, 470f, 510f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelPiece12", "vip_panel_piece_1_2", new Rect(1080f, 190f, 566f, 510f), sourceWidth, sourceHeight, scale);
-
-        CreateVipPanelPiece(parent, "VipPanelPiece20", "vip_panel_piece_2_0", new Rect(0f, 700f, 610f, 216f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelPiece21", "vip_panel_piece_2_1", new Rect(610f, 700f, 470f, 216f), sourceWidth, sourceHeight, scale);
-        CreateVipPanelPiece(parent, "VipPanelPiece22", "vip_panel_piece_2_2", new Rect(1080f, 700f, 566f, 216f), sourceWidth, sourceHeight, scale);
-    }
-
-    private void CreateVipPanelPiece(Transform parent, string objectName, string spriteName, Rect sourceRect, float sourceWidth, float sourceHeight, float scale)
-    {
-        GameObject pieceObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        pieceObject.transform.SetParent(parent, false);
-
-        RectTransform rect = pieceObject.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(sourceRect.width * scale, sourceRect.height * scale);
-        rect.anchoredPosition = new Vector2(
-            ((sourceRect.x + (sourceRect.width * 0.5f)) - (sourceWidth * 0.5f)) * scale,
-            -((sourceRect.y + (sourceRect.height * 0.5f)) - (sourceHeight * 0.5f)) * scale);
-
-        Image image = pieceObject.GetComponent<Image>();
-        image.sprite = LoadSpriteFromResources("Art/UI/VipPanelPieces/" + spriteName);
-        image.color = Color.white;
-        image.preserveAspect = false;
-        image.raycastTarget = false;
     }
 
     private void CreateVipInfoPanel(Transform parent)
