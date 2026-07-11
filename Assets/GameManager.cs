@@ -252,6 +252,7 @@ public class GameManager : MonoBehaviour
     private TMP_Text vipDecorBonusText;
     private TMP_Text vipInfoPanelText;
     private Image vipUpgradeGemIconImage;
+    private TMP_FontAsset vipPaytoneFontAsset;
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
     private readonly List<Image> vipLevelCardImages = new List<Image>();
     private readonly List<Image> vipLevelLockImages = new List<Image>();
@@ -2719,6 +2720,39 @@ public class GameManager : MonoBehaviour
         return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
     }
 
+    private TMP_FontAsset GetVipPaytoneFontAsset()
+    {
+        if (vipPaytoneFontAsset != null)
+        {
+            return vipPaytoneFontAsset;
+        }
+
+        Font font = Resources.Load<Font>("Fonts/PaytoneOne-Regular");
+        if (font == null)
+        {
+            return null;
+        }
+
+        vipPaytoneFontAsset = TMP_FontAsset.CreateFontAsset(font);
+        if (vipPaytoneFontAsset != null)
+        {
+            vipPaytoneFontAsset.atlasPopulationMode = AtlasPopulationMode.Dynamic;
+        }
+
+        return vipPaytoneFontAsset;
+    }
+
+    private void ApplyVipFont(TMP_Text text)
+    {
+        TMP_FontAsset fontAsset = GetVipPaytoneFontAsset();
+        if (text == null || fontAsset == null)
+        {
+            return;
+        }
+
+        text.font = fontAsset;
+    }
+
     private void ApplyButtonSprite(TMP_Text buttonText, Sprite sprite)
     {
         if (buttonText == null || sprite == null)
@@ -3493,16 +3527,19 @@ public class GameManager : MonoBehaviour
         panelImage.preserveAspect = true;
 
         TMP_Text title = CreateText(vipPanel.transform, "VipPanelTitle", "", new Vector2(-415, 166), new Vector2(320, 44), 32);
+        ApplyVipFont(title);
         title.color = new Color(0.40f, 0.20f, 0.05f, 1f);
         title.fontStyle = FontStyles.Bold;
         title.alignment = TextAlignmentOptions.Left;
 
         vipLevelSummaryText = CreateText(vipPanel.transform, "VipLevelSummary", "", new Vector2(392, 214), new Vector2(190, 32), 18);
+        ApplyVipFont(vipLevelSummaryText);
         vipLevelSummaryText.color = new Color(1f, 0.88f, 0.47f, 1f);
         vipLevelSummaryText.fontStyle = FontStyles.Bold;
         vipLevelSummaryText.alignment = TextAlignmentOptions.Right;
         vipLevelSummaryText.gameObject.SetActive(false);
         vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-405, 72), new Vector2(310, 140), 18);
+        ApplyVipFont(vipPanelText);
         vipPanelText.color = new Color(0.32f, 0.17f, 0.06f, 1f);
         vipPanelText.alignment = TextAlignmentOptions.TopLeft;
         vipPanelText.enableWordWrapping = true;
@@ -3534,6 +3571,7 @@ public class GameManager : MonoBehaviour
         vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "İndirim", "Lv.3", VipDiscountBonusLayout);
 
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", VipUpgradeButtonPosition, VipUpgradeButtonSize, UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
+        ApplyVipFont(vipUpgradeButtonText);
         vipUpgradeButtonText.rectTransform.anchoredPosition = VipUpgradeButtonTextPosition;
         vipUpgradeButtonText.rectTransform.sizeDelta = VipUpgradeButtonTextSize;
         vipUpgradeGemIconImage = CreateVipUpgradeGemIcon(vipUpgradeButtonText.transform.parent);
@@ -3562,9 +3600,11 @@ public class GameManager : MonoBehaviour
         StylePopupPanel(vipInfoPanel, panelRect.sizeDelta, new Color(1f, 0.91f, 0.76f, 0.98f), new Color(0.40f, 0.20f, 0.54f, 1f));
 
         TMP_Text title = CreateText(vipInfoPanel.transform, "VipInfoTitle", "VIP Bonuslari", new Vector2(0, 190), new Vector2(720, 60), 36);
+        ApplyVipFont(title);
         StylePopupTitle(title, 32);
 
         vipInfoPanelText = CreateText(vipInfoPanel.transform, "VipInfoText", "", new Vector2(0, 30), new Vector2(710, 250), 24);
+        ApplyVipFont(vipInfoPanelText);
         vipInfoPanelText.text = "Vip paketleri kalıcı bonuslar verir."
             + "\nCoin, XP, Müşterilerin sabrı ve pasif gelir artar."
             + "\nGold Vip ile birlikte kalıcı yüzdelik indirimler kazanırsınız"
@@ -3810,6 +3850,7 @@ public class GameManager : MonoBehaviour
         }
 
         TMP_Text text = CreateText(cardObject.transform, "Text", "", textOnly ? new Vector2(0, -8) : new Vector2(0, -8), textOnly ? new Vector2(106, 210) : new Vector2(148, 286), textOnly ? 15 : 17);
+        ApplyVipFont(text);
         text.color = textOnly ? Color.white : GetVipTierTextColor(level);
         text.alignment = TextAlignmentOptions.Center;
         text.enableWordWrapping = true;
@@ -3854,6 +3895,7 @@ public class GameManager : MonoBehaviour
         dot.raycastTarget = false;
 
         TMP_Text text = CreateText(pill.transform, "Text", title + "\n" + value, layout.TextPosition, layout.TextSize, 16);
+        ApplyVipFont(text);
         text.color = new Color(0.42f, 0.22f, 0.08f, 1f);
         text.alignment = TextAlignmentOptions.Left;
         text.fontStyle = FontStyles.Bold;
