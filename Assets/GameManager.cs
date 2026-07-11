@@ -166,6 +166,11 @@ public class GameManager : MonoBehaviour
         new Vector2(168f, 72f),
         new Color(0.86f, 0.36f, 0.18f, 1f));
 
+    private static readonly Vector2 VipUpgradeButtonTextPosition = new Vector2(-18f, -9f);
+    private static readonly Vector2 VipUpgradeButtonTextSize = new Vector2(260f, 62f);
+    private static readonly Vector2 VipUpgradeGemIconPosition = new Vector2(64f, -9f);
+    private static readonly Vector2 VipUpgradeGemIconSize = new Vector2(42f, 42f);
+
     private TMP_Text coinText;
     private TMP_Text coinInfoPopupText;
     private TMP_Text activeBoostText;
@@ -3527,8 +3532,8 @@ public class GameManager : MonoBehaviour
         vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "İndirim", "Lv.3", VipDiscountBonusLayout);
 
         vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", new Vector2(0, -296), new Vector2(340, 62), UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
-        vipUpgradeButtonText.rectTransform.anchoredPosition = new Vector2(-18f, 0f);
-        vipUpgradeButtonText.rectTransform.sizeDelta = new Vector2(260f, 62f);
+        vipUpgradeButtonText.rectTransform.anchoredPosition = VipUpgradeButtonTextPosition;
+        vipUpgradeButtonText.rectTransform.sizeDelta = VipUpgradeButtonTextSize;
         AttachPressAnimator(vipUpgradeButtonText.transform.parent as RectTransform, new Vector2(0f, -6f), 0.96f);
         vipUpgradeGemIconImage = CreateVipUpgradeGemIcon(vipUpgradeButtonText.transform.parent);
         CreateInvisibleButton(vipPanel.transform, "VipCloseButton", new Vector2(592, 309), new Vector2(92, 92), CloseVipPanel);
@@ -3594,8 +3599,8 @@ public class GameManager : MonoBehaviour
         RectTransform rect = iconObject.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = new Vector2(64f, 0f);
-        rect.sizeDelta = new Vector2(42f, 42f);
+        rect.anchoredPosition = VipUpgradeGemIconPosition;
+        rect.sizeDelta = VipUpgradeGemIconSize;
 
         Image image = iconObject.GetComponent<Image>();
         image.sprite = GetGemIconSprite();
