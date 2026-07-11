@@ -1470,15 +1470,13 @@ public class GameManager : MonoBehaviour
 
         if (vipLevel >= MaxVipLevel)
         {
-            return "Aktif Paket\n"
-                + GetVipKitName(vipLevel)
+            return GetVipKitName(vipLevel)
                 + "\nCoin +" + GetVipCoinBonusPercent(vipLevel) + "%  XP +" + GetVipXpBonusPercent(vipLevel) + "%"
                 + "\nIndirim " + GetVipDiscountBonusText(vipLevel)
                 + "\nVIP MAX";
         }
 
-        return "Aktif Paket\n"
-            + GetVipKitName(vipLevel)
+        return GetVipKitName(vipLevel)
             + "\nCoin +" + GetVipCoinBonusPercent(vipLevel) + "%  XP +" + GetVipXpBonusPercent(vipLevel) + "%"
             + "\nIndirim " + GetVipDiscountBonusText(vipLevel)
             + "\nSonraki: " + GetVipKitName(vipLevel + 1) + " / " + GetVipUpgradeCost() + " Elmas";
@@ -3546,12 +3544,15 @@ public class GameManager : MonoBehaviour
         vipLevelSummaryText.fontStyle = FontStyles.Bold;
         vipLevelSummaryText.alignment = TextAlignmentOptions.Right;
         vipLevelSummaryText.gameObject.SetActive(false);
-        vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-405, 72), new Vector2(310, 140), 18);
+        vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-352, 76), new Vector2(365, 116), 15);
         ApplyVipFont(vipPanelText);
         vipPanelText.color = new Color(0.32f, 0.17f, 0.06f, 1f);
         vipPanelText.alignment = TextAlignmentOptions.TopLeft;
         vipPanelText.enableWordWrapping = true;
         vipPanelText.fontStyle = FontStyles.Bold;
+        vipPanelText.enableAutoSizing = true;
+        vipPanelText.fontSizeMin = 10f;
+        vipPanelText.fontSizeMax = 15f;
 
         CreateVipPanelClearSelectionArea(vipPanel.transform);
 
