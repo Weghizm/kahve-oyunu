@@ -3011,7 +3011,7 @@ public class GameManager : MonoBehaviour
     {
         if (foodPanelBackgroundSprite == null)
         {
-            foodPanelBackgroundSprite = LoadSpriteFromResources("Art/UI/Food/food_upgrade_panel_background");
+            foodPanelBackgroundSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_upgrade_panel_background");
         }
 
         return foodPanelBackgroundSprite;
@@ -3026,7 +3026,7 @@ public class GameManager : MonoBehaviour
 
         if (!foodIconSprites.ContainsKey(data.IconResourceName))
         {
-            foodIconSprites[data.IconResourceName] = LoadSpriteFromResources("Art/UI/Food/" + data.IconResourceName);
+            foodIconSprites[data.IconResourceName] = LoadImportedSpriteFromResources("Art/UI/Food/" + data.IconResourceName);
         }
 
         return foodIconSprites[data.IconResourceName];
@@ -3035,70 +3035,70 @@ public class GameManager : MonoBehaviour
     private Sprite GetFoodCardFrameSprite()
     {
         if (foodCardFrameSprite == null)
-            foodCardFrameSprite = LoadSpriteFromResources("Art/UI/Food/food_card_frame");
+            foodCardFrameSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_card_frame");
         return foodCardFrameSprite;
     }
 
     private Sprite GetFoodCardLockedFrameSprite()
     {
         if (foodCardLockedFrameSprite == null)
-            foodCardLockedFrameSprite = LoadSpriteFromResources("Art/UI/Food/food_card_locked_frame");
+            foodCardLockedFrameSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_card_locked_frame");
         return foodCardLockedFrameSprite;
     }
 
     private Sprite GetFoodUpgradeButtonSprite()
     {
         if (foodUpgradeButtonSprite == null)
-            foodUpgradeButtonSprite = LoadSpriteFromResources("Art/UI/Food/food_upgrade_button");
+            foodUpgradeButtonSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_upgrade_button");
         return foodUpgradeButtonSprite;
     }
 
     private Sprite GetFoodLockedButtonSprite()
     {
         if (foodLockedButtonSprite == null)
-            foodLockedButtonSprite = LoadSpriteFromResources("Art/UI/Food/food_locked_button");
+            foodLockedButtonSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_locked_button");
         return foodLockedButtonSprite;
     }
 
     private Sprite GetFoodCategoryTabSelectedSprite()
     {
         if (foodCategoryTabSelectedSprite == null)
-            foodCategoryTabSelectedSprite = LoadSpriteFromResources("Art/UI/Food/food_category_tab_selected");
+            foodCategoryTabSelectedSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_category_tab_selected");
         return foodCategoryTabSelectedSprite;
     }
 
     private Sprite GetFoodCategoryTabNormalSprite()
     {
         if (foodCategoryTabNormalSprite == null)
-            foodCategoryTabNormalSprite = LoadSpriteFromResources("Art/UI/Food/food_category_tab_normal");
+            foodCategoryTabNormalSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_category_tab_normal");
         return foodCategoryTabNormalSprite;
     }
 
     private Sprite GetFoodLevelBadgeSprite()
     {
         if (foodLevelBadgeSprite == null)
-            foodLevelBadgeSprite = LoadSpriteFromResources("Art/UI/Food/food_level_badge");
+            foodLevelBadgeSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_level_badge");
         return foodLevelBadgeSprite;
     }
 
     private Sprite GetFoodCoinChipSprite()
     {
         if (foodCoinChipSprite == null)
-            foodCoinChipSprite = LoadSpriteFromResources("Art/UI/Food/food_coin_chip");
+            foodCoinChipSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_coin_chip");
         return foodCoinChipSprite;
     }
 
     private Sprite GetFoodPassiveChipSprite()
     {
         if (foodPassiveChipSprite == null)
-            foodPassiveChipSprite = LoadSpriteFromResources("Art/UI/Food/food_passive_chip");
+            foodPassiveChipSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_passive_chip");
         return foodPassiveChipSprite;
     }
 
     private Sprite GetFoodCloseButtonSprite()
     {
         if (foodCloseButtonSprite == null)
-            foodCloseButtonSprite = LoadSpriteFromResources("Art/UI/Food/food_close_button");
+            foodCloseButtonSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_close_button");
         return foodCloseButtonSprite;
     }
 
@@ -3203,6 +3203,23 @@ public class GameManager : MonoBehaviour
         }
 
         return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
+    }
+
+    private Sprite LoadImportedSpriteFromResources(string path)
+    {
+        Sprite sprite = Resources.Load<Sprite>(path);
+        if (sprite != null)
+        {
+            return sprite;
+        }
+
+        Sprite[] sprites = Resources.LoadAll<Sprite>(path);
+        if (sprites != null && sprites.Length > 0)
+        {
+            return sprites[0];
+        }
+
+        return LoadSpriteFromResources(path);
     }
 
     private TMP_FontAsset GetVipPaytoneFontAsset()
@@ -4264,6 +4281,7 @@ public class GameManager : MonoBehaviour
             upgradeImage.sprite = GetFoodUpgradeButtonSprite();
             upgradeImage.color = Color.white;
             upgradeImage.preserveAspect = false;
+            upgradeImage.type = Image.Type.Sliced;
         }
         ui.PriceText.transform.SetAsLastSibling();
         priceCoin.transform.SetAsLastSibling();
@@ -6834,6 +6852,7 @@ public class GameManager : MonoBehaviour
                 {
                     buttonImage.sprite = GetFoodUpgradeButtonSprite();
                     buttonImage.color = unlocked && !maxed ? Color.white : new Color(0.62f, 0.52f, 0.40f, 1f);
+                    buttonImage.type = Image.Type.Sliced;
                 }
             }
         }
