@@ -121,6 +121,7 @@ public sealed class FoodUISetupTool : EditorWindow
     {
         List<string> issues = new List<string>();
         if (importer.textureType != TextureImporterType.Sprite) issues.Add("TextureType");
+        if (importer.spriteImportMode != SpriteImportMode.Single) issues.Add("SpriteMode");
         if (importer.mipmapEnabled) issues.Add("MipMap");
         TextureImporterSettings textureSettings = new TextureImporterSettings();
         importer.ReadTextureSettings(textureSettings);
@@ -131,7 +132,6 @@ public sealed class FoodUISetupTool : EditorWindow
         string fileName = Path.GetFileName(assetPath);
         if (SliceBorders.TryGetValue(fileName, out Vector4 expectedBorder))
         {
-            if (importer.spriteImportMode != SpriteImportMode.Single) issues.Add("SpriteModeFor9Slice");
             if (importer.spriteBorder != expectedBorder) issues.Add("9SliceBorder");
         }
 
@@ -151,6 +151,7 @@ public sealed class FoodUISetupTool : EditorWindow
     {
         string fileName = Path.GetFileName(assetPath);
         importer.textureType = TextureImporterType.Sprite;
+        importer.spriteImportMode = SpriteImportMode.Single;
         importer.mipmapEnabled = false;
         importer.alphaIsTransparency = true;
         importer.wrapMode = TextureWrapMode.Clamp;
@@ -162,8 +163,11 @@ public sealed class FoodUISetupTool : EditorWindow
         importer.SetTextureSettings(textureSettings);
         if (SliceBorders.TryGetValue(fileName, out Vector4 border))
         {
-            importer.spriteImportMode = SpriteImportMode.Single;
             importer.spriteBorder = border;
+        }
+        else
+        {
+            importer.spriteBorder = Vector4.zero;
         }
 
         TextureImporterPlatformSettings android = importer.GetPlatformTextureSettings("Android");
