@@ -114,6 +114,7 @@ public class GameManager : MonoBehaviour
     private class FoodUpgradeCardUi
     {
         public FoodUpgradeData Data;
+        public GameObject RootObject;
         public Image CardImage;
         public Image IconImage;
         public Image LevelBadgeImage;
@@ -385,6 +386,8 @@ public class GameManager : MonoBehaviour
     private GameObject vipPanel;
     private GameObject vipInfoPanel;
     private GameObject foodPanel;
+    private RectTransform foodCardsContent;
+    private ScrollRect foodCardsScrollRect;
     private TMP_Text coffeeUpgradeButtonText;
     private TMP_Text machineUpgradeButtonText;
     private TMP_Text baristaUpgradeButtonText;
@@ -4033,22 +4036,40 @@ public class GameManager : MonoBehaviour
         CreateFoodCategoryTab("FoodTabSnack", "Atıştırmalık", FoodUpgradeCategory.Snack, new Vector2(-686, -70), false);
         CreateFoodCategoryTab("FoodTabCold", "Soğuk", FoodUpgradeCategory.Cold, new Vector2(-686, -247), false);
 
-        Vector2[] cardPositions =
-        {
-            new Vector2(-436, 145),
-            new Vector2(-221, 145),
-            new Vector2(-7, 145),
-            new Vector2(207, 145),
-            new Vector2(421, 145),
-            new Vector2(637, 145),
-            new Vector2(-436, -190),
-            new Vector2(-221, -190),
-            new Vector2(-7, -190)
-        };
+        GameObject viewportObject = new GameObject("FoodCardsViewport", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(RectMask2D));
+        viewportObject.transform.SetParent(foodPanel.transform, false);
+        RectTransform viewportRect = viewportObject.GetComponent<RectTransform>();
+        viewportRect.anchorMin = new Vector2(0.5f, 0.5f);
+        viewportRect.anchorMax = new Vector2(0.5f, 0.5f);
+        viewportRect.anchoredPosition = new Vector2(90f, 5f);
+        viewportRect.sizeDelta = new Vector2(1320f, 650f);
+        viewportObject.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.001f);
 
-        for (int i = 0; i < foodUpgradeDatabase.Count && i < cardPositions.Length; i++)
+        GameObject contentObject = new GameObject("FoodCardsContent", typeof(RectTransform));
+        contentObject.transform.SetParent(viewportObject.transform, false);
+        foodCardsContent = contentObject.GetComponent<RectTransform>();
+        foodCardsContent.anchorMin = new Vector2(0.5f, 1f);
+        foodCardsContent.anchorMax = new Vector2(0.5f, 1f);
+        foodCardsContent.pivot = new Vector2(0.5f, 1f);
+        foodCardsContent.anchoredPosition = Vector2.zero;
+        foodCardsContent.sizeDelta = new Vector2(1280f, 1435f);
+
+        foodCardsScrollRect = viewportObject.AddComponent<ScrollRect>();
+        foodCardsScrollRect.viewport = viewportRect;
+        foodCardsScrollRect.content = foodCardsContent;
+        foodCardsScrollRect.horizontal = false;
+        foodCardsScrollRect.vertical = true;
+        foodCardsScrollRect.movementType = ScrollRect.MovementType.Clamped;
+        foodCardsScrollRect.inertia = true;
+        foodCardsScrollRect.decelerationRate = 0.12f;
+        foodCardsScrollRect.scrollSensitivity = 38f;
+
+        for (int i = 0; i < foodUpgradeDatabase.Count; i++)
         {
-            CreateFoodUpgradeCard(foodPanel.transform, foodUpgradeDatabase[i], i, cardPositions[i]);
+            int column = i % 3;
+            int row = i / 3;
+            Vector2 position = new Vector2(-390f + (column * 390f), -225f - (row * 465f));
+            CreateFoodUpgradeCard(foodCardsContent, foodUpgradeDatabase[i], i, position);
         }
 
         CreateFoodSummaryBox("FoodTotalPassiveBox", "Toplam Pasif", new Vector2(-264, -402), true);
@@ -4088,10 +4109,11 @@ public class GameManager : MonoBehaviour
         cardObject.transform.SetParent(parent, false);
 
         RectTransform cardRect = cardObject.GetComponent<RectTransform>();
-        cardRect.anchorMin = new Vector2(0.5f, 0.5f);
-        cardRect.anchorMax = new Vector2(0.5f, 0.5f);
+        cardRect.anchorMin = new Vector2(0.5f, 1f);
+        cardRect.anchorMax = new Vector2(0.5f, 1f);
         cardRect.anchoredPosition = position;
         cardRect.sizeDelta = new Vector2(205, 330);
+        cardRect.localScale = Vector3.one * 1.35f;
 
         Image cardImage = cardObject.GetComponent<Image>();
         cardImage.sprite = GetFoodCardFrameSprite();
@@ -4103,6 +4125,7 @@ public class GameManager : MonoBehaviour
 
         FoodUpgradeCardUi ui = new FoodUpgradeCardUi();
         ui.Data = data;
+        ui.RootObject = cardObject;
         ui.CardImage = cardImage;
 
         ui.NameText = CreateText(cardObject.transform, "NameText", data.DisplayName, new Vector2(0.59998f, 136.4f), new Vector2(172, 32), 20);
