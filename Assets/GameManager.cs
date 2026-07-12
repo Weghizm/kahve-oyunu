@@ -484,6 +484,8 @@ public class GameManager : MonoBehaviour
     private readonly List<FoodUpgradeData> foodUpgradeDatabase = new List<FoodUpgradeData>();
     private readonly List<FoodUpgradeCardUi> foodUpgradeCardUis = new List<FoodUpgradeCardUi>();
     private readonly Dictionary<string, Sprite> foodIconSprites = new Dictionary<string, Sprite>();
+    private readonly Dictionary<FoodUpgradeCategory, TMP_Text> foodCategoryTabTexts = new Dictionary<FoodUpgradeCategory, TMP_Text>();
+    private FoodUpgradeCategory selectedFoodCategory = FoodUpgradeCategory.Coffee;
 
     private float coins = 0;
     private int coinsPerClick = 1;
@@ -3997,6 +3999,7 @@ public class GameManager : MonoBehaviour
     private void CreateFoodUpgradePanel(Transform parent)
     {
         foodUpgradeCardUis.Clear();
+        foodCategoryTabTexts.Clear();
 
         foodPanel = new GameObject("FoodUpgradePanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         foodPanel.transform.SetParent(parent, false);
@@ -4075,13 +4078,16 @@ public class GameManager : MonoBehaviour
         CreateFoodSummaryBox("FoodTotalPassiveBox", "Toplam Pasif", new Vector2(-264, -402), true);
         CreateFoodSummaryBox("FoodTotalBonusBox", "Toplam Bonus", new Vector2(340, -402), false);
 
+        RefreshFoodCategoryLayout();
+
         foodPanel.transform.SetAsLastSibling();
         foodPanel.SetActive(false);
     }
 
     private void CreateFoodCategoryTab(string objectName, string label, FoodUpgradeCategory category, Vector2 position, bool selected)
     {
-        TMP_Text tabText = CreateButton(foodPanel.transform, objectName, label, position, new Vector2(180, 116), delegate { }, Color.clear, 26);
+        TMP_Text tabText = CreateButton(foodPanel.transform, objectName, label, position, new Vector2(180, 116), delegate { SelectFoodCategory(category); }, Color.clear, 26);
+        foodCategoryTabTexts[category] = tabText;
         Image tabImage = tabText.GetComponentInParent<Image>();
         RectTransform tabRect = tabText.GetComponentInParent<RectTransform>();
         if (tabImage != null && tabRect != null)
@@ -4101,6 +4107,49 @@ public class GameManager : MonoBehaviour
         tabText.fontSizeMax = 26;
         tabText.raycastTarget = false;
         ApplyVipFont(tabText);
+    }
+
+    private void SelectFoodCategory(FoodUpgradeCategory category)
+    {
+        selectedFoodCategory = category;
+        RefreshFoodCategoryLayout();
+    }
+
+    private void RefreshFoodCategoryLayout()
+    {
+        int visibleIndex = 0;
+        for (int i = 0; i < foodUpgradeCardUis.Count; i++)
+        {
+            FoodUpgradeCardUi ui = foodUpgradeCardUis[i];
+            bool visible = ui.Data.Category == selectedFoodCategory;
+            ui.RootObject.SetActive(visible);
+            if (!visible) continue;
+
+            int column = visibleIndex % 3;
+            int row = visibleIndex / 3;
+            RectTransform cardRect = ui.RootObject.GetComponent<RectTransform>();
+            cardRect.anchoredPosition = new Vector2(-390f + (column * 390f), -225f - (row * 465f));
+            visibleIndex++;
+        }
+
+        int rowCount = Mathf.Max(1, Mathf.CeilToInt(visibleIndex / 3f));
+        if (foodCardsContent != null)
+        {
+            foodCardsContent.sizeDelta = new Vector2(1280f, Mathf.Max(650f, 20f + (rowCount * 465f)));
+            foodCardsContent.anchoredPosition = Vector2.zero;
+        }
+        if (foodCardsScrollRect != null)
+        {
+            foodCardsScrollRect.verticalNormalizedPosition = 1f;
+            foodCardsScrollRect.velocity = Vector2.zero;
+        }
+
+        foreach (KeyValuePair<FoodUpgradeCategory, TMP_Text> pair in foodCategoryTabTexts)
+        {
+            bool selected = pair.Key == selectedFoodCategory;
+            pair.Value.color = selected ? new Color(0.20f, 0.10f, 0.03f) : new Color(1f, 0.88f, 0.62f);
+            pair.Value.fontSizeMax = selected ? 28f : 24f;
+        }
     }
 
     private void CreateFoodUpgradeCard(Transform parent, FoodUpgradeData data, int index, Vector2 position)
