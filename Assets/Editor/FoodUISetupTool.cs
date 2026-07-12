@@ -122,7 +122,9 @@ public sealed class FoodUISetupTool : EditorWindow
         List<string> issues = new List<string>();
         if (importer.textureType != TextureImporterType.Sprite) issues.Add("TextureType");
         if (importer.mipmapEnabled) issues.Add("MipMap");
-        if (importer.spriteMeshType != SpriteMeshType.FullRect) issues.Add("MeshType");
+        TextureImporterSettings textureSettings = new TextureImporterSettings();
+        importer.ReadTextureSettings(textureSettings);
+        if (textureSettings.spriteMeshType != SpriteMeshType.FullRect) issues.Add("MeshType");
         if (!importer.alphaIsTransparency) issues.Add("Alpha");
         if (importer.wrapMode != TextureWrapMode.Clamp) issues.Add("WrapMode");
 
@@ -150,11 +152,14 @@ public sealed class FoodUISetupTool : EditorWindow
         string fileName = Path.GetFileName(assetPath);
         importer.textureType = TextureImporterType.Sprite;
         importer.mipmapEnabled = false;
-        importer.spriteMeshType = SpriteMeshType.FullRect;
         importer.alphaIsTransparency = true;
         importer.wrapMode = TextureWrapMode.Clamp;
         importer.filterMode = FilterMode.Bilinear;
         importer.spritePixelsPerUnit = 100f;
+        TextureImporterSettings textureSettings = new TextureImporterSettings();
+        importer.ReadTextureSettings(textureSettings);
+        textureSettings.spriteMeshType = SpriteMeshType.FullRect;
+        importer.SetTextureSettings(textureSettings);
         if (SliceBorders.TryGetValue(fileName, out Vector4 border))
         {
             importer.spriteImportMode = SpriteImportMode.Single;
