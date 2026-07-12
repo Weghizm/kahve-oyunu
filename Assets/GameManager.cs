@@ -77,6 +77,69 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private enum FoodUpgradeCategory
+    {
+        Coffee,
+        Sweet,
+        Snack,
+        Cold
+    }
+
+    private class FoodUpgradeData
+    {
+        public string Id;
+        public string DisplayName;
+        public FoodUpgradeCategory Category;
+        public string IconResourceName;
+        public int BaseCost;
+        public int UnlockPlayerLevel;
+        public int Level;
+        public int OrderBonusPerLevel;
+        public float PassivePerLevel;
+
+        public FoodUpgradeData(string id, string displayName, FoodUpgradeCategory category, string iconResourceName, int baseCost, int unlockPlayerLevel, int orderBonusPerLevel, float passivePerLevel)
+        {
+            Id = id;
+            DisplayName = displayName;
+            Category = category;
+            IconResourceName = iconResourceName;
+            BaseCost = baseCost;
+            UnlockPlayerLevel = unlockPlayerLevel;
+            OrderBonusPerLevel = orderBonusPerLevel;
+            PassivePerLevel = passivePerLevel;
+            Level = 0;
+        }
+    }
+
+    private class FoodUpgradeCardUi
+    {
+        public FoodUpgradeData Data;
+        public Image CardImage;
+        public Image IconImage;
+        public Image LevelBadgeImage;
+        public Image LevelRowImage;
+        public Image OrderStripImage;
+        public Image PassiveStripImage;
+        public Image OrderIconImage;
+        public Image PassiveIconImage;
+        public Image PriceCoinImage;
+        public Image BeanLeftImage;
+        public Image BeanCenterImage;
+        public Image BeanRightImage;
+        public Image LockedBadgeImage;
+        public Image LockedIconImage;
+        public Image UnlockStripImage;
+        public TMP_Text NameText;
+        public TMP_Text LevelText;
+        public TMP_Text LevelLabelText;
+        public TMP_Text UnlockText;
+        public TMP_Text OrderText;
+        public TMP_Text PassiveText;
+        public TMP_Text PriceText;
+        public TMP_Text ButtonText;
+        public Button Button;
+    }
+
     private const float OfferCooldownSeconds = 600f;
     private const float OfferVisibleSeconds = 60f;
     private const float RewardBoostSeconds = 300f;
@@ -172,6 +235,33 @@ public class GameManager : MonoBehaviour
     private static readonly Vector2 VipUpgradeButtonTextSize = new Vector2(104f, 62f);
     private static readonly Vector2 VipUpgradeGemIconPosition = new Vector2(49f, -9f);
     private static readonly Vector2 VipUpgradeGemIconSize = new Vector2(42f, 42f);
+    private static readonly Vector2 VipLeftBadgePosition = new Vector2(-507.21f, 80.079f);
+    private static readonly Vector2 VipLeftBadgeSize = new Vector2(92f, 223.4507f);
+    private static readonly Vector2 VipLeftProgressBarPosition = new Vector2(-453.8874f, -113.0993f);
+    private static readonly Vector2 VipLeftProgressBarSize = new Vector2(322f, 44f);
+    private static readonly Vector2 VipLeftProgressCrownPosition = new Vector2(-436.8f, -111.6f);
+    private static readonly Vector2 VipLeftProgressCrownSize = new Vector2(322f, 44f);
+    private static readonly Vector2 VipLeftGiftPosition = new Vector2(-253.0928f, -54.2053f);
+    private static readonly Vector2 VipLeftGiftSize = new Vector2(61f, 65f);
+    private static readonly Vector2 VipLeftClaimButtonPosition = new Vector2(-253.5431f, -109.2119f);
+    private static readonly Vector2 VipLeftClaimButtonSize = new Vector2(124f, 44f);
+    private static readonly Vector2 VipLeftCoinPillPosition = new Vector2(-499.4f, -20f);
+    private static readonly Vector2 VipLeftXpPillPosition = new Vector2(-376.54f, -20f);
+    private static readonly Vector2 VipLeftCustomerPillPosition = new Vector2(-499.4f, -67f);
+    private static readonly Vector2 VipLeftPassivePillPosition = new Vector2(-377.4f, -67f);
+    private static readonly Vector2 VipLeftBonusPillSize = new Vector2(122f, 36f);
+    private static readonly Vector2 VipLeftDailyRewardLabelPosition = new Vector2(-441.4f, -122.5f);
+    private static readonly Vector2 VipLeftDailyRewardLabelSize = new Vector2(250f, 75f);
+    private static readonly Vector2 VipInfoActivePackageBadgePosition = new Vector2(-323f, 130f);
+    private static readonly Vector2 VipInfoActivePackageBadgeSize = new Vector2(132f, 28f);
+    private static readonly Vector2 VipInfoCurrentTitlePosition = new Vector2(-326f, 91f);
+    private static readonly Vector2 VipInfoCurrentTitleSize = new Vector2(182f, 33f);
+    private static readonly Vector2 VipInfoNextTitlePosition = new Vector2(-326f, 54f);
+    private static readonly Vector2 VipInfoNextTitleSize = new Vector2(170f, 18f);
+    private static readonly Vector2 VipInfoPriceLinePosition = new Vector2(-326f, 26f);
+    private static readonly Vector2 VipInfoPriceLineSize = new Vector2(160f, 22f);
+    private static readonly Vector2 VipLeftClaimButtonTextPosition = new Vector2(0f, 0f);
+    private static readonly Vector2 VipLeftClaimButtonTextSize = new Vector2(96f, 34f);
 
     private TMP_Text coinText;
     private TMP_Text coinInfoPopupText;
@@ -251,6 +341,14 @@ public class GameManager : MonoBehaviour
     private TMP_Text vipPassiveBonusText;
     private TMP_Text vipDecorBonusText;
     private TMP_Text vipInfoPanelText;
+    private TMP_Text vipLeftCoinPillText;
+    private TMP_Text vipLeftXpPillText;
+    private TMP_Text vipLeftCustomerPillText;
+    private TMP_Text vipLeftPassivePillText;
+    private TMP_Text vipLeftClaimButtonText;
+    private TMP_Text foodUpgradeButtonText;
+    private TMP_Text foodTotalPassiveText;
+    private TMP_Text foodTotalBonusText;
     private Image vipUpgradeGemIconImage;
     private TMP_FontAsset vipPaytoneFontAsset;
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
@@ -286,6 +384,7 @@ public class GameManager : MonoBehaviour
     private GameObject vipBadgeObject;
     private GameObject vipPanel;
     private GameObject vipInfoPanel;
+    private GameObject foodPanel;
     private TMP_Text coffeeUpgradeButtonText;
     private TMP_Text machineUpgradeButtonText;
     private TMP_Text baristaUpgradeButtonText;
@@ -293,6 +392,7 @@ public class GameManager : MonoBehaviour
     private Button coffeeUpgradeButton;
     private Button machineUpgradeButton;
     private Button baristaUpgradeButton;
+    private Button foodUpgradeButton;
     private Image cafeSceneImage;
     private Image backgroundTapImage;
     private Image leftWallImage;
@@ -345,7 +445,29 @@ public class GameManager : MonoBehaviour
     private Sprite adBoostIconSprite;
     private Sprite adBoostTimerBadgeSprite;
     private Sprite vipPanelBackgroundSprite;
+    private Sprite vipLeftBadgeSprite;
+    private Sprite vipLeftProgressBarSprite;
+    private Sprite vipLeftProgressCrownSprite;
+    private Sprite vipLeftGiftSprite;
+    private Sprite vipLeftClaimButtonSprite;
+    private Sprite vipLeftBonusPillSprite;
+    private Sprite vipLeftDailyRewardLabelSprite;
+    private Sprite vipInfoActivePackageBadgeSprite;
+    private Sprite vipInfoCurrentTitleSprite;
+    private Sprite vipInfoNextTitleSprite;
+    private Sprite vipInfoPriceLineSprite;
     private Sprite vipLockIconSprite;
+    private Sprite foodPanelBackgroundSprite;
+    private Sprite foodCardFrameSprite;
+    private Sprite foodCardLockedFrameSprite;
+    private Sprite foodUpgradeButtonSprite;
+    private Sprite foodLockedButtonSprite;
+    private Sprite foodCategoryTabSelectedSprite;
+    private Sprite foodCategoryTabNormalSprite;
+    private Sprite foodLevelBadgeSprite;
+    private Sprite foodCoinChipSprite;
+    private Sprite foodPassiveChipSprite;
+    private Sprite foodCloseButtonSprite;
     private Sprite warmWoodCafeSceneSprite;
     private Sprite warmWoodCafeSceneNoMachineSprite;
     private Sprite coffeeMachineSceneSprite;
@@ -356,6 +478,9 @@ public class GameManager : MonoBehaviour
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
     private readonly List<GameObject> cafeObjectHotspots = new List<GameObject>();
     private readonly List<GameObject> cafePrototypeVisuals = new List<GameObject>();
+    private readonly List<FoodUpgradeData> foodUpgradeDatabase = new List<FoodUpgradeData>();
+    private readonly List<FoodUpgradeCardUi> foodUpgradeCardUis = new List<FoodUpgradeCardUi>();
+    private readonly Dictionary<string, Sprite> foodIconSprites = new Dictionary<string, Sprite>();
 
     private float coins = 0;
     private int coinsPerClick = 1;
@@ -445,6 +570,7 @@ public class GameManager : MonoBehaviour
     {
         ForceLandscapeMode();
         InitializeItemDatabase();
+        InitializeFoodUpgradeDatabase();
         LoadGame();
         RefreshDailyTasksIfNeeded();
         ApplyOfflineEarnings();
@@ -785,6 +911,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ClickVipLeftClaimButton()
+    {
+        Debug.Log("VipLeftClaimButton clicked");
+    }
+
     public void UpgradeVipLevel()
     {
         if (vipLevel >= MaxVipLevel)
@@ -1069,6 +1200,51 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void OpenFoodUpgradePanel()
+    {
+        if (foodPanel == null)
+        {
+            return;
+        }
+
+        foodPanel.SetActive(true);
+        foodPanel.transform.SetAsLastSibling();
+        UpdateUI();
+    }
+
+    public void CloseFoodUpgradePanel()
+    {
+        if (foodPanel != null)
+        {
+            foodPanel.SetActive(false);
+        }
+    }
+
+    public void BuyFoodUpgradeByIndex(int index)
+    {
+        if (index < 0 || index >= foodUpgradeDatabase.Count)
+        {
+            return;
+        }
+
+        FoodUpgradeData data = foodUpgradeDatabase[index];
+        if (!IsFoodUpgradeUnlocked(data) || data.Level >= UpgradeMaxLevel)
+        {
+            return;
+        }
+
+        int cost = GetDiscountedUpgradeCost(GetFoodUpgradeCost(data));
+        if (coins < cost)
+        {
+            return;
+        }
+
+        coins -= cost;
+        data.Level++;
+        UpdateUI();
+        SaveGame();
+    }
+
     public void ToggleCoinInfoPopup()
     {
         if (coinInfoPopup == null)
@@ -1219,17 +1395,56 @@ public class GameManager : MonoBehaviour
 
     private int GetCurrentCustomerCoinReward()
     {
-        return Mathf.CeilToInt(coinsPerClick * incomeMultiplier * currentCustomerCoinMultiplier * GetVipCoinMultiplier());
+        return Mathf.CeilToInt((coinsPerClick + GetFoodOrderBonus()) * incomeMultiplier * currentCustomerCoinMultiplier * GetVipCoinMultiplier());
     }
 
     private int GetCurrentTapPower()
     {
-        return Mathf.CeilToInt(coinsPerClick * incomeMultiplier * GetVipCoinMultiplier());
+        return Mathf.CeilToInt((coinsPerClick + GetFoodOrderBonus()) * incomeMultiplier * GetVipCoinMultiplier());
     }
 
     private float GetCurrentPassiveIncome()
     {
-        return coinsPerSecond * incomeMultiplier * GetVipPassiveIncomeMultiplier();
+        return (coinsPerSecond + GetFoodPassiveIncome()) * incomeMultiplier * GetVipPassiveIncomeMultiplier();
+    }
+
+    private int GetFoodOrderBonus()
+    {
+        int total = 0;
+        for (int i = 0; i < foodUpgradeDatabase.Count; i++)
+        {
+            FoodUpgradeData data = foodUpgradeDatabase[i];
+            total += data.Level * data.OrderBonusPerLevel;
+        }
+
+        return total;
+    }
+
+    private float GetFoodPassiveIncome()
+    {
+        float total = 0f;
+        for (int i = 0; i < foodUpgradeDatabase.Count; i++)
+        {
+            FoodUpgradeData data = foodUpgradeDatabase[i];
+            total += data.Level * data.PassivePerLevel;
+        }
+
+        return total;
+    }
+
+    private int GetFoodUpgradeCost(FoodUpgradeData data)
+    {
+        if (data == null)
+        {
+            return 0;
+        }
+
+        return Mathf.CeilToInt(data.BaseCost * Mathf.Pow(1.28f, data.Level));
+    }
+
+    private bool IsFoodUpgradeUnlocked(FoodUpgradeData data)
+    {
+        return data != null && playerLevel >= data.UnlockPlayerLevel;
     }
 
     private int GetTotalMachineLevel()
@@ -1252,7 +1467,8 @@ public class GameManager : MonoBehaviour
         float masterBaristaIncome = masterBaristaLevel * MasterBaristaIncomeGain;
         float machineTotal = basicMachineIncome + espressoMachineIncome + premiumMachineIncome;
         float baristaTotal = juniorBaristaIncome + seniorBaristaIncome + masterBaristaIncome;
-        float baseTotal = machineTotal + baristaTotal;
+        float foodTotal = GetFoodPassiveIncome();
+        float baseTotal = machineTotal + baristaTotal + foodTotal;
         float boostedTotal = baseTotal * incomeMultiplier * GetVipPassiveIncomeMultiplier();
 
         string text = "Kahve Makineleri: " + machineTotal.ToString("0.#") + "/sn"
@@ -1263,6 +1479,7 @@ public class GameManager : MonoBehaviour
             + "\n- Barista: " + juniorBaristaIncome.ToString("0.#") + "/sn"
             + "\n- Usta Barista: " + seniorBaristaIncome.ToString("0.#") + "/sn"
             + "\n- Sef Barista: " + masterBaristaIncome.ToString("0.#") + "/sn"
+            + "\n\nGida Urunleri: " + foodTotal.ToString("0.#") + "/sn"
             + "\n\nToplam: " + baseTotal.ToString("0.#") + "/sn";
 
         if (vipLevel > 0)
@@ -1402,6 +1619,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private int GetVipPackageCost(int level)
+    {
+        switch (level)
+        {
+            case 1: return 50;
+            case 2: return 125;
+            case 3: return 300;
+            case 4: return 650;
+            case 5: return 1200;
+            default: return 0;
+        }
+    }
+
     private string GetVipKitName(int level)
     {
         switch (level)
@@ -1446,6 +1676,24 @@ public class GameManager : MonoBehaviour
         return level == 2 || level == 3 || level == 5 ? new Color(0.08f, 0.07f, 0.09f, 1f) : Color.white;
     }
 
+    private string GetVipTitleColorHex(int level)
+    {
+        switch (level)
+        {
+            case 1: return "#B87333";
+            case 2: return "#BFC7D2";
+            case 3: return "#F5B52E";
+            case 4: return "#D7E5F0";
+            case 5: return "#5EDAF2";
+            default: return "#3A1C07";
+        }
+    }
+
+    private string FormatVipPanelTitle(string title, int level)
+    {
+        return "<size=20><color=" + GetVipTitleColorHex(level) + ">" + title + "</color></size>";
+    }
+
     private string GetVipLevelBonusLine(int level)
     {
         if (level <= 0)
@@ -1461,25 +1709,29 @@ public class GameManager : MonoBehaviour
 
     private string GetVipPanelText()
     {
+        int previewLevel = selectedVipPreviewLevel > 0 ? Mathf.Clamp(selectedVipPreviewLevel, 1, MaxVipLevel) : 0;
+        if (previewLevel > 0)
+        {
+            return FormatVipPanelTitle(GetVipKitName(previewLevel), previewLevel)
+                + (previewLevel > vipLevel ? "\nÜcret: " + GetVipPackageCost(previewLevel) + " Elmas" : "\nAktif Paket");
+        }
+
         if (vipLevel <= 0)
         {
-            return "VIP yok"
-                + "\nSonraki: " + GetVipKitName(1)
+            return FormatVipPanelTitle("VIP YOK", 0)
+                + "\nSonraki: " + FormatVipPanelTitle(GetVipKitName(1), 1)
                 + "\nÜcret: " + GetVipUpgradeCost() + " Elmas";
         }
 
         if (vipLevel >= MaxVipLevel)
         {
-            return GetVipKitName(vipLevel)
-                + "\nCoin +" + GetVipCoinBonusPercent(vipLevel) + "%  XP +" + GetVipXpBonusPercent(vipLevel) + "%"
-                + "\nIndirim " + GetVipDiscountBonusText(vipLevel)
+            return FormatVipPanelTitle(GetVipKitName(vipLevel), vipLevel)
                 + "\nVIP MAX";
         }
 
-        return GetVipKitName(vipLevel)
-            + "\nCoin +" + GetVipCoinBonusPercent(vipLevel) + "%  XP +" + GetVipXpBonusPercent(vipLevel) + "%"
-            + "\nIndirim " + GetVipDiscountBonusText(vipLevel)
-            + "\nSonraki: " + GetVipKitName(vipLevel + 1) + " / " + GetVipUpgradeCost() + " Elmas";
+        return FormatVipPanelTitle(GetVipKitName(vipLevel), vipLevel)
+            + "\nSonraki: " + FormatVipPanelTitle(GetVipKitName(vipLevel + 1), vipLevel + 1)
+            + "\nÜcret: " + GetVipUpgradeCost() + " Elmas";
     }
 
     private string GetVipCardText(int level)
@@ -1671,6 +1923,7 @@ public class GameManager : MonoBehaviour
         CreateMachinePanel(canvas.transform);
         CreateBaristaPanel(canvas.transform);
         CreatePassiveIncomePanel(canvas.transform);
+        CreateFoodUpgradePanel(canvas.transform);
         CreateVipPanel(canvas.transform);
         CreateVipInfoPanel(canvas.transform);
         CreateTimedOfferButton(gameFrame);
@@ -1706,6 +1959,9 @@ public class GameManager : MonoBehaviour
         baristaUpgradeButtonText = CreateButton(gameFrame, "BaristaUpgradeButton", "Bar", new Vector2(165, -475), new Vector2(126, 68), OpenBaristaPanel, new Color(0.54f, 0.32f, 0.72f), 23);
         baristaUpgradeButton = baristaUpgradeButtonText.GetComponentInParent<Button>();
         HideLegacyUpgradeButton(baristaUpgradeButtonText);
+
+        foodUpgradeButtonText = CreateButton(gameFrame, "FoodUpgradeButton", "Gıda", new Vector2(315, -475), new Vector2(126, 68), OpenFoodUpgradePanel, new Color(0.55f, 0.32f, 0.13f), 23);
+        foodUpgradeButton = foodUpgradeButtonText.GetComponentInParent<Button>();
     }
 
     private RectTransform CreateSafeGameFrame(Transform canvasTransform)
@@ -1956,6 +2212,20 @@ public class GameManager : MonoBehaviour
         AddDecorItemData(2, "wall_mint_soft_001", "Mint Duvar", DecorSlot.Wall, 2, "paint", DecorUnlockCost);
         AddDecorItemData(3, "floor_cream_tile_001", "Krem Zemin", DecorSlot.Floor, 1, "paint", 2);
         AddDecorItemData(4, "table_rose_round_001", "Rose Masa", DecorSlot.Table, 1, "wood", 5);
+    }
+
+    private void InitializeFoodUpgradeDatabase()
+    {
+        foodUpgradeDatabase.Clear();
+        foodUpgradeDatabase.Add(new FoodUpgradeData("coffee", "Kahve", FoodUpgradeCategory.Coffee, "food_icon_coffee", 180, 1, 2, 0.35f));
+        foodUpgradeDatabase.Add(new FoodUpgradeData("cookie", "Kurabiye", FoodUpgradeCategory.Sweet, "food_icon_cookie", 260, 2, 3, 0.55f));
+        foodUpgradeDatabase.Add(new FoodUpgradeData("donut", "Donut", FoodUpgradeCategory.Sweet, "food_icon_donut", 420, 3, 4, 0.80f));
+        foodUpgradeDatabase.Add(new FoodUpgradeData("cake", "Kek", FoodUpgradeCategory.Sweet, "food_icon_cake", 650, 5, 5, 1.15f));
+        foodUpgradeDatabase.Add(new FoodUpgradeData("croissant", "Kruvasan", FoodUpgradeCategory.Snack, "food_icon_croissant", 900, 7, 6, 1.45f));
+        foodUpgradeDatabase.Add(new FoodUpgradeData("cupcake", "Cupcake", FoodUpgradeCategory.Sweet, "food_icon_cupcake", 1250, 9, 7, 1.85f));
+        foodUpgradeDatabase.Add(new FoodUpgradeData("cheesecake", "Cheesecake", FoodUpgradeCategory.Sweet, "food_icon_cheesecake", 1750, 12, 9, 2.35f));
+        foodUpgradeDatabase.Add(new FoodUpgradeData("sandwich", "Sandviç", FoodUpgradeCategory.Snack, "food_icon_sandwich", 2400, 15, 11, 2.90f));
+        foodUpgradeDatabase.Add(new FoodUpgradeData("cold_coffee", "Soğuk Kahve", FoodUpgradeCategory.Cold, "food_icon_cold_coffee", 3200, 18, 13, 3.60f));
     }
 
     private void AddItemData(string id, string displayName, ItemCategory category, ItemRarity rarity, Color paintColor)
@@ -2606,10 +2876,120 @@ public class GameManager : MonoBehaviour
     {
         if (vipPanelBackgroundSprite == null)
         {
-            vipPanelBackgroundSprite = LoadSpriteFromResources("Art/UI/vip_panel_background_passive_icon");
+            vipPanelBackgroundSprite = LoadSpriteFromResources("Art/UI/vip_panel_background_modular_blank");
         }
 
         return vipPanelBackgroundSprite;
+    }
+
+    private Sprite GetVipLeftBadgeSprite()
+    {
+        if (vipLeftBadgeSprite == null)
+        {
+            vipLeftBadgeSprite = LoadSpriteFromResources("Art/UI/vip_left_badge");
+        }
+
+        return vipLeftBadgeSprite;
+    }
+
+    private Sprite GetVipLeftProgressBarSprite()
+    {
+        if (vipLeftProgressBarSprite == null)
+        {
+            vipLeftProgressBarSprite = LoadSpriteFromResources("Art/UI/vip_left_progress_bar");
+        }
+
+        return vipLeftProgressBarSprite;
+    }
+
+    private Sprite GetVipLeftProgressCrownSprite()
+    {
+        if (vipLeftProgressCrownSprite == null)
+        {
+            vipLeftProgressCrownSprite = LoadSpriteFromResources("Art/UI/vip_left_progress_crown");
+        }
+
+        return vipLeftProgressCrownSprite;
+    }
+
+    private Sprite GetVipLeftGiftSprite()
+    {
+        if (vipLeftGiftSprite == null)
+        {
+            vipLeftGiftSprite = LoadSpriteFromResources("Art/UI/vip_left_gift");
+        }
+
+        return vipLeftGiftSprite;
+    }
+
+    private Sprite GetVipLeftClaimButtonSprite()
+    {
+        if (vipLeftClaimButtonSprite == null)
+        {
+            vipLeftClaimButtonSprite = LoadSpriteFromResources("Art/UI/vip_left_claim_button");
+        }
+
+        return vipLeftClaimButtonSprite;
+    }
+
+    private Sprite GetVipLeftBonusPillSprite()
+    {
+        if (vipLeftBonusPillSprite == null)
+        {
+            vipLeftBonusPillSprite = LoadSpriteFromResources("Art/UI/vip_left_bonus_pill");
+        }
+
+        return vipLeftBonusPillSprite;
+    }
+
+    private Sprite GetVipLeftDailyRewardLabelSprite()
+    {
+        if (vipLeftDailyRewardLabelSprite == null)
+        {
+            vipLeftDailyRewardLabelSprite = LoadSpriteFromResources("Art/UI/vip_left_daily_reward_label");
+        }
+
+        return vipLeftDailyRewardLabelSprite;
+    }
+
+    private Sprite GetVipInfoActivePackageBadgeSprite()
+    {
+        if (vipInfoActivePackageBadgeSprite == null)
+        {
+            vipInfoActivePackageBadgeSprite = LoadSpriteFromResources("Art/UI/vip_info_active_package_badge");
+        }
+
+        return vipInfoActivePackageBadgeSprite;
+    }
+
+    private Sprite GetVipInfoCurrentTitleSprite()
+    {
+        if (vipInfoCurrentTitleSprite == null)
+        {
+            vipInfoCurrentTitleSprite = LoadSpriteFromResources("Art/UI/vip_info_current_title");
+        }
+
+        return vipInfoCurrentTitleSprite;
+    }
+
+    private Sprite GetVipInfoNextTitleSprite()
+    {
+        if (vipInfoNextTitleSprite == null)
+        {
+            vipInfoNextTitleSprite = LoadSpriteFromResources("Art/UI/vip_info_next_title");
+        }
+
+        return vipInfoNextTitleSprite;
+    }
+
+    private Sprite GetVipInfoPriceLineSprite()
+    {
+        if (vipInfoPriceLineSprite == null)
+        {
+            vipInfoPriceLineSprite = LoadSpriteFromResources("Art/UI/vip_info_price_line");
+        }
+
+        return vipInfoPriceLineSprite;
     }
 
     private Sprite GetVipLockIconSprite()
@@ -2620,6 +3000,101 @@ public class GameManager : MonoBehaviour
         }
 
         return vipLockIconSprite;
+    }
+
+    private Sprite GetFoodPanelBackgroundSprite()
+    {
+        if (foodPanelBackgroundSprite == null)
+        {
+            foodPanelBackgroundSprite = LoadSpriteFromResources("Art/UI/Food/food_upgrade_panel_background");
+        }
+
+        return foodPanelBackgroundSprite;
+    }
+
+    private Sprite GetFoodIconSprite(FoodUpgradeData data)
+    {
+        if (data == null || string.IsNullOrEmpty(data.IconResourceName))
+        {
+            return null;
+        }
+
+        if (!foodIconSprites.ContainsKey(data.IconResourceName))
+        {
+            foodIconSprites[data.IconResourceName] = LoadSpriteFromResources("Art/UI/Food/" + data.IconResourceName);
+        }
+
+        return foodIconSprites[data.IconResourceName];
+    }
+
+    private Sprite GetFoodCardFrameSprite()
+    {
+        if (foodCardFrameSprite == null)
+            foodCardFrameSprite = LoadSpriteFromResources("Art/UI/Food/food_card_frame");
+        return foodCardFrameSprite;
+    }
+
+    private Sprite GetFoodCardLockedFrameSprite()
+    {
+        if (foodCardLockedFrameSprite == null)
+            foodCardLockedFrameSprite = LoadSpriteFromResources("Art/UI/Food/food_card_locked_frame");
+        return foodCardLockedFrameSprite;
+    }
+
+    private Sprite GetFoodUpgradeButtonSprite()
+    {
+        if (foodUpgradeButtonSprite == null)
+            foodUpgradeButtonSprite = LoadSpriteFromResources("Art/UI/Food/food_upgrade_button");
+        return foodUpgradeButtonSprite;
+    }
+
+    private Sprite GetFoodLockedButtonSprite()
+    {
+        if (foodLockedButtonSprite == null)
+            foodLockedButtonSprite = LoadSpriteFromResources("Art/UI/Food/food_locked_button");
+        return foodLockedButtonSprite;
+    }
+
+    private Sprite GetFoodCategoryTabSelectedSprite()
+    {
+        if (foodCategoryTabSelectedSprite == null)
+            foodCategoryTabSelectedSprite = LoadSpriteFromResources("Art/UI/Food/food_category_tab_selected");
+        return foodCategoryTabSelectedSprite;
+    }
+
+    private Sprite GetFoodCategoryTabNormalSprite()
+    {
+        if (foodCategoryTabNormalSprite == null)
+            foodCategoryTabNormalSprite = LoadSpriteFromResources("Art/UI/Food/food_category_tab_normal");
+        return foodCategoryTabNormalSprite;
+    }
+
+    private Sprite GetFoodLevelBadgeSprite()
+    {
+        if (foodLevelBadgeSprite == null)
+            foodLevelBadgeSprite = LoadSpriteFromResources("Art/UI/Food/food_level_badge");
+        return foodLevelBadgeSprite;
+    }
+
+    private Sprite GetFoodCoinChipSprite()
+    {
+        if (foodCoinChipSprite == null)
+            foodCoinChipSprite = LoadSpriteFromResources("Art/UI/Food/food_coin_chip");
+        return foodCoinChipSprite;
+    }
+
+    private Sprite GetFoodPassiveChipSprite()
+    {
+        if (foodPassiveChipSprite == null)
+            foodPassiveChipSprite = LoadSpriteFromResources("Art/UI/Food/food_passive_chip");
+        return foodPassiveChipSprite;
+    }
+
+    private Sprite GetFoodCloseButtonSprite()
+    {
+        if (foodCloseButtonSprite == null)
+            foodCloseButtonSprite = LoadSpriteFromResources("Art/UI/Food/food_close_button");
+        return foodCloseButtonSprite;
     }
 
     private Sprite GetVipCardSprite(int level)
@@ -3516,6 +3991,317 @@ public class GameManager : MonoBehaviour
         passiveIncomePanel.SetActive(false);
     }
 
+    private void CreateFoodUpgradePanel(Transform parent)
+    {
+        foodUpgradeCardUis.Clear();
+
+        foodPanel = new GameObject("FoodUpgradePanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        foodPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = foodPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0f, 14f);
+        panelRect.sizeDelta = new Vector2(1674, 943);
+
+        Image panelImage = foodPanel.GetComponent<Image>();
+        panelImage.sprite = GetFoodPanelBackgroundSprite();
+        panelImage.color = Color.white;
+        panelImage.preserveAspect = true;
+#if UNITY_EDITOR
+        AttachEditorDragProbe(panelRect, "FoodUpgradePanel");
+#endif
+
+        TMP_Text title = CreateText(foodPanel.transform, "FoodPanelTitle", "Gıda Yükseltmeleri", new Vector2(0, 407), new Vector2(650, 72), 48);
+        StyleFoodTitle(title, 48);
+
+        TMP_Text closeText = CreateButton(foodPanel.transform, "FoodPanelCloseButton", "X", new Vector2(752, 407), new Vector2(72, 72), CloseFoodUpgradePanel, new Color(0.78f, 0.19f, 0.12f), 34);
+        StyleFoodButton(closeText, new Color(0.78f, 0.19f, 0.12f), 34);
+        Image closeImage = closeText.GetComponentInParent<Image>();
+        if (closeImage != null)
+        {
+            closeImage.sprite = null;
+            closeImage.color = Color.clear;
+            closeText.text = "X";
+            closeText.color = new Color(1f, 0.91f, 0.62f);
+            closeText.outlineColor = new Color(0.24f, 0.08f, 0.02f, 1f);
+            closeText.outlineWidth = 0.18f;
+        }
+
+        CreateFoodCategoryTab("FoodTabCoffee", "Kahve", FoodUpgradeCategory.Coffee, new Vector2(-686, 264), true);
+        CreateFoodCategoryTab("FoodTabSweet", "Tatlı", FoodUpgradeCategory.Sweet, new Vector2(-686, 106), false);
+        CreateFoodCategoryTab("FoodTabSnack", "Atıştırmalık", FoodUpgradeCategory.Snack, new Vector2(-686, -70), false);
+        CreateFoodCategoryTab("FoodTabCold", "Soğuk", FoodUpgradeCategory.Cold, new Vector2(-686, -247), false);
+
+        Vector2[] cardPositions =
+        {
+            new Vector2(-436, 145),
+            new Vector2(-221, 145),
+            new Vector2(-7, 145),
+            new Vector2(207, 145),
+            new Vector2(421, 145),
+            new Vector2(637, 145),
+            new Vector2(-436, -190),
+            new Vector2(-221, -190),
+            new Vector2(-7, -190)
+        };
+
+        for (int i = 0; i < foodUpgradeDatabase.Count && i < cardPositions.Length; i++)
+        {
+            CreateFoodUpgradeCard(foodPanel.transform, foodUpgradeDatabase[i], i, cardPositions[i]);
+        }
+
+        CreateFoodSummaryBox("FoodTotalPassiveBox", "Toplam Pasif", new Vector2(-264, -402), true);
+        CreateFoodSummaryBox("FoodTotalBonusBox", "Toplam Bonus", new Vector2(340, -402), false);
+
+        foodPanel.transform.SetAsLastSibling();
+        foodPanel.SetActive(false);
+    }
+
+    private void CreateFoodCategoryTab(string objectName, string label, FoodUpgradeCategory category, Vector2 position, bool selected)
+    {
+        TMP_Text tabText = CreateButton(foodPanel.transform, objectName, label, position, new Vector2(180, 116), delegate { }, Color.clear, 26);
+        Image tabImage = tabText.GetComponentInParent<Image>();
+        RectTransform tabRect = tabText.GetComponentInParent<RectTransform>();
+        if (tabImage != null && tabRect != null)
+        {
+            tabImage.sprite = null;
+            tabImage.color = Color.clear;
+            tabImage.preserveAspect = false;
+#if UNITY_EDITOR
+            AttachEditorDragProbe(tabRect, objectName);
+#endif
+        }
+
+        tabText.color = selected ? new Color(0.18f, 0.09f, 0.03f) : new Color(1f, 0.88f, 0.62f);
+        tabText.fontStyle = FontStyles.Bold;
+        tabText.enableAutoSizing = true;
+        tabText.fontSizeMin = 16;
+        tabText.fontSizeMax = 26;
+        tabText.raycastTarget = false;
+        ApplyVipFont(tabText);
+    }
+
+    private void CreateFoodUpgradeCard(Transform parent, FoodUpgradeData data, int index, Vector2 position)
+    {
+        GameObject cardObject = new GameObject("FoodCard_" + data.Id, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        cardObject.transform.SetParent(parent, false);
+
+        RectTransform cardRect = cardObject.GetComponent<RectTransform>();
+        cardRect.anchorMin = new Vector2(0.5f, 0.5f);
+        cardRect.anchorMax = new Vector2(0.5f, 0.5f);
+        cardRect.anchoredPosition = position;
+        cardRect.sizeDelta = new Vector2(205, 330);
+
+        Image cardImage = cardObject.GetComponent<Image>();
+        cardImage.sprite = GetFoodCardFrameSprite();
+        cardImage.color = Color.white;
+        cardImage.preserveAspect = false;
+#if UNITY_EDITOR
+        AttachEditorDragProbe(cardRect, "FoodCard_" + data.Id);
+#endif
+
+        FoodUpgradeCardUi ui = new FoodUpgradeCardUi();
+        ui.Data = data;
+        ui.CardImage = cardImage;
+
+        ui.NameText = CreateText(cardObject.transform, "NameText", data.DisplayName, new Vector2(0.59998f, 136.4f), new Vector2(172, 32), 20);
+        StyleFoodCardText(ui.NameText, 14, 20, TextAlignmentOptions.Center);
+
+        ui.IconImage = CreateFoodCardIcon(cardObject.transform, data, new Vector2(0, 67.9f), new Vector2(126, 126));
+
+        if (data.Id == "coffee")
+        {
+            ui.BeanLeftImage = CreateFoodUiImage(cardObject.transform, "BeanDecorLeft", GetFoodPassiveChipSprite(), new Vector2(-22, 5), new Vector2(17, 17), true);
+            ui.BeanLeftImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -28f);
+            ui.BeanCenterImage = CreateFoodUiImage(cardObject.transform, "BeanDecorCenter", GetFoodPassiveChipSprite(), new Vector2(0, 1), new Vector2(18, 18), true);
+            ui.BeanCenterImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 12f);
+            ui.BeanRightImage = CreateFoodUiImage(cardObject.transform, "BeanDecorRight", GetFoodPassiveChipSprite(), new Vector2(22, 6), new Vector2(16, 16), true);
+            ui.BeanRightImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 34f);
+        }
+
+        Image levelRow = CreateFoodUiImage(cardObject.transform, "LevelRowBackground", null, new Vector2(18, -35), new Vector2(120, 30), false);
+        levelRow.sprite = CreateRoundedRectSprite(levelRow.rectTransform.sizeDelta, new Color(1f, 0.91f, 0.70f, 0.42f), new Color(0.69f, 0.43f, 0.13f, 0.42f), 12, 1);
+        levelRow.color = Color.white;
+        ui.LevelRowImage = levelRow;
+
+        ui.LevelBadgeImage = CreateFoodUiImage(cardObject.transform, "LevelBadge", GetFoodLevelBadgeSprite(), new Vector2(-51.50002f, -35.99997f), new Vector2(42, 42), true);
+
+        ui.LevelText = CreateText(cardObject.transform, "LevelText", "", new Vector2(-51.5f, -35.99999f), new Vector2(38, 34), 11);
+        ui.LevelText.color = Color.white;
+        ui.LevelText.fontStyle = FontStyles.Bold;
+        ui.LevelText.alignment = TextAlignmentOptions.Center;
+        ui.LevelText.enableAutoSizing = true;
+        ui.LevelText.fontSizeMin = 8;
+        ui.LevelText.fontSizeMax = 10;
+        ui.LevelText.outlineColor = new Color(0.14f, 0.07f, 0.03f, 0.9f);
+        ui.LevelText.outlineWidth = 0.12f;
+        ApplyVipFont(ui.LevelText);
+
+        TMP_Text levelLabel = CreateText(cardObject.transform, "LevelLabel", "Ürün Seviyesi", new Vector2(23, -35), new Vector2(112, 28), 13);
+        StyleFoodCardText(levelLabel, 9, 13, TextAlignmentOptions.Center);
+        ui.LevelLabelText = levelLabel;
+
+        ui.UnlockStripImage = CreateFoodUiImage(cardObject.transform, "UnlockStrip", null, new Vector2(14, -42), new Vector2(132, 30), false);
+        ui.UnlockStripImage.sprite = CreateRoundedRectSprite(ui.UnlockStripImage.rectTransform.sizeDelta, new Color(1f, 0.89f, 0.64f, 0.94f), new Color(0.63f, 0.36f, 0.09f, 0.95f), 11, 2);
+        ui.UnlockStripImage.color = Color.white;
+        ui.LockedBadgeImage = CreateFoodUiImage(cardObject.transform, "LockedBadge", GetFoodLevelBadgeSprite(), new Vector2(-56, -42), new Vector2(42, 42), true);
+        ui.LockedIconImage = CreateFoodUiImage(cardObject.transform, "LockedIcon", GetVipLockIconSprite(), new Vector2(-56, -42), new Vector2(22, 22), true);
+        ui.LockedIconImage.color = new Color(1f, 0.72f, 0.17f, 1f);
+        ui.UnlockText = CreateText(cardObject.transform, "UnlockText", "", new Vector2(22, -42), new Vector2(108, 24), 15);
+        StyleFoodCardText(ui.UnlockText, 11, 15, TextAlignmentOptions.Center);
+
+        Image orderStrip = CreateFoodUiImage(cardObject.transform, "OrderStrip", null, new Vector2(-0.6000393f, -74.7f), new Vector2(166, 27), false);
+        orderStrip.sprite = CreateRoundedRectSprite(orderStrip.rectTransform.sizeDelta, new Color(1f, 0.91f, 0.72f, 0.34f), new Color(0.71f, 0.48f, 0.18f, 0.34f), 9, 1);
+        orderStrip.color = Color.white;
+        ui.OrderStripImage = orderStrip;
+        Image passiveStrip = CreateFoodUiImage(cardObject.transform, "PassiveStrip", null, new Vector2(0.6f, -101.9f), new Vector2(166, 27), false);
+        passiveStrip.sprite = CreateRoundedRectSprite(passiveStrip.rectTransform.sizeDelta, new Color(1f, 0.91f, 0.72f, 0.34f), new Color(0.71f, 0.48f, 0.18f, 0.34f), 9, 1);
+        passiveStrip.color = Color.white;
+        ui.PassiveStripImage = passiveStrip;
+
+        ui.OrderIconImage = CreateFoodUiImage(cardObject.transform, "OrderIcon", GetFoodCoinChipSprite(), new Vector2(-72.60004f, -74.7f), new Vector2(20, 20), true);
+        ui.PassiveIconImage = CreateFoodUiImage(cardObject.transform, "PassiveIcon", GetFoodPassiveChipSprite(), new Vector2(-71.39996f, -101.9f), new Vector2(20, 20), true);
+
+        ui.OrderText = CreateText(cardObject.transform, "OrderText", "", new Vector2(11.4f, -74.7f), new Vector2(132, 23), 12);
+        StyleFoodCardText(ui.OrderText, 9, 12, TextAlignmentOptions.Left);
+        ui.PassiveText = CreateText(cardObject.transform, "PassiveText", "", new Vector2(12.60004f, -101.9f), new Vector2(132, 23), 12);
+        StyleFoodCardText(ui.PassiveText, 9, 12, TextAlignmentOptions.Left);
+
+        ui.PriceText = CreateText(cardObject.transform, "PriceText", "", new Vector2(33.99998f, -131.4f), new Vector2(72, 28), 14);
+        StyleFoodCardText(ui.PriceText, 9, 13, TextAlignmentOptions.Center);
+        ui.PriceText.color = Color.white;
+
+        Image priceCoin = CreateFoodUiImage(cardObject.transform, "PriceCoin", GetFoodCoinChipSprite(), new Vector2(11.4f, -131.4f), new Vector2(15, 15), true);
+        ui.PriceCoinImage = priceCoin;
+
+        ui.ButtonText = CreateButton(cardObject.transform, "UpgradeButton", "Yükselt", new Vector2(0, -131.4f), new Vector2(140, 30), delegate { BuyFoodUpgradeByIndex(index); }, Color.white, 14);
+        ui.Button = ui.ButtonText.GetComponentInParent<Button>();
+        StyleFoodButton(ui.ButtonText, new Color(0.33f, 0.63f, 0.12f), 17);
+        ui.ButtonText.rectTransform.anchoredPosition = new Vector2(-29, 0);
+        ui.ButtonText.rectTransform.sizeDelta = new Vector2(60, 25);
+        Image upgradeImage = ui.Button != null ? ui.Button.GetComponent<Image>() : null;
+        if (upgradeImage != null)
+        {
+            upgradeImage.sprite = GetFoodUpgradeButtonSprite();
+            upgradeImage.color = Color.white;
+            upgradeImage.preserveAspect = false;
+        }
+        ui.PriceText.transform.SetAsLastSibling();
+        priceCoin.transform.SetAsLastSibling();
+
+        foodUpgradeCardUis.Add(ui);
+    }
+
+    private Image CreateFoodCardIcon(Transform parent, FoodUpgradeData data, Vector2 position, Vector2 size)
+    {
+        GameObject iconObject = new GameObject("Icon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        iconObject.transform.SetParent(parent, false);
+        RectTransform rect = iconObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = iconObject.GetComponent<Image>();
+        image.sprite = GetFoodIconSprite(data);
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+#if UNITY_EDITOR
+        AttachEditorDragProbe(rect, "FoodIcon_" + data.Id);
+#endif
+        return image;
+    }
+
+    private Image CreateFoodUiImage(Transform parent, string objectName, Sprite sprite, Vector2 position, Vector2 size, bool preserveAspect)
+    {
+        GameObject imageObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        imageObject.transform.SetParent(parent, false);
+
+        RectTransform rect = imageObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = imageObject.GetComponent<Image>();
+        image.sprite = sprite;
+        image.color = Color.white;
+        image.preserveAspect = preserveAspect;
+        image.raycastTarget = false;
+#if UNITY_EDITOR
+        AttachEditorDragProbe(rect, objectName);
+#endif
+        return image;
+    }
+
+    private void CreateFoodSummaryBox(string objectName, string label, Vector2 position, bool passive)
+    {
+        GameObject boxObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        boxObject.transform.SetParent(foodPanel.transform, false);
+
+        RectTransform rect = boxObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = new Vector2(485, 78);
+
+        Image image = boxObject.GetComponent<Image>();
+        image.sprite = null;
+        image.color = Color.clear;
+
+        TMP_Text labelText = CreateText(boxObject.transform, "Label", label, new Vector2(-75, 0), new Vector2(190, 42), 24);
+        StyleFoodCardText(labelText, 16, 24, TextAlignmentOptions.Center);
+
+        TMP_Text valueText = CreateText(boxObject.transform, "Value", "", new Vector2(128, 0), new Vector2(126, 42), 24);
+        StyleFoodCardText(valueText, 16, 24, TextAlignmentOptions.Center);
+        valueText.color = new Color(0.20f, 0.10f, 0.04f);
+
+        if (passive)
+        {
+            foodTotalPassiveText = valueText;
+        }
+        else
+        {
+            foodTotalBonusText = valueText;
+        }
+#if UNITY_EDITOR
+        AttachEditorDragProbe(rect, objectName);
+#endif
+    }
+
+    private void StyleFoodTitle(TMP_Text text, float maxSize)
+    {
+        text.color = new Color(1f, 0.89f, 0.58f);
+        text.fontStyle = FontStyles.Bold;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = 28;
+        text.fontSizeMax = maxSize;
+        text.outlineColor = new Color(0.18f, 0.08f, 0.02f, 0.95f);
+        text.outlineWidth = 0.16f;
+        ApplyVipFont(text);
+    }
+
+    private void StyleFoodCardText(TMP_Text text, float minSize, float maxSize, TextAlignmentOptions alignment)
+    {
+        text.color = new Color(0.18f, 0.10f, 0.04f);
+        text.fontStyle = FontStyles.Bold;
+        text.alignment = alignment;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = minSize;
+        text.fontSizeMax = maxSize;
+        text.enableWordWrapping = false;
+        text.overflowMode = TextOverflowModes.Ellipsis;
+        ApplyVipFont(text);
+    }
+
+    private void StyleFoodButton(TMP_Text labelText, Color fillColor, float maxSize)
+    {
+        StylePopupButton(labelText, fillColor, maxSize);
+        ApplyVipFont(labelText);
+    }
+
     private void CreateVipPanel(Transform parent)
     {
         vipPanel = new GameObject("VipPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -3544,17 +4330,21 @@ public class GameManager : MonoBehaviour
         vipLevelSummaryText.fontStyle = FontStyles.Bold;
         vipLevelSummaryText.alignment = TextAlignmentOptions.Right;
         vipLevelSummaryText.gameObject.SetActive(false);
-        vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-352, 76), new Vector2(365, 116), 15);
+        vipPanelText = CreateText(vipPanel.transform, "VipPanelText", "", new Vector2(-325.5474f, 80.0787f), new Vector2(174.3353f, 103.7557f), 17);
         ApplyVipFont(vipPanelText);
         vipPanelText.color = new Color(0.32f, 0.17f, 0.06f, 1f);
-        vipPanelText.alignment = TextAlignmentOptions.TopLeft;
+        vipPanelText.alignment = TextAlignmentOptions.Center;
         vipPanelText.enableWordWrapping = true;
+        vipPanelText.richText = true;
         vipPanelText.fontStyle = FontStyles.Bold;
         vipPanelText.enableAutoSizing = true;
-        vipPanelText.fontSizeMin = 10f;
-        vipPanelText.fontSizeMax = 15f;
+        vipPanelText.fontSizeMin = 12f;
+        vipPanelText.fontSizeMax = 18f;
+        vipPanelText.gameObject.SetActive(false);
+        CreateVipInfoPngElements(vipPanel.transform);
 
         CreateVipPanelClearSelectionArea(vipPanel.transform);
+        CreateVipLeftModularElements(vipPanel.transform);
 
         vipLevelCardTexts.Clear();
         vipLevelCardImages.Clear();
@@ -3591,6 +4381,150 @@ public class GameManager : MonoBehaviour
 
         vipPanel.transform.SetAsLastSibling();
         vipPanel.SetActive(false);
+    }
+
+    private void CreateVipInfoPngElements(Transform parent)
+    {
+        CreateVipInfoImage(parent, "VipInfoActivePackageBadge", GetVipInfoActivePackageBadgeSprite(), VipInfoActivePackageBadgePosition, VipInfoActivePackageBadgeSize);
+        CreateVipInfoImage(parent, "VipInfoCurrentTitle", GetVipInfoCurrentTitleSprite(), VipInfoCurrentTitlePosition, VipInfoCurrentTitleSize);
+        CreateVipInfoImage(parent, "VipInfoNextTitle", GetVipInfoNextTitleSprite(), VipInfoNextTitlePosition, VipInfoNextTitleSize);
+        CreateVipInfoImage(parent, "VipInfoPriceLine", GetVipInfoPriceLineSprite(), VipInfoPriceLinePosition, VipInfoPriceLineSize);
+    }
+
+    private Image CreateVipInfoImage(Transform parent, string objectName, Sprite sprite, Vector2 position, Vector2 size)
+    {
+        GameObject imageObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        imageObject.transform.SetParent(parent, false);
+
+        RectTransform rect = imageObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = imageObject.GetComponent<Image>();
+        image.sprite = sprite;
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+        return image;
+    }
+
+    private void CreateVipLeftModularElements(Transform parent)
+    {
+        CreateVipLeftSprite(parent, "VipLeftBadge", GetVipLeftBadgeSprite(), VipLeftBadgePosition, VipLeftBadgeSize);
+        vipLeftCoinPillText = CreateVipLeftBonusPill(parent, "VipLeftCoinPill", "Coin +0%", VipLeftCoinPillPosition);
+        vipLeftXpPillText = CreateVipLeftBonusPill(parent, "VipLeftXpPill", "XP +0%", VipLeftXpPillPosition);
+        vipLeftCustomerPillText = CreateVipLeftBonusPill(parent, "VipLeftCustomerPill", "Müşteri +0%", VipLeftCustomerPillPosition);
+        vipLeftPassivePillText = CreateVipLeftBonusPill(parent, "VipLeftPassivePill", "Pasif +0%", VipLeftPassivePillPosition);
+        CreateVipLeftDailyRewardLabel(parent);
+        CreateVipLeftSprite(parent, "VipLeftGift", GetVipLeftGiftSprite(), VipLeftGiftPosition, VipLeftGiftSize);
+        CreateVipLeftClaimButton(parent);
+    }
+
+    private Image CreateVipLeftSprite(Transform parent, string objectName, Sprite sprite, Vector2 position, Vector2 size)
+    {
+        GameObject imageObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        imageObject.transform.SetParent(parent, false);
+
+        RectTransform rect = imageObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = imageObject.GetComponent<Image>();
+        image.sprite = sprite;
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = true;
+
+        return image;
+    }
+
+    private TMP_Text CreateVipLeftBonusPill(Transform parent, string objectName, string label, Vector2 position)
+    {
+        GameObject pillObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        pillObject.transform.SetParent(parent, false);
+
+        RectTransform rect = pillObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = VipLeftBonusPillSize;
+
+        Image image = pillObject.GetComponent<Image>();
+        image.sprite = GetVipLeftBonusPillSprite();
+        image.color = Color.white;
+        image.preserveAspect = false;
+        image.raycastTarget = true;
+
+        TMP_Text text = CreateText(pillObject.transform, "Text", label, Vector2.zero, new Vector2(VipLeftBonusPillSize.x - 14f, VipLeftBonusPillSize.y - 4f), 15);
+        ApplyVipFont(text);
+        text.color = new Color(0.20f, 0.10f, 0.03f, 1f);
+        text.alignment = TextAlignmentOptions.Center;
+        text.fontStyle = FontStyles.Bold;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = 9f;
+        text.fontSizeMax = 15f;
+        text.raycastTarget = false;
+
+        return text;
+    }
+
+    private Image CreateVipLeftDailyRewardLabel(Transform parent)
+    {
+        GameObject labelObject = new GameObject("VipLeftDailyRewardLabel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        labelObject.transform.SetParent(parent, false);
+
+        RectTransform rect = labelObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = VipLeftDailyRewardLabelPosition;
+        rect.sizeDelta = VipLeftDailyRewardLabelSize;
+
+        Image image = labelObject.GetComponent<Image>();
+        image.sprite = GetVipLeftDailyRewardLabelSprite();
+        image.color = Color.white;
+        image.preserveAspect = false;
+        image.raycastTarget = false;
+
+        return image;
+    }
+
+    private void CreateVipLeftClaimButton(Transform parent)
+    {
+        GameObject buttonObject = new GameObject("VipLeftClaimButton", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+        buttonObject.transform.SetParent(parent, false);
+
+        RectTransform rect = buttonObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = VipLeftClaimButtonPosition;
+        rect.sizeDelta = VipLeftClaimButtonSize;
+
+        Image image = buttonObject.GetComponent<Image>();
+        image.sprite = GetVipLeftClaimButtonSprite();
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = true;
+
+        Button button = buttonObject.GetComponent<Button>();
+        button.transition = Selectable.Transition.None;
+        button.targetGraphic = image;
+        button.onClick.AddListener(ClickVipLeftClaimButton);
+
+        vipLeftClaimButtonText = CreateText(buttonObject.transform, "Text", "AL", VipLeftClaimButtonTextPosition, VipLeftClaimButtonTextSize, 20);
+        ApplyVipFont(vipLeftClaimButtonText);
+        vipLeftClaimButtonText.color = new Color(0.34f, 0.16f, 0.02f, 1f);
+        vipLeftClaimButtonText.alignment = TextAlignmentOptions.Center;
+        vipLeftClaimButtonText.fontStyle = FontStyles.Bold;
+        vipLeftClaimButtonText.enableAutoSizing = true;
+        vipLeftClaimButtonText.fontSizeMin = 12f;
+        vipLeftClaimButtonText.fontSizeMax = 20f;
+        vipLeftClaimButtonText.raycastTarget = false;
+
+        AttachPressAnimator(rect, new Vector2(0f, -4f), 0.96f);
     }
 
     private void CreateVipInfoPanel(Transform parent)
@@ -3697,6 +4631,12 @@ public class GameManager : MonoBehaviour
         if (image != null)
         {
             image.raycastTarget = true;
+        }
+
+        Graphic graphic = rect.GetComponent<Graphic>();
+        if (graphic != null)
+        {
+            graphic.raycastTarget = true;
         }
 
         EditorDragProbe probe = rect.gameObject.AddComponent<EditorDragProbe>();
@@ -5175,6 +6115,7 @@ public class GameManager : MonoBehaviour
                 || (machinePanel != null && machinePanel.activeSelf)
                 || (baristaPanel != null && baristaPanel.activeSelf)
                 || (passiveIncomePanel != null && passiveIncomePanel.activeSelf)
+                || (foodPanel != null && foodPanel.activeSelf)
                 || (dailyRewardPanel != null && dailyRewardPanel.activeSelf)
                 || (chestPanel != null && chestPanel.activeSelf)
                 || (decorPanel != null && decorPanel.activeSelf)
@@ -5305,6 +6246,21 @@ public class GameManager : MonoBehaviour
         if (vipDecorBonusText != null)
             vipDecorBonusText.text = shownVipName + "\nİndirim " + GetVipDiscountBonusText(shownVipLevel);
 
+        if (vipLeftCoinPillText != null)
+            vipLeftCoinPillText.text = "Coin " + GetVipBonusValueText(GetVipCoinBonusPercent(shownVipLevel));
+
+        if (vipLeftXpPillText != null)
+            vipLeftXpPillText.text = "XP " + GetVipBonusValueText(GetVipXpBonusPercent(shownVipLevel));
+
+        if (vipLeftCustomerPillText != null)
+            vipLeftCustomerPillText.text = "Müşteri " + GetVipBonusValueText(GetVipPatienceBonusPercent(shownVipLevel));
+
+        if (vipLeftPassivePillText != null)
+            vipLeftPassivePillText.text = "Pasif " + GetVipBonusValueText(GetVipPassiveBonusPercent(shownVipLevel));
+
+        if (vipLeftClaimButtonText != null)
+            vipLeftClaimButtonText.text = "AL";
+
         if (vipUpgradeButtonText != null)
         {
             Button vipButton = vipUpgradeButtonText.GetComponentInParent<Button>();
@@ -5385,6 +6341,11 @@ public class GameManager : MonoBehaviour
 
         if (vipInfoPanel != null && vipInfoPanel.activeSelf && lastOfflineCoins <= 0)
             vipInfoPanel.transform.SetAsLastSibling();
+
+        if (foodPanel != null && foodPanel.activeSelf && lastOfflineCoins <= 0)
+            foodPanel.transform.SetAsLastSibling();
+
+        UpdateFoodUpgradePanelUi();
 
         if (decorPanelText != null)
         {
@@ -5660,6 +6621,141 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     buttonImage.color = compactButton ? new Color(0.10f, 0.08f, 0.07f, 1f) : new Color(0.22f, 0.20f, 0.19f, 1f);
+                }
+            }
+        }
+    }
+
+    private void UpdateFoodUpgradePanelUi()
+    {
+        if (foodTotalPassiveText != null)
+        {
+            foodTotalPassiveText.text = GetFoodPassiveIncome().ToString("0.#") + "/sn";
+        }
+
+        if (foodTotalBonusText != null)
+        {
+            foodTotalBonusText.text = "+" + GetFoodOrderBonus();
+        }
+
+        for (int i = 0; i < foodUpgradeCardUis.Count; i++)
+        {
+            FoodUpgradeCardUi ui = foodUpgradeCardUis[i];
+            FoodUpgradeData data = ui.Data;
+            bool unlocked = IsFoodUpgradeUnlocked(data);
+            bool maxed = data.Level >= UpgradeMaxLevel;
+            int cost = GetDiscountedUpgradeCost(GetFoodUpgradeCost(data));
+
+            if (ui.CardImage != null)
+            {
+                ui.CardImage.sprite = GetFoodCardFrameSprite();
+                ui.CardImage.color = unlocked ? Color.white : new Color(0.64f, 0.62f, 0.58f, 1f);
+            }
+
+            if (ui.IconImage != null)
+            {
+                ui.IconImage.color = unlocked ? Color.white : new Color(0.72f, 0.69f, 0.63f, 0.72f);
+            }
+
+            if (ui.LevelBadgeImage != null)
+            {
+                ui.LevelBadgeImage.gameObject.SetActive(unlocked);
+            }
+
+            if (ui.LevelRowImage != null)
+            {
+                ui.LevelRowImage.gameObject.SetActive(unlocked);
+            }
+
+            if (ui.LevelLabelText != null)
+            {
+                ui.LevelLabelText.gameObject.SetActive(unlocked);
+            }
+
+            if (ui.OrderStripImage != null)
+            {
+                ui.OrderStripImage.gameObject.SetActive(unlocked);
+            }
+
+            if (ui.PassiveStripImage != null)
+            {
+                ui.PassiveStripImage.gameObject.SetActive(unlocked);
+            }
+
+            if (ui.BeanLeftImage != null) ui.BeanLeftImage.gameObject.SetActive(unlocked);
+            if (ui.BeanCenterImage != null) ui.BeanCenterImage.gameObject.SetActive(unlocked);
+            if (ui.BeanRightImage != null) ui.BeanRightImage.gameObject.SetActive(unlocked);
+
+            if (ui.LockedBadgeImage != null) ui.LockedBadgeImage.gameObject.SetActive(!unlocked);
+            if (ui.LockedIconImage != null) ui.LockedIconImage.gameObject.SetActive(!unlocked);
+            if (ui.UnlockStripImage != null) ui.UnlockStripImage.gameObject.SetActive(!unlocked);
+            if (ui.UnlockText != null)
+            {
+                ui.UnlockText.gameObject.SetActive(!unlocked);
+                ui.UnlockText.text = "Seviye " + data.UnlockPlayerLevel + "'de açılır";
+            }
+
+            if (ui.OrderIconImage != null)
+            {
+                ui.OrderIconImage.gameObject.SetActive(unlocked);
+            }
+
+            if (ui.PassiveIconImage != null)
+            {
+                ui.PassiveIconImage.gameObject.SetActive(unlocked);
+            }
+
+            if (ui.NameText != null)
+            {
+                ui.NameText.text = data.DisplayName;
+                ui.NameText.color = unlocked ? new Color(0.18f, 0.10f, 0.04f) : new Color(0.27f, 0.24f, 0.20f);
+            }
+
+            if (ui.LevelText != null)
+            {
+                ui.LevelText.gameObject.SetActive(unlocked);
+                ui.LevelText.text = unlocked ? "Lv.\n" + data.Level : "";
+            }
+
+            if (ui.OrderText != null)
+            {
+                ui.OrderText.gameObject.SetActive(unlocked);
+                ui.OrderText.text = "+Sipariş +" + (data.Level * data.OrderBonusPerLevel);
+            }
+
+            if (ui.PassiveText != null)
+            {
+                ui.PassiveText.gameObject.SetActive(unlocked);
+                ui.PassiveText.text = "+Pasif  " + (data.Level * data.PassivePerLevel).ToString("0.#") + "/sn";
+            }
+
+            if (ui.PriceText != null)
+            {
+                ui.PriceText.gameObject.SetActive(unlocked && !maxed);
+                ui.PriceText.text = unlocked && !maxed ? FormatResourceAmount(cost) : "";
+            }
+
+            if (ui.PriceCoinImage != null)
+            {
+                ui.PriceCoinImage.gameObject.SetActive(unlocked && !maxed);
+            }
+
+            if (ui.ButtonText != null)
+            {
+                ui.ButtonText.rectTransform.anchoredPosition = unlocked && !maxed ? new Vector2(-29, 0) : Vector2.zero;
+                ui.ButtonText.rectTransform.sizeDelta = unlocked && !maxed ? new Vector2(60, 25) : new Vector2(116, 26);
+                ui.ButtonText.text = maxed ? "MAX" : unlocked ? "Yükselt" : "Kilitli";
+            }
+
+            if (ui.Button != null)
+            {
+                ui.Button.interactable = unlocked && !maxed && coins >= cost;
+                Image buttonImage = ui.Button.GetComponent<Image>();
+                RectTransform buttonRect = ui.Button.GetComponent<RectTransform>();
+                if (buttonImage != null && buttonRect != null)
+                {
+                    buttonImage.sprite = GetFoodUpgradeButtonSprite();
+                    buttonImage.color = unlocked && !maxed ? Color.white : new Color(0.62f, 0.52f, 0.40f, 1f);
                 }
             }
         }
@@ -6687,6 +7783,11 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("seniorBaristaCost", seniorBaristaCost);
         PlayerPrefs.SetInt("masterBaristaLevel", masterBaristaLevel);
         PlayerPrefs.SetInt("masterBaristaCost", masterBaristaCost);
+        for (int i = 0; i < foodUpgradeDatabase.Count; i++)
+        {
+            FoodUpgradeData data = foodUpgradeDatabase[i];
+            PlayerPrefs.SetInt("foodUpgradeLevel_" + data.Id, data.Level);
+        }
         PlayerPrefs.SetInt("gems", gems);
         PlayerPrefs.SetInt("chests", chests);
         PlayerPrefs.SetInt("rareChests", rareChests);
@@ -6758,6 +7859,11 @@ public class GameManager : MonoBehaviour
         seniorBaristaCost = PlayerPrefs.GetInt("seniorBaristaCost", 2500);
         masterBaristaLevel = PlayerPrefs.GetInt("masterBaristaLevel", 0);
         masterBaristaCost = PlayerPrefs.GetInt("masterBaristaCost", 20000);
+        for (int i = 0; i < foodUpgradeDatabase.Count; i++)
+        {
+            FoodUpgradeData data = foodUpgradeDatabase[i];
+            data.Level = Mathf.Clamp(PlayerPrefs.GetInt("foodUpgradeLevel_" + data.Id, 0), 0, UpgradeMaxLevel);
+        }
         gems = PlayerPrefs.GetInt("gems", 0);
         chests = PlayerPrefs.GetInt("chests", 0);
         rareChests = PlayerPrefs.GetInt("rareChests", 0);
