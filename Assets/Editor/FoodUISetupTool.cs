@@ -8,6 +8,7 @@ public sealed class FoodUISetupTool : EditorWindow
 {
     private const string DefaultFolder = "Assets/Resources/Art/UI/Food";
     private const string PendingApplyRequest = "Temp/FoodUIApply.request";
+    private const string PendingCoinInfoApplyRequest = "Temp/CoinInfoUIApply.request";
 
     private static readonly Dictionary<string, Vector4> SliceBorders = new Dictionary<string, Vector4>(StringComparer.OrdinalIgnoreCase)
     {
@@ -55,13 +56,37 @@ public sealed class FoodUISetupTool : EditorWindow
         Debug.Log(ValidateFolder(DefaultFolder, true));
     }
 
+    public static void ApplyCoinInfoForBatch()
+    {
+        const string assetPath = "Assets/Resources/Art/UI/HUD/coin_info_panel_v2.png";
+        AssetDatabase.Refresh();
+        TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+        if (importer == null)
+        {
+            Debug.LogError("[FoodUITool] Coin info panel importer not found: " + assetPath);
+            return;
+        }
+
+        ApplyStandards(assetPath, importer);
+        importer.SaveAndReimport();
+        AssetDatabase.SaveAssets();
+        Debug.Log("[FoodUITool] Applied UI sprite standards to " + assetPath);
+    }
+
     [InitializeOnLoadMethod]
     private static void ApplyPendingRequestOnReload()
     {
-        if (!File.Exists(PendingApplyRequest)) return;
+        if (File.Exists(PendingApplyRequest))
+        {
+            File.Delete(PendingApplyRequest);
+            EditorApplication.delayCall += ApplyForBatch;
+        }
 
-        File.Delete(PendingApplyRequest);
-        EditorApplication.delayCall += ApplyForBatch;
+        if (File.Exists(PendingCoinInfoApplyRequest))
+        {
+            File.Delete(PendingCoinInfoApplyRequest);
+            EditorApplication.delayCall += ApplyCoinInfoForBatch;
+        }
     }
 
     private void RunInteractiveApply()

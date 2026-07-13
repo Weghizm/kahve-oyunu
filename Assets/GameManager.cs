@@ -265,7 +265,7 @@ public class GameManager : MonoBehaviour
     private static readonly Vector2 VipLeftClaimButtonTextSize = new Vector2(96f, 34f);
 
     private TMP_Text coinText;
-    private TMP_Text coinInfoPopupText;
+    private readonly TMP_Text[] coinInfoPopupRows = new TMP_Text[6];
     private TMP_Text activeBoostText;
     private TMP_Text customerStatsText;
     private TMP_Text gemText;
@@ -481,6 +481,7 @@ public class GameManager : MonoBehaviour
     private Sprite baristaSceneSprite;
     private Sprite baristaLockedPlaceholderSprite;
     private Sprite baristaCounterForegroundSprite;
+    private Sprite coinInfoPanelSprite;
     private readonly List<GameObject> startingRoomVisuals = new List<GameObject>();
     private readonly List<GameObject> cafeObjectHotspots = new List<GameObject>();
     private readonly List<GameObject> cafePrototypeVisuals = new List<GameObject>();
@@ -1520,17 +1521,29 @@ public class GameManager : MonoBehaviour
         return text;
     }
 
-    private string GetCoinInfoPopupText()
+    private string[] GetCoinInfoPopupRows()
     {
         string boostText = bonusTimer > 0 ? "Aktif (" + FormatCompactTime(bonusTimer) + ")" : "Kapalı";
         string vipText = vipLevel > 0
             ? "+" + GetVipCoinBonusPercent(vipLevel) + "% coin, +" + GetVipPassiveBonusPercent(vipLevel) + "% pasif"
             : "Yok";
 
-        return "Kahve Ücreti  +" + GetCurrentTapPower() + " coin"
-            + "\nPasif Gelir  " + GetCurrentPassiveIncome().ToString("0.#") + " / sn"
-            + "\nVIP Etkisi  " + vipText
-            + "\n2x Reklam  " + boostText;
+        int foodSalesBonusPercent = GetFoodSalesBonusPercent();
+        int foodPassiveBonusPercent = GetFoodPassiveBonusPercent();
+        return new[]
+        {
+            "Kahve Ücreti   +" + GetCurrentTapPower() + " coin",
+            "Pasif Gelir   " + GetCurrentPassiveIncome().ToString("0.#") + " / sn",
+            "Gıda Etkisi   +%" + foodSalesBonusPercent + " satış, +%" + foodPassiveBonusPercent + " pasif",
+            "VIP Etkisi   " + vipText,
+            "2x Reklam   " + boostText,
+            "Offline Gelir   " + GetOfflinePassiveIncomePerSecond().ToString("0.#") + " / sn  (1/3, maks. 4 sa)"
+        };
+    }
+
+    private float GetOfflinePassiveIncomePerSecond()
+    {
+        return coinsPerSecond * GetFoodPassiveMultiplier() * GetVipPassiveIncomeMultiplier() * OfflineIncomeRate;
     }
 
     private float GetVipCoinMultiplier()
@@ -1924,7 +1937,7 @@ public class GameManager : MonoBehaviour
 
         coinText = CreateResourceBar(gameFrame, "CoinBar", GetCoinIconSprite(), new Vector2(-245, 500), new Vector2(220, 52), new Color(0.28f, 0.15f, 0.05f, 0.93f), new Color(0.96f, 0.69f, 0.19f, 1f), 29, 1f);
         MakeResourceBarClickable(coinText, ToggleCoinInfoPopup);
-        CreateCoinInfoPopup(gameFrame, new Vector2(-245, 399));
+        CreateCoinInfoPopup(gameFrame, new Vector2(-245, 315));
         activeBoostText = CreateText(gameFrame, "ActiveBoostText", "", new Vector2(0, 375), new Vector2(520, 38), 24);
         activeBoostText.gameObject.SetActive(false);
         customerStatsText = CreateText(gameFrame, "CustomerStatsText", "Satis: 0 | Musteri: 0 | Kacan: 0", new Vector2(0, -470), new Vector2(620, 34), 18);
@@ -3226,6 +3239,16 @@ public class GameManager : MonoBehaviour
         }
 
         return baristaCounterForegroundSprite;
+    }
+
+    private Sprite GetCoinInfoPanelSprite()
+    {
+        if (coinInfoPanelSprite == null)
+        {
+            coinInfoPanelSprite = LoadImportedSpriteFromResources("Art/UI/HUD/coin_info_panel_v2");
+        }
+
+        return coinInfoPanelSprite;
     }
 
     private Sprite LoadSpriteFromResources(string path)
@@ -5851,32 +5874,29 @@ public class GameManager : MonoBehaviour
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
         panelRect.anchoredPosition = position;
-        panelRect.sizeDelta = new Vector2(340, 150);
+        panelRect.sizeDelta = new Vector2(620, 310);
 
         Image panelImage = coinInfoPopup.GetComponent<Image>();
-        panelImage.sprite = CreateResourceBarBackgroundSprite(panelRect.sizeDelta, new Color(0.22f, 0.12f, 0.05f, 0.96f), new Color(0.96f, 0.69f, 0.19f, 1f));
+        panelImage.sprite = GetCoinInfoPanelSprite();
         panelImage.color = Color.white;
+        panelImage.preserveAspect = true;
 
-        GameObject connectorObject = new GameObject("Connector", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        connectorObject.transform.SetParent(coinInfoPopup.transform, false);
-        RectTransform connectorRect = connectorObject.GetComponent<RectTransform>();
-        connectorRect.anchorMin = new Vector2(0.5f, 1f);
-        connectorRect.anchorMax = new Vector2(0.5f, 1f);
-        connectorRect.pivot = new Vector2(0.5f, 0f);
-        connectorRect.anchoredPosition = new Vector2(0, -2);
-        connectorRect.sizeDelta = new Vector2(118, 14);
-        Image connectorImage = connectorObject.GetComponent<Image>();
-        connectorImage.color = new Color(0.22f, 0.12f, 0.05f, 0.96f);
-        connectorImage.raycastTarget = false;
-
-        coinInfoPopupText = CreateText(coinInfoPopup.transform, "CoinInfoText", "", new Vector2(0, -8), new Vector2(302, 116), 19);
-        coinInfoPopupText.color = new Color(1f, 0.94f, 0.78f, 1f);
-        coinInfoPopupText.fontStyle = FontStyles.Bold;
-        coinInfoPopupText.alignment = TextAlignmentOptions.Left;
-        coinInfoPopupText.enableAutoSizing = true;
-        coinInfoPopupText.fontSizeMin = 14;
-        coinInfoPopupText.fontSizeMax = 19;
-        coinInfoPopupText.raycastTarget = false;
+        for (int i = 0; i < coinInfoPopupRows.Length; i++)
+        {
+            float rowY = 90f - (i * 36f);
+            TMP_Text rowText = CreateText(coinInfoPopup.transform, "CoinInfoRow" + (i + 1), "", new Vector2(0f, rowY), new Vector2(500f, 34f), 19);
+            rowText.color = new Color(1f, 0.91f, 0.66f, 1f);
+            rowText.fontStyle = FontStyles.Bold;
+            rowText.alignment = TextAlignmentOptions.Left;
+            rowText.enableAutoSizing = true;
+            rowText.fontSizeMin = 14;
+            rowText.fontSizeMax = 19;
+            rowText.enableWordWrapping = false;
+            rowText.overflowMode = TextOverflowModes.Ellipsis;
+            rowText.raycastTarget = false;
+            ApplyVipFont(rowText);
+            coinInfoPopupRows[i] = rowText;
+        }
 
         coinInfoPopup.transform.SetAsLastSibling();
         coinInfoPopup.SetActive(false);
@@ -6155,8 +6175,15 @@ public class GameManager : MonoBehaviour
         if (coinText != null)
             coinText.text = FormatResourceAmount(Mathf.FloorToInt(coins));
 
-        if (coinInfoPopupText != null)
-            coinInfoPopupText.text = GetCoinInfoPopupText();
+        if (coinInfoPopup != null && coinInfoPopup.activeSelf)
+        {
+            string[] coinInfoRows = GetCoinInfoPopupRows();
+            for (int i = 0; i < coinInfoPopupRows.Length; i++)
+            {
+                if (coinInfoPopupRows[i] != null)
+                    coinInfoPopupRows[i].text = i < coinInfoRows.Length ? coinInfoRows[i] : "";
+            }
+        }
 
         if (passiveIncomePanelText != null)
             passiveIncomePanelText.text = GetPassiveIncomeBreakdownText();
@@ -8137,7 +8164,7 @@ public class GameManager : MonoBehaviour
         DateTime lastSaveTime = new DateTime(ticks, DateTimeKind.Utc);
         double elapsedSeconds = Math.Max(0, (DateTime.UtcNow - lastSaveTime).TotalSeconds);
         double cappedSeconds = Math.Min(elapsedSeconds, MaxOfflineEarningsSeconds);
-        float offlineIncomePerSecond = coinsPerSecond * GetVipPassiveIncomeMultiplier() * OfflineIncomeRate;
+        float offlineIncomePerSecond = GetOfflinePassiveIncomePerSecond();
         int offlineCoins = Mathf.FloorToInt(offlineIncomePerSecond * (float)cappedSeconds);
 
         if (offlineCoins <= 0)
