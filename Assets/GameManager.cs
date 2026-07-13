@@ -4097,7 +4097,7 @@ public class GameManager : MonoBehaviour
         cardsGrid.spacing = new Vector2(40f, 20f);
         cardsGrid.startCorner = GridLayoutGroup.Corner.UpperLeft;
         cardsGrid.startAxis = GridLayoutGroup.Axis.Horizontal;
-        cardsGrid.childAlignment = TextAnchor.UpperCenter;
+        cardsGrid.childAlignment = TextAnchor.UpperLeft;
         cardsGrid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         cardsGrid.constraintCount = 3;
 
