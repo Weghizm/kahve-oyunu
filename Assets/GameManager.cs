@@ -4073,7 +4073,7 @@ public class GameManager : MonoBehaviour
         TMP_Text title = CreateText(foodPanel.transform, "FoodPanelTitle", "Gıda Yükseltmeleri", new Vector2(0, 407), new Vector2(650, 72), 48);
         StyleFoodTitle(title, 48);
 
-        TMP_Text closeText = CreateButton(foodPanel.transform, "FoodPanelCloseButton", "", new Vector2(724, 407), new Vector2(76, 76), CloseFoodUpgradePanel, Color.white, 1);
+        TMP_Text closeText = CreateButton(foodPanel.transform, "FoodPanelCloseButton", "", new Vector2(699.2f, 402.3f), new Vector2(76, 76), CloseFoodUpgradePanel, Color.white, 1);
         Image closeImage = closeText.GetComponentInParent<Image>();
         if (closeImage != null)
         {
