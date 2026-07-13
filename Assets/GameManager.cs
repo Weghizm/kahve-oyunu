@@ -4163,20 +4163,38 @@ public class GameManager : MonoBehaviour
             false);
         ribbon.type = Image.Type.Sliced;
 
-        CreateFoodUiImage(ribbon.transform, "ProgressIcon", GetFoodCoinChipSprite(), new Vector2(-210f, 0f), new Vector2(28f, 28f), true);
-        CreateFoodUiImage(ribbon.transform, "SalesIcon", GetFoodCoinChipSprite(), new Vector2(45f, 0f), new Vector2(28f, 28f), true);
-        CreateFoodUiImage(ribbon.transform, "PassiveIcon", GetFoodPassiveChipSprite(), new Vector2(285f, 0f), new Vector2(28f, 28f), true);
+        foodCategoryNameText = CreateText(ribbon.transform, "CategoryName", "", new Vector2(-472f, 0f), new Vector2(230f, 54f), 32);
+        StyleFoodCategoryInfoText(foodCategoryNameText, 22f, 32f);
 
-        foodCategoryNameText = CreateText(ribbon.transform, "CategoryName", "", new Vector2(-365f, 0f), new Vector2(250f, 46f), 25);
-        foodCategoryProgressText = CreateText(ribbon.transform, "CategoryProgress", "", new Vector2(-115f, 0f), new Vector2(160f, 46f), 24);
-        foodCategorySalesText = CreateText(ribbon.transform, "CategorySales", "", new Vector2(145f, 0f), new Vector2(160f, 46f), 24);
-        foodCategoryPassiveText = CreateText(ribbon.transform, "CategoryPassive", "", new Vector2(385f, 0f), new Vector2(160f, 46f), 24);
+        Image progressPill = CreateFoodCategoryInfoPill(ribbon.transform, "ProgressPill", new Vector2(-202f, 0f), new Vector2(238f, 58f));
+        CreateFoodUiImage(progressPill.transform, "ProgressIcon", GetFoodCoinChipSprite(), new Vector2(-88f, 0f), new Vector2(34f, 34f), true);
+        foodCategoryProgressText = CreateText(progressPill.transform, "CategoryProgress", "", new Vector2(18f, 0f), new Vector2(164f, 44f), 23);
 
-        StyleFoodCategoryInfoText(foodCategoryNameText, 17f, 25f);
-        StyleFoodCategoryInfoText(foodCategoryProgressText, 16f, 24f);
-        StyleFoodCategoryInfoText(foodCategorySalesText, 16f, 24f);
-        StyleFoodCategoryInfoText(foodCategoryPassiveText, 16f, 24f);
+        Image salesPill = CreateFoodCategoryInfoPill(ribbon.transform, "SalesPill", new Vector2(72f, 0f), new Vector2(270f, 58f));
+        CreateFoodUiImage(salesPill.transform, "SalesIcon", GetFoodCoinChipSprite(), new Vector2(-103f, 0f), new Vector2(34f, 34f), true);
+        foodCategorySalesText = CreateText(salesPill.transform, "CategorySales", "", new Vector2(18f, 0f), new Vector2(202f, 44f), 23);
+
+        Image passivePill = CreateFoodCategoryInfoPill(ribbon.transform, "PassivePill", new Vector2(372f, 0f), new Vector2(270f, 58f));
+        CreateFoodUiImage(passivePill.transform, "PassiveIcon", GetFoodPassiveChipSprite(), new Vector2(-103f, 0f), new Vector2(34f, 34f), true);
+        foodCategoryPassiveText = CreateText(passivePill.transform, "CategoryPassive", "", new Vector2(18f, 0f), new Vector2(202f, 44f), 23);
+
+        StyleFoodCategoryInfoText(foodCategoryProgressText, 18f, 23f);
+        StyleFoodCategoryInfoText(foodCategorySalesText, 18f, 23f);
+        StyleFoodCategoryInfoText(foodCategoryPassiveText, 18f, 23f);
         UpdateFoodCategoryInfo();
+    }
+
+    private Image CreateFoodCategoryInfoPill(Transform parent, string objectName, Vector2 position, Vector2 size)
+    {
+        Image pill = CreateFoodUiImage(parent, objectName, null, position, size, false);
+        pill.sprite = CreateRoundedRectSprite(
+            size,
+            new Color(0.20f, 0.075f, 0.018f, 0.78f),
+            new Color(0.92f, 0.61f, 0.20f, 0.90f),
+            18,
+            2);
+        pill.color = Color.white;
+        return pill;
     }
 
     private void StyleFoodCategoryInfoText(TMP_Text text, float minSize, float maxSize)
@@ -4215,13 +4233,13 @@ public class GameManager : MonoBehaviour
         }
 
         if (foodCategoryNameText != null)
-            foodCategoryNameText.text = GetFoodCategoryDisplayName(selectedFoodCategory) + " Koleksiyonu";
+            foodCategoryNameText.text = GetFoodCategoryDisplayName(selectedFoodCategory);
         if (foodCategoryProgressText != null)
             foodCategoryProgressText.text = purchased + "/" + total + " Al\u0131nd\u0131";
         if (foodCategorySalesText != null)
-            foodCategorySalesText.text = "+%" + salesBonus + " Sat\u0131\u015F";
+            foodCategorySalesText.text = "Sat\u0131\u015F +%" + salesBonus;
         if (foodCategoryPassiveText != null)
-            foodCategoryPassiveText.text = "+%" + passiveBonus + " Pasif";
+            foodCategoryPassiveText.text = "Pasif +%" + passiveBonus;
     }
 
     private string GetFoodCategoryDisplayName(FoodUpgradeCategory category)
