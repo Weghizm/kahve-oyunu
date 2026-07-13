@@ -266,8 +266,8 @@ public class GameManager : MonoBehaviour
     private static readonly Vector2 VipInfoPriceLineSize = new Vector2(160f, 22f);
     private static readonly Vector2 VipLeftClaimButtonTextPosition = new Vector2(0f, 0f);
     private static readonly Vector2 VipLeftClaimButtonTextSize = new Vector2(96f, 34f);
-    private static readonly Vector2 VipProfessionalInfoPosition = new Vector2(-407f, 35f);
-    private static readonly Vector2 VipProfessionalInfoSize = new Vector2(392f, 392f);
+    private static readonly Vector2 VipProfessionalInfoPosition = new Vector2(-384.8642f, 29.97939f);
+    private static readonly Vector2 VipProfessionalInfoSize = new Vector2(628.9684f, 427.0721f);
 
     private TMP_Text coinText;
     private readonly TMP_Text[] coinInfoPopupRows = new TMP_Text[6];
@@ -357,6 +357,8 @@ public class GameManager : MonoBehaviour
     private TMP_Text vipProfessionalStatusText;
     private TMP_Text vipProfessionalUpgradeText;
     private TMP_Text vipProfessionalUpgradeCostText;
+    private Button vipProfessionalUpgradeButton;
+    private Button vipProfessionalClaimButton;
     private TMP_Text foodUpgradeButtonText;
     private TMP_Text foodCategoryProgressText;
     private TMP_Text foodCategorySalesText;
@@ -989,6 +991,10 @@ public class GameManager : MonoBehaviour
         seniorBaristaCost = 2500;
         masterBaristaLevel = 0;
         masterBaristaCost = 20000;
+        for (int i = 0; i < foodUpgradeDatabase.Count; i++)
+        {
+            foodUpgradeDatabase[i].Level = 0;
+        }
         gems = 0;
         chests = 0;
         rareChests = 0;
@@ -4223,9 +4229,6 @@ public class GameManager : MonoBehaviour
         panelImage.sprite = GetFoodPanelBackgroundSprite();
         panelImage.color = Color.white;
         panelImage.preserveAspect = true;
-#if UNITY_EDITOR
-        AttachEditorDragProbe(panelRect, "FoodUpgradePanel");
-#endif
 
         TMP_Text title = CreateText(foodPanel.transform, "FoodPanelTitle", "Gıda Yükseltmeleri", new Vector2(3, 421), new Vector2(650, 72), 48);
         StyleFoodTitle(title, 48);
@@ -4406,9 +4409,6 @@ public class GameManager : MonoBehaviour
             tabImage.color = Color.white;
             tabImage.preserveAspect = false;
             tabImage.type = Image.Type.Simple;
-#if UNITY_EDITOR
-            AttachEditorDragProbe(tabRect, objectName);
-#endif
         }
 
         tabText.color = selected ? new Color(0.18f, 0.09f, 0.03f) : new Color(1f, 0.88f, 0.62f);
@@ -4486,9 +4486,6 @@ public class GameManager : MonoBehaviour
         cardImage.sprite = GetFoodCardFrameSprite();
         cardImage.color = Color.white;
         cardImage.preserveAspect = false;
-#if UNITY_EDITOR
-        AttachEditorDragProbe(cardRect, "FoodCard_" + data.Id);
-#endif
 
         FoodUpgradeCardUi ui = new FoodUpgradeCardUi();
         ui.Data = data;
@@ -4599,9 +4596,6 @@ public class GameManager : MonoBehaviour
         image.color = Color.white;
         image.preserveAspect = true;
         image.raycastTarget = false;
-#if UNITY_EDITOR
-        AttachEditorDragProbe(rect, "FoodIcon_" + data.Id);
-#endif
         return image;
     }
 
@@ -4621,9 +4615,6 @@ public class GameManager : MonoBehaviour
         image.color = Color.white;
         image.preserveAspect = preserveAspect;
         image.raycastTarget = false;
-#if UNITY_EDITOR
-        AttachEditorDragProbe(rect, objectName);
-#endif
         return image;
     }
 
@@ -4802,44 +4793,51 @@ public class GameManager : MonoBehaviour
         contentRect.anchorMax = new Vector2(0.5f, 0.5f);
         contentRect.anchoredPosition = Vector2.zero;
         contentRect.sizeDelta = new Vector2(438f, 438f);
-        contentRect.localScale = Vector3.one * (VipProfessionalInfoSize.x / 438f);
+        contentRect.localScale = Vector3.one * (VipProfessionalInfoSize.y / 438f);
         Transform content = contentObject.transform;
 
-        CreateVipProfessionalIcon(content, "TierCrest", 0, new Vector2(-124f, 124f), new Vector2(112f, 134f));
-        vipProfessionalUpgradeGemImage = CreateVipProfessionalIcon(content, "UpgradeGem", 1, new Vector2(169f, 45f), new Vector2(25f, 25f));
-        CreateVipProfessionalIcon(content, "CoinIcon", 2, new Vector2(-144f, -15f), new Vector2(45f, 45f));
-        CreateVipProfessionalIcon(content, "XpIcon", 3, new Vector2(38f, -15f), new Vector2(45f, 45f));
-        CreateVipProfessionalIcon(content, "CustomerIcon", 4, new Vector2(-144f, -79f), new Vector2(47f, 43f));
-        CreateVipProfessionalIcon(content, "PassiveIcon", 5, new Vector2(38f, -79f), new Vector2(45f, 42f));
-        CreateVipProfessionalIcon(content, "GiftIcon", 6, new Vector2(-151f, -151f), new Vector2(68f, 68f));
+        CreateVipProfessionalIcon(content, "TierCrest", 0, new Vector2(-134.52f, 112.25f), new Vector2(150f, 150f));
+        vipProfessionalUpgradeGemImage = CreateVipProfessionalIcon(content, "UpgradeGem", 1, new Vector2(158.7f, 53.3f), new Vector2(20.4431f, 20.4431f));
+        CreateVipProfessionalIcon(content, "CoinIcon", 2, new Vector2(-150.9f, -5.7f), new Vector2(60f, 60f));
+        CreateVipProfessionalIcon(content, "XpIcon", 3, new Vector2(38f, -5.7f), new Vector2(60f, 60f));
+        CreateVipProfessionalIcon(content, "CustomerIcon", 4, new Vector2(-150.9f, -65.69997f), new Vector2(60f, 60f));
+        CreateVipProfessionalIcon(content, "PassiveIcon", 5, new Vector2(38f, -73.79998f), new Vector2(60f, 60f));
+        CreateVipProfessionalIcon(content, "GiftIcon", 6, new Vector2(-154.9f, -147f), new Vector2(68f, 68f));
 
-        vipProfessionalTierTitleText = CreateVipProfessionalText(content, "TierTitle", "VIP YOK", new Vector2(61f, 133f), new Vector2(218f, 48f), 30f);
+        vipProfessionalTierTitleText = CreateVipProfessionalText(content, "TierTitle", "VIP YOK", new Vector2(59.922f, 146.7f), new Vector2(218f, 48f), 30f);
         vipProfessionalTierTitleText.outlineColor = new Color(0.20f, 0.10f, 0.04f, 0.96f);
         vipProfessionalTierTitleText.outlineWidth = 0.14f;
 
-        vipProfessionalStatusText = CreateVipProfessionalText(content, "Status", "KİLİTLİ", new Vector2(65f, 87f), new Vector2(104f, 28f), 18f);
-        vipProfessionalStatusText.color = new Color(1f, 0.91f, 0.60f, 1f);
+        vipProfessionalStatusText = CreateVipProfessionalText(content, "Status", "KİLİTLİ", new Vector2(68.4f, 91.6f), new Vector2(104f, 28f), 18f);
+        vipProfessionalStatusText.color = Color.white;
 
-        vipProfessionalUpgradeText = CreateVipProfessionalText(content, "UpgradeTarget", "BRONZ VIP'E GEÇ", new Vector2(18f, 45f), new Vector2(160f, 30f), 16f);
+        vipProfessionalUpgradeText = CreateVipProfessionalText(content, "UpgradeTarget", "BRONZ VIP'E GEÇ", new Vector2(20.48f, 52.25f), new Vector2(160f, 30f), 16f);
         vipProfessionalUpgradeText.color = new Color(1f, 0.91f, 0.62f, 1f);
         vipProfessionalUpgradeText.alignment = TextAlignmentOptions.Left;
 
-        vipProfessionalUpgradeCostText = CreateVipProfessionalText(content, "UpgradeCost", "0", new Vector2(137f, 45f), new Vector2(44f, 30f), 19f);
+        vipProfessionalUpgradeCostText = CreateVipProfessionalText(content, "UpgradeCost", "0", new Vector2(120.5f, 52.24999f), new Vector2(44f, 30f), 19f);
         vipProfessionalUpgradeCostText.color = new Color(0.30f, 0.13f, 0.02f, 1f);
 
-        vipLeftCoinPillText = CreateVipProfessionalText(content, "CoinBonus", "COIN +%0", new Vector2(-61f, -15f), new Vector2(98f, 32f), 16f);
-        vipLeftXpPillText = CreateVipProfessionalText(content, "XpBonus", "XP +%0", new Vector2(118f, -15f), new Vector2(94f, 32f), 16f);
-        vipLeftCustomerPillText = CreateVipProfessionalText(content, "CustomerBonus", "MÜŞTERİ +%0", new Vector2(-59f, -79f), new Vector2(102f, 32f), 14f);
-        vipLeftPassivePillText = CreateVipProfessionalText(content, "PassiveBonus", "PASİF +%0", new Vector2(118f, -79f), new Vector2(94f, 32f), 15f);
+        vipProfessionalUpgradeButton = CreateInvisibleButton(
+            content,
+            "VipProfessionalUpgradeButton",
+            new Vector2(54f, 52.25f),
+            new Vector2(236f, 48f),
+            UpgradeVipLevel);
 
-        TMP_Text dailyTitle = CreateVipProfessionalText(content, "DailyGiftTitle", "GÜNLÜK HEDİYE", new Vector2(-22f, -145f), new Vector2(166f, 38f), 18f);
+        vipLeftCoinPillText = CreateVipProfessionalText(content, "CoinBonus", "COIN +%0", new Vector2(-75.7052f, -11.75f), new Vector2(121.1997f, 38.5f), 18f);
+        vipLeftXpPillText = CreateVipProfessionalText(content, "XpBonus", "XP +%0", new Vector2(119f, -11.75f), new Vector2(94f, 32f), 18f);
+        vipLeftCustomerPillText = CreateVipProfessionalText(content, "CustomerBonus", "MÜŞTERİ +%0", new Vector2(-75.705f, -73.8f), new Vector2(102f, 32f), 17f);
+        vipLeftPassivePillText = CreateVipProfessionalText(content, "PassiveBonus", "PASİF +%0", new Vector2(127f, -73.80001f), new Vector2(94f, 32f), 17f);
+
+        TMP_Text dailyTitle = CreateVipProfessionalText(content, "DailyGiftTitle", "GÜNLÜK HEDİYE", new Vector2(-37.89999f, -132f), new Vector2(166f, 38f), 18f);
         dailyTitle.color = new Color(1f, 0.89f, 0.55f, 1f);
 
         vipLeftClaimButtonText = CreateTransparentButton(
             content,
             "VipLeftClaimButton",
             "AL",
-            new Vector2(119f, -147f),
+            new Vector2(112.5f, -140f),
             new Vector2(126f, 54f),
             ClickVipLeftClaimButton,
             27f,
@@ -4848,7 +4846,7 @@ public class GameManager : MonoBehaviour
         vipLeftClaimButtonText.fontStyle = FontStyles.Bold;
         vipLeftClaimButtonText.fontSizeMin = 20f;
         vipLeftClaimButtonText.fontSizeMax = 27f;
-        AttachPressAnimator(vipLeftClaimButtonText.transform.parent as RectTransform, new Vector2(0f, -4f), 0.96f);
+        vipProfessionalClaimButton = vipLeftClaimButtonText.GetComponentInParent<Button>();
     }
 
     private Image CreateVipProfessionalIcon(Transform parent, string objectName, int iconIndex, Vector2 position, Vector2 size)
@@ -6375,7 +6373,7 @@ public class GameManager : MonoBehaviour
         return text;
     }
 
-    private void CreateInvisibleButton(Transform parent, string objectName, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action)
+    private Button CreateInvisibleButton(Transform parent, string objectName, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action)
     {
         GameObject buttonObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
         buttonObject.transform.SetParent(parent, false);
@@ -6392,6 +6390,7 @@ public class GameManager : MonoBehaviour
         Button button = buttonObject.GetComponent<Button>();
         button.targetGraphic = image;
         button.onClick.AddListener(action);
+        return button;
     }
 
     private TMP_Text CreateButton(Transform parent, string objectName, string label, Vector2 position, Vector2 size, UnityEngine.Events.UnityAction action, Color color, float fontSize)
@@ -6434,6 +6433,12 @@ public class GameManager : MonoBehaviour
         }
 
         return amount.ToString();
+    }
+
+    private static void SetVipLockedTextSize(TMP_Text text, bool locked, float normalMaxSize)
+    {
+        text.fontSizeMin = locked ? 15f : Mathf.Max(10f, normalMaxSize - 5f);
+        text.fontSizeMax = locked ? 19f : normalMaxSize;
     }
 
     private void UpdateUI()
@@ -6744,7 +6749,7 @@ public class GameManager : MonoBehaviour
                 ? new Color(0.91f, 1f, 0.63f, 1f)
                 : openTier
                     ? new Color(1f, 0.91f, 0.58f, 1f)
-                    : new Color(1f, 0.71f, 0.55f, 1f);
+                    : Color.white;
         }
 
         bool vipAtMaximum = vipLevel >= MaxVipLevel;
@@ -6758,32 +6763,79 @@ public class GameManager : MonoBehaviour
         if (vipProfessionalUpgradeGemImage != null)
             vipProfessionalUpgradeGemImage.gameObject.SetActive(!vipAtMaximum);
 
+        if (vipProfessionalUpgradeButton != null)
+            vipProfessionalUpgradeButton.interactable = !vipAtMaximum && gems >= GetVipUpgradeCost();
+
+        if (vipProfessionalClaimButton != null)
+            vipProfessionalClaimButton.interactable = true;
+
+        bool shownVipIsLocked = shownVipLevel <= 0;
+
         if (vipCoinBonusText != null)
-            vipCoinBonusText.text = shownVipName + "\nCoin " + GetVipBonusValueText(GetVipCoinBonusPercent(shownVipLevel));
+        {
+            vipCoinBonusText.text = shownVipIsLocked ? "KİLİTLİ" : shownVipName + "\nCoin " + GetVipBonusValueText(GetVipCoinBonusPercent(shownVipLevel));
+            SetVipLockedTextSize(vipCoinBonusText, shownVipIsLocked, 16f);
+        }
 
         if (vipXpBonusText != null)
-            vipXpBonusText.text = shownVipName + "\nXP " + GetVipBonusValueText(GetVipXpBonusPercent(shownVipLevel));
+        {
+            vipXpBonusText.text = shownVipIsLocked ? "KİLİTLİ" : shownVipName + "\nXP " + GetVipBonusValueText(GetVipXpBonusPercent(shownVipLevel));
+            SetVipLockedTextSize(vipXpBonusText, shownVipIsLocked, 16f);
+        }
 
         if (vipCoffeeBonusText != null)
-            vipCoffeeBonusText.text = shownVipName + "\nMüşteri " + GetVipBonusValueText(GetVipPatienceBonusPercent(shownVipLevel));
+        {
+            vipCoffeeBonusText.text = shownVipIsLocked ? "KİLİTLİ" : shownVipName + "\nMüşteri " + GetVipBonusValueText(GetVipPatienceBonusPercent(shownVipLevel));
+            SetVipLockedTextSize(vipCoffeeBonusText, shownVipIsLocked, 16f);
+        }
 
         if (vipPassiveBonusText != null)
-            vipPassiveBonusText.text = shownVipName + "\nPasif Gelir " + GetVipBonusValueText(GetVipPassiveBonusPercent(shownVipLevel));
+        {
+            vipPassiveBonusText.text = shownVipIsLocked ? "KİLİTLİ" : shownVipName + "\nPasif Gelir " + GetVipBonusValueText(GetVipPassiveBonusPercent(shownVipLevel));
+            SetVipLockedTextSize(vipPassiveBonusText, shownVipIsLocked, 16f);
+        }
 
         if (vipDecorBonusText != null)
-            vipDecorBonusText.text = shownVipName + "\nİndirim " + GetVipDiscountBonusText(shownVipLevel);
+        {
+            vipDecorBonusText.text = shownVipIsLocked ? "KİLİTLİ" : shownVipName + "\nİndirim " + GetVipDiscountBonusText(shownVipLevel);
+            SetVipLockedTextSize(vipDecorBonusText, shownVipIsLocked, 16f);
+        }
 
         if (vipLeftCoinPillText != null)
-            vipLeftCoinPillText.text = "COIN +%" + GetVipCoinBonusPercent(shownVipLevel);
+        {
+            vipLeftCoinPillText.text = shownVipIsLocked ? "KİLİTLİ" : "COIN +%" + GetVipCoinBonusPercent(shownVipLevel);
+            SetVipLockedTextSize(vipLeftCoinPillText, shownVipIsLocked, 18f);
+            vipLeftCoinPillText.rectTransform.anchoredPosition = shownVipIsLocked
+                ? new Vector2(-74.2052f, -12.75f)
+                : new Vector2(-75.7052f, -11.75f);
+        }
 
         if (vipLeftXpPillText != null)
-            vipLeftXpPillText.text = "XP +%" + GetVipXpBonusPercent(shownVipLevel);
+        {
+            vipLeftXpPillText.text = shownVipIsLocked ? "KİLİTLİ" : "XP +%" + GetVipXpBonusPercent(shownVipLevel);
+            SetVipLockedTextSize(vipLeftXpPillText, shownVipIsLocked, 18f);
+            vipLeftXpPillText.rectTransform.anchoredPosition = shownVipIsLocked
+                ? new Vector2(120.5f, -12.75f)
+                : new Vector2(119f, -11.75f);
+        }
 
         if (vipLeftCustomerPillText != null)
-            vipLeftCustomerPillText.text = "MÜŞTERİ +%" + GetVipPatienceBonusPercent(shownVipLevel);
+        {
+            vipLeftCustomerPillText.text = shownVipIsLocked ? "KİLİTLİ" : "MÜŞTERİ +%" + GetVipPatienceBonusPercent(shownVipLevel);
+            SetVipLockedTextSize(vipLeftCustomerPillText, shownVipIsLocked, 17f);
+            vipLeftCustomerPillText.rectTransform.anchoredPosition = shownVipIsLocked
+                ? new Vector2(-74.205f, -74.8f)
+                : new Vector2(-75.705f, -73.8f);
+        }
 
         if (vipLeftPassivePillText != null)
-            vipLeftPassivePillText.text = "PASİF +%" + GetVipPassiveBonusPercent(shownVipLevel);
+        {
+            vipLeftPassivePillText.text = shownVipIsLocked ? "KİLİTLİ" : "PASİF +%" + GetVipPassiveBonusPercent(shownVipLevel);
+            SetVipLockedTextSize(vipLeftPassivePillText, shownVipIsLocked, 17f);
+            vipLeftPassivePillText.rectTransform.anchoredPosition = shownVipIsLocked
+                ? new Vector2(128.5f, -74.80001f)
+                : new Vector2(127f, -73.80001f);
+        }
 
         if (vipLeftClaimButtonText != null)
             vipLeftClaimButtonText.text = "AL";
@@ -6818,6 +6870,8 @@ public class GameManager : MonoBehaviour
                 vipLevelCardTexts[i].color = readableCardText;
                 vipLevelCardTexts[i].outlineColor = readableCardOutline;
                 vipLevelCardTexts[i].outlineWidth = 0.12f;
+                vipLevelCardTexts[i].fontSizeMin = cardLocked ? 14f : 11f;
+                vipLevelCardTexts[i].fontSizeMax = cardLocked ? 19f : 16f;
             }
 
             if (i < vipLevelCardTitleTexts.Count)
