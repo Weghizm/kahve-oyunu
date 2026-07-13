@@ -3133,7 +3133,7 @@ public class GameManager : MonoBehaviour
     private Sprite GetFoodCloseButtonSprite()
     {
         if (foodCloseButtonSprite == null)
-            foodCloseButtonSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_close_button");
+            foodCloseButtonSprite = LoadSpriteFromResources("Art/UI/Food/food_close_button");
         return foodCloseButtonSprite;
     }
 
@@ -4073,18 +4073,15 @@ public class GameManager : MonoBehaviour
         TMP_Text title = CreateText(foodPanel.transform, "FoodPanelTitle", "Gıda Yükseltmeleri", new Vector2(0, 407), new Vector2(650, 72), 48);
         StyleFoodTitle(title, 48);
 
-        TMP_Text closeText = CreateButton(foodPanel.transform, "FoodPanelCloseButton", "X", new Vector2(752, 407), new Vector2(72, 72), CloseFoodUpgradePanel, new Color(0.78f, 0.19f, 0.12f), 34);
-        StyleFoodButton(closeText, new Color(0.78f, 0.19f, 0.12f), 34);
+        TMP_Text closeText = CreateButton(foodPanel.transform, "FoodPanelCloseButton", "", new Vector2(724, 407), new Vector2(76, 76), CloseFoodUpgradePanel, Color.white, 1);
         Image closeImage = closeText.GetComponentInParent<Image>();
         if (closeImage != null)
         {
-            closeImage.sprite = null;
-            closeImage.color = Color.clear;
-            closeText.text = "X";
-            closeText.color = new Color(1f, 0.91f, 0.62f);
-            closeText.outlineColor = new Color(0.24f, 0.08f, 0.02f, 1f);
-            closeText.outlineWidth = 0.18f;
+            closeImage.sprite = GetFoodCloseButtonSprite();
+            closeImage.color = Color.white;
+            closeImage.preserveAspect = true;
         }
+        closeText.gameObject.SetActive(false);
 
         CreateFoodCategoryTab("FoodTabCoffee", "Kahve", FoodUpgradeCategory.Coffee, new Vector2(-665, 272), true);
         CreateFoodCategoryTab("FoodTabSweet", "Tatlı", FoodUpgradeCategory.Sweet, new Vector2(-665, 93), false);
