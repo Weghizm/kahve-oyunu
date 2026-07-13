@@ -76,7 +76,7 @@ public sealed class FoodUISetupTool : EditorWindow
 
     public static void ApplyVipCardAtlasForBatch()
     {
-        const string assetPath = "Assets/Resources/Art/UI/vip_cards_modular_atlas_v2.png";
+        const string assetPath = "Assets/Resources/Art/UI/vip_cards_modular_atlas_v3.png";
         AssetDatabase.Refresh();
         TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
         if (importer == null)
