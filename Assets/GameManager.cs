@@ -4795,38 +4795,48 @@ public class GameManager : MonoBehaviour
         background.preserveAspect = true;
         background.raycastTarget = false;
 
-        CreateVipProfessionalIcon(rootObject.transform, "TierCrest", 0, new Vector2(-124f, 124f), new Vector2(112f, 134f));
-        vipProfessionalUpgradeGemImage = CreateVipProfessionalIcon(rootObject.transform, "UpgradeGem", 1, new Vector2(169f, 45f), new Vector2(25f, 25f));
-        CreateVipProfessionalIcon(rootObject.transform, "CoinIcon", 2, new Vector2(-144f, -15f), new Vector2(45f, 45f));
-        CreateVipProfessionalIcon(rootObject.transform, "XpIcon", 3, new Vector2(38f, -15f), new Vector2(45f, 45f));
-        CreateVipProfessionalIcon(rootObject.transform, "CustomerIcon", 4, new Vector2(-144f, -79f), new Vector2(47f, 43f));
-        CreateVipProfessionalIcon(rootObject.transform, "PassiveIcon", 5, new Vector2(38f, -79f), new Vector2(45f, 42f));
-        CreateVipProfessionalIcon(rootObject.transform, "GiftIcon", 6, new Vector2(-151f, -151f), new Vector2(72f, 72f));
+        GameObject contentObject = new GameObject("Content", typeof(RectTransform));
+        contentObject.transform.SetParent(rootObject.transform, false);
+        RectTransform contentRect = contentObject.GetComponent<RectTransform>();
+        contentRect.anchorMin = new Vector2(0.5f, 0.5f);
+        contentRect.anchorMax = new Vector2(0.5f, 0.5f);
+        contentRect.anchoredPosition = Vector2.zero;
+        contentRect.sizeDelta = new Vector2(438f, 438f);
+        contentRect.localScale = Vector3.one * (VipProfessionalInfoSize.x / 438f);
+        Transform content = contentObject.transform;
 
-        vipProfessionalTierTitleText = CreateVipProfessionalText(rootObject.transform, "TierTitle", "VIP YOK", new Vector2(61f, 133f), new Vector2(218f, 48f), 30f);
+        CreateVipProfessionalIcon(content, "TierCrest", 0, new Vector2(-124f, 124f), new Vector2(112f, 134f));
+        vipProfessionalUpgradeGemImage = CreateVipProfessionalIcon(content, "UpgradeGem", 1, new Vector2(169f, 45f), new Vector2(25f, 25f));
+        CreateVipProfessionalIcon(content, "CoinIcon", 2, new Vector2(-144f, -15f), new Vector2(45f, 45f));
+        CreateVipProfessionalIcon(content, "XpIcon", 3, new Vector2(38f, -15f), new Vector2(45f, 45f));
+        CreateVipProfessionalIcon(content, "CustomerIcon", 4, new Vector2(-144f, -79f), new Vector2(47f, 43f));
+        CreateVipProfessionalIcon(content, "PassiveIcon", 5, new Vector2(38f, -79f), new Vector2(45f, 42f));
+        CreateVipProfessionalIcon(content, "GiftIcon", 6, new Vector2(-151f, -151f), new Vector2(68f, 68f));
+
+        vipProfessionalTierTitleText = CreateVipProfessionalText(content, "TierTitle", "VIP YOK", new Vector2(61f, 133f), new Vector2(218f, 48f), 30f);
         vipProfessionalTierTitleText.outlineColor = new Color(0.20f, 0.10f, 0.04f, 0.96f);
         vipProfessionalTierTitleText.outlineWidth = 0.14f;
 
-        vipProfessionalStatusText = CreateVipProfessionalText(rootObject.transform, "Status", "KİLİTLİ", new Vector2(65f, 87f), new Vector2(104f, 28f), 18f);
+        vipProfessionalStatusText = CreateVipProfessionalText(content, "Status", "KİLİTLİ", new Vector2(65f, 87f), new Vector2(104f, 28f), 18f);
         vipProfessionalStatusText.color = new Color(1f, 0.91f, 0.60f, 1f);
 
-        vipProfessionalUpgradeText = CreateVipProfessionalText(rootObject.transform, "UpgradeTarget", "BRONZ VIP'E GEÇ", new Vector2(31f, 45f), new Vector2(190f, 30f), 18f);
+        vipProfessionalUpgradeText = CreateVipProfessionalText(content, "UpgradeTarget", "BRONZ VIP'E GEÇ", new Vector2(18f, 45f), new Vector2(160f, 30f), 16f);
         vipProfessionalUpgradeText.color = new Color(1f, 0.91f, 0.62f, 1f);
         vipProfessionalUpgradeText.alignment = TextAlignmentOptions.Left;
 
-        vipProfessionalUpgradeCostText = CreateVipProfessionalText(rootObject.transform, "UpgradeCost", "0", new Vector2(137f, 45f), new Vector2(48f, 30f), 19f);
+        vipProfessionalUpgradeCostText = CreateVipProfessionalText(content, "UpgradeCost", "0", new Vector2(137f, 45f), new Vector2(44f, 30f), 19f);
         vipProfessionalUpgradeCostText.color = new Color(0.30f, 0.13f, 0.02f, 1f);
 
-        vipLeftCoinPillText = CreateVipProfessionalText(rootObject.transform, "CoinBonus", "COIN +%0", new Vector2(-71f, -15f), new Vector2(104f, 32f), 17f);
-        vipLeftXpPillText = CreateVipProfessionalText(rootObject.transform, "XpBonus", "XP +%0", new Vector2(112f, -15f), new Vector2(104f, 32f), 17f);
-        vipLeftCustomerPillText = CreateVipProfessionalText(rootObject.transform, "CustomerBonus", "MÜŞTERİ +%0", new Vector2(-69f, -79f), new Vector2(110f, 32f), 15f);
-        vipLeftPassivePillText = CreateVipProfessionalText(rootObject.transform, "PassiveBonus", "PASİF +%0", new Vector2(112f, -79f), new Vector2(104f, 32f), 16f);
+        vipLeftCoinPillText = CreateVipProfessionalText(content, "CoinBonus", "COIN +%0", new Vector2(-61f, -15f), new Vector2(98f, 32f), 16f);
+        vipLeftXpPillText = CreateVipProfessionalText(content, "XpBonus", "XP +%0", new Vector2(118f, -15f), new Vector2(94f, 32f), 16f);
+        vipLeftCustomerPillText = CreateVipProfessionalText(content, "CustomerBonus", "MÜŞTERİ +%0", new Vector2(-59f, -79f), new Vector2(102f, 32f), 14f);
+        vipLeftPassivePillText = CreateVipProfessionalText(content, "PassiveBonus", "PASİF +%0", new Vector2(118f, -79f), new Vector2(94f, 32f), 15f);
 
-        TMP_Text dailyTitle = CreateVipProfessionalText(rootObject.transform, "DailyGiftTitle", "GÜNLÜK HEDİYE", new Vector2(-25f, -145f), new Vector2(154f, 38f), 20f);
+        TMP_Text dailyTitle = CreateVipProfessionalText(content, "DailyGiftTitle", "GÜNLÜK HEDİYE", new Vector2(-22f, -145f), new Vector2(166f, 38f), 18f);
         dailyTitle.color = new Color(1f, 0.89f, 0.55f, 1f);
 
         vipLeftClaimButtonText = CreateTransparentButton(
-            rootObject.transform,
+            content,
             "VipLeftClaimButton",
             "AL",
             new Vector2(119f, -147f),
