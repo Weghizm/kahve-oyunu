@@ -3080,14 +3080,14 @@ public class GameManager : MonoBehaviour
     private Sprite GetFoodCategoryTabSelectedSprite()
     {
         if (foodCategoryTabSelectedSprite == null)
-            foodCategoryTabSelectedSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_category_tab_selected");
+            foodCategoryTabSelectedSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_category_tab_selected_v2");
         return foodCategoryTabSelectedSprite;
     }
 
     private Sprite GetFoodCategoryTabNormalSprite()
     {
         if (foodCategoryTabNormalSprite == null)
-            foodCategoryTabNormalSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_category_tab_normal");
+            foodCategoryTabNormalSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_category_tab_normal_v2");
         return foodCategoryTabNormalSprite;
     }
 
@@ -4068,10 +4068,10 @@ public class GameManager : MonoBehaviour
             closeText.outlineWidth = 0.18f;
         }
 
-        CreateFoodCategoryTab("FoodTabCoffee", "Kahve", FoodUpgradeCategory.Coffee, new Vector2(-686, 264), true);
-        CreateFoodCategoryTab("FoodTabSweet", "Tatlı", FoodUpgradeCategory.Sweet, new Vector2(-686, 106), false);
-        CreateFoodCategoryTab("FoodTabSnack", "Atıştırmalık", FoodUpgradeCategory.Snack, new Vector2(-686, -70), false);
-        CreateFoodCategoryTab("FoodTabCold", "Soğuk", FoodUpgradeCategory.Cold, new Vector2(-686, -247), false);
+        CreateFoodCategoryTab("FoodTabCoffee", "Kahve", FoodUpgradeCategory.Coffee, new Vector2(-665, 272), true);
+        CreateFoodCategoryTab("FoodTabSweet", "Tatlı", FoodUpgradeCategory.Sweet, new Vector2(-665, 93), false);
+        CreateFoodCategoryTab("FoodTabSnack", "Atıştırmalık", FoodUpgradeCategory.Snack, new Vector2(-665, -75), false);
+        CreateFoodCategoryTab("FoodTabCold", "Soğuk", FoodUpgradeCategory.Cold, new Vector2(-665, -240), false);
 
         GameObject viewportObject = new GameObject("FoodCardsViewport", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(RectMask2D));
         viewportObject.transform.SetParent(foodPanel.transform, false);
@@ -4131,7 +4131,7 @@ public class GameManager : MonoBehaviour
 
     private void CreateFoodCategoryTab(string objectName, string label, FoodUpgradeCategory category, Vector2 position, bool selected)
     {
-        TMP_Text tabText = CreateButton(foodPanel.transform, objectName, label, position, new Vector2(180, 116), delegate { SelectFoodCategory(category); }, Color.clear, 26);
+        TMP_Text tabText = CreateButton(foodPanel.transform, objectName, label, position, new Vector2(220, 165), delegate { SelectFoodCategory(category); }, Color.clear, 26);
         foodCategoryTabTexts[category] = tabText;
         Image tabImage = tabText.GetComponentInParent<Image>();
         RectTransform tabRect = tabText.GetComponentInParent<RectTransform>();
@@ -4140,7 +4140,7 @@ public class GameManager : MonoBehaviour
             tabImage.sprite = selected ? GetFoodCategoryTabSelectedSprite() : GetFoodCategoryTabNormalSprite();
             tabImage.color = Color.white;
             tabImage.preserveAspect = false;
-            tabImage.type = Image.Type.Sliced;
+            tabImage.type = Image.Type.Simple;
 #if UNITY_EDITOR
             AttachEditorDragProbe(tabRect, objectName);
 #endif
@@ -4190,7 +4190,7 @@ public class GameManager : MonoBehaviour
             {
                 tabImage.sprite = selected ? GetFoodCategoryTabSelectedSprite() : GetFoodCategoryTabNormalSprite();
                 tabImage.color = Color.white;
-                tabImage.type = Image.Type.Sliced;
+                tabImage.type = Image.Type.Simple;
             }
 
             pair.Value.color = selected ? new Color(0.20f, 0.10f, 0.03f, 1f) : new Color(1f, 0.90f, 0.68f, 1f);
