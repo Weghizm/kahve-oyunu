@@ -6787,12 +6787,12 @@ public class GameManager : MonoBehaviour
 
             if (ui.OrderStripImage != null)
             {
-                ui.OrderStripImage.gameObject.SetActive(unlocked);
+                ui.OrderStripImage.gameObject.SetActive(true);
             }
 
             if (ui.PassiveStripImage != null)
             {
-                ui.PassiveStripImage.gameObject.SetActive(unlocked);
+                ui.PassiveStripImage.gameObject.SetActive(true);
             }
 
             if (ui.BeanLeftImage != null) ui.BeanLeftImage.gameObject.SetActive(unlocked);
@@ -6800,22 +6800,24 @@ public class GameManager : MonoBehaviour
             if (ui.BeanRightImage != null) ui.BeanRightImage.gameObject.SetActive(unlocked);
 
             if (ui.LockedBadgeImage != null) ui.LockedBadgeImage.gameObject.SetActive(false);
-            if (ui.LockedIconImage != null) ui.LockedIconImage.gameObject.SetActive(!unlocked);
-            if (ui.UnlockStripImage != null) ui.UnlockStripImage.gameObject.SetActive(!unlocked);
+            if (ui.LockedIconImage != null) ui.LockedIconImage.gameObject.SetActive(false);
+            if (ui.UnlockStripImage != null) ui.UnlockStripImage.gameObject.SetActive(false);
             if (ui.UnlockText != null)
             {
-                ui.UnlockText.gameObject.SetActive(!unlocked);
+                ui.UnlockText.gameObject.SetActive(false);
                 ui.UnlockText.text = "Seviye " + data.UnlockPlayerLevel + "'de açılır";
             }
 
             if (ui.OrderIconImage != null)
             {
-                ui.OrderIconImage.gameObject.SetActive(unlocked);
+                ui.OrderIconImage.gameObject.SetActive(true);
+                ui.OrderIconImage.color = unlocked ? Color.white : new Color(0.72f, 0.69f, 0.63f, 0.78f);
             }
 
             if (ui.PassiveIconImage != null)
             {
-                ui.PassiveIconImage.gameObject.SetActive(unlocked);
+                ui.PassiveIconImage.gameObject.SetActive(true);
+                ui.PassiveIconImage.color = unlocked ? Color.white : new Color(0.72f, 0.69f, 0.63f, 0.78f);
             }
 
             if (ui.NameText != null)
@@ -6832,13 +6834,15 @@ public class GameManager : MonoBehaviour
 
             if (ui.OrderText != null)
             {
-                ui.OrderText.gameObject.SetActive(unlocked);
+                ui.OrderText.gameObject.SetActive(true);
+                ui.OrderText.color = unlocked ? new Color(0.18f, 0.10f, 0.04f) : new Color(0.36f, 0.33f, 0.29f);
                 ui.OrderText.text = "Satış Geliri  +%" + data.SalesBonusPercent;
             }
 
             if (ui.PassiveText != null)
             {
-                ui.PassiveText.gameObject.SetActive(unlocked);
+                ui.PassiveText.gameObject.SetActive(true);
+                ui.PassiveText.color = unlocked ? new Color(0.18f, 0.10f, 0.04f) : new Color(0.36f, 0.33f, 0.29f);
                 ui.PassiveText.text = "Pasif Gelir  +%" + data.PassiveBonusPercent;
             }
 
