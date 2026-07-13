@@ -3028,7 +3028,7 @@ public class GameManager : MonoBehaviour
     {
         if (foodPanelBackgroundSprite == null)
         {
-            foodPanelBackgroundSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_upgrade_panel_background");
+            foodPanelBackgroundSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_upgrade_panel_background_v2");
         }
 
         return foodPanelBackgroundSprite;

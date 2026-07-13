@@ -7,6 +7,7 @@ using UnityEngine;
 public sealed class FoodUISetupTool : EditorWindow
 {
     private const string DefaultFolder = "Assets/Resources/Art/UI/Food";
+    private const string PendingApplyRequest = "Temp/FoodUIApply.request";
 
     private static readonly Dictionary<string, Vector4> SliceBorders = new Dictionary<string, Vector4>(StringComparer.OrdinalIgnoreCase)
     {
@@ -50,6 +51,15 @@ public sealed class FoodUISetupTool : EditorWindow
     public static void ApplyForBatch()
     {
         Debug.Log(ValidateFolder(DefaultFolder, true));
+    }
+
+    [InitializeOnLoadMethod]
+    private static void ApplyPendingRequestOnReload()
+    {
+        if (!File.Exists(PendingApplyRequest)) return;
+
+        File.Delete(PendingApplyRequest);
+        EditorApplication.delayCall += ApplyForBatch;
     }
 
     private void RunInteractiveApply()
