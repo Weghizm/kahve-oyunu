@@ -4220,15 +4220,15 @@ public class GameManager : MonoBehaviour
         ui.NameText = CreateText(cardObject.transform, "NameText", data.DisplayName, new Vector2(0.59998f, 136.4f), new Vector2(172, 32), 20);
         StyleFoodCardText(ui.NameText, 14, 20, TextAlignmentOptions.Center);
 
-        ui.IconImage = CreateFoodCardIcon(cardObject.transform, data, new Vector2(0, 67.9f), new Vector2(126, 126));
+        ui.IconImage = CreateFoodCardIcon(cardObject.transform, data, new Vector2(-0.000035286f, 53f), new Vector2(112.0013f, 94.2971f));
 
         if (data.Id == "coffee")
         {
-            ui.BeanLeftImage = CreateFoodUiImage(cardObject.transform, "BeanDecorLeft", GetFoodPassiveChipSprite(), new Vector2(-22, 5), new Vector2(17, 17), true);
+            ui.BeanLeftImage = CreateFoodUiImage(cardObject.transform, "BeanDecorLeft", GetFoodPassiveChipSprite(), new Vector2(-24.89997f, -4.900003f), new Vector2(17, 17), true);
             ui.BeanLeftImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -28f);
-            ui.BeanCenterImage = CreateFoodUiImage(cardObject.transform, "BeanDecorCenter", GetFoodPassiveChipSprite(), new Vector2(0, 1), new Vector2(18, 18), true);
+            ui.BeanCenterImage = CreateFoodUiImage(cardObject.transform, "BeanDecorCenter", GetFoodPassiveChipSprite(), new Vector2(-2.9f, -8.9f), new Vector2(18, 18), true);
             ui.BeanCenterImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 12f);
-            ui.BeanRightImage = CreateFoodUiImage(cardObject.transform, "BeanDecorRight", GetFoodPassiveChipSprite(), new Vector2(22, 6), new Vector2(16, 16), true);
+            ui.BeanRightImage = CreateFoodUiImage(cardObject.transform, "BeanDecorRight", GetFoodPassiveChipSprite(), new Vector2(19.10003f, -3.900003f), new Vector2(16, 16), true);
             ui.BeanRightImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 34f);
         }
 
@@ -4237,9 +4237,9 @@ public class GameManager : MonoBehaviour
         levelRow.color = Color.white;
         ui.LevelRowImage = levelRow;
 
-        ui.LevelBadgeImage = CreateFoodUiImage(cardObject.transform, "LevelBadge", GetFoodLevelBadgeSprite(), new Vector2(-51.50002f, -35.99997f), new Vector2(42, 42), true);
+        ui.LevelBadgeImage = CreateFoodUiImage(cardObject.transform, "LevelBadge", GetFoodLevelBadgeSprite(), new Vector2(-52f, -26.4f), new Vector2(42, 42), true);
 
-        ui.LevelText = CreateText(cardObject.transform, "LevelText", "", new Vector2(-51.5f, -35.99999f), new Vector2(38, 34), 11);
+        ui.LevelText = CreateText(cardObject.transform, "LevelText", "", new Vector2(-52f, -26.024f), new Vector2(38, 30.543f), 11);
         ui.LevelText.color = Color.white;
         ui.LevelText.fontStyle = FontStyles.Bold;
         ui.LevelText.alignment = TextAlignmentOptions.Center;
@@ -4250,7 +4250,7 @@ public class GameManager : MonoBehaviour
         ui.LevelText.outlineWidth = 0.12f;
         ApplyVipFont(ui.LevelText);
 
-        TMP_Text levelLabel = CreateText(cardObject.transform, "LevelLabel", "Gerekli Seviye", new Vector2(23, -35), new Vector2(112, 28), 13);
+        TMP_Text levelLabel = CreateText(cardObject.transform, "LevelLabel", "Gerekli Seviye", new Vector2(17.99998f, -30.04402f), new Vector2(85.427f, 22.5021f), 13);
         StyleFoodCardText(levelLabel, 9, 13, TextAlignmentOptions.Center);
         ui.LevelLabelText = levelLabel;
 
@@ -4263,21 +4263,21 @@ public class GameManager : MonoBehaviour
         ui.UnlockText = CreateText(cardObject.transform, "UnlockText", "", new Vector2(18, -74.7f), new Vector2(112, 23), 15);
         StyleFoodCardText(ui.UnlockText, 11, 15, TextAlignmentOptions.Center);
 
-        Image orderStrip = CreateFoodUiImage(cardObject.transform, "OrderStrip", null, new Vector2(-0.6000393f, -74.7f), new Vector2(166, 27), false);
+        Image orderStrip = CreateFoodUiImage(cardObject.transform, "OrderStrip", null, new Vector2(0.49998f, -69.911f), new Vector2(147, 18), false);
         orderStrip.sprite = CreateRoundedRectSprite(orderStrip.rectTransform.sizeDelta, new Color(1f, 0.91f, 0.72f, 0.34f), new Color(0.71f, 0.48f, 0.18f, 0.34f), 9, 1);
         orderStrip.color = Color.white;
         ui.OrderStripImage = orderStrip;
-        Image passiveStrip = CreateFoodUiImage(cardObject.transform, "PassiveStrip", null, new Vector2(0.6f, -101.9f), new Vector2(166, 27), false);
+        Image passiveStrip = CreateFoodUiImage(cardObject.transform, "PassiveStrip", null, new Vector2(-0.00002718f, -95.2f), new Vector2(147, 18), false);
         passiveStrip.sprite = CreateRoundedRectSprite(passiveStrip.rectTransform.sizeDelta, new Color(1f, 0.91f, 0.72f, 0.34f), new Color(0.71f, 0.48f, 0.18f, 0.34f), 9, 1);
         passiveStrip.color = Color.white;
         ui.PassiveStripImage = passiveStrip;
 
-        ui.OrderIconImage = CreateFoodUiImage(cardObject.transform, "OrderIcon", GetFoodCoinChipSprite(), new Vector2(-72.60004f, -74.7f), new Vector2(20, 20), true);
-        ui.PassiveIconImage = CreateFoodUiImage(cardObject.transform, "PassiveIcon", GetFoodPassiveChipSprite(), new Vector2(-71.39996f, -101.9f), new Vector2(20, 20), true);
+        ui.OrderIconImage = CreateFoodUiImage(cardObject.transform, "OrderIcon", GetFoodCoinChipSprite(), new Vector2(-56.009f, -63.425f), new Vector2(20, 20), true);
+        ui.PassiveIconImage = CreateFoodUiImage(cardObject.transform, "PassiveIcon", GetFoodPassiveChipSprite(), new Vector2(-60f, -96.19999f), new Vector2(20, 20), true);
 
-        ui.OrderText = CreateText(cardObject.transform, "OrderText", "", new Vector2(11.4f, -74.7f), new Vector2(132, 23), 12);
+        ui.OrderText = CreateText(cardObject.transform, "OrderText", "", new Vector2(10.7209f, -69.911f), new Vector2(114.4419f, 19), 12);
         StyleFoodCardText(ui.OrderText, 9, 12, TextAlignmentOptions.Left);
-        ui.PassiveText = CreateText(cardObject.transform, "PassiveText", "", new Vector2(12.60004f, -101.9f), new Vector2(132, 23), 12);
+        ui.PassiveText = CreateText(cardObject.transform, "PassiveText", "", new Vector2(9.564996f, -95.7f), new Vector2(112.13f, 19), 12);
         StyleFoodCardText(ui.PassiveText, 9, 12, TextAlignmentOptions.Left);
 
         ui.PriceText = CreateText(cardObject.transform, "PriceText", "", new Vector2(33.99998f, -131.4f), new Vector2(72, 28), 14);
@@ -4298,7 +4298,7 @@ public class GameManager : MonoBehaviour
             upgradeImage.sprite = GetFoodUpgradeButtonSprite();
             upgradeImage.color = Color.white;
             upgradeImage.preserveAspect = false;
-            upgradeImage.type = Image.Type.Sliced;
+            upgradeImage.type = Image.Type.Simple;
         }
         ui.PriceText.transform.SetAsLastSibling();
         priceCoin.transform.SetAsLastSibling();
@@ -6869,7 +6869,7 @@ public class GameManager : MonoBehaviour
                 {
                     buttonImage.sprite = GetFoodUpgradeButtonSprite();
                     buttonImage.color = unlocked && !purchased ? Color.white : purchased ? new Color(0.70f, 0.86f, 0.56f, 1f) : new Color(0.52f, 0.47f, 0.40f, 1f);
-                    buttonImage.type = Image.Type.Sliced;
+                    buttonImage.type = Image.Type.Simple;
                 }
             }
         }
