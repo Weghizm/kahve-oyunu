@@ -263,6 +263,8 @@ public class GameManager : MonoBehaviour
     private static readonly Vector2 VipInfoPriceLineSize = new Vector2(160f, 22f);
     private static readonly Vector2 VipLeftClaimButtonTextPosition = new Vector2(0f, 0f);
     private static readonly Vector2 VipLeftClaimButtonTextSize = new Vector2(96f, 34f);
+    private static readonly Vector2 VipProfessionalInfoPosition = new Vector2(-407f, 35f);
+    private static readonly Vector2 VipProfessionalInfoSize = new Vector2(392f, 392f);
 
     private TMP_Text coinText;
     private readonly TMP_Text[] coinInfoPopupRows = new TMP_Text[6];
@@ -348,11 +350,16 @@ public class GameManager : MonoBehaviour
     private TMP_Text vipLeftCustomerPillText;
     private TMP_Text vipLeftPassivePillText;
     private TMP_Text vipLeftClaimButtonText;
+    private TMP_Text vipProfessionalTierTitleText;
+    private TMP_Text vipProfessionalStatusText;
+    private TMP_Text vipProfessionalUpgradeText;
+    private TMP_Text vipProfessionalUpgradeCostText;
     private TMP_Text foodUpgradeButtonText;
     private TMP_Text foodCategoryProgressText;
     private TMP_Text foodCategorySalesText;
     private TMP_Text foodCategoryPassiveText;
     private Image vipUpgradeGemIconImage;
+    private Image vipProfessionalUpgradeGemImage;
     private TMP_FontAsset vipPaytoneFontAsset;
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
     private readonly List<TMP_Text> vipLevelCardTitleTexts = new List<TMP_Text>();
@@ -366,6 +373,9 @@ public class GameManager : MonoBehaviour
     private readonly Dictionary<int, Sprite> vipCardSprites = new Dictionary<int, Sprite>();
     private readonly Dictionary<int, Sprite> vipCardBottomStarSprites = new Dictionary<int, Sprite>();
     private Texture2D vipCardAtlasTexture;
+    private Texture2D vipProfessionalIconAtlasTexture;
+    private Sprite vipProfessionalPanelSprite;
+    private readonly Dictionary<int, Sprite> vipProfessionalIconSprites = new Dictionary<int, Sprite>();
     private int vipUnlockFlashLevel = 0;
     private float vipUnlockFlashEndTime = 0f;
     private bool vipInfoSeen = false;
@@ -3080,6 +3090,54 @@ public class GameManager : MonoBehaviour
         return vipInfoPriceLineSprite;
     }
 
+    private Sprite GetVipProfessionalPanelSprite()
+    {
+        if (vipProfessionalPanelSprite == null)
+        {
+            vipProfessionalPanelSprite = LoadSpriteFromResources("Art/UI/vip_info_panel_professional_blank");
+        }
+
+        return vipProfessionalPanelSprite;
+    }
+
+    private Sprite GetVipProfessionalIconSprite(int iconIndex)
+    {
+        if (vipProfessionalIconSprites.TryGetValue(iconIndex, out Sprite cachedSprite))
+        {
+            return cachedSprite;
+        }
+
+        if (vipProfessionalIconAtlasTexture == null)
+        {
+            vipProfessionalIconAtlasTexture = Resources.Load<Texture2D>("Art/UI/vip_info_icons_atlas");
+        }
+
+        if (vipProfessionalIconAtlasTexture == null)
+        {
+            return null;
+        }
+
+        Rect[] iconRects =
+        {
+            new Rect(88f, 439f, 354f, 413f),
+            new Rect(534f, 498f, 300f, 269f),
+            new Rect(931f, 515f, 344f, 274f),
+            new Rect(1338f, 500f, 346f, 306f),
+            new Rect(70f, 126f, 349f, 321f),
+            new Rect(500f, 100f, 338f, 301f),
+            new Rect(938f, 66f, 329f, 352f)
+        };
+
+        int safeIndex = Mathf.Clamp(iconIndex, 0, iconRects.Length - 1);
+        Sprite sprite = Sprite.Create(
+            vipProfessionalIconAtlasTexture,
+            iconRects[safeIndex],
+            new Vector2(0.5f, 0.5f),
+            100f);
+        vipProfessionalIconSprites[safeIndex] = sprite;
+        return sprite;
+    }
+
     private Sprite GetVipLockIconSprite()
     {
         if (vipLockIconSprite == null)
@@ -4636,10 +4694,10 @@ public class GameManager : MonoBehaviour
         vipPanelText.fontSizeMin = 12f;
         vipPanelText.fontSizeMax = 18f;
         vipPanelText.gameObject.SetActive(false);
-        CreateVipInfoPngElements(vipPanel.transform);
+        // The professional information card uses live text instead of tier-specific baked labels.
 
         CreateVipPanelClearSelectionArea(vipPanel.transform);
-        CreateVipLeftModularElements(vipPanel.transform);
+        CreateVipProfessionalInfoPanel(vipPanel.transform);
 
         vipLevelCardTexts.Clear();
         vipLevelCardTitleTexts.Clear();
@@ -4715,6 +4773,104 @@ public class GameManager : MonoBehaviour
         CreateVipLeftDailyRewardLabel(parent);
         CreateVipLeftSprite(parent, "VipLeftGift", GetVipLeftGiftSprite(), VipLeftGiftPosition, VipLeftGiftSize);
         CreateVipLeftClaimButton(parent);
+    }
+
+    private void CreateVipProfessionalInfoPanel(Transform parent)
+    {
+        GameObject rootObject = new GameObject("VipProfessionalInfo", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        rootObject.transform.SetParent(parent, false);
+
+        RectTransform rootRect = rootObject.GetComponent<RectTransform>();
+        rootRect.anchorMin = new Vector2(0.5f, 0.5f);
+        rootRect.anchorMax = new Vector2(0.5f, 0.5f);
+        rootRect.anchoredPosition = VipProfessionalInfoPosition;
+        rootRect.sizeDelta = VipProfessionalInfoSize;
+
+        Image background = rootObject.GetComponent<Image>();
+        background.sprite = GetVipProfessionalPanelSprite();
+        background.color = Color.white;
+        background.preserveAspect = true;
+        background.raycastTarget = false;
+
+        CreateVipProfessionalIcon(rootObject.transform, "TierCrest", 0, new Vector2(-124f, 124f), new Vector2(112f, 134f));
+        vipProfessionalUpgradeGemImage = CreateVipProfessionalIcon(rootObject.transform, "UpgradeGem", 1, new Vector2(169f, 45f), new Vector2(25f, 25f));
+        CreateVipProfessionalIcon(rootObject.transform, "CoinIcon", 2, new Vector2(-144f, -15f), new Vector2(45f, 45f));
+        CreateVipProfessionalIcon(rootObject.transform, "XpIcon", 3, new Vector2(38f, -15f), new Vector2(45f, 45f));
+        CreateVipProfessionalIcon(rootObject.transform, "CustomerIcon", 4, new Vector2(-144f, -79f), new Vector2(47f, 43f));
+        CreateVipProfessionalIcon(rootObject.transform, "PassiveIcon", 5, new Vector2(38f, -79f), new Vector2(45f, 42f));
+        CreateVipProfessionalIcon(rootObject.transform, "GiftIcon", 6, new Vector2(-151f, -151f), new Vector2(72f, 72f));
+
+        vipProfessionalTierTitleText = CreateVipProfessionalText(rootObject.transform, "TierTitle", "VIP YOK", new Vector2(61f, 133f), new Vector2(218f, 48f), 30f);
+        vipProfessionalTierTitleText.outlineColor = new Color(0.20f, 0.10f, 0.04f, 0.96f);
+        vipProfessionalTierTitleText.outlineWidth = 0.14f;
+
+        vipProfessionalStatusText = CreateVipProfessionalText(rootObject.transform, "Status", "KİLİTLİ", new Vector2(65f, 87f), new Vector2(104f, 28f), 18f);
+        vipProfessionalStatusText.color = new Color(1f, 0.91f, 0.60f, 1f);
+
+        vipProfessionalUpgradeText = CreateVipProfessionalText(rootObject.transform, "UpgradeTarget", "BRONZ VIP'E GEÇ", new Vector2(31f, 45f), new Vector2(190f, 30f), 18f);
+        vipProfessionalUpgradeText.color = new Color(1f, 0.91f, 0.62f, 1f);
+        vipProfessionalUpgradeText.alignment = TextAlignmentOptions.Left;
+
+        vipProfessionalUpgradeCostText = CreateVipProfessionalText(rootObject.transform, "UpgradeCost", "0", new Vector2(137f, 45f), new Vector2(48f, 30f), 19f);
+        vipProfessionalUpgradeCostText.color = new Color(0.30f, 0.13f, 0.02f, 1f);
+
+        vipLeftCoinPillText = CreateVipProfessionalText(rootObject.transform, "CoinBonus", "COIN +%0", new Vector2(-71f, -15f), new Vector2(104f, 32f), 17f);
+        vipLeftXpPillText = CreateVipProfessionalText(rootObject.transform, "XpBonus", "XP +%0", new Vector2(112f, -15f), new Vector2(104f, 32f), 17f);
+        vipLeftCustomerPillText = CreateVipProfessionalText(rootObject.transform, "CustomerBonus", "MÜŞTERİ +%0", new Vector2(-69f, -79f), new Vector2(110f, 32f), 15f);
+        vipLeftPassivePillText = CreateVipProfessionalText(rootObject.transform, "PassiveBonus", "PASİF +%0", new Vector2(112f, -79f), new Vector2(104f, 32f), 16f);
+
+        TMP_Text dailyTitle = CreateVipProfessionalText(rootObject.transform, "DailyGiftTitle", "GÜNLÜK HEDİYE", new Vector2(-25f, -145f), new Vector2(154f, 38f), 20f);
+        dailyTitle.color = new Color(1f, 0.89f, 0.55f, 1f);
+
+        vipLeftClaimButtonText = CreateTransparentButton(
+            rootObject.transform,
+            "VipLeftClaimButton",
+            "AL",
+            new Vector2(119f, -147f),
+            new Vector2(126f, 54f),
+            ClickVipLeftClaimButton,
+            27f,
+            new Color(0.32f, 0.13f, 0.01f, 1f));
+        ApplyVipFont(vipLeftClaimButtonText);
+        vipLeftClaimButtonText.fontStyle = FontStyles.Bold;
+        vipLeftClaimButtonText.fontSizeMin = 20f;
+        vipLeftClaimButtonText.fontSizeMax = 27f;
+        AttachPressAnimator(vipLeftClaimButtonText.transform.parent as RectTransform, new Vector2(0f, -4f), 0.96f);
+    }
+
+    private Image CreateVipProfessionalIcon(Transform parent, string objectName, int iconIndex, Vector2 position, Vector2 size)
+    {
+        GameObject iconObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        iconObject.transform.SetParent(parent, false);
+
+        RectTransform rect = iconObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = iconObject.GetComponent<Image>();
+        image.sprite = GetVipProfessionalIconSprite(iconIndex);
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+        return image;
+    }
+
+    private TMP_Text CreateVipProfessionalText(Transform parent, string objectName, string value, Vector2 position, Vector2 size, float maxFontSize)
+    {
+        TMP_Text text = CreateText(parent, objectName, value, position, size, maxFontSize);
+        ApplyVipFont(text);
+        text.color = new Color(0.25f, 0.11f, 0.03f, 1f);
+        text.alignment = TextAlignmentOptions.Center;
+        text.fontStyle = FontStyles.Bold;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = Mathf.Max(10f, maxFontSize - 7f);
+        text.fontSizeMax = maxFontSize;
+        text.textWrappingMode = TextWrappingModes.NoWrap;
+        text.overflowMode = TextOverflowModes.Ellipsis;
+        text.raycastTarget = false;
+        return text;
     }
 
     private Image CreateVipLeftSprite(Transform parent, string objectName, Sprite sprite, Vector2 position, Vector2 size)
@@ -6565,8 +6721,41 @@ public class GameManager : MonoBehaviour
         if (vipLevelSummaryText != null)
             vipLevelSummaryText.gameObject.SetActive(false);
 
-        int shownVipLevel = selectedVipPreviewLevel > 0 ? selectedVipPreviewLevel : Mathf.Clamp(vipLevel > 0 ? vipLevel : 1, 1, MaxVipLevel);
-        string shownVipName = GetVipTierName(shownVipLevel);
+        int shownVipLevel = selectedVipPreviewLevel > 0
+            ? Mathf.Clamp(selectedVipPreviewLevel, 1, MaxVipLevel)
+            : Mathf.Clamp(vipLevel, 0, MaxVipLevel);
+        string shownVipName = shownVipLevel > 0 ? GetVipTierName(shownVipLevel) : "VIP Yok";
+
+        if (vipProfessionalTierTitleText != null)
+        {
+            vipProfessionalTierTitleText.text = shownVipLevel > 0 ? shownVipName.ToUpperInvariant() : "VIP YOK";
+            Color tierColor = shownVipLevel > 0 ? GetVipTierColor(shownVipLevel) : new Color(0.46f, 0.27f, 0.10f, 1f);
+            tierColor.a = 1f;
+            vipProfessionalTierTitleText.color = tierColor;
+        }
+
+        if (vipProfessionalStatusText != null)
+        {
+            bool activeTier = shownVipLevel > 0 && shownVipLevel == vipLevel;
+            bool openTier = shownVipLevel > 0 && shownVipLevel < vipLevel;
+            vipProfessionalStatusText.text = activeTier ? "AKTİF" : openTier ? "AÇIK" : "KİLİTLİ";
+            vipProfessionalStatusText.color = activeTier
+                ? new Color(0.91f, 1f, 0.63f, 1f)
+                : openTier
+                    ? new Color(1f, 0.91f, 0.58f, 1f)
+                    : new Color(1f, 0.71f, 0.55f, 1f);
+        }
+
+        bool vipAtMaximum = vipLevel >= MaxVipLevel;
+        int nextVipLevel = Mathf.Clamp(vipLevel + 1, 1, MaxVipLevel);
+        if (vipProfessionalUpgradeText != null)
+            vipProfessionalUpgradeText.text = vipAtMaximum ? "EN YÜKSEK VIP" : GetVipTierName(nextVipLevel).ToUpperInvariant() + "'E GEÇ";
+
+        if (vipProfessionalUpgradeCostText != null)
+            vipProfessionalUpgradeCostText.text = vipAtMaximum ? "MAX" : GetVipUpgradeCost().ToString();
+
+        if (vipProfessionalUpgradeGemImage != null)
+            vipProfessionalUpgradeGemImage.gameObject.SetActive(!vipAtMaximum);
 
         if (vipCoinBonusText != null)
             vipCoinBonusText.text = shownVipName + "\nCoin " + GetVipBonusValueText(GetVipCoinBonusPercent(shownVipLevel));
@@ -6584,16 +6773,16 @@ public class GameManager : MonoBehaviour
             vipDecorBonusText.text = shownVipName + "\nİndirim " + GetVipDiscountBonusText(shownVipLevel);
 
         if (vipLeftCoinPillText != null)
-            vipLeftCoinPillText.text = "Coin " + GetVipBonusValueText(GetVipCoinBonusPercent(shownVipLevel));
+            vipLeftCoinPillText.text = "COIN +%" + GetVipCoinBonusPercent(shownVipLevel);
 
         if (vipLeftXpPillText != null)
-            vipLeftXpPillText.text = "XP " + GetVipBonusValueText(GetVipXpBonusPercent(shownVipLevel));
+            vipLeftXpPillText.text = "XP +%" + GetVipXpBonusPercent(shownVipLevel);
 
         if (vipLeftCustomerPillText != null)
-            vipLeftCustomerPillText.text = "Müşteri " + GetVipBonusValueText(GetVipPatienceBonusPercent(shownVipLevel));
+            vipLeftCustomerPillText.text = "MÜŞTERİ +%" + GetVipPatienceBonusPercent(shownVipLevel);
 
         if (vipLeftPassivePillText != null)
-            vipLeftPassivePillText.text = "Pasif " + GetVipBonusValueText(GetVipPassiveBonusPercent(shownVipLevel));
+            vipLeftPassivePillText.text = "PASİF +%" + GetVipPassiveBonusPercent(shownVipLevel);
 
         if (vipLeftClaimButtonText != null)
             vipLeftClaimButtonText.text = "AL";
