@@ -348,7 +348,6 @@ public class GameManager : MonoBehaviour
     private TMP_Text vipLeftPassivePillText;
     private TMP_Text vipLeftClaimButtonText;
     private TMP_Text foodUpgradeButtonText;
-    private TMP_Text foodCategoryNameText;
     private TMP_Text foodCategoryProgressText;
     private TMP_Text foodCategorySalesText;
     private TMP_Text foodCategoryPassiveText;
@@ -4163,19 +4162,16 @@ public class GameManager : MonoBehaviour
             false);
         ribbon.type = Image.Type.Sliced;
 
-        foodCategoryNameText = CreateText(ribbon.transform, "CategoryName", "", new Vector2(-375f, 0f), new Vector2(205f, 54f), 30);
-        StyleFoodCategoryInfoText(foodCategoryNameText, 18f, 30f);
+        Image progressPill = CreateFoodCategoryInfoPill(ribbon.transform, "ProgressPill", new Vector2(-260f, 0f), new Vector2(200f, 40f));
+        CreateFoodUiImage(progressPill.transform, "ProgressIcon", GetFoodCoinChipSprite(), new Vector2(-65f, -3f), new Vector2(34f, 34f), true);
+        foodCategoryProgressText = CreateText(progressPill.transform, "CategoryProgress", "", new Vector2(18f, 0f), new Vector2(200f, 40f), 23);
 
-        Image progressPill = CreateFoodCategoryInfoPill(ribbon.transform, "ProgressPill", new Vector2(-140f, 0f), new Vector2(225f, 58f));
-        CreateFoodUiImage(progressPill.transform, "ProgressIcon", GetFoodCoinChipSprite(), new Vector2(-82f, 0f), new Vector2(34f, 34f), true);
-        foodCategoryProgressText = CreateText(progressPill.transform, "CategoryProgress", "", new Vector2(18f, 0f), new Vector2(152f, 44f), 23);
-
-        Image salesPill = CreateFoodCategoryInfoPill(ribbon.transform, "SalesPill", new Vector2(110f, 0f), new Vector2(245f, 58f));
-        CreateFoodUiImage(salesPill.transform, "SalesIcon", GetFoodCoinChipSprite(), new Vector2(-90f, 0f), new Vector2(34f, 34f), true);
+        Image salesPill = CreateFoodCategoryInfoPill(ribbon.transform, "SalesPill", new Vector2(0f, 0f), new Vector2(200f, 40f));
+        CreateFoodUiImage(salesPill.transform, "SalesIcon", GetFoodCoinChipSprite(), new Vector2(-69f, -1f), new Vector2(34f, 34f), true);
         foodCategorySalesText = CreateText(salesPill.transform, "CategorySales", "", new Vector2(17f, 0f), new Vector2(180f, 44f), 23);
 
-        Image passivePill = CreateFoodCategoryInfoPill(ribbon.transform, "PassivePill", new Vector2(385f, 0f), new Vector2(245f, 58f));
-        CreateFoodUiImage(passivePill.transform, "PassiveIcon", GetFoodPassiveChipSprite(), new Vector2(-90f, 0f), new Vector2(34f, 34f), true);
+        Image passivePill = CreateFoodCategoryInfoPill(ribbon.transform, "PassivePill", new Vector2(270f, 0f), new Vector2(200f, 40f));
+        CreateFoodUiImage(passivePill.transform, "PassiveIcon", GetFoodPassiveChipSprite(), new Vector2(-69.4f, -2.2f), new Vector2(34f, 34f), true);
         foodCategoryPassiveText = CreateText(passivePill.transform, "CategoryPassive", "", new Vector2(17f, 0f), new Vector2(180f, 44f), 23);
 
         StyleFoodCategoryInfoText(foodCategoryProgressText, 18f, 23f);
@@ -4232,29 +4228,12 @@ public class GameManager : MonoBehaviour
             passiveBonus += data.PassiveBonusPercent;
         }
 
-        if (foodCategoryNameText != null)
-            foodCategoryNameText.text = GetFoodCategoryDisplayName(selectedFoodCategory);
         if (foodCategoryProgressText != null)
             foodCategoryProgressText.text = purchased + "/" + total + " Al\u0131nd\u0131";
         if (foodCategorySalesText != null)
             foodCategorySalesText.text = "Sat\u0131\u015F +%" + salesBonus;
         if (foodCategoryPassiveText != null)
             foodCategoryPassiveText.text = "Pasif +%" + passiveBonus;
-    }
-
-    private string GetFoodCategoryDisplayName(FoodUpgradeCategory category)
-    {
-        switch (category)
-        {
-            case FoodUpgradeCategory.Sweet:
-                return "Tat\u0131";
-            case FoodUpgradeCategory.Snack:
-                return "At\u0131\u015Ft\u0131rmal\u0131k";
-            case FoodUpgradeCategory.Cold:
-                return "So\u011Fuk";
-            default:
-                return "Kahve";
-        }
     }
 
     private void CreateFoodCategoryTab(string objectName, string label, FoodUpgradeCategory category, Vector2 position, bool selected)
