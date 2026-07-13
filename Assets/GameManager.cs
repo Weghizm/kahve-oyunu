@@ -4280,14 +4280,14 @@ public class GameManager : MonoBehaviour
         ui.PassiveText = CreateText(cardObject.transform, "PassiveText", "", new Vector2(9.564996f, -95.7f), new Vector2(112.13f, 19), 12);
         StyleFoodCardText(ui.PassiveText, 9, 12, TextAlignmentOptions.Left);
 
-        ui.PriceText = CreateText(cardObject.transform, "PriceText", "", new Vector2(33.99998f, -131.4f), new Vector2(72, 28), 14);
+        ui.PriceText = CreateText(cardObject.transform, "PriceText", "", new Vector2(24.10001f, -127f), new Vector2(72, 28), 14);
         StyleFoodCardText(ui.PriceText, 9, 13, TextAlignmentOptions.Center);
         ui.PriceText.color = Color.white;
 
         Image priceCoin = CreateFoodUiImage(cardObject.transform, "PriceCoin", GetFoodCoinChipSprite(), new Vector2(11.4f, -131.4f), new Vector2(15, 15), true);
         ui.PriceCoinImage = priceCoin;
 
-        ui.ButtonText = CreateButton(cardObject.transform, "UpgradeButton", "Satın Al", new Vector2(0, -131.4f), new Vector2(140, 30), delegate { BuyFoodUpgradeByIndex(index); }, Color.white, 14);
+        ui.ButtonText = CreateButton(cardObject.transform, "UpgradeButton", "Satın Al", new Vector2(0, -127f), new Vector2(140, 30), delegate { BuyFoodUpgradeByIndex(index); }, Color.white, 14);
         ui.Button = ui.ButtonText.GetComponentInParent<Button>();
         StyleFoodButton(ui.ButtonText, new Color(0.33f, 0.63f, 0.12f), 17);
         ui.ButtonText.rectTransform.anchoredPosition = new Vector2(-29, 0);
