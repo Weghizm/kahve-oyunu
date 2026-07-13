@@ -3094,7 +3094,7 @@ public class GameManager : MonoBehaviour
     private Sprite GetFoodLevelBadgeSprite()
     {
         if (foodLevelBadgeSprite == null)
-            foodLevelBadgeSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_level_badge");
+            foodLevelBadgeSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_level_badge_octagonal");
         return foodLevelBadgeSprite;
     }
 
@@ -4244,8 +4244,8 @@ public class GameManager : MonoBehaviour
         ui.LevelText.fontStyle = FontStyles.Bold;
         ui.LevelText.alignment = TextAlignmentOptions.Center;
         ui.LevelText.enableAutoSizing = true;
-        ui.LevelText.fontSizeMin = 8;
-        ui.LevelText.fontSizeMax = 10;
+        ui.LevelText.fontSizeMin = 14;
+        ui.LevelText.fontSizeMax = 22;
         ui.LevelText.outlineColor = new Color(0.14f, 0.07f, 0.03f, 0.9f);
         ui.LevelText.outlineWidth = 0.12f;
         ApplyVipFont(ui.LevelText);
@@ -6839,7 +6839,7 @@ public class GameManager : MonoBehaviour
             if (ui.LevelText != null)
             {
                 ui.LevelText.gameObject.SetActive(true);
-                ui.LevelText.text = "Sv.\n" + data.UnlockPlayerLevel;
+                ui.LevelText.text = data.UnlockPlayerLevel.ToString();
             }
 
             if (ui.OrderText != null)
