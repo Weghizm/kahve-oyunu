@@ -4284,7 +4284,7 @@ public class GameManager : MonoBehaviour
         StyleFoodCardText(ui.PriceText, 9, 13, TextAlignmentOptions.Center);
         ui.PriceText.color = Color.white;
 
-        Image priceCoin = CreateFoodUiImage(cardObject.transform, "PriceCoin", GetFoodCoinChipSprite(), new Vector2(11.4f, -131.4f), new Vector2(15, 15), true);
+        Image priceCoin = CreateFoodUiImage(cardObject.transform, "PriceCoin", GetFoodCoinChipSprite(), new Vector2(50.7f, -127f), new Vector2(15, 15), true);
         ui.PriceCoinImage = priceCoin;
 
         ui.ButtonText = CreateButton(cardObject.transform, "UpgradeButton", "Satın Al", new Vector2(0, -127f), new Vector2(140, 30), delegate { BuyFoodUpgradeByIndex(index); }, Color.white, 14);
