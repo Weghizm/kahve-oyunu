@@ -355,6 +355,8 @@ public class GameManager : MonoBehaviour
     private Image vipUpgradeGemIconImage;
     private TMP_FontAsset vipPaytoneFontAsset;
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
+    private readonly List<TMP_Text> vipLevelCardTitleTexts = new List<TMP_Text>();
+    private readonly List<TMP_Text> vipLevelCardBonusTexts = new List<TMP_Text>();
     private readonly List<Image> vipLevelCardImages = new List<Image>();
     private readonly List<Image> vipLevelLockImages = new List<Image>();
     private readonly List<Image> vipLevelSelectImages = new List<Image>();
@@ -363,6 +365,7 @@ public class GameManager : MonoBehaviour
     private readonly List<RectTransform> vipLevelButtonRects = new List<RectTransform>();
     private readonly Dictionary<int, Sprite> vipCardSprites = new Dictionary<int, Sprite>();
     private readonly Dictionary<int, Sprite> vipCardBottomStarSprites = new Dictionary<int, Sprite>();
+    private Texture2D vipCardAtlasTexture;
     private int vipUnlockFlashLevel = 0;
     private float vipUnlockFlashEndTime = 0f;
     private bool vipInfoSeen = false;
@@ -3201,7 +3204,31 @@ public class GameManager : MonoBehaviour
         int safeLevel = Mathf.Clamp(level, 1, MaxVipLevel);
         if (!vipCardSprites.ContainsKey(safeLevel))
         {
-            vipCardSprites[safeLevel] = LoadSpriteFromResources("Art/UI/vip_card_" + safeLevel);
+            if (vipCardAtlasTexture == null)
+            {
+                vipCardAtlasTexture = Resources.Load<Texture2D>("Art/UI/vip_cards_modular_atlas_v2");
+            }
+
+            if (vipCardAtlasTexture == null)
+            {
+                vipCardSprites[safeLevel] = LoadSpriteFromResources("Art/UI/vip_card_" + safeLevel);
+            }
+            else
+            {
+                Rect[] atlasRects =
+                {
+                    new Rect(63f, 91f, 310f, 653f),
+                    new Rect(427f, 91f, 310f, 653f),
+                    new Rect(788f, 91f, 313f, 653f),
+                    new Rect(1150f, 91f, 313f, 653f),
+                    new Rect(1512f, 90f, 311f, 654f)
+                };
+                vipCardSprites[safeLevel] = Sprite.Create(
+                    vipCardAtlasTexture,
+                    atlasRects[safeLevel - 1],
+                    new Vector2(0.5f, 0.5f),
+                    100f);
+            }
         }
 
         return vipCardSprites[safeLevel];
@@ -4615,6 +4642,8 @@ public class GameManager : MonoBehaviour
         CreateVipLeftModularElements(vipPanel.transform);
 
         vipLevelCardTexts.Clear();
+        vipLevelCardTitleTexts.Clear();
+        vipLevelCardBonusTexts.Clear();
         vipLevelCardImages.Clear();
         vipLevelLockImages.Clear();
         vipLevelSelectImages.Clear();
@@ -4624,11 +4653,6 @@ public class GameManager : MonoBehaviour
         for (int i = 1; i <= MaxVipLevel; i++)
         {
             CreateVipCardButton(vipPanel.transform, i, new Vector2(-75f + ((i - 1) * 151f), 18f));
-        }
-
-        for (int i = 1; i <= MaxVipLevel; i++)
-        {
-            CreateVipCardBottomStarOverlay(vipPanel.transform, i, new Vector2(-75f + ((i - 1) * 151f), -89f));
         }
 
         vipCoinBonusText = CreateVipBonusPill(vipPanel.transform, "Coin", "+0%", VipCoinBonusLayout);
@@ -4986,14 +5010,15 @@ public class GameManager : MonoBehaviour
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = position;
-        rect.sizeDelta = new Vector2(148, 294);
+        rect.sizeDelta = new Vector2(144, 308);
         vipLevelButtonRects.Add(rect);
 
         Image image = buttonObject.GetComponent<Image>();
         image.sprite = GetVipCardSprite(level);
         image.color = Color.white;
-        image.preserveAspect = false;
+        image.preserveAspect = true;
         image.raycastTarget = true;
+        vipLevelCardImages.Add(image);
 
         Button button = buttonObject.GetComponent<Button>();
         int selectedLevel = level;
@@ -5015,7 +5040,41 @@ public class GameManager : MonoBehaviour
         lockImage.raycastTarget = false;
         vipLevelLockImages.Add(lockImage);
 
-        Image selectGlow = CreatePanelStrip(buttonObject.transform, "SelectedGlow", new Vector2(0, -154), new Vector2(112, 10), new Color(1f, 0.78f, 0.18f, 0f));
+        TMP_Text titleText = CreateText(buttonObject.transform, "VipCardTitle", "", new Vector2(0f, 49f), new Vector2(130f, 30f), 17);
+        ApplyVipFont(titleText);
+        titleText.color = new Color(1f, 0.92f, 0.70f, 1f);
+        titleText.alignment = TextAlignmentOptions.Center;
+        titleText.fontStyle = FontStyles.Bold;
+        titleText.enableAutoSizing = true;
+        titleText.fontSizeMin = 12f;
+        titleText.fontSizeMax = 17f;
+        titleText.raycastTarget = false;
+        vipLevelCardTitleTexts.Add(titleText);
+
+        TMP_Text bonusText = CreateText(buttonObject.transform, "VipCardBonus", "", new Vector2(0f, -25f), new Vector2(128f, 104f), 14);
+        ApplyVipFont(bonusText);
+        bonusText.color = new Color(1f, 0.94f, 0.78f, 1f);
+        bonusText.alignment = TextAlignmentOptions.Center;
+        bonusText.fontStyle = FontStyles.Bold;
+        bonusText.textWrappingMode = TextWrappingModes.Normal;
+        bonusText.enableAutoSizing = true;
+        bonusText.fontSizeMin = 9f;
+        bonusText.fontSizeMax = 14f;
+        bonusText.raycastTarget = false;
+        vipLevelCardBonusTexts.Add(bonusText);
+
+        TMP_Text statusText = CreateText(buttonObject.transform, "VipCardStatus", "", new Vector2(0f, -126f), new Vector2(112f, 26f), 16);
+        ApplyVipFont(statusText);
+        statusText.color = new Color(1f, 0.87f, 0.42f, 1f);
+        statusText.alignment = TextAlignmentOptions.Center;
+        statusText.fontStyle = FontStyles.Bold;
+        statusText.enableAutoSizing = true;
+        statusText.fontSizeMin = 11f;
+        statusText.fontSizeMax = 16f;
+        statusText.raycastTarget = false;
+        vipLevelCardTexts.Add(statusText);
+
+        Image selectGlow = CreatePanelStrip(buttonObject.transform, "SelectedGlow", new Vector2(0, -151), new Vector2(112, 8), new Color(1f, 0.78f, 0.18f, 0f));
         selectGlow.raycastTarget = false;
         vipLevelSelectImages.Add(selectGlow);
     }
@@ -6551,21 +6610,48 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < MaxVipLevel; i++)
         {
             int cardLevel = i + 1;
+            bool cardLocked = vipLevel < cardLevel;
+            bool cardActive = vipLevel == cardLevel;
             if (i < vipLevelCardTexts.Count)
-                vipLevelCardTexts[i].text = "";
+            {
+                vipLevelCardTexts[i].text = cardLocked ? "KİLİTLİ" : cardActive ? "AKTİF" : "AÇIK";
+                vipLevelCardTexts[i].color = cardLocked
+                    ? new Color(0.72f, 0.70f, 0.66f, 0.88f)
+                    : cardActive
+                        ? new Color(1f, 0.88f, 0.30f, 1f)
+                        : new Color(1f, 0.91f, 0.65f, 1f);
+            }
+
+            if (i < vipLevelCardTitleTexts.Count)
+            {
+                vipLevelCardTitleTexts[i].text = GetVipTierName(cardLevel);
+                vipLevelCardTitleTexts[i].color = cardLocked
+                    ? new Color(0.72f, 0.70f, 0.66f, 0.88f)
+                    : new Color(1f, 0.92f, 0.70f, 1f);
+            }
+
+            if (i < vipLevelCardBonusTexts.Count)
+            {
+                vipLevelCardBonusTexts[i].text = GetVipLevelBonusLine(cardLevel);
+                vipLevelCardBonusTexts[i].color = cardLocked
+                    ? new Color(0.66f, 0.65f, 0.62f, 0.82f)
+                    : new Color(1f, 0.94f, 0.78f, 1f);
+            }
 
             if (i < vipLevelCardImages.Count)
             {
-                Color cardColor = GetVipTierColor(cardLevel);
+                Color cardColor;
                 if (vipLevel < cardLevel)
                 {
-                    cardColor = Color.Lerp(cardColor, new Color(0.05f, 0.05f, 0.06f, cardColor.a), 0.58f);
-                    cardColor.a = 0.84f;
+                    cardColor = new Color(0.48f, 0.48f, 0.48f, 0.86f);
                 }
                 else if (vipLevel == cardLevel)
                 {
-                    cardColor = Color.Lerp(cardColor, Color.white, 0.15f);
-                    cardColor.a = 1f;
+                    cardColor = Color.white;
+                }
+                else
+                {
+                    cardColor = new Color(0.90f, 0.90f, 0.90f, 1f);
                 }
 
                 vipLevelCardImages[i].color = cardColor;

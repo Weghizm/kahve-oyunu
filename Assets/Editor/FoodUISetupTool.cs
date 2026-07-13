@@ -9,6 +9,7 @@ public sealed class FoodUISetupTool : EditorWindow
     private const string DefaultFolder = "Assets/Resources/Art/UI/Food";
     private const string PendingApplyRequest = "Temp/FoodUIApply.request";
     private const string PendingCoinInfoApplyRequest = "Temp/CoinInfoUIApply.request";
+    private const string PendingVipCardAtlasApplyRequest = "Temp/VipCardAtlasApply.request";
 
     private static readonly Dictionary<string, Vector4> SliceBorders = new Dictionary<string, Vector4>(StringComparer.OrdinalIgnoreCase)
     {
@@ -73,6 +74,23 @@ public sealed class FoodUISetupTool : EditorWindow
         Debug.Log("[FoodUITool] Applied UI sprite standards to " + assetPath);
     }
 
+    public static void ApplyVipCardAtlasForBatch()
+    {
+        const string assetPath = "Assets/Resources/Art/UI/vip_cards_modular_atlas_v2.png";
+        AssetDatabase.Refresh();
+        TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+        if (importer == null)
+        {
+            Debug.LogError("[FoodUITool] VIP card atlas importer not found: " + assetPath);
+            return;
+        }
+
+        ApplyStandards(assetPath, importer);
+        importer.SaveAndReimport();
+        AssetDatabase.SaveAssets();
+        Debug.Log("[FoodUITool] Applied UI sprite standards to " + assetPath);
+    }
+
     [InitializeOnLoadMethod]
     private static void ApplyPendingRequestOnReload()
     {
@@ -86,6 +104,12 @@ public sealed class FoodUISetupTool : EditorWindow
         {
             File.Delete(PendingCoinInfoApplyRequest);
             EditorApplication.delayCall += ApplyCoinInfoForBatch;
+        }
+
+        if (File.Exists(PendingVipCardAtlasApplyRequest))
+        {
+            File.Delete(PendingVipCardAtlasApplyRequest);
+            EditorApplication.delayCall += ApplyVipCardAtlasForBatch;
         }
     }
 
