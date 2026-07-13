@@ -348,8 +348,10 @@ public class GameManager : MonoBehaviour
     private TMP_Text vipLeftPassivePillText;
     private TMP_Text vipLeftClaimButtonText;
     private TMP_Text foodUpgradeButtonText;
-    private TMP_Text foodTotalPassiveText;
-    private TMP_Text foodTotalBonusText;
+    private TMP_Text foodCategoryNameText;
+    private TMP_Text foodCategoryProgressText;
+    private TMP_Text foodCategorySalesText;
+    private TMP_Text foodCategoryPassiveText;
     private Image vipUpgradeGemIconImage;
     private TMP_FontAsset vipPaytoneFontAsset;
     private readonly List<TMP_Text> vipLevelCardTexts = new List<TMP_Text>();
@@ -467,6 +469,8 @@ public class GameManager : MonoBehaviour
     private Sprite foodLockedButtonSprite;
     private Sprite foodCategoryTabSelectedSprite;
     private Sprite foodCategoryTabNormalSprite;
+    private Sprite foodCategoryInfoRibbonSprite;
+    private Sprite foodParchmentWatermarkSprite;
     private Sprite foodLevelBadgeSprite;
     private Sprite foodCoinChipSprite;
     private Sprite foodPassiveChipSprite;
@@ -3028,7 +3032,7 @@ public class GameManager : MonoBehaviour
     {
         if (foodPanelBackgroundSprite == null)
         {
-            foodPanelBackgroundSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_upgrade_panel_background_v2");
+            foodPanelBackgroundSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_upgrade_panel_background_v3");
         }
 
         return foodPanelBackgroundSprite;
@@ -3089,6 +3093,20 @@ public class GameManager : MonoBehaviour
         if (foodCategoryTabNormalSprite == null)
             foodCategoryTabNormalSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_category_tab_normal_v2");
         return foodCategoryTabNormalSprite;
+    }
+
+    private Sprite GetFoodCategoryInfoRibbonSprite()
+    {
+        if (foodCategoryInfoRibbonSprite == null)
+            foodCategoryInfoRibbonSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_category_info_ribbon");
+        return foodCategoryInfoRibbonSprite;
+    }
+
+    private Sprite GetFoodParchmentWatermarkSprite()
+    {
+        if (foodParchmentWatermarkSprite == null)
+            foodParchmentWatermarkSprite = LoadImportedSpriteFromResources("Art/UI/Food/food_parchment_watermark");
+        return foodParchmentWatermarkSprite;
     }
 
     private Sprite GetFoodLevelBadgeSprite()
@@ -4073,13 +4091,15 @@ public class GameManager : MonoBehaviour
         CreateFoodCategoryTab("FoodTabSnack", "Atıştırmalık", FoodUpgradeCategory.Snack, new Vector2(-665, -87.2f), false);
         CreateFoodCategoryTab("FoodTabCold", "Soğuk", FoodUpgradeCategory.Cold, new Vector2(-665, -268), false);
 
+        CreateFoodCategoryInfo();
+
         GameObject viewportObject = new GameObject("FoodCardsViewport", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(RectMask2D));
         viewportObject.transform.SetParent(foodPanel.transform, false);
         RectTransform viewportRect = viewportObject.GetComponent<RectTransform>();
         viewportRect.anchorMin = new Vector2(0.5f, 0.5f);
         viewportRect.anchorMax = new Vector2(0.5f, 0.5f);
-        viewportRect.anchoredPosition = new Vector2(90f, 5f);
-        viewportRect.sizeDelta = new Vector2(1320f, 650f);
+        viewportRect.anchoredPosition = new Vector2(90f, -30f);
+        viewportRect.sizeDelta = new Vector2(1320f, 580f);
         viewportObject.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.001f);
 
         GameObject contentObject = new GameObject("FoodCardsContent", typeof(RectTransform));
@@ -4120,13 +4140,106 @@ public class GameManager : MonoBehaviour
             CreateFoodUpgradeCard(foodCardsContent, foodUpgradeDatabase[i], i, Vector2.zero);
         }
 
-        CreateFoodSummaryBox("FoodTotalPassiveBox", "Pasif Gelir", new Vector2(-264, -402), true);
-        CreateFoodSummaryBox("FoodTotalBonusBox", "Satış Geliri", new Vector2(340, -402), false);
-
         RefreshFoodCategoryLayout();
 
         foodPanel.transform.SetAsLastSibling();
         foodPanel.SetActive(false);
+    }
+
+    private void CreateFoodCategoryInfo()
+    {
+        Image watermark = CreateFoodUiImage(
+            foodPanel.transform,
+            "FoodParchmentWatermark",
+            GetFoodParchmentWatermarkSprite(),
+            new Vector2(500f, -225f),
+            new Vector2(390f, 92f),
+            true);
+        watermark.color = new Color(0.82f, 0.61f, 0.24f, 0.11f);
+
+        Image ribbon = CreateFoodUiImage(
+            foodPanel.transform,
+            "FoodCategoryInfoRibbon",
+            GetFoodCategoryInfoRibbonSprite(),
+            new Vector2(90f, 330f),
+            new Vector2(1260f, 88f),
+            false);
+        ribbon.type = Image.Type.Sliced;
+
+        CreateFoodUiImage(ribbon.transform, "ProgressIcon", GetFoodCoinChipSprite(), new Vector2(-210f, 0f), new Vector2(28f, 28f), true);
+        CreateFoodUiImage(ribbon.transform, "SalesIcon", GetFoodCoinChipSprite(), new Vector2(45f, 0f), new Vector2(28f, 28f), true);
+        CreateFoodUiImage(ribbon.transform, "PassiveIcon", GetFoodPassiveChipSprite(), new Vector2(285f, 0f), new Vector2(28f, 28f), true);
+
+        foodCategoryNameText = CreateText(ribbon.transform, "CategoryName", "", new Vector2(-365f, 0f), new Vector2(250f, 46f), 25);
+        foodCategoryProgressText = CreateText(ribbon.transform, "CategoryProgress", "", new Vector2(-115f, 0f), new Vector2(160f, 46f), 24);
+        foodCategorySalesText = CreateText(ribbon.transform, "CategorySales", "", new Vector2(145f, 0f), new Vector2(160f, 46f), 24);
+        foodCategoryPassiveText = CreateText(ribbon.transform, "CategoryPassive", "", new Vector2(385f, 0f), new Vector2(160f, 46f), 24);
+
+        StyleFoodCategoryInfoText(foodCategoryNameText, 17f, 25f);
+        StyleFoodCategoryInfoText(foodCategoryProgressText, 16f, 24f);
+        StyleFoodCategoryInfoText(foodCategorySalesText, 16f, 24f);
+        StyleFoodCategoryInfoText(foodCategoryPassiveText, 16f, 24f);
+        UpdateFoodCategoryInfo();
+    }
+
+    private void StyleFoodCategoryInfoText(TMP_Text text, float minSize, float maxSize)
+    {
+        text.color = new Color(1f, 0.88f, 0.62f, 1f);
+        text.fontStyle = FontStyles.Bold;
+        text.alignment = TextAlignmentOptions.Center;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = minSize;
+        text.fontSizeMax = maxSize;
+        text.enableWordWrapping = false;
+        text.overflowMode = TextOverflowModes.Ellipsis;
+        text.outlineColor = new Color(0.13f, 0.05f, 0.01f, 1f);
+        text.outlineWidth = 0.14f;
+        ApplyVipFont(text);
+    }
+
+    private void UpdateFoodCategoryInfo()
+    {
+        int total = 0;
+        int purchased = 0;
+        int salesBonus = 0;
+        int passiveBonus = 0;
+
+        for (int i = 0; i < foodUpgradeDatabase.Count; i++)
+        {
+            FoodUpgradeData data = foodUpgradeDatabase[i];
+            if (data.Category != selectedFoodCategory) continue;
+
+            total++;
+            if (data.Level <= 0) continue;
+
+            purchased++;
+            salesBonus += data.SalesBonusPercent;
+            passiveBonus += data.PassiveBonusPercent;
+        }
+
+        if (foodCategoryNameText != null)
+            foodCategoryNameText.text = GetFoodCategoryDisplayName(selectedFoodCategory) + " Koleksiyonu";
+        if (foodCategoryProgressText != null)
+            foodCategoryProgressText.text = purchased + "/" + total + " Al\u0131nd\u0131";
+        if (foodCategorySalesText != null)
+            foodCategorySalesText.text = "+%" + salesBonus + " Sat\u0131\u015F";
+        if (foodCategoryPassiveText != null)
+            foodCategoryPassiveText.text = "+%" + passiveBonus + " Pasif";
+    }
+
+    private string GetFoodCategoryDisplayName(FoodUpgradeCategory category)
+    {
+        switch (category)
+        {
+            case FoodUpgradeCategory.Sweet:
+                return "Tat\u0131";
+            case FoodUpgradeCategory.Snack:
+                return "At\u0131\u015Ft\u0131rmal\u0131k";
+            case FoodUpgradeCategory.Cold:
+                return "So\u011Fuk";
+            default:
+                return "Kahve";
+        }
     }
 
     private void CreateFoodCategoryTab(string objectName, string label, FoodUpgradeCategory category, Vector2 position, bool selected)
@@ -4198,6 +4311,8 @@ public class GameManager : MonoBehaviour
             pair.Value.outlineColor = selected ? new Color(1f, 0.76f, 0.24f, 0.75f) : new Color(0.10f, 0.04f, 0.01f, 0.95f);
             pair.Value.outlineWidth = selected ? 0.08f : 0.15f;
         }
+
+        UpdateFoodCategoryInfo();
     }
 
     private void CreateFoodUpgradeCard(Transform parent, FoodUpgradeData data, int index, Vector2 position)
@@ -4358,41 +4473,6 @@ public class GameManager : MonoBehaviour
         AttachEditorDragProbe(rect, objectName);
 #endif
         return image;
-    }
-
-    private void CreateFoodSummaryBox(string objectName, string label, Vector2 position, bool passive)
-    {
-        GameObject boxObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        boxObject.transform.SetParent(foodPanel.transform, false);
-
-        RectTransform rect = boxObject.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = position;
-        rect.sizeDelta = new Vector2(485, 78);
-
-        Image image = boxObject.GetComponent<Image>();
-        image.sprite = null;
-        image.color = Color.clear;
-
-        TMP_Text labelText = CreateText(boxObject.transform, "Label", label, new Vector2(-75, 0), new Vector2(190, 42), 24);
-        StyleFoodCardText(labelText, 16, 24, TextAlignmentOptions.Center);
-
-        TMP_Text valueText = CreateText(boxObject.transform, "Value", "", new Vector2(128, 0), new Vector2(126, 42), 24);
-        StyleFoodCardText(valueText, 16, 24, TextAlignmentOptions.Center);
-        valueText.color = new Color(0.20f, 0.10f, 0.04f);
-
-        if (passive)
-        {
-            foodTotalPassiveText = valueText;
-        }
-        else
-        {
-            foodTotalBonusText = valueText;
-        }
-#if UNITY_EDITOR
-        AttachEditorDragProbe(rect, objectName);
-#endif
     }
 
     private void StyleFoodTitle(TMP_Text text, float maxSize)
@@ -6752,15 +6832,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateFoodUpgradePanelUi()
     {
-        if (foodTotalPassiveText != null)
-        {
-            foodTotalPassiveText.text = "+%" + GetFoodPassiveBonusPercent();
-        }
-
-        if (foodTotalBonusText != null)
-        {
-            foodTotalBonusText.text = "+%" + GetFoodSalesBonusPercent();
-        }
+        UpdateFoodCategoryInfo();
 
         for (int i = 0; i < foodUpgradeCardUis.Count; i++)
         {

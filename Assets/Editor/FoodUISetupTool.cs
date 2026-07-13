@@ -13,7 +13,9 @@ public sealed class FoodUISetupTool : EditorWindow
     {
         { "food_upgrade_button.png", new Vector4(42f, 26f, 42f, 26f) },
         { "food_category_tab_selected.png", new Vector4(44f, 32f, 44f, 32f) },
-        { "food_category_tab_normal.png", new Vector4(44f, 32f, 44f, 32f) }
+        { "food_category_tab_normal.png", new Vector4(44f, 32f, 44f, 32f) },
+        // Preserve the ornate end caps while the center expands for dynamic category text.
+        { "food_category_info_ribbon.png", new Vector4(300f, 80f, 300f, 80f) }
     };
 
     private string folderPath = DefaultFolder;
