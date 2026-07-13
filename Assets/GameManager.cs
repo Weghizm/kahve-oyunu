@@ -236,6 +236,9 @@ public class GameManager : MonoBehaviour
     private static readonly Vector2 VipUpgradeButtonTextSize = new Vector2(106f, 62f);
     private static readonly Vector2 VipUpgradeGemIconPosition = new Vector2(49f, -9f);
     private static readonly Vector2 VipUpgradeGemIconSize = new Vector2(42f, 42f);
+    // Atlas ring bounds map to a shared local center: left/right are symmetric around X 0,
+    // while top/bottom map to Y 97.5 at the card's rendered aspect ratio.
+    private static readonly Vector2 VipCardMedallionCenter = new Vector2(0f, 97.5f);
     private static readonly Vector2 VipLeftBadgePosition = new Vector2(-507.21f, 80.079f);
     private static readonly Vector2 VipLeftBadgeSize = new Vector2(92f, 223.4507f);
     private static readonly Vector2 VipLeftProgressBarPosition = new Vector2(-453.8874f, -113.0993f);
@@ -4710,7 +4713,7 @@ public class GameManager : MonoBehaviour
         vipLevelButtonRects.Clear();
         for (int i = 1; i <= MaxVipLevel; i++)
         {
-            CreateVipCardButton(vipPanel.transform, i, new Vector2(-90f + ((i - 1) * 151f), 18f));
+            CreateVipCardButton(vipPanel.transform, i, new Vector2(-92f + ((i - 1) * 151f), 18f));
         }
 
         vipCoinBonusText = CreateVipBonusPill(vipPanel.transform, "Coin", "+0%", VipCoinBonusLayout);
@@ -5120,19 +5123,7 @@ public class GameManager : MonoBehaviour
 
     private Vector2 GetVipCardButtonLockPosition(int level)
     {
-        switch (level)
-        {
-            case 1:
-            case 2:
-            case 4:
-                return new Vector2(0f, 97.8f);
-            case 3:
-                return new Vector2(3.7f, 97.8f);
-            case 5:
-                return new Vector2(-8f, 97.8f);
-            default:
-                return new Vector2(0f, 86f);
-        }
+        return VipCardMedallionCenter;
     }
 
     private void CreateVipCardHitArea(Transform parent, int level, Vector2 position)
@@ -6804,30 +6795,35 @@ public class GameManager : MonoBehaviour
             int cardLevel = i + 1;
             bool cardLocked = vipLevel < cardLevel;
             bool cardActive = vipLevel == cardLevel;
+            bool useDarkCardText = cardLevel == 2 || cardLevel == 3 || cardLevel == 5;
+            Color readableCardText = useDarkCardText
+                ? new Color(0.20f, 0.09f, 0.025f, 1f)
+                : new Color(1f, 0.95f, 0.72f, 1f);
+            Color readableCardOutline = useDarkCardText
+                ? new Color(1f, 0.84f, 0.45f, 0.78f)
+                : new Color(0.16f, 0.055f, 0.015f, 0.96f);
             if (i < vipLevelCardTexts.Count)
             {
                 vipLevelCardTexts[i].text = cardLocked ? "KİLİTLİ" : cardActive ? "AKTİF" : "AÇIK";
-                vipLevelCardTexts[i].color = cardLocked
-                    ? new Color(0.72f, 0.70f, 0.66f, 0.88f)
-                    : cardActive
-                        ? new Color(1f, 0.88f, 0.30f, 1f)
-                        : new Color(1f, 0.91f, 0.65f, 1f);
+                vipLevelCardTexts[i].color = readableCardText;
+                vipLevelCardTexts[i].outlineColor = readableCardOutline;
+                vipLevelCardTexts[i].outlineWidth = 0.12f;
             }
 
             if (i < vipLevelCardTitleTexts.Count)
             {
                 vipLevelCardTitleTexts[i].text = GetVipTierName(cardLevel);
-                vipLevelCardTitleTexts[i].color = cardLocked
-                    ? new Color(0.72f, 0.70f, 0.66f, 0.88f)
-                    : new Color(1f, 0.92f, 0.70f, 1f);
+                vipLevelCardTitleTexts[i].color = readableCardText;
+                vipLevelCardTitleTexts[i].outlineColor = readableCardOutline;
+                vipLevelCardTitleTexts[i].outlineWidth = 0.12f;
             }
 
             if (i < vipLevelCardBonusTexts.Count)
             {
                 vipLevelCardBonusTexts[i].text = GetVipLevelBonusLine(cardLevel);
-                vipLevelCardBonusTexts[i].color = cardLocked
-                    ? new Color(0.66f, 0.65f, 0.62f, 0.82f)
-                    : new Color(1f, 0.94f, 0.78f, 1f);
+                vipLevelCardBonusTexts[i].color = readableCardText;
+                vipLevelCardBonusTexts[i].outlineColor = readableCardOutline;
+                vipLevelCardBonusTexts[i].outlineWidth = 0.09f;
             }
 
             if (i < vipLevelCardImages.Count)
@@ -6870,7 +6866,7 @@ public class GameManager : MonoBehaviour
             {
                 bool selected = selectedVipPreviewLevel == cardLevel;
                 bool unlockFlash = vipUnlockFlashLevel == cardLevel && Time.time < vipUnlockFlashEndTime;
-                Vector2 basePosition = new Vector2(-90f + (i * 151f), 18f);
+                Vector2 basePosition = new Vector2(-92f + (i * 151f), 18f);
                 Vector2 targetPosition = selected ? basePosition + new Vector2(0f, -8f) : basePosition;
                 Vector3 targetScale = selected ? new Vector3(0.94f, 0.94f, 1f) : Vector3.one;
                 if (unlockFlash && !selected)
