@@ -232,8 +232,8 @@ public class GameManager : MonoBehaviour
 
     private static readonly Vector2 VipUpgradeButtonPosition = new Vector2(0.6f, -302.4f);
     private static readonly Vector2 VipUpgradeButtonSize = new Vector2(146.8112f, 62f);
-    private static readonly Vector2 VipUpgradeButtonTextPosition = new Vector2(-27f, -9f);
-    private static readonly Vector2 VipUpgradeButtonTextSize = new Vector2(104f, 62f);
+    private static readonly Vector2 VipUpgradeButtonTextPosition = new Vector2(-28f, -9f);
+    private static readonly Vector2 VipUpgradeButtonTextSize = new Vector2(106f, 62f);
     private static readonly Vector2 VipUpgradeGemIconPosition = new Vector2(49f, -9f);
     private static readonly Vector2 VipUpgradeGemIconSize = new Vector2(42f, 42f);
     private static readonly Vector2 VipLeftBadgePosition = new Vector2(-507.21f, 80.079f);
@@ -4661,12 +4661,15 @@ public class GameManager : MonoBehaviour
         vipPassiveBonusText = CreateVipBonusPill(vipPanel.transform, "Pasif Gelir", "+0%", VipPassiveBonusLayout);
         vipDecorBonusText = CreateVipBonusPill(vipPanel.transform, "İndirim", "Kilitli", VipDiscountBonusLayout);
 
-        vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP Al", VipUpgradeButtonPosition, VipUpgradeButtonSize, UpgradeVipLevel, 24, new Color(0.42f, 0.22f, 0.04f, 1f));
+        vipUpgradeButtonText = CreateTransparentButton(vipPanel.transform, "VipUpgradeButton", "VIP AL", VipUpgradeButtonPosition, VipUpgradeButtonSize, UpgradeVipLevel, 28, new Color(0.35f, 0.16f, 0.03f, 1f));
         ApplyVipFont(vipUpgradeButtonText);
         vipUpgradeButtonText.rectTransform.anchoredPosition = VipUpgradeButtonTextPosition;
         vipUpgradeButtonText.rectTransform.sizeDelta = VipUpgradeButtonTextSize;
-        vipUpgradeButtonText.fontSizeMax = 20f;
-        vipUpgradeButtonText.fontSizeMin = 12f;
+        vipUpgradeButtonText.fontStyle = FontStyles.Normal;
+        vipUpgradeButtonText.fontSize = 28f;
+        vipUpgradeButtonText.fontSizeMax = 28f;
+        vipUpgradeButtonText.fontSizeMin = 22f;
+        vipUpgradeButtonText.characterSpacing = 0.5f;
         vipUpgradeGemIconImage = CreateVipUpgradeGemIcon(vipUpgradeButtonText.transform.parent);
         AttachPressAnimator(vipUpgradeButtonText.transform.parent as RectTransform, new Vector2(0f, -6f), 0.96f);
         CreateInvisibleButton(vipPanel.transform, "VipCloseButton", new Vector2(592, 309), new Vector2(92, 92), CloseVipPanel);
@@ -6600,7 +6603,7 @@ public class GameManager : MonoBehaviour
             Button vipButton = vipUpgradeButtonText.GetComponentInParent<Button>();
             bool maxed = vipLevel >= MaxVipLevel;
             int cost = GetVipUpgradeCost();
-            vipUpgradeButtonText.text = maxed ? "VIP MAX" : "Aç: " + cost;
+            vipUpgradeButtonText.text = maxed ? "VIP MAX" : "AÇ: " + cost;
             if (vipUpgradeGemIconImage != null)
                 vipUpgradeGemIconImage.gameObject.SetActive(!maxed);
             if (vipButton != null)
