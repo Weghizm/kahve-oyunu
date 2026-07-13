@@ -2120,7 +2120,7 @@ public class GameManager : MonoBehaviour
         panelImage.color = Color.white;
         panelImage.preserveAspect = true;
 
-        TMP_Text title = CreateText(offlinePanel.transform, "OfflineTitle", "BARİSTA ÇALIŞTI", new Vector2(0, 150), new Vector2(700, 54), 34);
+        TMP_Text title = CreateText(offlinePanel.transform, "OfflineTitle", "BARİSTA ÇALIŞTI", new Vector2(-10, 130), new Vector2(700, 54), 34);
         title.color = new Color(1f, 0.79f, 0.28f, 1f);
         title.fontStyle = FontStyles.Bold;
         title.alignment = TextAlignmentOptions.Center;
