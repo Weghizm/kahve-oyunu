@@ -6438,7 +6438,7 @@ public class GameManager : MonoBehaviour
             offlineAmountText.text = "+" + FormatResourceAmount(lastOfflineCoins) + " COIN";
 
         if (offlineText != null)
-            offlineText.text = "Sen yokken baristan çalıştı\nPasif gelirin 1/3'ü • En fazla 4 saat";
+            offlineText.text = "Sen yokken baristan çalıştı";
 
         if (dailyRewardPanelText != null)
             dailyRewardPanelText.text = GetDailyRewardText();
