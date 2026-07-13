@@ -4254,6 +4254,14 @@ public class GameManager : MonoBehaviour
         StyleFoodCardText(levelLabel, 9, 13, TextAlignmentOptions.Center);
         ui.LevelLabelText = levelLabel;
 
+        if (data.Id == "donut")
+        {
+            levelLabel.rectTransform.anchoredPosition = new Vector2(11.714f, -26.024f);
+            levelLabel.rectTransform.sizeDelta = new Vector2(85.427f, 22.5021f);
+            levelRow.rectTransform.anchoredPosition = new Vector2(9.815f, -26.4f);
+            levelRow.rectTransform.sizeDelta = new Vector2(100.57f, 21.959f);
+        }
+
         ui.UnlockStripImage = CreateFoodUiImage(cardObject.transform, "UnlockStrip", null, new Vector2(14, -74.7f), new Vector2(132, 27), false);
         ui.UnlockStripImage.sprite = CreateRoundedRectSprite(ui.UnlockStripImage.rectTransform.sizeDelta, new Color(1f, 0.89f, 0.64f, 0.94f), new Color(0.63f, 0.36f, 0.09f, 0.95f), 11, 2);
         ui.UnlockStripImage.color = Color.white;
