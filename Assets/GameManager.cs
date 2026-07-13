@@ -4137,9 +4137,10 @@ public class GameManager : MonoBehaviour
         RectTransform tabRect = tabText.GetComponentInParent<RectTransform>();
         if (tabImage != null && tabRect != null)
         {
-            tabImage.sprite = null;
-            tabImage.color = Color.clear;
+            tabImage.sprite = selected ? GetFoodCategoryTabSelectedSprite() : GetFoodCategoryTabNormalSprite();
+            tabImage.color = Color.white;
             tabImage.preserveAspect = false;
+            tabImage.type = Image.Type.Sliced;
 #if UNITY_EDITOR
             AttachEditorDragProbe(tabRect, objectName);
 #endif
@@ -4184,8 +4185,18 @@ public class GameManager : MonoBehaviour
         foreach (KeyValuePair<FoodUpgradeCategory, TMP_Text> pair in foodCategoryTabTexts)
         {
             bool selected = pair.Key == selectedFoodCategory;
-            pair.Value.color = selected ? new Color(0.20f, 0.10f, 0.03f) : new Color(1f, 0.88f, 0.62f);
+            Image tabImage = pair.Value.GetComponentInParent<Image>();
+            if (tabImage != null)
+            {
+                tabImage.sprite = selected ? GetFoodCategoryTabSelectedSprite() : GetFoodCategoryTabNormalSprite();
+                tabImage.color = Color.white;
+                tabImage.type = Image.Type.Sliced;
+            }
+
+            pair.Value.color = selected ? new Color(0.20f, 0.10f, 0.03f, 1f) : new Color(1f, 0.90f, 0.68f, 1f);
             pair.Value.fontSizeMax = selected ? 28f : 24f;
+            pair.Value.outlineColor = selected ? new Color(1f, 0.76f, 0.24f, 0.75f) : new Color(0.10f, 0.04f, 0.01f, 0.95f);
+            pair.Value.outlineWidth = selected ? 0.08f : 0.15f;
         }
     }
 
