@@ -4272,7 +4272,7 @@ public class GameManager : MonoBehaviour
         passiveStrip.color = Color.white;
         ui.PassiveStripImage = passiveStrip;
 
-        ui.OrderIconImage = CreateFoodUiImage(cardObject.transform, "OrderIcon", GetFoodCoinChipSprite(), new Vector2(-56.009f, -63.425f), new Vector2(20, 20), true);
+        ui.OrderIconImage = CreateFoodUiImage(cardObject.transform, "OrderIcon", GetFoodCoinChipSprite(), new Vector2(-59.99997f, -72.481f), new Vector2(20, 20), true);
         ui.PassiveIconImage = CreateFoodUiImage(cardObject.transform, "PassiveIcon", GetFoodPassiveChipSprite(), new Vector2(-60f, -96.19999f), new Vector2(20, 20), true);
 
         ui.OrderText = CreateText(cardObject.transform, "OrderText", "", new Vector2(10.7209f, -69.911f), new Vector2(114.4419f, 19), 12);
