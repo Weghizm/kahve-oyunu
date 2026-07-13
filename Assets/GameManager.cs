@@ -4163,20 +4163,20 @@ public class GameManager : MonoBehaviour
             false);
         ribbon.type = Image.Type.Sliced;
 
-        foodCategoryNameText = CreateText(ribbon.transform, "CategoryName", "", new Vector2(-472f, 0f), new Vector2(230f, 54f), 32);
-        StyleFoodCategoryInfoText(foodCategoryNameText, 22f, 32f);
+        foodCategoryNameText = CreateText(ribbon.transform, "CategoryName", "", new Vector2(-375f, 0f), new Vector2(205f, 54f), 30);
+        StyleFoodCategoryInfoText(foodCategoryNameText, 18f, 30f);
 
-        Image progressPill = CreateFoodCategoryInfoPill(ribbon.transform, "ProgressPill", new Vector2(-202f, 0f), new Vector2(238f, 58f));
-        CreateFoodUiImage(progressPill.transform, "ProgressIcon", GetFoodCoinChipSprite(), new Vector2(-88f, 0f), new Vector2(34f, 34f), true);
-        foodCategoryProgressText = CreateText(progressPill.transform, "CategoryProgress", "", new Vector2(18f, 0f), new Vector2(164f, 44f), 23);
+        Image progressPill = CreateFoodCategoryInfoPill(ribbon.transform, "ProgressPill", new Vector2(-140f, 0f), new Vector2(225f, 58f));
+        CreateFoodUiImage(progressPill.transform, "ProgressIcon", GetFoodCoinChipSprite(), new Vector2(-82f, 0f), new Vector2(34f, 34f), true);
+        foodCategoryProgressText = CreateText(progressPill.transform, "CategoryProgress", "", new Vector2(18f, 0f), new Vector2(152f, 44f), 23);
 
-        Image salesPill = CreateFoodCategoryInfoPill(ribbon.transform, "SalesPill", new Vector2(72f, 0f), new Vector2(270f, 58f));
-        CreateFoodUiImage(salesPill.transform, "SalesIcon", GetFoodCoinChipSprite(), new Vector2(-103f, 0f), new Vector2(34f, 34f), true);
-        foodCategorySalesText = CreateText(salesPill.transform, "CategorySales", "", new Vector2(18f, 0f), new Vector2(202f, 44f), 23);
+        Image salesPill = CreateFoodCategoryInfoPill(ribbon.transform, "SalesPill", new Vector2(110f, 0f), new Vector2(245f, 58f));
+        CreateFoodUiImage(salesPill.transform, "SalesIcon", GetFoodCoinChipSprite(), new Vector2(-90f, 0f), new Vector2(34f, 34f), true);
+        foodCategorySalesText = CreateText(salesPill.transform, "CategorySales", "", new Vector2(17f, 0f), new Vector2(180f, 44f), 23);
 
-        Image passivePill = CreateFoodCategoryInfoPill(ribbon.transform, "PassivePill", new Vector2(372f, 0f), new Vector2(270f, 58f));
-        CreateFoodUiImage(passivePill.transform, "PassiveIcon", GetFoodPassiveChipSprite(), new Vector2(-103f, 0f), new Vector2(34f, 34f), true);
-        foodCategoryPassiveText = CreateText(passivePill.transform, "CategoryPassive", "", new Vector2(18f, 0f), new Vector2(202f, 44f), 23);
+        Image passivePill = CreateFoodCategoryInfoPill(ribbon.transform, "PassivePill", new Vector2(385f, 0f), new Vector2(245f, 58f));
+        CreateFoodUiImage(passivePill.transform, "PassiveIcon", GetFoodPassiveChipSprite(), new Vector2(-90f, 0f), new Vector2(34f, 34f), true);
+        foodCategoryPassiveText = CreateText(passivePill.transform, "CategoryPassive", "", new Vector2(17f, 0f), new Vector2(180f, 44f), 23);
 
         StyleFoodCategoryInfoText(foodCategoryProgressText, 18f, 23f);
         StyleFoodCategoryInfoText(foodCategorySalesText, 18f, 23f);
