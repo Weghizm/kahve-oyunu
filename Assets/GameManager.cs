@@ -4071,7 +4071,7 @@ public class GameManager : MonoBehaviour
         CreateFoodCategoryTab("FoodTabCoffee", "Kahve", FoodUpgradeCategory.Coffee, new Vector2(-665, 272), true);
         CreateFoodCategoryTab("FoodTabSweet", "Tatlı", FoodUpgradeCategory.Sweet, new Vector2(-665, 93), false);
         CreateFoodCategoryTab("FoodTabSnack", "Atıştırmalık", FoodUpgradeCategory.Snack, new Vector2(-665, -75), false);
-        CreateFoodCategoryTab("FoodTabCold", "Soğuk", FoodUpgradeCategory.Cold, new Vector2(-665, -240), false);
+        CreateFoodCategoryTab("FoodTabCold", "Soğuk", FoodUpgradeCategory.Cold, new Vector2(-665, -268), false);
 
         GameObject viewportObject = new GameObject("FoodCardsViewport", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(RectMask2D));
         viewportObject.transform.SetParent(foodPanel.transform, false);
