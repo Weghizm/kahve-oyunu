@@ -2145,8 +2145,8 @@ public class GameManager : MonoBehaviour
         offlineText.fontSizeMax = 24;
         ApplyVipFont(offlineText);
 
-        StyleCoffeePopupButton(CreateButton(offlinePanel.transform, "OfflineCollectButton", "TOPLA", new Vector2(-180, -125), new Vector2(300, 72), CloseOfflinePanel, Color.white, 29), new Color(0.27f, 0.10f, 0.025f, 0.98f), false);
-        StyleCoffeePopupButton(CreateButton(offlinePanel.transform, "OfflineDoubleButton", "2x TOPLA", new Vector2(180, -125), new Vector2(300, 72), CollectOfflineDouble, Color.white, 29), new Color(0.72f, 0.38f, 0.07f, 0.98f), true);
+        StyleCoffeePopupButton(CreateButton(offlinePanel.transform, "OfflineCollectButton", "TOPLA", new Vector2(-183, -96), new Vector2(300, 72), CloseOfflinePanel, Color.white, 29), new Color(0.27f, 0.10f, 0.025f, 0.98f), false);
+        StyleCoffeePopupButton(CreateButton(offlinePanel.transform, "OfflineDoubleButton", "2x TOPLA", new Vector2(141, -96), new Vector2(300, 72), CollectOfflineDouble, Color.white, 29), new Color(0.72f, 0.38f, 0.07f, 0.98f), true);
         offlinePanel.transform.SetAsLastSibling();
         offlinePanel.SetActive(false);
     }
