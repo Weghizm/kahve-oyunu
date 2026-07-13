@@ -4652,7 +4652,7 @@ public class GameManager : MonoBehaviour
         vipLevelButtonRects.Clear();
         for (int i = 1; i <= MaxVipLevel; i++)
         {
-            CreateVipCardButton(vipPanel.transform, i, new Vector2(-85f + ((i - 1) * 151f), 18f));
+            CreateVipCardButton(vipPanel.transform, i, new Vector2(-90f + ((i - 1) * 151f), 18f));
         }
 
         vipCoinBonusText = CreateVipBonusPill(vipPanel.transform, "Coin", "+0%", VipCoinBonusLayout);
@@ -6646,15 +6646,15 @@ public class GameManager : MonoBehaviour
                 Color cardColor;
                 if (vipLevel < cardLevel)
                 {
-                    cardColor = new Color(0.82f, 0.82f, 0.82f, 0.96f);
+                    cardColor = new Color(0.70f, 0.70f, 0.70f, 0.96f);
                 }
                 else if (vipLevel == cardLevel)
                 {
-                    cardColor = Color.white;
+                    cardColor = new Color(0.90f, 0.90f, 0.90f, 1f);
                 }
                 else
                 {
-                    cardColor = Color.white;
+                    cardColor = new Color(0.86f, 0.86f, 0.86f, 1f);
                 }
 
                 vipLevelCardImages[i].color = cardColor;
@@ -6681,7 +6681,7 @@ public class GameManager : MonoBehaviour
             {
                 bool selected = selectedVipPreviewLevel == cardLevel;
                 bool unlockFlash = vipUnlockFlashLevel == cardLevel && Time.time < vipUnlockFlashEndTime;
-                Vector2 basePosition = new Vector2(-85f + (i * 151f), 18f);
+                Vector2 basePosition = new Vector2(-90f + (i * 151f), 18f);
                 Vector2 targetPosition = selected ? basePosition + new Vector2(0f, -8f) : basePosition;
                 Vector3 targetScale = selected ? new Vector3(0.94f, 0.94f, 1f) : Vector3.one;
                 if (unlockFlash && !selected)
