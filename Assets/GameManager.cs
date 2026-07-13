@@ -325,6 +325,7 @@ public class GameManager : MonoBehaviour
     private Image dailyTasksNotifyDot;
     private Image vipNotifyDot;
     private TMP_Text offlineText;
+    private TMP_Text offlineAmountText;
     private TMP_Text adBoostButtonText;
     private TMP_Text offerButtonText;
     private TMP_Text offerPanelText;
@@ -2111,18 +2112,64 @@ public class GameManager : MonoBehaviour
         RectTransform panelRect = offlinePanel.GetComponent<RectTransform>();
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
-        panelRect.anchoredPosition = new Vector2(0, 40);
-        panelRect.sizeDelta = new Vector2(860, 390);
+        panelRect.anchoredPosition = new Vector2(0, 35);
+        panelRect.sizeDelta = new Vector2(900, 450);
 
-        StylePopupPanel(offlinePanel, panelRect.sizeDelta, new Color(1f, 0.94f, 0.78f, 0.98f), new Color(0.56f, 0.30f, 0.10f, 1f));
+        Image panelImage = offlinePanel.GetComponent<Image>();
+        panelImage.sprite = GetCoinInfoPanelSprite();
+        panelImage.color = Color.white;
+        panelImage.preserveAspect = true;
 
-        offlineText = CreateText(offlinePanel.transform, "OfflineText", "", new Vector2(0, 82), new Vector2(760, 170), 34);
-        StylePopupBodyText(offlineText, 22, 34, TextAlignmentOptions.Center);
+        TMP_Text title = CreateText(offlinePanel.transform, "OfflineTitle", "BARİSTA ÇALIŞTI", new Vector2(0, 150), new Vector2(700, 54), 34);
+        title.color = new Color(1f, 0.79f, 0.28f, 1f);
+        title.fontStyle = FontStyles.Bold;
+        title.alignment = TextAlignmentOptions.Center;
+        title.outlineColor = new Color(0.12f, 0.04f, 0.01f, 1f);
+        title.outlineWidth = 0.14f;
+        ApplyVipFont(title);
 
-        StylePopupButton(CreateButton(offlinePanel.transform, "OfflineCollectButton", "Topla", new Vector2(-220, -118), new Vector2(360, 92), CloseOfflinePanel, new Color(0.20f, 0.55f, 0.36f), 31), new Color(0.20f, 0.55f, 0.36f), 31);
-        StylePopupButton(CreateButton(offlinePanel.transform, "OfflineDoubleButton", "2x Topla", new Vector2(220, -118), new Vector2(360, 92), CollectOfflineDouble, new Color(0.18f, 0.38f, 0.82f), 31), new Color(0.18f, 0.38f, 0.82f), 31);
+        offlineAmountText = CreateText(offlinePanel.transform, "OfflineAmountText", "", new Vector2(0, 70), new Vector2(700, 62), 42);
+        offlineAmountText.color = new Color(1f, 0.86f, 0.42f, 1f);
+        offlineAmountText.fontStyle = FontStyles.Bold;
+        offlineAmountText.alignment = TextAlignmentOptions.Center;
+        offlineAmountText.outlineColor = new Color(0.12f, 0.04f, 0.01f, 1f);
+        offlineAmountText.outlineWidth = 0.14f;
+        ApplyVipFont(offlineAmountText);
+
+        offlineText = CreateText(offlinePanel.transform, "OfflineText", "", new Vector2(0, 5), new Vector2(700, 72), 24);
+        offlineText.color = new Color(1f, 0.91f, 0.68f, 1f);
+        offlineText.fontStyle = FontStyles.Bold;
+        offlineText.alignment = TextAlignmentOptions.Center;
+        offlineText.enableAutoSizing = true;
+        offlineText.fontSizeMin = 18;
+        offlineText.fontSizeMax = 24;
+        ApplyVipFont(offlineText);
+
+        StyleCoffeePopupButton(CreateButton(offlinePanel.transform, "OfflineCollectButton", "TOPLA", new Vector2(-180, -125), new Vector2(300, 72), CloseOfflinePanel, Color.white, 29), new Color(0.27f, 0.10f, 0.025f, 0.98f), false);
+        StyleCoffeePopupButton(CreateButton(offlinePanel.transform, "OfflineDoubleButton", "2x TOPLA", new Vector2(180, -125), new Vector2(300, 72), CollectOfflineDouble, Color.white, 29), new Color(0.72f, 0.38f, 0.07f, 0.98f), true);
         offlinePanel.transform.SetAsLastSibling();
         offlinePanel.SetActive(false);
+    }
+
+    private TMP_Text StyleCoffeePopupButton(TMP_Text labelText, Color fillColor, bool darkText)
+    {
+        Image image = labelText.GetComponentInParent<Image>();
+        RectTransform rect = labelText.GetComponentInParent<RectTransform>();
+        if (image != null && rect != null)
+        {
+            image.sprite = CreateRoundedRectSprite(rect.sizeDelta, fillColor, new Color(0.96f, 0.68f, 0.20f, 1f), 18, 3);
+            image.color = Color.white;
+        }
+
+        labelText.color = darkText ? new Color(0.16f, 0.055f, 0.01f, 1f) : new Color(1f, 0.91f, 0.67f, 1f);
+        labelText.fontStyle = FontStyles.Bold;
+        labelText.enableAutoSizing = true;
+        labelText.fontSizeMin = 18;
+        labelText.fontSizeMax = 29;
+        labelText.outlineColor = darkText ? new Color(1f, 0.78f, 0.32f, 0.42f) : new Color(0f, 0f, 0f, 0.72f);
+        labelText.outlineWidth = 0.10f;
+        ApplyVipFont(labelText);
+        return labelText;
     }
 
     public void OpenDailyRewardPanel()
@@ -6387,8 +6434,11 @@ public class GameManager : MonoBehaviour
             offlinePanel.transform.SetAsLastSibling();
         }
 
+        if (offlineAmountText != null)
+            offlineAmountText.text = "+" + FormatResourceAmount(lastOfflineCoins) + " COIN";
+
         if (offlineText != null)
-            offlineText.text = "Barista çalıştı\nSen yokken " + lastOfflineCoins + " coin kazandın\nOffline kazanç: pasif gelirin 1/3'ü, en fazla 4 saat";
+            offlineText.text = "Sen yokken baristan çalıştı\nPasif gelirin 1/3'ü • En fazla 4 saat";
 
         if (dailyRewardPanelText != null)
             dailyRewardPanelText.text = GetDailyRewardText();
