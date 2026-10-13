@@ -1,0 +1,30 @@
+Panel: Günlük Giriş - PNG Text Starter
+Canvas: 1728x960
+Technical preview: C:\Users\akkus\Documents\Codex\2026-07-02\me\deneme\Assets\Resources\Art\UI\CoffeeUILayoutTool\DailyLogin\coffee_ui_layout_preview.png
+Clean preview: C:\Users\akkus\Documents\Codex\2026-07-02\me\deneme\Assets\Resources\Art\UI\CoffeeUILayoutTool\DailyLogin\coffee_ui_layout_clean_preview.png
+
+Static PNG text assets:
+- title: daily_text_title.png
+- today: daily_text_today.png
+- today_reward: daily_text_today_reward.png
+- claim: daily_text_claim.png
+- claimed: daily_text_status_claimed.png
+- available: daily_text_status_available.png
+- locked: daily_text_status_locked.png
+- locked_long: daily_text_status_locked_long.png
+- arc_sample: daily_text_arc_sample.png
+
+Unity RectTransform slots:
+- title_text: pos=(16.0, 382.0) size=(520.0, 86.0) role=text_png
+- today_text: pos=(-646.0, 270.0) size=(180.0, 50.0) role=text_png
+- today_reward_text: pos=(-642.0, -300.0) size=(200.0, 64.0) role=text_png
+- claim_text: pos=(504.0, -344.0) size=(350.0, 82.0) role=text_png
+- day1_status: pos=(-346.0, -116.0) size=(116.0, 36.0) role=text_png
+- day2_status: pos=(-196.0, -116.0) size=(116.0, 36.0) role=text_png
+- day3_status: pos=(-46.0, -116.0) size=(116.0, 36.0) role=text_png
+- day4_status: pos=(104.0, -116.0) size=(116.0, 36.0) role=text_png
+- day5_status: pos=(254.0, -116.0) size=(116.0, 36.0) role=text_png
+- day6_status: pos=(404.0, -116.0) size=(116.0, 36.0) role=text_png
+- day7_status: pos=(632.0, -144.0) size=(150.0, 40.0) role=text_png
+- close_button: pos=(744.0, 350.0) size=(112.0, 112.0) role=button
+- claim_button: pos=(504.0, -344.0) size=(390.0, 118.0) role=button

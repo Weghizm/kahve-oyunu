@@ -1,0 +1,826 @@
+{
+    "panelWidth": 1672.0,
+    "panelHeight": 941.0,
+    "panelY": 14.0,
+    "referenceOverlayAlpha": 0.0,
+    "title": {
+        "id": "title",
+        "x": 7.0,
+        "y": 417.5,
+        "width": 514.0,
+        "height": 106.0
+    },
+    "titleText": {
+        "id": "titleText",
+        "x": 7.0,
+        "y": 417.5,
+        "width": 414.0,
+        "height": 66.0
+    },
+    "closeButton": {
+        "id": "close",
+        "x": 782.0,
+        "y": 418.5,
+        "width": 68.0,
+        "height": 68.0
+    },
+    "categories": [
+        {
+            "id": "category0",
+            "x": -714.5,
+            "y": 383.5,
+            "width": 215.0,
+            "height": 84.0
+        },
+        {
+            "id": "category1",
+            "x": -714.5,
+            "y": 293.5,
+            "width": 215.0,
+            "height": 84.0
+        },
+        {
+            "id": "category2",
+            "x": -714.5,
+            "y": 203.5,
+            "width": 215.0,
+            "height": 84.0
+        },
+        {
+            "id": "category3",
+            "x": -714.5,
+            "y": 113.5,
+            "width": 215.0,
+            "height": 84.0
+        },
+        {
+            "id": "category4",
+            "x": -714.5,
+            "y": 23.5,
+            "width": 215.0,
+            "height": 84.0
+        },
+        {
+            "id": "category5",
+            "x": -714.5,
+            "y": -66.5,
+            "width": 215.0,
+            "height": 84.0
+        },
+        {
+            "id": "category6",
+            "x": -714.5,
+            "y": -156.5,
+            "width": 215.0,
+            "height": 84.0
+        },
+        {
+            "id": "category7",
+            "x": -714.5,
+            "y": -246.5,
+            "width": 215.0,
+            "height": 84.0
+        },
+        {
+            "id": "category8",
+            "x": -714.5,
+            "y": -336.5,
+            "width": 215.0,
+            "height": 84.0
+        }
+    ],
+    "categoryIcons": [
+        {
+            "id": "categoryIcon0",
+            "x": -68.0,
+            "y": 1.0,
+            "width": 54.0,
+            "height": 54.0
+        },
+        {
+            "id": "categoryIcon1",
+            "x": -68.0,
+            "y": 1.0,
+            "width": 54.0,
+            "height": 54.0
+        },
+        {
+            "id": "categoryIcon2",
+            "x": -68.0,
+            "y": 1.0,
+            "width": 54.0,
+            "height": 54.0
+        },
+        {
+            "id": "categoryIcon3",
+            "x": -68.0,
+            "y": 1.0,
+            "width": 54.0,
+            "height": 54.0
+        },
+        {
+            "id": "categoryIcon4",
+            "x": -68.0,
+            "y": 1.0,
+            "width": 54.0,
+            "height": 54.0
+        },
+        {
+            "id": "categoryIcon5",
+            "x": -68.0,
+            "y": 1.0,
+            "width": 54.0,
+            "height": 54.0
+        },
+        {
+            "id": "categoryIcon6",
+            "x": -68.0,
+            "y": 1.0,
+            "width": 54.0,
+            "height": 54.0
+        },
+        {
+            "id": "categoryIcon7",
+            "x": -68.0,
+            "y": 1.0,
+            "width": 54.0,
+            "height": 54.0
+        },
+        {
+            "id": "categoryIcon8",
+            "x": -68.0,
+            "y": 1.0,
+            "width": 54.0,
+            "height": 54.0
+        }
+    ],
+    "categoryTexts": [
+        {
+            "id": "categoryText0",
+            "x": 27.0,
+            "y": 2.0,
+            "width": 142.0,
+            "height": 58.0
+        },
+        {
+            "id": "categoryText1",
+            "x": 27.0,
+            "y": 2.0,
+            "width": 142.0,
+            "height": 58.0
+        },
+        {
+            "id": "categoryText2",
+            "x": 27.0,
+            "y": 2.0,
+            "width": 142.0,
+            "height": 58.0
+        },
+        {
+            "id": "categoryText3",
+            "x": 27.0,
+            "y": 2.0,
+            "width": 142.0,
+            "height": 58.0
+        },
+        {
+            "id": "categoryText4",
+            "x": 27.0,
+            "y": 2.0,
+            "width": 142.0,
+            "height": 58.0
+        },
+        {
+            "id": "categoryText5",
+            "x": 27.0,
+            "y": 2.0,
+            "width": 142.0,
+            "height": 58.0
+        },
+        {
+            "id": "categoryText6",
+            "x": 27.0,
+            "y": 2.0,
+            "width": 142.0,
+            "height": 58.0
+        },
+        {
+            "id": "categoryText7",
+            "x": 27.0,
+            "y": 2.0,
+            "width": 142.0,
+            "height": 58.0
+        },
+        {
+            "id": "categoryText8",
+            "x": 27.0,
+            "y": 2.0,
+            "width": 142.0,
+            "height": 58.0
+        }
+    ],
+    "materials": [
+        {
+            "id": "material0",
+            "x": -487.0,
+            "y": 311.5,
+            "width": 190.0,
+            "height": 96.0
+        },
+        {
+            "id": "material1",
+            "x": -288.0,
+            "y": 311.5,
+            "width": 190.0,
+            "height": 96.0
+        },
+        {
+            "id": "material2",
+            "x": -89.0,
+            "y": 311.5,
+            "width": 190.0,
+            "height": 96.0
+        },
+        {
+            "id": "material3",
+            "x": 110.0,
+            "y": 311.5,
+            "width": 190.0,
+            "height": 96.0
+        },
+        {
+            "id": "material4",
+            "x": 309.0,
+            "y": 311.5,
+            "width": 190.0,
+            "height": 96.0
+        },
+        {
+            "id": "material5",
+            "x": 508.0,
+            "y": 311.5,
+            "width": 190.0,
+            "height": 96.0
+        },
+        {
+            "id": "material6",
+            "x": 707.0,
+            "y": 311.5,
+            "width": 190.0,
+            "height": 96.0
+        }
+    ],
+    "materialIcons": [
+        {
+            "id": "materialIcon0",
+            "x": -545.0,
+            "y": 311.5,
+            "width": 70.0,
+            "height": 70.0
+        },
+        {
+            "id": "materialIcon1",
+            "x": -346.0,
+            "y": 311.5,
+            "width": 70.0,
+            "height": 70.0
+        },
+        {
+            "id": "materialIcon2",
+            "x": -147.0,
+            "y": 311.5,
+            "width": 70.0,
+            "height": 70.0
+        },
+        {
+            "id": "materialIcon3",
+            "x": 52.0,
+            "y": 311.5,
+            "width": 70.0,
+            "height": 70.0
+        },
+        {
+            "id": "materialIcon4",
+            "x": 251.0,
+            "y": 311.5,
+            "width": 70.0,
+            "height": 70.0
+        },
+        {
+            "id": "materialIcon5",
+            "x": 450.0,
+            "y": 311.5,
+            "width": 70.0,
+            "height": 70.0
+        },
+        {
+            "id": "materialIcon6",
+            "x": 649.0,
+            "y": 311.5,
+            "width": 70.0,
+            "height": 70.0
+        }
+    ],
+    "materialNames": [
+        {
+            "id": "materialName0",
+            "x": -455.0,
+            "y": 329.5,
+            "width": 112.0,
+            "height": 26.0
+        },
+        {
+            "id": "materialName1",
+            "x": -256.0,
+            "y": 329.5,
+            "width": 112.0,
+            "height": 26.0
+        },
+        {
+            "id": "materialName2",
+            "x": -57.0,
+            "y": 329.5,
+            "width": 112.0,
+            "height": 26.0
+        },
+        {
+            "id": "materialName3",
+            "x": 142.0,
+            "y": 329.5,
+            "width": 112.0,
+            "height": 26.0
+        },
+        {
+            "id": "materialName4",
+            "x": 341.0,
+            "y": 329.5,
+            "width": 112.0,
+            "height": 26.0
+        },
+        {
+            "id": "materialName5",
+            "x": 540.0,
+            "y": 329.5,
+            "width": 112.0,
+            "height": 26.0
+        },
+        {
+            "id": "materialName6",
+            "x": 739.0,
+            "y": 329.5,
+            "width": 112.0,
+            "height": 26.0
+        }
+    ],
+    "materialCounts": [
+        {
+            "id": "materialCount0",
+            "x": -455.0,
+            "y": 292.5,
+            "width": 112.0,
+            "height": 38.0
+        },
+        {
+            "id": "materialCount1",
+            "x": -256.0,
+            "y": 292.5,
+            "width": 112.0,
+            "height": 38.0
+        },
+        {
+            "id": "materialCount2",
+            "x": -57.0,
+            "y": 292.5,
+            "width": 112.0,
+            "height": 38.0
+        },
+        {
+            "id": "materialCount3",
+            "x": 142.0,
+            "y": 292.5,
+            "width": 112.0,
+            "height": 38.0
+        },
+        {
+            "id": "materialCount4",
+            "x": 341.0,
+            "y": 292.5,
+            "width": 112.0,
+            "height": 38.0
+        },
+        {
+            "id": "materialCount5",
+            "x": 540.0,
+            "y": 292.5,
+            "width": 112.0,
+            "height": 38.0
+        },
+        {
+            "id": "materialCount6",
+            "x": 739.0,
+            "y": 292.5,
+            "width": 112.0,
+            "height": 38.0
+        }
+    ],
+    "preview": {
+        "id": "preview",
+        "x": -159.0,
+        "y": 21.5,
+        "width": 850.0,
+        "height": 458.0
+    },
+    "previewFrame": {
+        "id": "previewFrame",
+        "x": -159.0,
+        "y": 21.5,
+        "width": 866.0,
+        "height": 474.0
+    },
+    "productCards": [
+        {
+            "id": "product0",
+            "x": -517.0,
+            "y": -332.5,
+            "width": 134.0,
+            "height": 226.0
+        },
+        {
+            "id": "product1",
+            "x": -371.0,
+            "y": -332.5,
+            "width": 134.0,
+            "height": 226.0
+        },
+        {
+            "id": "product2",
+            "x": -225.0,
+            "y": -332.5,
+            "width": 134.0,
+            "height": 226.0
+        },
+        {
+            "id": "product3",
+            "x": -79.0,
+            "y": -332.5,
+            "width": 134.0,
+            "height": 226.0
+        },
+        {
+            "id": "product4",
+            "x": 67.0,
+            "y": -332.5,
+            "width": 134.0,
+            "height": 226.0
+        },
+        {
+            "id": "product5",
+            "x": 213.0,
+            "y": -332.5,
+            "width": 134.0,
+            "height": 226.0
+        }
+    ],
+    "productImages": [
+        {
+            "id": "productImage0",
+            "x": 0.0,
+            "y": 28.0,
+            "width": 116.0,
+            "height": 104.0
+        },
+        {
+            "id": "productImage1",
+            "x": 0.0,
+            "y": 28.0,
+            "width": 116.0,
+            "height": 104.0
+        },
+        {
+            "id": "productImage2",
+            "x": 0.0,
+            "y": 28.0,
+            "width": 116.0,
+            "height": 104.0
+        },
+        {
+            "id": "productImage3",
+            "x": 0.0,
+            "y": 28.0,
+            "width": 116.0,
+            "height": 104.0
+        },
+        {
+            "id": "productImage4",
+            "x": 0.0,
+            "y": 28.0,
+            "width": 116.0,
+            "height": 104.0
+        },
+        {
+            "id": "productImage5",
+            "x": 0.0,
+            "y": 28.0,
+            "width": 116.0,
+            "height": 104.0
+        }
+    ],
+    "productNames": [
+        {
+            "id": "productName0",
+            "x": 0.0,
+            "y": -44.0,
+            "width": 124.0,
+            "height": 42.0
+        },
+        {
+            "id": "productName1",
+            "x": 0.0,
+            "y": -44.0,
+            "width": 124.0,
+            "height": 42.0
+        },
+        {
+            "id": "productName2",
+            "x": 0.0,
+            "y": -44.0,
+            "width": 124.0,
+            "height": 42.0
+        },
+        {
+            "id": "productName3",
+            "x": 0.0,
+            "y": -44.0,
+            "width": 124.0,
+            "height": 42.0
+        },
+        {
+            "id": "productName4",
+            "x": 0.0,
+            "y": -44.0,
+            "width": 124.0,
+            "height": 42.0
+        },
+        {
+            "id": "productName5",
+            "x": 0.0,
+            "y": -44.0,
+            "width": 124.0,
+            "height": 42.0
+        }
+    ],
+    "productRarities": [
+        {
+            "id": "productRarity0",
+            "x": 0.0,
+            "y": 91.0,
+            "width": 120.0,
+            "height": 22.0
+        },
+        {
+            "id": "productRarity1",
+            "x": 0.0,
+            "y": 91.0,
+            "width": 120.0,
+            "height": 22.0
+        },
+        {
+            "id": "productRarity2",
+            "x": 0.0,
+            "y": 91.0,
+            "width": 120.0,
+            "height": 22.0
+        },
+        {
+            "id": "productRarity3",
+            "x": 0.0,
+            "y": 91.0,
+            "width": 120.0,
+            "height": 22.0
+        },
+        {
+            "id": "productRarity4",
+            "x": 0.0,
+            "y": 91.0,
+            "width": 120.0,
+            "height": 22.0
+        },
+        {
+            "id": "productRarity5",
+            "x": 0.0,
+            "y": 91.0,
+            "width": 120.0,
+            "height": 22.0
+        }
+    ],
+    "productStatuses": [
+        {
+            "id": "productStatus0",
+            "x": 0.0,
+            "y": -87.0,
+            "width": 120.0,
+            "height": 24.0
+        },
+        {
+            "id": "productStatus1",
+            "x": 0.0,
+            "y": -87.0,
+            "width": 120.0,
+            "height": 24.0
+        },
+        {
+            "id": "productStatus2",
+            "x": 0.0,
+            "y": -87.0,
+            "width": 120.0,
+            "height": 24.0
+        },
+        {
+            "id": "productStatus3",
+            "x": 0.0,
+            "y": -87.0,
+            "width": 120.0,
+            "height": 24.0
+        },
+        {
+            "id": "productStatus4",
+            "x": 0.0,
+            "y": -87.0,
+            "width": 120.0,
+            "height": 24.0
+        },
+        {
+            "id": "productStatus5",
+            "x": 0.0,
+            "y": -87.0,
+            "width": 120.0,
+            "height": 24.0
+        }
+    ],
+    "detailPanel": {
+        "id": "detailPanel",
+        "x": 546.0,
+        "y": -99.5,
+        "width": 544.0,
+        "height": 704.0
+    },
+    "detailTitle": {
+        "id": "detailTitle",
+        "x": 546.0,
+        "y": 196.5,
+        "width": 484.0,
+        "height": 58.0
+    },
+    "detailCategory": {
+        "id": "detailCategory",
+        "x": 409.0,
+        "y": 147.5,
+        "width": 190.0,
+        "height": 36.0
+    },
+    "detailRarity": {
+        "id": "detailRarity",
+        "x": 683.0,
+        "y": 147.5,
+        "width": 170.0,
+        "height": 36.0
+    },
+    "selectedProductFrame": {
+        "id": "selectedProductFrame",
+        "x": 416.0,
+        "y": 6.5,
+        "width": 250.0,
+        "height": 250.0
+    },
+    "selectedProduct": {
+        "id": "selectedProduct",
+        "x": 416.0,
+        "y": 6.5,
+        "width": 184.0,
+        "height": 184.0
+    },
+    "effectHeading": {
+        "id": "effectHeading",
+        "x": 658.0,
+        "y": 102.5,
+        "width": 232.0,
+        "height": 36.0
+    },
+    "effectRows": [
+        {
+            "id": "effect0",
+            "x": 658.0,
+            "y": 41.5,
+            "width": 232.0,
+            "height": 64.0
+        },
+        {
+            "id": "effect1",
+            "x": 658.0,
+            "y": -38.5,
+            "width": 232.0,
+            "height": 64.0
+        }
+    ],
+    "effectTexts": [
+        {
+            "id": "effectText0",
+            "x": 658.0,
+            "y": 41.5,
+            "width": 208.0,
+            "height": 34.0
+        },
+        {
+            "id": "effectText1",
+            "x": 658.0,
+            "y": -38.5,
+            "width": 208.0,
+            "height": 34.0
+        }
+    ],
+    "requirementHeading": {
+        "id": "requirementHeading",
+        "x": 546.0,
+        "y": -148.5,
+        "width": 404.0,
+        "height": 38.0
+    },
+    "requirementCards": [
+        {
+            "id": "requirement0",
+            "x": 414.0,
+            "y": -254.5,
+            "width": 220.0,
+            "height": 150.0
+        },
+        {
+            "id": "requirement1",
+            "x": 656.0,
+            "y": -254.5,
+            "width": 220.0,
+            "height": 150.0
+        }
+    ],
+    "requirementIcons": [
+        {
+            "id": "requirementIcon0",
+            "x": 359.0,
+            "y": -246.5,
+            "width": 78.0,
+            "height": 78.0
+        },
+        {
+            "id": "requirementIcon1",
+            "x": 601.0,
+            "y": -246.5,
+            "width": 78.0,
+            "height": 78.0
+        }
+    ],
+    "requirementNames": [
+        {
+            "id": "requirementName0",
+            "x": 456.0,
+            "y": -230.5,
+            "width": 112.0,
+            "height": 34.0
+        },
+        {
+            "id": "requirementName1",
+            "x": 698.0,
+            "y": -230.5,
+            "width": 112.0,
+            "height": 34.0
+        }
+    ],
+    "requirementCounts": [
+        {
+            "id": "requirementCount0",
+            "x": 456.0,
+            "y": -278.5,
+            "width": 112.0,
+            "height": 40.0
+        },
+        {
+            "id": "requirementCount1",
+            "x": 698.0,
+            "y": -278.5,
+            "width": 112.0,
+            "height": 40.0
+        }
+    ],
+    "actionButton": {
+        "id": "action",
+        "x": 544.0,
+        "y": -384.5,
+        "width": 320.0,
+        "height": 78.0
+    },
+    "actionText": {
+        "id": "actionText",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 240.0,
+        "height": 46.0
+    }
+}

@@ -1,0 +1,8 @@
+Canvas reference: 1613x1024
+Background: daily_login_clean_panel_bg.png
+Title text PNG center: 805,103 size 430x70
+Today label PNG center: 210,377 size 150x36
+Today reward PNG center: 210,782 size 160x52
+Day badge centers: 407,348 | 565,348 | 724,348 | 882,348 | 1041,348 | 1198,348 | 1380,347
+Status text centers: 407,663 | 565,663 | 724,663 | 882,663 | 1041,663 | 1198,663 | 1380,663
+Claim text center: 1298,843 size 320x66

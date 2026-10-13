@@ -1,0 +1,8 @@
+Canvas: 1693x929
+Base: daily_login_professional_panel.png
+Title center 880,100 size 520x82
+Today label center 210,205 size 176x48
+Today reward center 218,742 size 190x58
+Day badge centers 520,338 | 670,338 | 820,338 | 970,338 | 1120,338 | 1270,338 | 1485,330
+Status centers 520,595 | 670,595 | 820,595 | 970,595 | 1120,595 | 1270,595 | 1495,623
+Claim center 1368,826 size 340x78

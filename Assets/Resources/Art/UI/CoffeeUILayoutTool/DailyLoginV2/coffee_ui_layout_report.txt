@@ -1,0 +1,44 @@
+Panel: G?nl?k Giri? - Mevcut Panel D?zenleme V2
+Canvas: 1728x960
+Technical preview: C:\Users\akkus\Documents\Codex\2026-07-02\me\deneme\Assets\Resources\Art\UI\CoffeeUILayoutTool\DailyLoginV2\coffee_ui_layout_preview.png
+Clean preview: C:\Users\akkus\Documents\Codex\2026-07-02\me\deneme\Assets\Resources\Art\UI\CoffeeUILayoutTool\DailyLoginV2\coffee_ui_layout_clean_preview.png
+
+Static PNG text assets:
+- title: daily_v2_text_title.png
+- today: daily_v2_text_today.png
+- today_reward: daily_v2_text_today_reward.png
+- claim: daily_v2_text_claim.png
+- claimed: daily_v2_text_status_claimed.png
+- available: daily_v2_text_status_available.png
+- locked: daily_v2_text_status_locked.png
+- wait: daily_v2_text_status_wait.png
+- day1: daily_v2_text_day_1.png
+- day2: daily_v2_text_day_2.png
+- day3: daily_v2_text_day_3.png
+- day4: daily_v2_text_day_4.png
+- day5: daily_v2_text_day_5.png
+- day6: daily_v2_text_day_6.png
+- day7: daily_v2_text_day_7.png
+- locked_long: daily_v2_text_status_locked_long.png
+
+Unity RectTransform slots:
+- title_text: pos=(16.0, 360.0) size=(540.0, 82.0) role=text_png
+- today_text: pos=(-642.0, 252.0) size=(178.0, 46.0) role=text_png
+- today_reward_text: pos=(-640.0, -292.0) size=(196.0, 60.0) role=text_png
+- claim_text: pos=(504.0, -346.0) size=(350.0, 80.0) role=text_png
+- day1_number: pos=(-346.0, 128.0) size=(58.0, 58.0) role=text_png
+- day2_number: pos=(-196.0, 128.0) size=(58.0, 58.0) role=text_png
+- day3_number: pos=(-46.0, 128.0) size=(58.0, 58.0) role=text_png
+- day4_number: pos=(104.0, 128.0) size=(58.0, 58.0) role=text_png
+- day5_number: pos=(254.0, 128.0) size=(58.0, 58.0) role=text_png
+- day6_number: pos=(404.0, 128.0) size=(58.0, 58.0) role=text_png
+- day7_number: pos=(632.0, 136.0) size=(58.0, 58.0) role=text_png
+- day1_status: pos=(-346.0, -116.0) size=(112.0, 34.0) role=text_png
+- day2_status: pos=(-196.0, -116.0) size=(112.0, 34.0) role=text_png
+- day3_status: pos=(-46.0, -116.0) size=(112.0, 34.0) role=text_png
+- day4_status: pos=(104.0, -116.0) size=(112.0, 34.0) role=text_png
+- day5_status: pos=(254.0, -116.0) size=(112.0, 34.0) role=text_png
+- day6_status: pos=(404.0, -116.0) size=(112.0, 34.0) role=text_png
+- day7_status: pos=(632.0, -144.0) size=(150.0, 40.0) role=text_png
+- close_button: pos=(744.0, 350.0) size=(112.0, 112.0) role=button
+- claim_button: pos=(504.0, -344.0) size=(390.0, 118.0) role=button

@@ -1,0 +1,9 @@
+Canvas reference size: 1680x945
+Background: daily_login_png_text_panel_bg.png
+Title PNG center: 840,105 size 560x72
+Today label PNG center: 265,255 size 210x52
+Today reward PNG center: 265,835 size 190x62
+Day badge centers: 540,270 | 690,270 | 840,270 | 990,270 | 1140,270 | 1290,270 | 1490,230
+Day status centers: 540,681 | 690,681 | 840,681 | 990,681 | 1140,681 | 1290,681 | 1490,680
+Claim button PNG center: 1390,850 size 320x72
+PNG text asset rule: static words are sprites, reward quantities can remain TMP/dynamic.

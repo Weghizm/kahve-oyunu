@@ -1,0 +1,61 @@
+{
+  "panel": "daily_login_reward_icons_v3_preview",
+  "iconSlots": [
+    {
+      "id": "day1_reward_icon",
+      "x": -344,
+      "y": -12,
+      "width": 120,
+      "height": 110,
+      "icon": "reward_icon_coin"
+    },
+    {
+      "id": "day2_reward_icon",
+      "x": -194,
+      "y": -12,
+      "width": 118,
+      "height": 112,
+      "icon": "reward_icon_gem"
+    },
+    {
+      "id": "day3_reward_icon",
+      "x": -44,
+      "y": -12,
+      "width": 125,
+      "height": 115,
+      "icon": "reward_icon_common_chest"
+    },
+    {
+      "id": "day4_reward_icon",
+      "x": 106,
+      "y": -12,
+      "width": 132,
+      "height": 120,
+      "icon": "reward_icon_material_pack"
+    },
+    {
+      "id": "day5_reward_icon",
+      "x": 256,
+      "y": -12,
+      "width": 130,
+      "height": 118,
+      "icon": "reward_icon_rare_chest"
+    },
+    {
+      "id": "day6_reward_icon",
+      "x": 406,
+      "y": -12,
+      "width": 130,
+      "height": 118,
+      "icon": "reward_icon_gem_pack"
+    },
+    {
+      "id": "day7_reward_icon",
+      "x": 626,
+      "y": -8,
+      "width": 210,
+      "height": 160,
+      "icon": "reward_icon_vip_gift"
+    }
+  ]
+}

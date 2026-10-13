@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -75,6 +76,18 @@ public class GameManager : MonoBehaviour
             CostResource = costResource;
             CostAmount = costAmount;
         }
+    }
+
+    private sealed class WorkshopProductCardUi
+    {
+        public GameObject Root;
+        public Image Background;
+        public Image ProductImage;
+        public TMP_Text NameText;
+        public TMP_Text RarityText;
+        public TMP_Text StatusText;
+        public Button Button;
+        public WorkshopDecorProduct Product;
     }
 
     private enum FoodUpgradeCategory
@@ -268,6 +281,8 @@ public class GameManager : MonoBehaviour
     private static readonly Vector2 VipLeftClaimButtonTextSize = new Vector2(96f, 34f);
     private static readonly Vector2 VipProfessionalInfoPosition = new Vector2(-384.8642f, 29.97939f);
     private static readonly Vector2 VipProfessionalInfoSize = new Vector2(628.9684f, 427.0721f);
+    private const float DailyRewardLayoutScale = 1260f / 1728f;
+    private const string DailyRewardTextSpriteRoot = "Art/UI/CoffeeUILayoutTool/DailyLoginV2/";
 
     private TMP_Text coinText;
     private readonly TMP_Text[] coinInfoPopupRows = new TMP_Text[6];
@@ -287,8 +302,29 @@ public class GameManager : MonoBehaviour
     private TMP_Text dailyTaskChestButtonText;
     private TMP_Text dailyRewardPanelText;
     private TMP_Text dailyRewardButtonText;
+    private GameObject dailyRewardDimmer;
+    private TMP_Text dailyRewardTodayLabelText;
+    private TMP_Text dailyRewardTodayAmountText;
+    private TMP_Text dailyRewardClaimStateText;
+    private TMP_Text dailyRewardTimerText;
+    private readonly List<TMP_Text> dailyRewardDayNumberTexts = new List<TMP_Text>();
+    private readonly List<Image> dailyRewardDayHighlightImages = new List<Image>();
+    private readonly List<Image> dailyRewardStepBadgeImages = new List<Image>();
+    private readonly List<TMP_Text> dailyRewardStepStatusTexts = new List<TMP_Text>();
+    private readonly List<Image> dailyRewardDayNumberImages = new List<Image>();
+    private readonly List<Image> dailyRewardStepStatusImages = new List<Image>();
+    private readonly List<Vector2> dailyRewardStepStatusReferencePositions = new List<Vector2>();
+    private Image dailyRewardClaimTextImage;
+    private Sprite dailyRewardStatusClaimedSprite;
+    private Sprite dailyRewardStatusAvailableSprite;
+    private Sprite dailyRewardStatusLockedSprite;
+    private Sprite dailyRewardStatusLockedLongSprite;
+    private Sprite dailyRewardClaimSprite;
     private TMP_Text chestPanelText;
     private TMP_Text chestRewardTitleText;
+    private TMP_Text commonChestCountText;
+    private TMP_Text rareChestCountText;
+    private TMP_Text luxuryChestCountText;
     private TMP_Text chestOpenButtonText;
     private TMP_Text rareChestOpenButtonText;
     private TMP_Text luxuryChestOpenButtonText;
@@ -316,6 +352,31 @@ public class GameManager : MonoBehaviour
     private TMP_Text creamFloorButtonText;
     private TMP_Text roseTableButtonText;
     private TMP_Text decorActionButtonText;
+    private TMP_Text workshopDetailEffectText;
+    private readonly List<TMP_Text> workshopEffectTexts = new List<TMP_Text>();
+    private readonly List<Image> workshopEffectFrameImages = new List<Image>();
+    private TMP_Text workshopRecipeText;
+    private readonly List<Image> workshopRequirementFrameImages = new List<Image>();
+    private readonly List<Image> workshopRequirementIconImages = new List<Image>();
+    private readonly List<TMP_Text> workshopRequirementTexts = new List<TMP_Text>();
+    private readonly List<TMP_Text> workshopRequirementCountTexts = new List<TMP_Text>();
+    private TMP_Text workshopMaterialSummaryText;
+    private TMP_Text workshopCategoryTitleText;
+    private Image workshopSelectedProductImage;
+    private Image workshopCafePreviewImage;
+    private TextureQuadGraphic workshopCafePreviewFloorGraphic;
+    private readonly Dictionary<WorkshopDecorCategory, List<Image>> workshopCafePreviewObjectImages = new Dictionary<WorkshopDecorCategory, List<Image>>();
+    private readonly List<Image> workshopMaterialIconImages = new List<Image>();
+    private readonly List<TMP_Text> workshopMaterialCountTexts = new List<TMP_Text>();
+    private readonly List<TMP_Text> workshopCategoryTabTexts = new List<TMP_Text>();
+    private readonly List<Image> workshopCategoryTabImages = new List<Image>();
+    private readonly List<Image> workshopCategoryIconImages = new List<Image>();
+    private readonly List<WorkshopProductCardUi> workshopProductCards = new List<WorkshopProductCardUi>();
+    private readonly HashSet<string> unlockedWorkshopProducts = new HashSet<string>(StringComparer.Ordinal);
+    private readonly Dictionary<WorkshopDecorCategory, string> selectedWorkshopProducts = new Dictionary<WorkshopDecorCategory, string>();
+    private WorkshopDecorCategory selectedWorkshopCategory = WorkshopDecorCategory.Wall;
+    private int workshopCategoryPage = 0;
+    private string selectedWorkshopPreviewId = "wall_cream_001";
     private TMP_Text basicCoffeeButtonText;
     private TMP_Text premiumCoffeeButtonText;
     private TMP_Text signatureCoffeeButtonText;
@@ -446,13 +507,67 @@ public class GameManager : MonoBehaviour
     private Image vipRugVisual;
     private Image vipPlantVisual;
     private Image roomLockOverlay;
+    private Image chestRewardCardFrameImage;
     private Image chestRewardIconImage;
+    private Image chestOpeningImage;
+    private Image chestOpeningTransitionImage;
+    private RectTransform chestLayeredRootRect;
+    private Image chestLayeredBodyImage;
+    private Image chestLayeredLidImage;
+    private Image chestOpeningGlowImage;
+    private Image chestOpeningFlashImage;
+    private Image chestOpeningPlatformImage;
+    private Image chestOpeningOrbitImage;
+    private Image chestOpeningShockwaveImage;
+    private Image chestOpeningKeyImage;
+    private Image chestOpeningScreenFlashImage;
+    private TMP_Text chestOpeningTapText;
+    private CanvasGroup chestRewardIconCanvasGroup;
+    private CanvasGroup chestRewardTextCanvasGroup;
+    private readonly List<Image> chestRewardTrailImages = new List<Image>();
+    private readonly List<Image> chestOpeningRayImages = new List<Image>();
+    private readonly List<Image> chestOpeningSparkleImages = new List<Image>();
+    private Sprite chestGlowSprite;
+    private Sprite chestRingSprite;
+    private Sprite chestBeamSprite;
+    private Sprite chestStarSprite;
+    private Sprite chestRewardCardFrameSprite;
+    private GameObject chestRewardCloseButtonObject;
+    private readonly Dictionary<ChestTier, Sprite[]> chestAnimationFrames = new Dictionary<ChestTier, Sprite[]>();
+    private readonly Dictionary<ChestTier, Sprite[]> chestSilhouetteFrames = new Dictionary<ChestTier, Sprite[]>();
+    private readonly Dictionary<string, Sprite> chestLayerSprites = new Dictionary<string, Sprite>();
+    private bool shouldAnimateChestReward;
+    private bool chestOpeningInProgress;
+    private ChestTier openingChestTier;
+    private Coroutine chestOpeningCoroutine;
+    private AudioSource chestOpeningAudioSource;
+    private AudioClip chestKeyImpactClip;
+    private AudioClip chestOpenCommonClip;
+    private AudioClip chestOpenRareClip;
+    private AudioClip chestOpenLuxuryClip;
+    private AudioClip chestRewardLaunchClip;
+    private AudioClip chestRewardRevealClip;
+    private AudioSource saleCoinAudioSource;
+    private AudioClip saleCoinClip;
+    private float lastSaleCoinTime = -1f;
+    private RectTransform saleFeedbackLayer;
+    private Sprite saleFeedbackCoffeeSprite;
+    private RectTransform saleCornerFeedbackRoot;
+    private CanvasGroup saleCornerFeedbackGroup;
+    private Image saleCornerFeedbackIcon;
+    private TMP_Text saleCornerFeedbackText;
+    private Coroutine saleCornerFeedbackCoroutine;
     private Image xpFillImage;
     private Sprite commonPaintCanSprite;
     private Sprite rarePaintCanSprite;
     private Sprite specialPaintCanSprite;
     private readonly Dictionary<string, Sprite> paintCanSprites = new Dictionary<string, Sprite>();
     private readonly Dictionary<string, Sprite> decorIconSprites = new Dictionary<string, Sprite>();
+    private readonly Dictionary<WorkshopCraftMaterialType, Sprite> workshopMaterialSprites = new Dictionary<WorkshopCraftMaterialType, Sprite>();
+    private readonly Dictionary<string, Texture2D> workshopProductAtlasTextures = new Dictionary<string, Texture2D>();
+    private readonly Dictionary<string, Sprite> workshopProductSprites = new Dictionary<string, Sprite>();
+    private readonly Dictionary<string, Sprite> workshopUiSprites = new Dictionary<string, Sprite>();
+    private Texture2D workshopMaterialAtlasTexture;
     private Sprite craftPaintIconSprite;
     private Sprite chestButtonSprite;
     private Sprite coinIconSprite;
@@ -495,6 +610,8 @@ public class GameManager : MonoBehaviour
     private Sprite foodCloseButtonSprite;
     private Sprite warmWoodCafeSceneSprite;
     private Sprite warmWoodCafeSceneNoMachineSprite;
+    private readonly Dictionary<string, Sprite> workshopWallSceneSprites = new Dictionary<string, Sprite>();
+    private readonly Dictionary<string, Sprite> workshopEmptySceneSprites = new Dictionary<string, Sprite>();
     private Sprite coffeeMachineSceneSprite;
     private Sprite coffeeMachineLockedPlaceholderSprite;
     private Sprite baristaSceneSprite;
@@ -566,7 +683,7 @@ public class GameManager : MonoBehaviour
     private int selectedWallStyle = 0;
     private int selectedFloorStyle = 0;
     private int selectedTableStyle = 0;
-    private int previewDecorItem = 1;
+    private int previewDecorItem = 0;
     private int xp = 0;
     private int playerLevel = 1;
     private int dailyRewardDay = 0;
@@ -593,6 +710,48 @@ public class GameManager : MonoBehaviour
     private bool vipRoomUnlocked = false;
     private int vipLevel = 0;
     private int selectedVipPreviewLevel = 0;
+    private string lastVipDailyRewardUtc = "";
+
+    public IReadOnlyList<WorkshopDecorProduct> GetWorkshopDecorProducts()
+    {
+        return WorkshopDecorCatalog.Products;
+    }
+
+    public IReadOnlyList<WorkshopCraftMaterialDefinition> GetWorkshopCraftMaterials()
+    {
+        return WorkshopDecorCatalog.CraftMaterials;
+    }
+
+    public int GetWorkshopCraftMaterialCount(WorkshopCraftMaterialType material)
+    {
+        if (material == WorkshopCraftMaterialType.Paint) return GetAvailablePaintCanCount();
+        if (material == WorkshopCraftMaterialType.Wood) return woodPieces;
+        return GetInventoryItemCount(GetWorkshopMaterialInventoryId(material));
+    }
+
+    public void GrantWorkshopCraftMaterial(WorkshopCraftMaterialType material, int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        if (material == WorkshopCraftMaterialType.Paint)
+        {
+            paintPieces += amount;
+        }
+        else if (material == WorkshopCraftMaterialType.Wood)
+        {
+            woodPieces += amount;
+        }
+        else
+        {
+            AddInventoryItem(GetWorkshopMaterialInventoryId(material), amount);
+        }
+
+        UpdateUI();
+        SaveGame();
+    }
 
     private void Start()
     {
@@ -691,7 +850,7 @@ public class GameManager : MonoBehaviour
             if (customerVisibleTimer <= 0)
             {
                 customerVisibleTimer = 0;
-                customerSpawnTimer = CustomerSpawnSeconds;
+                customerSpawnTimer = GetCustomerSpawnSeconds();
                 missedCustomers++;
                 SaveGame();
             }
@@ -720,7 +879,7 @@ public class GameManager : MonoBehaviour
         }
 
         baristaAutoServeTimer = 0;
-        SellCoffeeToCustomer();
+        SellCoffeeToCustomer(false);
     }
 
     private bool HasBaristaUnlocked()
@@ -732,7 +891,16 @@ public class GameManager : MonoBehaviour
     {
         int totalBaristaLevel = Mathf.Clamp(GetTotalBaristaLevel(), 1, UpgradeMaxLevel * 3);
         float speedRatio = Mathf.Clamp01((totalBaristaLevel - 1) / 18f);
-        return Mathf.Lerp(BaseBaristaAutoServeSeconds, FastBaristaAutoServeSeconds, speedRatio);
+        float seconds = Mathf.Lerp(BaseBaristaAutoServeSeconds, FastBaristaAutoServeSeconds, speedRatio);
+        int workshopSpeed = GetWorkshopEffectTotal(WorkshopCafeEffectType.ServiceSpeed)
+            + GetWorkshopEffectTotal(WorkshopCafeEffectType.PreparationSpeed);
+        return seconds / (1f + (workshopSpeed / 100f));
+    }
+
+    private float GetCustomerSpawnSeconds()
+    {
+        int rateBonus = GetWorkshopEffectTotal(WorkshopCafeEffectType.CustomerRate);
+        return CustomerSpawnSeconds / (1f + (rateBonus / 100f));
     }
 
     private string GetBaristaStatusText()
@@ -749,21 +917,22 @@ public class GameManager : MonoBehaviour
     {
         int roll = UnityEngine.Random.Range(0, 100);
 
-        if (roll < 10)
+        int vipThreshold = Mathf.Clamp(10 + GetWorkshopEffectTotal(WorkshopCafeEffectType.VipChance), 10, 60);
+        if (roll < vipThreshold)
         {
             currentCustomerName = "VIP Müşteri";
             currentCustomerCoinMultiplier = VipCustomerCoinMultiplier;
             currentCustomerXpReward = VipCustomerXpReward;
             currentCustomerColor = new Color(0.78f, 0.50f, 0.08f);
-            customerVisibleTimer = 8f * GetVipCustomerPatienceMultiplier();
+            customerVisibleTimer = (8f + GetWorkshopEffectTotal(WorkshopCafeEffectType.WaitTolerance)) * GetVipCustomerPatienceMultiplier();
         }
-        else if (roll < 30)
+        else if (roll < vipThreshold + 20)
         {
             currentCustomerName = "Aceleci Musteri";
             currentCustomerCoinMultiplier = RushCustomerCoinMultiplier;
             currentCustomerXpReward = RushCustomerXpReward;
             currentCustomerColor = new Color(0.82f, 0.28f, 0.18f);
-            customerVisibleTimer = 6f * GetVipCustomerPatienceMultiplier();
+            customerVisibleTimer = (6f + GetWorkshopEffectTotal(WorkshopCafeEffectType.WaitTolerance)) * GetVipCustomerPatienceMultiplier();
         }
         else
         {
@@ -771,7 +940,7 @@ public class GameManager : MonoBehaviour
             currentCustomerCoinMultiplier = NormalCustomerCoinMultiplier;
             currentCustomerXpReward = NormalCustomerXpReward;
             currentCustomerColor = new Color(0.18f, 0.58f, 0.32f);
-            customerVisibleTimer = CustomerVisibleSeconds * GetVipCustomerPatienceMultiplier();
+            customerVisibleTimer = (CustomerVisibleSeconds + GetWorkshopEffectTotal(WorkshopCafeEffectType.WaitTolerance)) * GetVipCustomerPatienceMultiplier();
         }
 
         customerSpawnTimer = 0;
@@ -793,10 +962,16 @@ public class GameManager : MonoBehaviour
         totalCoffeeSold++;
         dailyCoffeeSold++;
         UpdateUI();
+        PlaySaleCoinSound();
         SaveGame();
     }
 
     public void SellCoffeeToCustomer()
+    {
+        SellCoffeeToCustomer(true);
+    }
+
+    private void SellCoffeeToCustomer(bool showTapFeedback)
     {
         bool soldToVip = currentCustomerName == "VIP Müşteri";
         coins += GetCurrentCustomerCoinReward();
@@ -810,12 +985,13 @@ public class GameManager : MonoBehaviour
         }
         AddXp(currentCustomerXpReward);
         customerVisibleTimer = 0;
-        customerSpawnTimer = CustomerSpawnSeconds;
+        customerSpawnTimer = GetCustomerSpawnSeconds();
         if (customerButtonObject != null)
         {
             customerButtonObject.SetActive(false);
         }
         UpdateUI();
+        PlaySaleCoinSound();
         SaveGame();
     }
 
@@ -941,7 +1117,36 @@ public class GameManager : MonoBehaviour
 
     public void ClickVipLeftClaimButton()
     {
-        Debug.Log("VipLeftClaimButton clicked");
+        if (!CanClaimVipDailyReward())
+        {
+            return;
+        }
+
+        int gemReward = vipLevel;
+        gems += gemReward;
+
+        string chestReward;
+        if (vipLevel >= 5)
+        {
+            luxuryChests += 1;
+            chestReward = "1 Özel Sandık";
+        }
+        else if (vipLevel >= 3)
+        {
+            rareChests += 1;
+            chestReward = "1 Nadir Sandık";
+        }
+        else
+        {
+            chests += 1;
+            chestReward = "1 Sıradan Sandık";
+        }
+
+        lastVipDailyRewardUtc = DateTime.UtcNow.Ticks.ToString();
+        string rewardText = "Günlük VIP hediyesi: " + gemReward + " Elmas + " + chestReward;
+        ShowChestReward(rewardText, GetVipLeftGiftSprite());
+        UpdateUI();
+        SaveGame();
     }
 
     public void UpgradeVipLevel()
@@ -951,14 +1156,15 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        int cost = GetVipUpgradeCost();
+        int targetLevel = GetVipPurchaseTargetLevel();
+        int cost = GetVipPackageCost(targetLevel);
         if (gems < cost)
         {
             return;
         }
 
         gems -= cost;
-        vipLevel++;
+        vipLevel = targetLevel;
         selectedVipPreviewLevel = 0;
         vipUnlockFlashLevel = vipLevel;
         vipUnlockFlashEndTime = Time.time + 1.25f;
@@ -1002,6 +1208,10 @@ public class GameManager : MonoBehaviour
         paintPieces = 0;
         woodPieces = 0;
         itemInventory.Clear();
+        unlockedWorkshopProducts.Clear();
+        selectedWorkshopProducts.Clear();
+        selectedWorkshopCategory = WorkshopDecorCategory.Wall;
+        selectedWorkshopPreviewId = "wall_cream_001";
         lastChestRewardText = "Henuz sandik acilmadi.";
         pinkWallUnlocked = false;
         mintWallUnlocked = false;
@@ -1014,6 +1224,7 @@ public class GameManager : MonoBehaviour
         productionRoomUnlocked = false;
         vipRoomUnlocked = false;
         vipLevel = 0;
+        lastVipDailyRewardUtc = "";
         vipInfoSeen = false;
         xp = 0;
         playerLevel = 1;
@@ -1277,6 +1488,20 @@ public class GameManager : MonoBehaviour
         SaveGame();
     }
 
+    public void AddTestWorkshopMaterials()
+    {
+        paintPieces += 20;
+        woodPieces += 20;
+        AddInventoryItem(GetWorkshopMaterialInventoryId(WorkshopCraftMaterialType.Fabric), 20);
+        AddInventoryItem(GetWorkshopMaterialInventoryId(WorkshopCraftMaterialType.Metal), 20);
+        AddInventoryItem(GetWorkshopMaterialInventoryId(WorkshopCraftMaterialType.Stone), 20);
+        AddInventoryItem(GetWorkshopMaterialInventoryId(WorkshopCraftMaterialType.Glass), 20);
+        AddInventoryItem(GetWorkshopMaterialInventoryId(WorkshopCraftMaterialType.Ceramic), 20);
+        lastChestRewardText = "Atölye test malzemeleri eklendi.";
+        UpdateUI();
+        SaveGame();
+    }
+
     public void ToggleCoinInfoPopup()
     {
         if (coinInfoPopup == null)
@@ -1411,7 +1636,7 @@ public class GameManager : MonoBehaviour
 
     private void AddXp(int amount)
     {
-        amount = Mathf.CeilToInt(amount * GetVipXpMultiplier());
+        amount = Mathf.CeilToInt(amount * GetVipXpMultiplier() * GetWorkshopMultiplier(WorkshopCafeEffectType.XpIncome));
         xp += amount;
         while (xp >= GetXpNeededForNextLevel())
         {
@@ -1427,17 +1652,39 @@ public class GameManager : MonoBehaviour
 
     private int GetCurrentCustomerCoinReward()
     {
-        return Mathf.CeilToInt(coinsPerClick * GetFoodSalesMultiplier() * incomeMultiplier * currentCustomerCoinMultiplier * GetVipCoinMultiplier());
+        return Mathf.CeilToInt(coinsPerClick * GetFoodSalesMultiplier() * incomeMultiplier * currentCustomerCoinMultiplier * GetVipCoinMultiplier()
+            * GetWorkshopMultiplier(WorkshopCafeEffectType.CoinIncome)
+            * GetWorkshopMultiplier(WorkshopCafeEffectType.Tips));
     }
 
     private int GetCurrentTapPower()
     {
-        return Mathf.CeilToInt(coinsPerClick * GetFoodSalesMultiplier() * incomeMultiplier * GetVipCoinMultiplier());
+        return Mathf.CeilToInt(coinsPerClick * GetFoodSalesMultiplier() * incomeMultiplier * GetVipCoinMultiplier()
+            * GetWorkshopMultiplier(WorkshopCafeEffectType.CoinIncome));
     }
 
     private float GetCurrentPassiveIncome()
     {
-        return coinsPerSecond * GetFoodPassiveMultiplier() * incomeMultiplier * GetVipPassiveIncomeMultiplier();
+        return coinsPerSecond * GetFoodPassiveMultiplier() * incomeMultiplier * GetVipPassiveIncomeMultiplier()
+            * GetWorkshopMultiplier(WorkshopCafeEffectType.PassiveIncome);
+    }
+
+    private float GetWorkshopMultiplier(WorkshopCafeEffectType effect)
+    {
+        return 1f + (GetWorkshopEffectTotal(effect) / 100f);
+    }
+
+    private int GetWorkshopEffectTotal(WorkshopCafeEffectType effect)
+    {
+        int total = 0;
+        foreach (KeyValuePair<WorkshopDecorCategory, string> pair in selectedWorkshopProducts)
+        {
+            WorkshopDecorProduct product = GetWorkshopProduct(pair.Value);
+            if (product == null || !unlockedWorkshopProducts.Contains(product.Id)) continue;
+            if (product.PrimaryEffect == effect) total += product.PrimaryEffectValue;
+            if (product.HasSecondaryEffect && product.SecondaryEffect == effect) total += product.SecondaryEffectValue;
+        }
+        return total;
     }
 
     private int GetFoodSalesBonusPercent()
@@ -1693,6 +1940,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private int GetVipPurchaseTargetLevel()
+    {
+        if (vipLevel >= MaxVipLevel)
+        {
+            return MaxVipLevel;
+        }
+
+        int selectedLevel = selectedVipPreviewLevel > 0
+            ? Mathf.Clamp(selectedVipPreviewLevel, 1, MaxVipLevel)
+            : 0;
+
+        return selectedLevel > vipLevel ? selectedLevel : vipLevel + 1;
+    }
+
+    private int GetVipPurchaseCost()
+    {
+        return vipLevel >= MaxVipLevel ? 0 : GetVipPackageCost(GetVipPurchaseTargetLevel());
+    }
+
     private string GetVipKitName(int level)
     {
         switch (level)
@@ -1946,6 +2212,8 @@ public class GameManager : MonoBehaviour
             new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
         }
 
+        ConfigureSaleCoinAudio();
+
         RectTransform gameFrame = CreateSafeGameFrame(canvas.transform);
 
         CreateCafeScene(gameFrame);
@@ -2023,6 +2291,223 @@ public class GameManager : MonoBehaviour
 
         foodUpgradeButtonText = CreateButton(gameFrame, "FoodUpgradeButton", "Gıda", new Vector2(315, -475), new Vector2(126, 68), OpenFoodUpgradePanel, new Color(0.55f, 0.32f, 0.13f), 23);
         foodUpgradeButton = foodUpgradeButtonText.GetComponentInParent<Button>();
+        CreateSaleCornerFeedback(gameFrame);
+    }
+
+    private void CreateSaleCornerFeedback(RectTransform parent)
+    {
+        GameObject rootObject = new GameObject("SaleCornerFeedback", typeof(RectTransform), typeof(CanvasGroup), typeof(CanvasRenderer), typeof(Image));
+        rootObject.transform.SetParent(parent, false);
+
+        saleCornerFeedbackRoot = rootObject.GetComponent<RectTransform>();
+        saleCornerFeedbackRoot.anchorMin = new Vector2(0.5f, 0.5f);
+        saleCornerFeedbackRoot.anchorMax = new Vector2(0.5f, 0.5f);
+        saleCornerFeedbackRoot.pivot = new Vector2(0.5f, 0.5f);
+        saleCornerFeedbackRoot.anchoredPosition = new Vector2(720f, 360f);
+        saleCornerFeedbackRoot.sizeDelta = new Vector2(176f, 46f);
+
+        Image background = rootObject.GetComponent<Image>();
+        background.sprite = CreateRoundedRectSprite(
+            saleCornerFeedbackRoot.sizeDelta,
+            new Color(0.18f, 0.075f, 0.015f, 0.32f),
+            new Color(1f, 0.72f, 0.22f, 0.42f),
+            23,
+            1);
+        background.color = Color.white;
+        background.raycastTarget = false;
+
+        saleCornerFeedbackGroup = rootObject.GetComponent<CanvasGroup>();
+        saleCornerFeedbackGroup.alpha = 0f;
+        saleCornerFeedbackGroup.blocksRaycasts = false;
+        saleCornerFeedbackGroup.interactable = false;
+
+        GameObject iconObject = new GameObject("Icon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        iconObject.transform.SetParent(rootObject.transform, false);
+        RectTransform iconRect = iconObject.GetComponent<RectTransform>();
+        iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+        iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+        iconRect.pivot = new Vector2(0.5f, 0.5f);
+        iconRect.anchoredPosition = new Vector2(-54f, 0f);
+        iconRect.sizeDelta = new Vector2(38f, 38f);
+        saleCornerFeedbackIcon = iconObject.GetComponent<Image>();
+        saleCornerFeedbackIcon.sprite = GetSaleFeedbackCoffeeSprite();
+        saleCornerFeedbackIcon.preserveAspect = true;
+        saleCornerFeedbackIcon.raycastTarget = false;
+
+        saleCornerFeedbackText = CreateText(rootObject.transform, "Text", "SELL", new Vector2(30f, 0f), new Vector2(112f, 40f), 26f);
+        saleCornerFeedbackText.color = new Color(1f, 0.86f, 0.42f, 1f);
+        saleCornerFeedbackText.fontStyle = FontStyles.Bold;
+        saleCornerFeedbackText.raycastTarget = false;
+
+        Outline outline = saleCornerFeedbackText.gameObject.AddComponent<Outline>();
+        outline.effectColor = new Color(0.20f, 0.075f, 0.005f, 0.88f);
+        outline.effectDistance = new Vector2(1.3f, -1.3f);
+
+        rootObject.SetActive(false);
+    }
+
+    private void CreateSaleFeedbackLayer(Transform parent)
+    {
+        GameObject previousLayer = GameObject.Find("SaleFeedbackOverlayCanvas");
+        if (previousLayer != null)
+        {
+            Destroy(previousLayer);
+        }
+
+        GameObject layerObject = new GameObject("SaleFeedbackOverlayCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
+
+        saleFeedbackLayer = layerObject.GetComponent<RectTransform>();
+        saleFeedbackLayer.anchorMin = Vector2.zero;
+        saleFeedbackLayer.anchorMax = Vector2.one;
+        saleFeedbackLayer.pivot = new Vector2(0.5f, 0.5f);
+        saleFeedbackLayer.anchoredPosition = Vector2.zero;
+        saleFeedbackLayer.offsetMin = Vector2.zero;
+        saleFeedbackLayer.offsetMax = Vector2.zero;
+        saleFeedbackLayer.sizeDelta = new Vector2(1920f, 1080f);
+        saleFeedbackLayer.SetAsLastSibling();
+
+        Canvas layerCanvas = layerObject.GetComponent<Canvas>();
+        layerCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        layerCanvas.overrideSorting = true;
+        layerCanvas.sortingOrder = 30000;
+
+        CanvasScaler scaler = layerObject.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.matchWidthOrHeight = 1f;
+    }
+
+    private void ShowSaleFeedbackAtPointer()
+    {
+        if (saleFeedbackLayer == null)
+        {
+            CreateSaleFeedbackLayer(null);
+        }
+        if (saleFeedbackLayer == null) return;
+
+        saleFeedbackLayer.SetAsLastSibling();
+        while (saleFeedbackLayer.childCount > 7)
+        {
+            Destroy(saleFeedbackLayer.GetChild(0).gameObject);
+        }
+
+        Vector2 pointer = Input.mousePosition;
+        float screenWidth = Mathf.Max(1f, Screen.width);
+        float screenHeight = Mathf.Max(1f, Screen.height);
+        Vector2 localPosition = new Vector2(
+            ((pointer.x / screenWidth) - 0.5f) * 1920f,
+            ((pointer.y / screenHeight) - 0.5f) * 1080f
+        );
+
+        StartCoroutine(PlaySaleFeedback(Vector2.zero));
+    }
+
+    private IEnumerator PlaySaleFeedback(Vector2 startPosition)
+    {
+        GameObject rootObject = new GameObject("SaleCoffeeFeedback", typeof(RectTransform), typeof(CanvasGroup));
+        rootObject.transform.SetParent(saleFeedbackLayer, false);
+
+        RectTransform rootRect = rootObject.GetComponent<RectTransform>();
+        rootRect.anchorMin = new Vector2(0.5f, 0.5f);
+        rootRect.anchorMax = new Vector2(0.5f, 0.5f);
+        rootRect.pivot = new Vector2(0.5f, 0.5f);
+        rootRect.anchoredPosition = startPosition;
+        rootRect.sizeDelta = new Vector2(260f, 110f);
+
+        CanvasGroup group = rootObject.GetComponent<CanvasGroup>();
+        group.alpha = 1f;
+        group.blocksRaycasts = false;
+        group.interactable = false;
+
+        GameObject pillObject = new GameObject("FeedbackPill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        pillObject.transform.SetParent(rootObject.transform, false);
+        RectTransform pillRect = pillObject.GetComponent<RectTransform>();
+        pillRect.anchorMin = new Vector2(0.5f, 0.5f);
+        pillRect.anchorMax = new Vector2(0.5f, 0.5f);
+        pillRect.pivot = new Vector2(0.5f, 0.5f);
+        pillRect.anchoredPosition = Vector2.zero;
+        pillRect.sizeDelta = new Vector2(250f, 92f);
+        Image pillImage = pillObject.GetComponent<Image>();
+        pillImage.color = new Color(0.55f, 0.25f, 0.04f, 0.86f);
+        pillImage.raycastTarget = false;
+
+        GameObject iconObject = new GameObject("CoffeeIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        iconObject.transform.SetParent(rootObject.transform, false);
+        RectTransform iconRect = iconObject.GetComponent<RectTransform>();
+        iconRect.anchorMin = new Vector2(0.5f, 0.5f);
+        iconRect.anchorMax = new Vector2(0.5f, 0.5f);
+        iconRect.pivot = new Vector2(0.5f, 0.5f);
+        iconRect.anchoredPosition = new Vector2(-62f, 0f);
+        iconRect.sizeDelta = new Vector2(88f, 88f);
+        Image iconImage = iconObject.GetComponent<Image>();
+        iconImage.sprite = GetSaleFeedbackCoffeeSprite();
+        iconImage.preserveAspect = true;
+        iconImage.raycastTarget = false;
+
+        GameObject textObject = new GameObject("SellText", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+        textObject.transform.SetParent(rootObject.transform, false);
+        RectTransform textRect = textObject.GetComponent<RectTransform>();
+        textRect.anchorMin = new Vector2(0.5f, 0.5f);
+        textRect.anchorMax = new Vector2(0.5f, 0.5f);
+        textRect.pivot = new Vector2(0.5f, 0.5f);
+        textRect.anchoredPosition = new Vector2(50f, 2f);
+        textRect.sizeDelta = new Vector2(166f, 70f);
+
+        TMP_Text text = textObject.GetComponent<TMP_Text>();
+        text.text = "SELL";
+        text.fontSize = 46f;
+        text.fontStyle = FontStyles.Bold;
+        text.alignment = TextAlignmentOptions.MidlineLeft;
+        text.color = new Color(1f, 0.91f, 0.58f, 1f);
+        text.raycastTarget = false;
+
+        Outline textOutline = textObject.AddComponent<Outline>();
+        textOutline.effectColor = new Color(0.28f, 0.11f, 0.02f, 0.92f);
+        textOutline.effectDistance = new Vector2(2f, -2f);
+        Shadow textShadow = textObject.AddComponent<Shadow>();
+        textShadow.effectColor = new Color(0f, 0f, 0f, 0.34f);
+        textShadow.effectDistance = new Vector2(0f, -3f);
+
+        const float duration = 1.15f;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            if (rootRect == null)
+            {
+                yield break;
+            }
+
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float pop = Mathf.Sin(Mathf.Clamp01(t / 0.2f) * Mathf.PI) * 0.18f;
+            float drift = EaseOutCubic(t) * 86f;
+            float fade = t < 0.56f ? 1f : 1f - Mathf.Clamp01((t - 0.56f) / 0.44f);
+
+            rootRect.anchoredPosition = startPosition + new Vector2(8f * Mathf.Sin(t * Mathf.PI), drift);
+            rootRect.localScale = Vector3.one * (0.82f + (0.18f * EaseOutBack(Mathf.Clamp01(t / 0.24f))) + pop);
+            group.alpha = fade;
+
+            yield return null;
+        }
+
+        if (rootObject != null)
+        {
+            Destroy(rootObject);
+        }
+    }
+
+    private Sprite GetSaleFeedbackCoffeeSprite()
+    {
+        if (saleFeedbackCoffeeSprite == null)
+        {
+            saleFeedbackCoffeeSprite = LoadSpriteFromResources("Art/UI/Food/food_icon_coffee");
+            if (saleFeedbackCoffeeSprite == null)
+            {
+                saleFeedbackCoffeeSprite = GetCoinIconSprite();
+            }
+        }
+
+        return saleFeedbackCoffeeSprite;
     }
 
     private RectTransform CreateSafeGameFrame(Transform canvasTransform)
@@ -2201,6 +2686,11 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if (dailyRewardDimmer != null)
+        {
+            dailyRewardDimmer.SetActive(true);
+            dailyRewardDimmer.transform.SetAsLastSibling();
+        }
         dailyRewardPanel.SetActive(true);
         dailyRewardPanel.transform.SetAsLastSibling();
         UpdateUI();
@@ -2212,6 +2702,10 @@ public class GameManager : MonoBehaviour
         {
             dailyRewardPanel.SetActive(false);
         }
+        if (dailyRewardDimmer != null)
+        {
+            dailyRewardDimmer.SetActive(false);
+        }
     }
 
     public void ClaimDailyReward()
@@ -2222,10 +2716,16 @@ public class GameManager : MonoBehaviour
         }
 
         int gemReward = GetDailyGemReward(dailyRewardDay);
-        int chestReward = GetDailyChestReward(dailyRewardDay);
+        int commonChestReward = GetDailyCommonChestReward(dailyRewardDay);
+        int rareChestReward = GetDailyRareChestReward(dailyRewardDay);
+        int luxuryChestReward = GetDailyLuxuryChestReward(dailyRewardDay);
 
         gems += gemReward;
-        chests += chestReward;
+        chests += commonChestReward;
+        rareChests += rareChestReward;
+        luxuryChests += luxuryChestReward;
+        string rewardText = "Günlük giriş ödülü: " + GetDailyRewardLine(dailyRewardDay);
+        lastChestRewardText = rewardText;
         lastDailyRewardUtc = DateTime.UtcNow.Ticks.ToString();
         dailyRewardDay = (dailyRewardDay + 1) % DailyRewardCycleDays;
 
@@ -2233,7 +2733,12 @@ public class GameManager : MonoBehaviour
         {
             dailyRewardPanel.SetActive(false);
         }
+        if (dailyRewardDimmer != null)
+        {
+            dailyRewardDimmer.SetActive(false);
+        }
 
+        ShowChestReward(rewardText, GetGemIconSprite());
         UpdateUI();
         SaveGame();
     }
@@ -2248,28 +2753,304 @@ public class GameManager : MonoBehaviour
 
     private void CreateDailyRewardPanel(Transform parent)
     {
+        dailyRewardDimmer = new GameObject("DailyRewardDimmer", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        dailyRewardDimmer.transform.SetParent(parent, false);
+        RectTransform dimmerRect = dailyRewardDimmer.GetComponent<RectTransform>();
+        dimmerRect.anchorMin = Vector2.zero;
+        dimmerRect.anchorMax = Vector2.one;
+        dimmerRect.offsetMin = Vector2.zero;
+        dimmerRect.offsetMax = Vector2.zero;
+        Image dimmerImage = dailyRewardDimmer.GetComponent<Image>();
+        dimmerImage.color = new Color(0.03f, 0.02f, 0.015f, 0.42f);
+        dimmerImage.raycastTarget = true;
+        Button dimmerButton = dailyRewardDimmer.AddComponent<Button>();
+        dimmerButton.transition = Selectable.Transition.None;
+        dailyRewardDimmer.SetActive(false);
+
         dailyRewardPanel = new GameObject("DailyRewardPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         dailyRewardPanel.transform.SetParent(parent, false);
 
         RectTransform panelRect = dailyRewardPanel.GetComponent<RectTransform>();
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
-        panelRect.anchoredPosition = new Vector2(0, 25);
-        panelRect.sizeDelta = new Vector2(900, 650);
+        panelRect.anchoredPosition = new Vector2(0f, -12f);
+        panelRect.sizeDelta = new Vector2(1260f, 691f);
 
-        StylePopupPanel(dailyRewardPanel, panelRect.sizeDelta, new Color(1f, 0.92f, 0.78f, 0.98f), new Color(0.72f, 0.36f, 0.16f, 1f));
+        Image dailyRewardBackground = dailyRewardPanel.GetComponent<Image>();
+        dailyRewardBackground.sprite = LoadSpriteFromResources("Art/UI/DailyReward/ScratchDesign/daily_login_scratch_icon_panel_v1_alpha");
+        dailyRewardBackground.color = Color.white;
+        dailyRewardBackground.preserveAspect = true;
 
-        TMP_Text title = CreateText(dailyRewardPanel.transform, "DailyRewardTitle", "Günlük Giriş Ödülü", new Vector2(0, 270), new Vector2(820, 70), 42);
-        StylePopupTitle(title, 34);
+        TMP_Text title = CreateText(dailyRewardPanel.transform, "DailyRewardTitle", "GÜNLÜK GİRİŞ", new Vector2(0f, 258f), new Vector2(500f, 56f), 36);
+        StylePopupTitle(title, 36);
+        title.color = new Color(1f, 0.86f, 0.48f, 1f);
+        title.outlineColor = new Color(0.16f, 0.06f, 0.01f, 0.92f);
+        title.outlineWidth = 0.20f;
+        title.gameObject.SetActive(false);
 
         dailyRewardPanelText = CreateText(dailyRewardPanel.transform, "DailyRewardText", "", new Vector2(0, 65), new Vector2(790, 330), 28);
         StylePopupBodyText(dailyRewardPanelText, 19, 27, TextAlignmentOptions.TopLeft);
+        dailyRewardPanelText.gameObject.SetActive(false);
+        CreateDailyRewardLiveOverlay();
 
-        dailyRewardButtonText = StylePopupButton(CreateButton(dailyRewardPanel.transform, "DailyRewardClaimButton", "Ödülü Al", new Vector2(-190, -225), new Vector2(360, 82), ClaimDailyReward, new Color(0.84f, 0.38f, 0.22f), 30), new Color(0.84f, 0.38f, 0.22f), 30);
-        StylePopupButton(CreateButton(dailyRewardPanel.transform, "DailyRewardCloseButton", "Kapat", new Vector2(230, -225), new Vector2(300, 82), CloseDailyRewardPanel, new Color(0.20f, 0.20f, 0.20f), 28), new Color(0.20f, 0.20f, 0.20f), 28);
+        dailyRewardButtonText = StylePopupButton(CreateButton(dailyRewardPanel.transform, "DailyRewardClaimButton", "", DailyRewardLayoutPosition(new Vector2(504f, -344f)), DailyRewardLayoutSize(new Vector2(390f, 118f)), ClaimDailyReward, new Color(0.84f, 0.38f, 0.22f), 30), new Color(0.84f, 0.38f, 0.22f), 30);
+        StylePopupButton(CreateButton(dailyRewardPanel.transform, "DailyRewardCloseButton", "", DailyRewardLayoutPosition(new Vector2(744f, 350f)), DailyRewardLayoutSize(new Vector2(112f, 112f)), CloseDailyRewardPanel, new Color(0.20f, 0.20f, 0.20f), 28), new Color(0.20f, 0.20f, 0.20f), 28);
+
+        ConfigureDailyRewardTransparentButton(dailyRewardButtonText, DailyRewardLayoutPosition(new Vector2(504f, -344f)), DailyRewardLayoutSize(new Vector2(390f, 118f)));
+        Transform closeButtonTransform = dailyRewardPanel.transform.Find("DailyRewardCloseButton");
+        if (closeButtonTransform != null)
+        {
+            TMP_Text closeButtonText = closeButtonTransform.GetComponentInChildren<TMP_Text>();
+            ConfigureDailyRewardTransparentButton(closeButtonText, DailyRewardLayoutPosition(new Vector2(744f, 350f)), DailyRewardLayoutSize(new Vector2(112f, 112f)));
+        }
 
         dailyRewardPanel.transform.SetAsLastSibling();
         dailyRewardPanel.SetActive(false);
+    }
+
+    private void CreateDailyRewardLiveOverlay()
+    {
+        dailyRewardDayNumberTexts.Clear();
+        dailyRewardDayHighlightImages.Clear();
+        dailyRewardStepBadgeImages.Clear();
+        dailyRewardStepStatusTexts.Clear();
+        dailyRewardDayNumberImages.Clear();
+        dailyRewardStepStatusImages.Clear();
+        dailyRewardStepStatusReferencePositions.Clear();
+
+        dailyRewardStatusClaimedSprite = LoadDailyRewardTextSprite("daily_v2_text_status_claimed");
+        dailyRewardStatusAvailableSprite = LoadDailyRewardTextSprite("daily_v2_text_status_available");
+        dailyRewardStatusLockedSprite = LoadDailyRewardTextSprite("daily_v2_text_status_locked");
+        dailyRewardStatusLockedLongSprite = LoadDailyRewardTextSprite("daily_v2_text_status_locked_long");
+        dailyRewardClaimSprite = LoadDailyRewardTextSprite("daily_v2_text_claim");
+
+        CreateDailyRewardSpriteOverlay("DailyRewardTitleTextPng", "daily_v2_text_title", new Vector2(16f, 360f), new Vector2(540f, 82f));
+        CreateDailyRewardSpriteOverlay("DailyRewardTodayLabelPng", "daily_v2_text_today", new Vector2(-642f, 252f), new Vector2(178f, 46f));
+        dailyRewardClaimTextImage = CreateDailyRewardSpriteOverlay("DailyRewardClaimTextPng", "daily_v2_text_claim", new Vector2(504f, -346f), new Vector2(350f, 80f));
+
+        Vector2[] pngDayNumberPositions =
+        {
+            new Vector2(-346f, 128f),
+            new Vector2(-196f, 128f),
+            new Vector2(-46f, 128f),
+            new Vector2(104f, 128f),
+            new Vector2(254f, 128f),
+            new Vector2(404f, 128f),
+            new Vector2(632f, 136f)
+        };
+
+        for (int i = 0; i < DailyRewardCycleDays; i++)
+        {
+            Image numberImage = CreateDailyRewardSpriteOverlay("DailyRewardDayNumberPng_" + (i + 1), "daily_v2_text_day_" + (i + 1), pngDayNumberPositions[i], new Vector2(58f, 58f));
+            dailyRewardDayNumberImages.Add(numberImage);
+        }
+
+        Vector2[] pngStatusPositions =
+        {
+            new Vector2(-342.9f, -157.7f),
+            new Vector2(-198.1f, -157.7f),
+            new Vector2(-54.1f, -157.7f),
+            new Vector2(89.9f, -157.7f),
+            new Vector2(232.9f, -157.7f),
+            new Vector2(377.9f, -157.7f),
+            new Vector2(585.7f, -184.1f)
+        };
+
+        for (int i = 0; i < DailyRewardCycleDays; i++)
+        {
+            Vector2 statusSize = i == DailyRewardCycleDays - 1 ? new Vector2(150f, 40f) : new Vector2(112f, 34f);
+            Image statusImage = CreateDailyRewardSpriteOverlay("DailyRewardStatusTextPng_" + (i + 1), i == DailyRewardCycleDays - 1 ? "daily_v2_text_status_locked_long" : "daily_v2_text_status_locked", pngStatusPositions[i], statusSize);
+            dailyRewardStepStatusImages.Add(statusImage);
+            dailyRewardStepStatusReferencePositions.Add(pngStatusPositions[i]);
+        }
+
+        dailyRewardTodayAmountText = null;
+        dailyRewardClaimStateText = null;
+        dailyRewardTimerText = null;
+        if (dailyRewardPanel != null) return;
+
+        dailyRewardTodayLabelText = CreateText(dailyRewardPanel.transform, "DailyRewardTodayLabel", "BUGÜN", new Vector2(-468f, 153f), new Vector2(160f, 38f), 25);
+        dailyRewardTodayLabelText.color = new Color(1f, 0.92f, 0.66f, 1f);
+        dailyRewardTodayLabelText.fontStyle = FontStyles.Bold;
+        dailyRewardTodayLabelText.enableAutoSizing = true;
+        dailyRewardTodayLabelText.fontSizeMin = 18;
+        dailyRewardTodayLabelText.fontSizeMax = 25;
+        dailyRewardTodayLabelText.margin = Vector4.zero;
+        dailyRewardTodayLabelText.outlineColor = new Color(0.10f, 0.04f, 0.01f, 0.90f);
+        dailyRewardTodayLabelText.outlineWidth = 0.18f;
+        ApplyVipFont(dailyRewardTodayLabelText);
+        dailyRewardTodayLabelText.raycastTarget = false;
+
+        Vector2[] dayNumberPositions =
+        {
+            new Vector2(-258f, 98f),
+            new Vector2(-145f, 98f),
+            new Vector2(-32f, 98f),
+            new Vector2(81f, 98f),
+            new Vector2(195f, 98f),
+            new Vector2(306f, 98f),
+            new Vector2(435f, 117f)
+        };
+
+        for (int i = 0; i < DailyRewardCycleDays; i++)
+        {
+            TMP_Text number = CreateText(dailyRewardPanel.transform, "DailyRewardDayNumber_" + i, (i + 1).ToString(), dayNumberPositions[i], new Vector2(48f, 46f), 27);
+            number.color = new Color(1f, 0.87f, 0.48f, 1f);
+            number.fontStyle = FontStyles.Bold;
+            number.enableAutoSizing = true;
+            number.fontSizeMin = 18;
+            number.fontSizeMax = i == 6 ? 30 : 27;
+            number.margin = Vector4.zero;
+            number.outlineColor = new Color(0.10f, 0.04f, 0.01f, 0.92f);
+            number.outlineWidth = 0.18f;
+            ApplyVipFont(number);
+            number.raycastTarget = false;
+            dailyRewardDayNumberTexts.Add(number);
+        }
+
+        Vector2[] statusPositions =
+        {
+            new Vector2(-258f, -76f),
+            new Vector2(-145f, -76f),
+            new Vector2(-32f, -76f),
+            new Vector2(81f, -76f),
+            new Vector2(195f, -76f),
+            new Vector2(306f, -76f),
+            new Vector2(435f, -109f)
+        };
+
+        for (int i = 0; i < DailyRewardCycleDays; i++)
+        {
+            Vector2 badgeSize = i == 6 ? new Vector2(166f, 38f) : new Vector2(92f, 31f);
+            Image badge = CreateDailyRewardBadge("DailyRewardStepBadge_" + i, statusPositions[i], badgeSize, new Color(0.13f, 0.38f, 0.25f, 0.96f));
+            badge.gameObject.SetActive(false);
+            TMP_Text status = CreateText(dailyRewardPanel.transform, "DailyRewardStepStatus_" + i, "", statusPositions[i], badgeSize + new Vector2(8f, 6f), 18);
+            status.gameObject.SetActive(true);
+            status.color = new Color(1f, 0.92f, 0.64f, 1f);
+            status.fontStyle = FontStyles.Bold;
+            status.alignment = TextAlignmentOptions.Center;
+            status.enableAutoSizing = true;
+            status.fontSizeMin = 13;
+            status.fontSizeMax = i == 6 ? 19 : 18;
+            status.margin = Vector4.zero;
+            status.outlineColor = new Color(0.12f, 0.04f, 0.01f, 0.82f);
+            status.outlineWidth = 0.22f;
+            ApplyVipFont(status);
+            status.raycastTarget = false;
+
+            dailyRewardStepBadgeImages.Add(badge);
+            dailyRewardStepStatusTexts.Add(status);
+        }
+
+        CreateDailyRewardBadge("DailyRewardTodayAmountBadge", new Vector2(-472f, -183f), new Vector2(196f, 48f), new Color(0.18f, 0.10f, 0.04f, 0.92f));
+        dailyRewardTodayAmountText = CreateText(dailyRewardPanel.transform, "DailyRewardTodayAmount", "", new Vector2(-472f, -183f), new Vector2(186f, 42f), 18);
+        dailyRewardTodayAmountText.color = new Color(1f, 0.90f, 0.58f, 1f);
+        dailyRewardTodayAmountText.fontStyle = FontStyles.Bold;
+        dailyRewardTodayAmountText.enableAutoSizing = true;
+        dailyRewardTodayAmountText.fontSizeMin = 10;
+        dailyRewardTodayAmountText.fontSizeMax = 18;
+        dailyRewardTodayAmountText.margin = new Vector4(5f, 0f, 5f, 0f);
+        dailyRewardTodayAmountText.outlineColor = new Color(0.12f, 0.04f, 0.01f, 0.82f);
+        dailyRewardTodayAmountText.outlineWidth = 0.16f;
+        ApplyVipFont(dailyRewardTodayAmountText);
+        dailyRewardTodayAmountText.raycastTarget = false;
+
+        dailyRewardClaimStateText = CreateText(dailyRewardPanel.transform, "DailyRewardClaimState", "", new Vector2(390f, -255f), new Vector2(330f, 66f), 32);
+        dailyRewardClaimStateText.color = new Color(1f, 0.86f, 0.48f, 1f);
+        dailyRewardClaimStateText.fontStyle = FontStyles.Bold;
+        dailyRewardClaimStateText.enableAutoSizing = true;
+        dailyRewardClaimStateText.fontSizeMin = 20;
+        dailyRewardClaimStateText.fontSizeMax = 34;
+        dailyRewardClaimStateText.margin = Vector4.zero;
+        dailyRewardClaimStateText.outlineColor = new Color(0.08f, 0.03f, 0.01f, 0.90f);
+        dailyRewardClaimStateText.outlineWidth = 0.16f;
+        ApplyVipFont(dailyRewardClaimStateText);
+        dailyRewardClaimStateText.raycastTarget = false;
+        dailyRewardClaimStateText.gameObject.SetActive(true);
+
+        dailyRewardTimerText = CreateText(dailyRewardPanel.transform, "DailyRewardTimer", "", new Vector2(92f, -365f), new Vector2(360f, 34f), 18);
+        dailyRewardTimerText.color = new Color(0.36f, 0.18f, 0.05f, 1f);
+        dailyRewardTimerText.fontStyle = FontStyles.Bold;
+        dailyRewardTimerText.enableAutoSizing = true;
+        dailyRewardTimerText.fontSizeMin = 12;
+        dailyRewardTimerText.fontSizeMax = 18;
+        dailyRewardTimerText.margin = Vector4.zero;
+        ApplyVipFont(dailyRewardTimerText);
+        dailyRewardTimerText.raycastTarget = false;
+        dailyRewardTimerText.gameObject.SetActive(false);
+    }
+
+    private Vector2 DailyRewardLayoutPosition(Vector2 referencePosition)
+    {
+        return referencePosition * DailyRewardLayoutScale;
+    }
+
+    private Vector2 DailyRewardLayoutSize(Vector2 referenceSize)
+    {
+        return referenceSize * DailyRewardLayoutScale;
+    }
+
+    private Sprite LoadDailyRewardTextSprite(string spriteName)
+    {
+        return LoadSpriteFromResources(DailyRewardTextSpriteRoot + spriteName);
+    }
+
+    private Image CreateDailyRewardSpriteOverlay(string objectName, string spriteName, Vector2 referencePosition, Vector2 referenceSize)
+    {
+        GameObject overlayObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        overlayObject.transform.SetParent(dailyRewardPanel.transform, false);
+
+        RectTransform rect = overlayObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = DailyRewardLayoutPosition(referencePosition);
+        rect.sizeDelta = DailyRewardLayoutSize(referenceSize);
+
+        Image image = overlayObject.GetComponent<Image>();
+        image.sprite = LoadDailyRewardTextSprite(spriteName);
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+        return image;
+    }
+
+    private Image CreateDailyRewardBadge(string objectName, Vector2 position, Vector2 size, Color color)
+    {
+        GameObject badgeObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        badgeObject.transform.SetParent(dailyRewardPanel.transform, false);
+
+        RectTransform rect = badgeObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = badgeObject.GetComponent<Image>();
+        image.sprite = CreateRoundedRectSprite(size, color, new Color(0.96f, 0.70f, 0.24f, 1f), 12, 2);
+        image.color = Color.white;
+        image.raycastTarget = false;
+        return image;
+    }
+
+    private void ConfigureDailyRewardTransparentButton(TMP_Text buttonText, Vector2 position, Vector2 size)
+    {
+        if (buttonText == null) return;
+        Button button = buttonText.GetComponentInParent<Button>();
+        if (button == null) return;
+        RectTransform buttonRect = button.GetComponent<RectTransform>();
+        if (buttonRect != null)
+        {
+            buttonRect.anchoredPosition = position;
+            buttonRect.sizeDelta = size;
+        }
+        Image buttonImage = button.GetComponent<Image>();
+        if (buttonImage != null)
+        {
+            buttonImage.color = new Color(1f, 1f, 1f, 0.01f);
+        }
+        buttonText.text = "";
+        buttonText.color = new Color(1f, 1f, 1f, 0f);
     }
 
     public void OpenChestPanel()
@@ -2314,6 +3095,12 @@ public class GameManager : MonoBehaviour
         AddItemData("paint_can_neon_blue_001", "Neon Mavi Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.08f, 0.38f, 1.00f));
         AddItemData("paint_can_pearl_white_001", "Inci Beyazi Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.95f, 0.92f, 0.98f));
         AddItemData("paint_can_lavender_001", "Lavanta Boya Kutusu", ItemCategory.Material, ItemRarity.Luxury, new Color(0.84f, 0.68f, 1.00f));
+
+        AddItemData("craft_fabric_001", "Kumaş", ItemCategory.Material, ItemRarity.Common, new Color(0.58f, 0.18f, 0.20f));
+        AddItemData("craft_metal_001", "Metal", ItemCategory.Material, ItemRarity.Rare, new Color(0.42f, 0.43f, 0.46f));
+        AddItemData("craft_stone_001", "Taş / Mermer", ItemCategory.Material, ItemRarity.Rare, new Color(0.78f, 0.77f, 0.74f));
+        AddItemData("craft_glass_001", "Cam", ItemCategory.Material, ItemRarity.Luxury, new Color(0.35f, 0.68f, 0.78f));
+        AddItemData("craft_ceramic_001", "Seramik", ItemCategory.Material, ItemRarity.Luxury, new Color(0.88f, 0.78f, 0.58f));
 
         AddDecorItemData(1, "wall_pink_soft_001", "Pembe Duvar", DecorSlot.Wall, 1, "paint", DecorUnlockCost);
         AddDecorItemData(2, "wall_mint_soft_001", "Mint Duvar", DecorSlot.Wall, 2, "paint", DecorUnlockCost);
@@ -2381,6 +3168,16 @@ public class GameManager : MonoBehaviour
         }
 
         return itemInventory[itemId];
+    }
+
+    private string GetWorkshopMaterialInventoryId(WorkshopCraftMaterialType material)
+    {
+        if (material == WorkshopCraftMaterialType.Fabric) return "craft_fabric_001";
+        if (material == WorkshopCraftMaterialType.Metal) return "craft_metal_001";
+        if (material == WorkshopCraftMaterialType.Stone) return "craft_stone_001";
+        if (material == WorkshopCraftMaterialType.Glass) return "craft_glass_001";
+        if (material == WorkshopCraftMaterialType.Ceramic) return "craft_ceramic_001";
+        return "";
     }
 
     private string GetRandomPaintCanId(ItemRarity maxRarity)
@@ -2461,6 +3258,11 @@ public class GameManager : MonoBehaviour
 
     private void OpenChestByTier(ChestTier tier)
     {
+        if (chestOpeningInProgress)
+        {
+            return;
+        }
+
         if (GetChestCount(tier) <= 0)
         {
             lastChestRewardText = "Acacak " + GetChestTierName(tier) + " yok.";
@@ -2475,6 +3277,9 @@ public class GameManager : MonoBehaviour
         else
             luxuryChests--;
 
+        chestOpeningInProgress = true;
+        shouldAnimateChestReward = true;
+        openingChestTier = tier;
         dailyChestsOpened++;
         int roll = UnityEngine.Random.Range(0, 100);
 
@@ -2497,63 +3302,120 @@ public class GameManager : MonoBehaviour
 
     private void OpenCommonChestReward(int roll)
     {
-        if (roll < 45)
+        if (roll < 20)
         {
             gems += 1;
             lastChestRewardText = "Sıradan Sandıktan 1 Elmas çıktı.";
             ShowChestReward(lastChestRewardText, GetGemIconSprite());
         }
-        else if (roll < 70)
-        {
-            woodPieces += 1;
-            lastChestRewardText = "Sıradan Sandıktan 1 Tahta çıktı.";
-            ShowChestReward(lastChestRewardText, GetWoodIconSprite());
-        }
         else
         {
-            AddRandomPaintCanReward(ItemRarity.Common, "Siradan Sandik");
+            AddRandomWorkshopMaterialReward(ChestTier.Common);
         }
     }
 
     private void OpenRareChestReward(int roll)
     {
-        if (roll < 35)
+        if (roll < 20)
         {
             gems += 2;
             lastChestRewardText = "Nadir Sandıktan 2 Elmas çıktı.";
             ShowChestReward(lastChestRewardText, GetGemIconSprite());
         }
-        else if (roll < 55)
-        {
-            woodPieces += 2;
-            lastChestRewardText = "Nadir Sandıktan 2 Tahta çıktı.";
-            ShowChestReward(lastChestRewardText, GetWoodIconSprite());
-        }
         else
         {
-            AddRandomPaintCanReward(ItemRarity.Rare, "Nadir Sandik");
+            AddRandomWorkshopMaterialReward(ChestTier.Rare);
         }
     }
 
     private void OpenLuxuryChestReward(int roll)
     {
-        if (roll < 25)
+        if (roll < 20)
         {
             gems += 5;
             lastChestRewardText = "Özel Sandıktan 5 Elmas çıktı.";
             ShowChestReward(lastChestRewardText, GetGemIconSprite());
         }
-        else if (roll < 45)
+        else
         {
-            woodPieces += 3;
-            gems += 2;
-            lastChestRewardText = "Özel Sandıktan 3 Tahta + 2 Elmas çıktı.";
-            ShowChestReward(lastChestRewardText, GetWoodIconSprite());
+            AddRandomWorkshopMaterialReward(ChestTier.Luxury);
+        }
+    }
+
+    private void AddRandomWorkshopMaterialReward(ChestTier tier)
+    {
+        WorkshopCraftMaterialType[] pool;
+        int amount;
+        string chestName;
+        if (tier == ChestTier.Luxury)
+        {
+            pool = new[]
+            {
+                WorkshopCraftMaterialType.Paint,
+                WorkshopCraftMaterialType.Wood,
+                WorkshopCraftMaterialType.Fabric, WorkshopCraftMaterialType.Fabric,
+                WorkshopCraftMaterialType.Metal, WorkshopCraftMaterialType.Metal, WorkshopCraftMaterialType.Metal,
+                WorkshopCraftMaterialType.Stone, WorkshopCraftMaterialType.Stone, WorkshopCraftMaterialType.Stone,
+                WorkshopCraftMaterialType.Glass, WorkshopCraftMaterialType.Glass, WorkshopCraftMaterialType.Glass,
+                WorkshopCraftMaterialType.Ceramic, WorkshopCraftMaterialType.Ceramic, WorkshopCraftMaterialType.Ceramic
+            };
+            amount = UnityEngine.Random.Range(2, 4);
+            chestName = "Özel Sandık";
+        }
+        else if (tier == ChestTier.Rare)
+        {
+            pool = new[]
+            {
+                WorkshopCraftMaterialType.Paint, WorkshopCraftMaterialType.Paint,
+                WorkshopCraftMaterialType.Wood, WorkshopCraftMaterialType.Wood,
+                WorkshopCraftMaterialType.Fabric, WorkshopCraftMaterialType.Fabric, WorkshopCraftMaterialType.Fabric,
+                WorkshopCraftMaterialType.Metal, WorkshopCraftMaterialType.Metal, WorkshopCraftMaterialType.Metal,
+                WorkshopCraftMaterialType.Stone, WorkshopCraftMaterialType.Stone, WorkshopCraftMaterialType.Stone,
+                WorkshopCraftMaterialType.Glass, WorkshopCraftMaterialType.Glass,
+                WorkshopCraftMaterialType.Ceramic
+            };
+            amount = UnityEngine.Random.Range(1, 3);
+            chestName = "Nadir Sandık";
         }
         else
         {
-            AddRandomPaintCanReward(ItemRarity.Luxury, "Ozel Sandik");
+            pool = new[]
+            {
+                WorkshopCraftMaterialType.Paint, WorkshopCraftMaterialType.Paint, WorkshopCraftMaterialType.Paint,
+                WorkshopCraftMaterialType.Wood, WorkshopCraftMaterialType.Wood, WorkshopCraftMaterialType.Wood,
+                WorkshopCraftMaterialType.Fabric, WorkshopCraftMaterialType.Fabric, WorkshopCraftMaterialType.Fabric,
+                WorkshopCraftMaterialType.Stone, WorkshopCraftMaterialType.Stone, WorkshopCraftMaterialType.Stone,
+                WorkshopCraftMaterialType.Ceramic, WorkshopCraftMaterialType.Ceramic,
+                WorkshopCraftMaterialType.Metal,
+                WorkshopCraftMaterialType.Glass
+            };
+            amount = 1;
+            chestName = "Sıradan Sandık";
         }
+
+        WorkshopCraftMaterialType material = pool[UnityEngine.Random.Range(0, pool.Length)];
+        if (material == WorkshopCraftMaterialType.Paint)
+        {
+            paintPieces += amount;
+        }
+        else if (material == WorkshopCraftMaterialType.Wood)
+        {
+            woodPieces += amount;
+        }
+        else
+        {
+            AddInventoryItem(GetWorkshopMaterialInventoryId(material), amount);
+        }
+
+        lastChestRewardText = chestName + " ödülü: " + amount + " " + GetWorkshopMaterialName(material) + ".";
+        ShowChestReward(lastChestRewardText, GetWorkshopMaterialSprite(material), GetWorkshopChestMaterialColor(tier));
+    }
+
+    private static Color GetWorkshopChestMaterialColor(ChestTier tier)
+    {
+        if (tier == ChestTier.Luxury) return new Color(0.30f, 0.12f, 0.38f, 0.99f);
+        if (tier == ChestTier.Rare) return new Color(0.08f, 0.34f, 0.38f, 0.99f);
+        return new Color(0.56f, 0.32f, 0.12f, 0.99f);
     }
 
     private void AddRandomPaintCanReward(ItemRarity maxRarity, string chestName)
@@ -2648,6 +3510,557 @@ public class GameManager : MonoBehaviour
         return chests;
     }
 
+    private Image CreateChestSelectionImage(Transform parent, string objectName, ChestTier tier, Vector2 position)
+    {
+        GameObject imageObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        imageObject.transform.SetParent(parent, false);
+        RectTransform rect = imageObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = new Vector2(245f, 245f);
+        Image image = imageObject.GetComponent<Image>();
+        Sprite[] frames = GetChestAnimationFrames(tier);
+        image.sprite = frames != null && frames.Length > 0 ? frames[0] : null;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+        return image;
+    }
+
+    private Sprite[] GetChestAnimationFrames(ChestTier tier)
+    {
+        if (chestAnimationFrames.TryGetValue(tier, out Sprite[] cached))
+        {
+            return cached;
+        }
+
+        string assetName = tier == ChestTier.Rare
+            ? "chest_rare_animation"
+            : tier == ChestTier.Luxury ? "chest_luxury_animation" : "chest_common_animation";
+        Texture2D atlas = Resources.Load<Texture2D>("Art/UI/Chests/" + assetName);
+        if (atlas == null)
+        {
+            chestAnimationFrames[tier] = null;
+            return null;
+        }
+
+        float cellWidth = atlas.width * 0.5f;
+        float cellHeight = atlas.height * 0.5f;
+        Sprite[] frames = new Sprite[4];
+        frames[0] = Sprite.Create(atlas, new Rect(0f, cellHeight, cellWidth, cellHeight), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        frames[1] = Sprite.Create(atlas, new Rect(cellWidth, cellHeight, cellWidth, cellHeight), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        frames[2] = Sprite.Create(atlas, new Rect(0f, 0f, cellWidth, cellHeight), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        frames[3] = Sprite.Create(atlas, new Rect(cellWidth, 0f, cellWidth, cellHeight), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        for (int i = 0; i < frames.Length; i++)
+        {
+            frames[i].name = assetName + "_frame_" + i;
+        }
+        chestAnimationFrames[tier] = frames;
+        return frames;
+    }
+
+    private Sprite[] GetChestSilhouetteFrames(ChestTier tier)
+    {
+        if (chestSilhouetteFrames.TryGetValue(tier, out Sprite[] cached)) return cached;
+        string assetName = tier == ChestTier.Rare
+            ? "chest_rare_silhouette"
+            : tier == ChestTier.Luxury ? "chest_luxury_silhouette" : "chest_common_silhouette";
+        Texture2D atlas = Resources.Load<Texture2D>("Art/UI/Chests/" + assetName);
+        if (atlas == null)
+        {
+            chestSilhouetteFrames[tier] = null;
+            return null;
+        }
+
+        float cellWidth = atlas.width * 0.5f;
+        float cellHeight = atlas.height * 0.5f;
+        Sprite[] frames = new Sprite[4];
+        frames[0] = Sprite.Create(atlas, new Rect(0f, cellHeight, cellWidth, cellHeight), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        frames[1] = Sprite.Create(atlas, new Rect(cellWidth, cellHeight, cellWidth, cellHeight), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        frames[2] = Sprite.Create(atlas, new Rect(0f, 0f, cellWidth, cellHeight), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        frames[3] = Sprite.Create(atlas, new Rect(cellWidth, 0f, cellWidth, cellHeight), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        chestSilhouetteFrames[tier] = frames;
+        return frames;
+    }
+
+    private Sprite GetChestLayerSprite(ChestTier tier, string layer)
+    {
+        string tierName = tier == ChestTier.Rare ? "rare" : tier == ChestTier.Luxury ? "luxury" : "common";
+        string key = tierName + "_" + layer;
+        if (chestLayerSprites.TryGetValue(key, out Sprite cached)) return cached;
+        Texture2D texture = Resources.Load<Texture2D>("Art/UI/Chests/chest_" + key);
+        if (texture == null)
+        {
+            chestLayerSprites[key] = null;
+            return null;
+        }
+        Sprite sprite = Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        sprite.name = "ChestLayer_" + key;
+        chestLayerSprites[key] = sprite;
+        return sprite;
+    }
+
+    private Sprite CreateChestGlowSprite()
+    {
+        if (chestGlowSprite != null) return chestGlowSprite;
+        const int size = 96;
+        Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        texture.name = "ChestOpeningRadialGlowTexture";
+        texture.filterMode = FilterMode.Bilinear;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        Color[] pixels = new Color[size * size];
+        Vector2 center = new Vector2((size - 1) * 0.5f, (size - 1) * 0.5f);
+        float radius = size * 0.5f;
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                float distance = Vector2.Distance(new Vector2(x, y), center) / radius;
+                float alpha = Mathf.Pow(1f - Mathf.Clamp01(distance), 2.2f);
+                pixels[(y * size) + x] = new Color(1f, 1f, 1f, alpha);
+            }
+        }
+        texture.SetPixels(pixels);
+        texture.Apply(false, true);
+        chestGlowSprite = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), 100f);
+        chestGlowSprite.name = "ChestOpeningRadialGlow";
+        return chestGlowSprite;
+    }
+
+    private Sprite CreateChestRingSprite()
+    {
+        if (chestRingSprite != null) return chestRingSprite;
+        const int size = 128;
+        Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        texture.name = "ChestOpeningEnergyRingTexture";
+        texture.filterMode = FilterMode.Bilinear;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        Color[] pixels = new Color[size * size];
+        Vector2 center = new Vector2((size - 1) * 0.5f, (size - 1) * 0.5f);
+        float radius = size * 0.5f;
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                Vector2 offset = new Vector2(x, y) - center;
+                float normalizedDistance = offset.magnitude / radius;
+                float ring = 1f - Mathf.Clamp01(Mathf.Abs(normalizedDistance - 0.72f) / 0.055f);
+                float angle = Mathf.Atan2(offset.y, offset.x);
+                float streak = 0.72f + (0.28f * Mathf.Sin((angle * 7f) + (normalizedDistance * 12f)));
+                float alpha = ring * streak;
+                pixels[(y * size) + x] = new Color(1f, 1f, 1f, alpha);
+            }
+        }
+        texture.SetPixels(pixels);
+        texture.Apply(false, true);
+        chestRingSprite = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), 100f);
+        chestRingSprite.name = "ChestOpeningEnergyRing";
+        return chestRingSprite;
+    }
+
+    private Sprite CreateChestBeamSprite()
+    {
+        if (chestBeamSprite != null) return chestBeamSprite;
+        const int width = 32;
+        const int height = 256;
+        Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        texture.name = "ChestOpeningBeamTexture";
+        texture.filterMode = FilterMode.Bilinear;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        Color[] pixels = new Color[width * height];
+        for (int y = 0; y < height; y++)
+        {
+            float vertical = y / (height - 1f);
+            float taper = Mathf.Pow(1f - vertical, 1.35f);
+            for (int x = 0; x < width; x++)
+            {
+                float horizontal = Mathf.Abs((x / (width - 1f)) - 0.5f) * 2f;
+                float alpha = Mathf.Pow(1f - Mathf.Clamp01(horizontal), 2.8f) * taper;
+                pixels[(y * width) + x] = new Color(1f, 1f, 1f, alpha);
+            }
+        }
+        texture.SetPixels(pixels);
+        texture.Apply(false, true);
+        chestBeamSprite = Sprite.Create(texture, new Rect(0f, 0f, width, height), new Vector2(0.5f, 0f), 100f);
+        chestBeamSprite.name = "ChestOpeningBeam";
+        return chestBeamSprite;
+    }
+
+    private Sprite CreateChestStarSprite()
+    {
+        if (chestStarSprite != null) return chestStarSprite;
+        const int size = 64;
+        Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        texture.name = "ChestOpeningStarTexture";
+        texture.filterMode = FilterMode.Bilinear;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        Color[] pixels = new Color[size * size];
+        float center = (size - 1) * 0.5f;
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                float dx = Mathf.Abs(x - center) / center;
+                float dy = Mathf.Abs(y - center) / center;
+                float vertical = 1f - Mathf.Clamp01(dx * 5.5f + dy * 0.85f);
+                float horizontal = 1f - Mathf.Clamp01(dy * 5.5f + dx * 0.85f);
+                float core = 1f - Mathf.Clamp01(Mathf.Sqrt((dx * dx) + (dy * dy)) * 5f);
+                float alpha = Mathf.Clamp01(Mathf.Max(vertical, horizontal) + core);
+                pixels[(y * size) + x] = new Color(1f, 1f, 1f, alpha);
+            }
+        }
+        texture.SetPixels(pixels);
+        texture.Apply(false, true);
+        chestStarSprite = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), 100f);
+        chestStarSprite.name = "ChestOpeningStar";
+        return chestStarSprite;
+    }
+
+    private AudioClip CreateChestImpactSound()
+    {
+        const int sampleRate = 44100;
+        const int channels = 2;
+        const float duration = 0.62f;
+        int frameCount = Mathf.CeilToInt(sampleRate * duration);
+        float[] samples = new float[frameCount * channels];
+        System.Random random = new System.Random(4817);
+        float filteredNoiseLeft = 0f;
+        float filteredNoiseRight = 0f;
+        for (int i = 0; i < frameCount; i++)
+        {
+            float time = i / (float)sampleRate;
+            float bassFrequency = Mathf.Lerp(112f, 43f, Mathf.Clamp01(time * 5f));
+            float thud = Mathf.Sin(time * bassFrequency * Mathf.PI * 2f) * Mathf.Exp(-time * 10.5f);
+            float metal = (Mathf.Sin(time * 1280f * Mathf.PI * 2f) * 0.36f
+                + Mathf.Sin(time * 2137f * Mathf.PI * 2f) * 0.24f
+                + Mathf.Sin(time * 3181f * Mathf.PI * 2f) * 0.12f) * Mathf.Exp(-time * 16f);
+            float secondLatchTime = Mathf.Max(0f, time - 0.105f);
+            float secondLatch = time >= 0.105f
+                ? (Mathf.Sin(secondLatchTime * 1760f * Mathf.PI * 2f) * Mathf.Exp(-secondLatchTime * 28f) * 0.42f)
+                : 0f;
+            float noiseLeft = ((float)random.NextDouble() * 2f) - 1f;
+            float noiseRight = ((float)random.NextDouble() * 2f) - 1f;
+            filteredNoiseLeft = (filteredNoiseLeft * 0.86f) + (noiseLeft * 0.14f);
+            filteredNoiseRight = (filteredNoiseRight * 0.86f) + (noiseRight * 0.14f);
+            float gritEnvelope = Mathf.Exp(-time * 19f) * 0.24f;
+            float left = (thud * 0.72f) + (metal * 0.70f) + secondLatch + (filteredNoiseLeft * gritEnvelope);
+            float right = (thud * 0.72f) + (metal * 0.62f) + (secondLatch * 0.82f) + (filteredNoiseRight * gritEnvelope);
+            samples[(i * channels)] = left / (1f + Mathf.Abs(left));
+            samples[(i * channels) + 1] = right / (1f + Mathf.Abs(right));
+        }
+        AudioClip clip = AudioClip.Create("ChestKeyImpact", frameCount, channels, sampleRate, false);
+        clip.SetData(samples, 0);
+        return clip;
+    }
+
+    private AudioClip CreateChestOpenSound(string clipName, float baseFrequency, float intensity, int seed)
+    {
+        const int sampleRate = 44100;
+        const int channels = 2;
+        const float duration = 1.36f;
+        int frameCount = Mathf.CeilToInt(sampleRate * duration);
+        float[] samples = new float[frameCount * channels];
+        System.Random random = new System.Random(seed);
+        float slowNoiseLeft = 0f;
+        float slowNoiseRight = 0f;
+        float brightNoiseLeft = 0f;
+        float brightNoiseRight = 0f;
+        float sweepPhase = 0f;
+        for (int i = 0; i < frameCount; i++)
+        {
+            float time = i / (float)sampleRate;
+            float t = time / duration;
+            float noiseLeft = ((float)random.NextDouble() * 2f) - 1f;
+            float noiseRight = ((float)random.NextDouble() * 2f) - 1f;
+            slowNoiseLeft = (slowNoiseLeft * 0.975f) + (noiseLeft * 0.025f);
+            slowNoiseRight = (slowNoiseRight * 0.975f) + (noiseRight * 0.025f);
+            brightNoiseLeft = (brightNoiseLeft * 0.72f) + (noiseLeft * 0.28f);
+            brightNoiseRight = (brightNoiseRight * 0.72f) + (noiseRight * 0.28f);
+
+            float hingeT = Mathf.Clamp01(time / 0.48f);
+            float hingeEnvelope = Mathf.Sin(hingeT * Mathf.PI) * (time < 0.52f ? 1f : 0f);
+            float hingeFrequency = Mathf.Lerp(118f, 54f, hingeT) + (Mathf.Sin(time * 31f) * 9f);
+            float hinge = (Mathf.Sin(time * hingeFrequency * Mathf.PI * 2f)
+                + (Mathf.Sin(time * hingeFrequency * 2.47f * Mathf.PI * 2f) * 0.34f)) * hingeEnvelope;
+
+            float impactTime = Mathf.Max(0f, time - 0.29f);
+            float bodyImpact = time >= 0.29f
+                ? Mathf.Sin(impactTime * Mathf.Lerp(96f, 42f, Mathf.Clamp01(impactTime * 5f)) * Mathf.PI * 2f) * Mathf.Exp(-impactTime * 8.8f)
+                : 0f;
+
+            float whooshT = Mathf.Clamp01((time - 0.18f) / 1.08f);
+            float whooshEnvelope = Mathf.Sin(whooshT * Mathf.PI) * Mathf.Sqrt(whooshT);
+            float sweepFrequency = Mathf.Lerp(baseFrequency * 0.30f, baseFrequency * 1.72f, Mathf.Pow(whooshT, 0.62f));
+            sweepPhase += (Mathf.PI * 2f * sweepFrequency) / sampleRate;
+            float tonalSweep = Mathf.Sin(sweepPhase) * whooshEnvelope;
+
+            float shimmerTime = Mathf.Max(0f, time - 0.34f);
+            float shimmerEnvelope = time >= 0.34f ? Mathf.Exp(-shimmerTime * 2.25f) * Mathf.Clamp01(shimmerTime * 9f) : 0f;
+            float shimmerLeft = (Mathf.Sin(shimmerTime * baseFrequency * 1.01f * Mathf.PI * 2f) * 0.32f
+                + Mathf.Sin(shimmerTime * baseFrequency * 2.02f * Mathf.PI * 2f) * 0.13f) * shimmerEnvelope;
+            float shimmerRight = (Mathf.Sin(shimmerTime * baseFrequency * 1.006f * Mathf.PI * 2f) * 0.32f
+                + Mathf.Sin(shimmerTime * baseFrequency * 2.51f * Mathf.PI * 2f) * 0.11f) * shimmerEnvelope;
+
+            float left = ((hinge * 0.25f) + (bodyImpact * 0.58f) + (slowNoiseLeft * hingeEnvelope * 0.34f)
+                + (brightNoiseLeft * whooshEnvelope * 0.24f) + (tonalSweep * 0.16f) + shimmerLeft) * intensity;
+            float right = ((hinge * 0.23f) + (bodyImpact * 0.58f) + (slowNoiseRight * hingeEnvelope * 0.34f)
+                + (brightNoiseRight * whooshEnvelope * 0.24f) + (tonalSweep * 0.16f) + shimmerRight) * intensity;
+            samples[(i * channels)] = left / (1f + Mathf.Abs(left));
+            samples[(i * channels) + 1] = right / (1f + Mathf.Abs(right));
+        }
+        AudioClip clip = AudioClip.Create(clipName, frameCount, channels, sampleRate, false);
+        clip.SetData(samples, 0);
+        return clip;
+    }
+
+    private AudioClip CreateChestRewardLaunchSound()
+    {
+        const int sampleRate = 44100;
+        const int channels = 2;
+        const float duration = 0.82f;
+        int frameCount = Mathf.CeilToInt(sampleRate * duration);
+        float[] samples = new float[frameCount * channels];
+        System.Random random = new System.Random(8241);
+        float filteredLeft = 0f;
+        float filteredRight = 0f;
+        float phase = 0f;
+        for (int i = 0; i < frameCount; i++)
+        {
+            float time = i / (float)sampleRate;
+            float t = time / duration;
+            float noiseLeft = ((float)random.NextDouble() * 2f) - 1f;
+            float noiseRight = ((float)random.NextDouble() * 2f) - 1f;
+            filteredLeft = (filteredLeft * 0.84f) + (noiseLeft * 0.16f);
+            filteredRight = (filteredRight * 0.84f) + (noiseRight * 0.16f);
+            float envelope = Mathf.Sin(Mathf.Clamp01(t) * Mathf.PI) * Mathf.Pow(Mathf.Clamp01(t), 0.35f);
+            float frequency = Mathf.Lerp(180f, 1320f, Mathf.Pow(t, 0.72f));
+            phase += (Mathf.PI * 2f * frequency) / sampleRate;
+            float rise = Mathf.Sin(phase) * envelope;
+            float sparkleTime = Mathf.Max(0f, time - 0.32f);
+            float sparkle = time >= 0.32f
+                ? (Mathf.Sin(sparkleTime * 1760f * Mathf.PI * 2f) + (Mathf.Sin(sparkleTime * 2637f * Mathf.PI * 2f) * 0.44f)) * Mathf.Exp(-sparkleTime * 7.5f)
+                : 0f;
+            float left = (filteredLeft * envelope * 0.34f) + (rise * 0.20f) + (sparkle * 0.18f);
+            float right = (filteredRight * envelope * 0.34f) + (rise * 0.20f) + (sparkle * 0.22f);
+            samples[(i * channels)] = left / (1f + Mathf.Abs(left));
+            samples[(i * channels) + 1] = right / (1f + Mathf.Abs(right));
+        }
+        AudioClip clip = AudioClip.Create("ChestRewardLaunch", frameCount, channels, sampleRate, false);
+        clip.SetData(samples, 0);
+        return clip;
+    }
+
+    private AudioClip CreateChestRewardSound()
+    {
+        const int sampleRate = 44100;
+        const int channels = 2;
+        const float duration = 1.02f;
+        int frameCount = Mathf.CeilToInt(sampleRate * duration);
+        float[] samples = new float[frameCount * channels];
+        float[] frequencies = { 523.25f, 659.25f, 783.99f, 1046.5f };
+        for (int i = 0; i < frameCount; i++)
+        {
+            float time = i / (float)sampleRate;
+            float left = 0f;
+            float right = 0f;
+            for (int note = 0; note < frequencies.Length; note++)
+            {
+                float delay = note * 0.058f;
+                if (time < delay) continue;
+                float noteTime = time - delay;
+                float attack = Mathf.Clamp01(noteTime * 34f);
+                float envelope = attack * Mathf.Exp(-noteTime * (3.4f + (note * 0.28f)));
+                float amplitude = 0.24f - (note * 0.025f);
+                float pan = Mathf.Lerp(-0.48f, 0.48f, note / (frequencies.Length - 1f));
+                float fundamental = Mathf.Sin(noteTime * frequencies[note] * Mathf.PI * 2f);
+                float overtone = Mathf.Sin(noteTime * frequencies[note] * 2.003f * Mathf.PI * 2f) * 0.23f;
+                float tone = (fundamental + overtone) * envelope * amplitude;
+                left += tone * (1f - Mathf.Max(0f, pan));
+                right += tone * (1f + Mathf.Min(0f, pan));
+            }
+            float lowBody = Mathf.Sin(time * 130.81f * Mathf.PI * 2f) * Mathf.Exp(-time * 5.2f) * 0.12f;
+            left += lowBody;
+            right += lowBody;
+            samples[(i * channels)] = left / (1f + Mathf.Abs(left));
+            samples[(i * channels) + 1] = right / (1f + Mathf.Abs(right));
+        }
+        AudioClip clip = AudioClip.Create("ChestRewardReveal", frameCount, channels, sampleRate, false);
+        clip.SetData(samples, 0);
+        return clip;
+    }
+
+    private void ConfigureSaleCoinAudio()
+    {
+        if (saleCoinAudioSource == null)
+        {
+            saleCoinAudioSource = gameObject.AddComponent<AudioSource>();
+            saleCoinAudioSource.playOnAwake = false;
+            saleCoinAudioSource.loop = false;
+            saleCoinAudioSource.spatialBlend = 0f;
+            saleCoinAudioSource.ignoreListenerPause = true;
+            saleCoinAudioSource.volume = 0.78f;
+        }
+
+        if (saleCoinClip == null)
+        {
+            saleCoinClip = Resources.Load<AudioClip>("Audio/sale_coin_ting");
+            if (saleCoinClip == null)
+            {
+                saleCoinClip = CreateSaleCoinSound();
+            }
+        }
+    }
+
+    private AudioClip CreateSaleCoinSound()
+    {
+        const int sampleRate = 44100;
+        const int channels = 2;
+        const float duration = 0.34f;
+        int frameCount = Mathf.CeilToInt(sampleRate * duration);
+        float[] samples = new float[frameCount * channels];
+        System.Random random = new System.Random(7319);
+        float filteredLeft = 0f;
+        float filteredRight = 0f;
+        for (int i = 0; i < frameCount; i++)
+        {
+            float time = i / (float)sampleRate;
+            float attack = Mathf.Clamp01(time * 900f);
+            float contactEnvelope = attack * Mathf.Exp(-time * 78f);
+            float ringEnvelope = attack * Mathf.Exp(-time * 13.5f);
+            float contact = (Mathf.Sin(time * 940f * Mathf.PI * 2f) * 0.12f
+                + Mathf.Sin(time * 1835f * Mathf.PI * 2f) * 0.17f) * contactEnvelope;
+            float coinRing = (Mathf.Sin(time * 2380f * Mathf.PI * 2f) * 0.25f
+                + Mathf.Sin(time * 3565f * Mathf.PI * 2f) * 0.17f
+                + Mathf.Sin(time * 5270f * Mathf.PI * 2f) * 0.08f) * ringEnvelope;
+            float noiseLeft = ((float)random.NextDouble() * 2f) - 1f;
+            float noiseRight = ((float)random.NextDouble() * 2f) - 1f;
+            filteredLeft = (filteredLeft * 0.68f) + (noiseLeft * 0.32f);
+            filteredRight = (filteredRight * 0.68f) + (noiseRight * 0.32f);
+            float textureEnvelope = Mathf.Exp(-time * 125f) * 0.045f;
+            float left = contact + coinRing + (filteredLeft * textureEnvelope);
+            float right = (contact * 0.96f) + (coinRing * 1.035f) + (filteredRight * textureEnvelope);
+            samples[i * channels] = left / (1f + Mathf.Abs(left));
+            samples[(i * channels) + 1] = right / (1f + Mathf.Abs(right));
+        }
+
+        AudioClip clip = AudioClip.Create("SaleCoinTing", frameCount, channels, sampleRate, false);
+        clip.SetData(samples, 0);
+        return clip;
+    }
+
+    private void PlaySaleCoinSound()
+    {
+        if (saleCoinAudioSource == null || saleCoinClip == null) return;
+        if (Time.unscaledTime - lastSaleCoinTime < 0.018f) return;
+        lastSaleCoinTime = Time.unscaledTime;
+        saleCoinAudioSource.pitch = 1.08f;
+        saleCoinAudioSource.PlayOneShot(saleCoinClip, 0.9f);
+        ShowSaleCornerFeedback();
+    }
+
+    private void ShowSaleCornerFeedback()
+    {
+        if (saleCornerFeedbackRoot == null || saleCornerFeedbackGroup == null)
+        {
+            return;
+        }
+
+        saleCornerFeedbackRoot.gameObject.SetActive(true);
+        saleCornerFeedbackRoot.SetAsLastSibling();
+        if (saleCornerFeedbackCoroutine != null)
+        {
+            StopCoroutine(saleCornerFeedbackCoroutine);
+        }
+
+        saleCornerFeedbackCoroutine = StartCoroutine(PlaySaleCornerFeedback());
+    }
+
+    private IEnumerator PlaySaleCornerFeedback()
+    {
+        Vector2 basePosition = new Vector2(720f, 360f);
+        saleCornerFeedbackRoot.anchoredPosition = basePosition;
+        saleCornerFeedbackGroup.alpha = 1f;
+
+        const float duration = 0.62f;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float pop = Mathf.Sin(Mathf.Clamp01(t / 0.18f) * Mathf.PI) * 0.10f;
+            float fade = t < 0.46f ? 1f : 1f - Mathf.Clamp01((t - 0.46f) / 0.54f);
+            saleCornerFeedbackRoot.anchoredPosition = basePosition + new Vector2(EaseOutCubic(t) * 10f, EaseOutCubic(t) * 18f);
+            saleCornerFeedbackRoot.localScale = Vector3.one * (1f + pop);
+            saleCornerFeedbackGroup.alpha = fade;
+            yield return null;
+        }
+
+        saleCornerFeedbackGroup.alpha = 0f;
+        saleCornerFeedbackRoot.localScale = Vector3.one;
+        saleCornerFeedbackRoot.gameObject.SetActive(false);
+        saleCornerFeedbackCoroutine = null;
+    }
+
+    private IEnumerator ShowSaleFeedbackAfterFrame()
+    {
+        yield return null;
+        ShowSaleFeedbackAtPointer();
+    }
+
+    private IEnumerator CrossfadeChestFrame(Sprite nextFrame, float duration)
+    {
+        if (chestOpeningImage == null || chestOpeningTransitionImage == null || nextFrame == null)
+        {
+            if (chestOpeningImage != null) chestOpeningImage.sprite = nextFrame;
+            yield break;
+        }
+
+        chestOpeningTransitionImage.sprite = nextFrame;
+        chestOpeningTransitionImage.color = new Color(1f, 1f, 1f, 0f);
+        chestOpeningTransitionImage.gameObject.SetActive(true);
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            chestOpeningTransitionImage.color = new Color(1f, 1f, 1f, EaseOutCubic(t));
+            chestOpeningImage.color = new Color(1f, 1f, 1f, Mathf.Lerp(1f, 0.72f, t));
+            yield return null;
+        }
+        chestOpeningImage.sprite = nextFrame;
+        chestOpeningImage.color = Color.white;
+        chestOpeningTransitionImage.gameObject.SetActive(false);
+    }
+
+    private Image CreateChestAnimationEffectImage(Transform parent, string objectName, Vector2 position, Vector2 size)
+    {
+        GameObject effectObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        effectObject.transform.SetParent(parent, false);
+        RectTransform rect = effectObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+        Image image = effectObject.GetComponent<Image>();
+        image.sprite = chestGlowSprite != null ? chestGlowSprite : CreateChestGlowSprite();
+        image.color = Color.clear;
+        image.raycastTarget = false;
+        return image;
+    }
+
+    private static float EaseOutBack(float t)
+    {
+        const float overshoot = 1.70158f;
+        float shifted = Mathf.Clamp01(t) - 1f;
+        return 1f + ((overshoot + 1f) * shifted * shifted * shifted) + (overshoot * shifted * shifted);
+    }
+
+    private static float EaseOutCubic(float t)
+    {
+        float shifted = 1f - Mathf.Clamp01(t);
+        return 1f - (shifted * shifted * shifted);
+    }
+
     private void CreateChestPanel(Transform parent)
     {
         chestPanel = new GameObject("ChestPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -2656,24 +4069,84 @@ public class GameManager : MonoBehaviour
         RectTransform panelRect = chestPanel.GetComponent<RectTransform>();
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
-        panelRect.anchoredPosition = new Vector2(0, 25);
-        panelRect.sizeDelta = new Vector2(980, 620);
+        panelRect.anchoredPosition = new Vector2(0f, 12f);
+        panelRect.sizeDelta = new Vector2(958f, 636f);
 
-        StylePopupPanel(chestPanel, panelRect.sizeDelta, new Color(0.98f, 0.89f, 0.70f, 0.98f), new Color(0.58f, 0.32f, 0.12f, 1f));
+        Image panelImage = chestPanel.GetComponent<Image>();
+        panelImage.sprite = LoadSpriteFromResources("Art/UI/Chests/chest_selection_panel_v1");
+        panelImage.color = Color.white;
+        panelImage.preserveAspect = true;
 
-        TMP_Text title = CreateText(chestPanel.transform, "ChestPanelTitle", "Sandiklar", new Vector2(0, 260), new Vector2(900, 64), 38);
-        StylePopupTitle(title, 34);
+        TMP_Text title = CreateText(chestPanel.transform, "ChestPanelTitle", "SANDIKLAR", new Vector2(0f, 240.1f), new Vector2(610f, 58f), 42);
+        title.fontStyle = FontStyles.Bold;
+        title.color = new Color(0.28f, 0.12f, 0.035f, 1f);
+        title.alignment = TextAlignmentOptions.Center;
+        title.enableAutoSizing = true;
+        title.fontSizeMin = 28f;
+        title.fontSizeMax = 42f;
 
         chestPanelText = CreateText(chestPanel.transform, "ChestPanelText", "", new Vector2(0, 45), new Vector2(850, 330), 20);
         StylePopupBodyText(chestPanelText, 14, 20, TextAlignmentOptions.TopLeft);
+        chestPanelText.gameObject.SetActive(false);
 
-        chestOpenButtonText = StylePopupButton(CreateButton(chestPanel.transform, "ChestOpenButton", "Siradan", new Vector2(-330, -250), new Vector2(190, 70), OpenChest, new Color(0.64f, 0.36f, 0.16f), 22), new Color(0.64f, 0.36f, 0.16f), 22);
-        rareChestOpenButtonText = StylePopupButton(CreateButton(chestPanel.transform, "RareChestOpenButton", "Nadir", new Vector2(-110, -250), new Vector2(190, 70), OpenRareChest, new Color(0.30f, 0.42f, 0.68f), 22), new Color(0.30f, 0.42f, 0.68f), 22);
-        luxuryChestOpenButtonText = StylePopupButton(CreateButton(chestPanel.transform, "LuxuryChestOpenButton", "Ozel", new Vector2(110, -250), new Vector2(190, 70), OpenLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 22), new Color(0.72f, 0.54f, 0.22f), 22);
-        StylePopupButton(CreateButton(chestPanel.transform, "ChestCloseButton", "Kapat", new Vector2(330, -250), new Vector2(190, 70), CloseChestPanel, new Color(0.20f, 0.20f, 0.20f), 22), new Color(0.20f, 0.20f, 0.20f), 22);
+        commonChestCountText = CreateText(chestPanel.transform, "CommonChestCount", "", new Vector2(-294.7f, -156.8f), new Vector2(205f, 46f), 25);
+        rareChestCountText = CreateText(chestPanel.transform, "RareChestCount", "", new Vector2(0f, -156.8f), new Vector2(205f, 46f), 25);
+        luxuryChestCountText = CreateText(chestPanel.transform, "LuxuryChestCount", "", new Vector2(294.7f, -156.8f), new Vector2(205f, 46f), 25);
+        ConfigureChestPanelCountText(commonChestCountText, new Color(1f, 0.84f, 0.42f, 1f));
+        ConfigureChestPanelCountText(rareChestCountText, new Color(0.72f, 1f, 0.96f, 1f));
+        ConfigureChestPanelCountText(luxuryChestCountText, new Color(1f, 0.76f, 0.42f, 1f));
+        commonChestCountText.enableAutoSizing = false;
+        commonChestCountText.fontSize = 19f;
+        rareChestCountText.enableAutoSizing = false;
+        rareChestCountText.fontSize = 19f;
+        luxuryChestCountText.enableAutoSizing = false;
+        luxuryChestCountText.fontSize = 19f;
+
+        chestOpenButtonText = CreateChestPanelButton("ChestOpenButton", "SIRADAN AÇ", new Vector2(-297.2f, -233.9f), OpenChest, new Color(1f, 0.90f, 0.63f, 1f));
+        rareChestOpenButtonText = CreateChestPanelButton("RareChestOpenButton", "NADIR AÇ", new Vector2(0f, -233.9f), OpenRareChest, new Color(0.80f, 1f, 0.97f, 1f));
+        luxuryChestOpenButtonText = CreateChestPanelButton("LuxuryChestOpenButton", "ÖZEL AÇ", new Vector2(297.2f, -233.9f), OpenLuxuryChest, new Color(1f, 0.87f, 0.56f, 1f));
+
+        TMP_Text closeButtonText = CreateButton(chestPanel.transform, "ChestCloseButton", "", new Vector2(444f, 266f), new Vector2(68f, 68f), CloseChestPanel, Color.clear, 1f);
+        Image closeButtonImage = closeButtonText.GetComponentInParent<Image>();
+        if (closeButtonImage != null) closeButtonImage.color = Color.clear;
 
         chestPanel.transform.SetAsLastSibling();
         chestPanel.SetActive(false);
+    }
+
+    private static void ConfigureChestPanelCountText(TMP_Text text, Color color)
+    {
+        if (text == null) return;
+        text.fontStyle = FontStyles.Bold;
+        text.alignment = TextAlignmentOptions.Center;
+        text.color = color;
+        text.enableAutoSizing = true;
+        text.enableWordWrapping = false;
+        text.margin = Vector4.zero;
+        text.lineSpacing = 0f;
+        text.fontSizeMin = 18f;
+        text.fontSizeMax = 25f;
+        text.outlineColor = new Color32(40, 18, 4, 235);
+        text.outlineWidth = 0.18f;
+    }
+
+    private TMP_Text CreateChestPanelButton(string objectName, string label, Vector2 position, UnityEngine.Events.UnityAction action, Color textColor)
+    {
+        TMP_Text text = CreateButton(chestPanel.transform, objectName, label, position, new Vector2(252f, 72f), action, Color.clear, 22f);
+        Image image = text.GetComponentInParent<Image>();
+        if (image != null) image.color = Color.clear;
+        text.fontStyle = FontStyles.Bold;
+        text.alignment = TextAlignmentOptions.Center;
+        text.color = textColor;
+        text.enableAutoSizing = true;
+        text.enableWordWrapping = false;
+        text.overflowMode = TextOverflowModes.Ellipsis;
+        text.fontSizeMin = 16f;
+        text.fontSizeMax = 22f;
+        text.margin = new Vector4(18f, 5f, 18f, 5f);
+        text.outlineColor = new Color32(43, 16, 3, 245);
+        text.outlineWidth = 0.20f;
+        return text;
     }
 
     private void CreateChestRewardPanel(Transform parent)
@@ -2685,12 +4158,32 @@ public class GameManager : MonoBehaviour
         panelRect.anchorMin = new Vector2(0.5f, 0.5f);
         panelRect.anchorMax = new Vector2(0.5f, 0.5f);
         panelRect.anchoredPosition = new Vector2(0, 15);
-        panelRect.sizeDelta = new Vector2(560, 500);
+        panelRect.sizeDelta = new Vector2(940, 620);
 
         StylePopupPanel(chestRewardPanel, panelRect.sizeDelta, new Color(0.98f, 0.92f, 0.78f, 0.99f), new Color(0.62f, 0.42f, 0.16f, 1f));
 
-        chestRewardTitleText = CreateText(chestRewardPanel.transform, "ChestRewardTitle", "Sandık Ödülü", new Vector2(0, 205), new Vector2(500, 60), 38);
+        Transform rewardHeader = chestRewardPanel.transform.Find("PopupHeader");
+        if (rewardHeader != null) rewardHeader.gameObject.SetActive(false);
+        Transform rewardHeaderLine = chestRewardPanel.transform.Find("PopupHeaderLine");
+        if (rewardHeaderLine != null) rewardHeaderLine.gameObject.SetActive(false);
+
+        chestRewardTitleText = CreateText(chestRewardPanel.transform, "ChestRewardTitle", "Sandık Ödülü", new Vector2(0, 258), new Vector2(820, 60), 38);
         StylePopupTitle(chestRewardTitleText, 30);
+        chestRewardTitleText.gameObject.SetActive(false);
+
+        GameObject rewardCardObject = new GameObject("ChestRewardCardFrame", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        rewardCardObject.transform.SetParent(chestRewardPanel.transform, false);
+        RectTransform rewardCardRect = rewardCardObject.GetComponent<RectTransform>();
+        rewardCardRect.anchorMin = new Vector2(0.5f, 0.5f);
+        rewardCardRect.anchorMax = new Vector2(0.5f, 0.5f);
+        rewardCardRect.anchoredPosition = new Vector2(0f, 55f);
+        rewardCardRect.sizeDelta = new Vector2(230f, 230f);
+        chestRewardCardFrameImage = rewardCardObject.GetComponent<Image>();
+        chestRewardCardFrameImage.sprite = GetChestRewardCardFrameSprite();
+        chestRewardCardFrameImage.preserveAspect = true;
+        chestRewardCardFrameImage.raycastTarget = false;
+        chestRewardCardFrameImage.color = Color.white;
+        rewardCardObject.SetActive(false);
 
         GameObject iconObject = new GameObject("ChestRewardIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         iconObject.transform.SetParent(chestRewardPanel.transform, false);
@@ -2702,11 +4195,162 @@ public class GameManager : MonoBehaviour
         chestRewardIconImage = iconObject.GetComponent<Image>();
         chestRewardIconImage.preserveAspect = true;
         chestRewardIconImage.color = Color.white;
+        chestRewardIconCanvasGroup = iconObject.AddComponent<CanvasGroup>();
 
-        chestRewardText = CreateText(chestRewardPanel.transform, "ChestRewardText", "", new Vector2(0, -105), new Vector2(500, 110), 28);
+        chestRewardTrailImages.Clear();
+        for (int i = 0; i < 4; i++)
+        {
+            GameObject trailObject = new GameObject("ChestRewardTrail_" + i, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            trailObject.transform.SetParent(chestRewardPanel.transform, false);
+            trailObject.transform.SetSiblingIndex(iconObject.transform.GetSiblingIndex());
+            RectTransform trailRect = trailObject.GetComponent<RectTransform>();
+            trailRect.anchorMin = new Vector2(0.5f, 0.5f);
+            trailRect.anchorMax = new Vector2(0.5f, 0.5f);
+            trailRect.anchoredPosition = new Vector2(0f, 55f);
+            trailRect.sizeDelta = new Vector2(190f, 190f);
+            Image trailImage = trailObject.GetComponent<Image>();
+            trailImage.preserveAspect = true;
+            trailImage.raycastTarget = false;
+            trailImage.color = Color.clear;
+            trailObject.SetActive(false);
+            chestRewardTrailImages.Add(trailImage);
+        }
+
+        chestGlowSprite = CreateChestGlowSprite();
+        chestRingSprite = CreateChestRingSprite();
+        chestOpeningPlatformImage = CreateChestAnimationEffectImage(chestRewardPanel.transform, "ChestOpeningPlatform", new Vector2(0f, -105f), new Vector2(650f, 180f));
+        chestOpeningPlatformImage.gameObject.SetActive(false);
+        chestOpeningOrbitImage = CreateChestAnimationEffectImage(chestRewardPanel.transform, "ChestOpeningOrbit", new Vector2(0f, 25f), new Vector2(520f, 520f));
+        chestOpeningOrbitImage.sprite = chestRingSprite;
+        chestOpeningOrbitImage.gameObject.SetActive(false);
+        chestOpeningShockwaveImage = CreateChestAnimationEffectImage(chestRewardPanel.transform, "ChestOpeningShockwave", new Vector2(0f, 25f), new Vector2(560f, 360f));
+        chestOpeningShockwaveImage.sprite = chestGlowSprite;
+        chestOpeningShockwaveImage.preserveAspect = true;
+        chestOpeningShockwaveImage.gameObject.SetActive(false);
+
+        chestOpeningRayImages.Clear();
+        Sprite beamSprite = CreateChestBeamSprite();
+        for (int i = 0; i < 11; i++)
+        {
+            Image ray = CreateChestAnimationEffectImage(chestRewardPanel.transform, "ChestOpeningRay_" + i, new Vector2(0f, 42f), new Vector2(22f + ((i % 3) * 8f), 250f + ((i % 4) * 42f)));
+            ray.sprite = beamSprite;
+            ray.preserveAspect = false;
+            ray.rectTransform.pivot = new Vector2(0.5f, 0f);
+            ray.gameObject.SetActive(false);
+            chestOpeningRayImages.Add(ray);
+        }
+        chestOpeningGlowImage = CreateChestAnimationEffectImage(chestRewardPanel.transform, "ChestOpeningGlow", new Vector2(0f, 32f), new Vector2(500f, 500f));
+        chestOpeningFlashImage = CreateChestAnimationEffectImage(chestRewardPanel.transform, "ChestOpeningFlash", new Vector2(0f, 32f), new Vector2(390f, 390f));
+        chestOpeningFlashImage.sprite = CreateChestStarSprite();
+        chestOpeningGlowImage.gameObject.SetActive(false);
+        chestOpeningFlashImage.gameObject.SetActive(false);
+
+        GameObject openingObject = new GameObject("ChestOpeningVisual", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        openingObject.transform.SetParent(chestRewardPanel.transform, false);
+        RectTransform openingRect = openingObject.GetComponent<RectTransform>();
+        openingRect.anchorMin = new Vector2(0.5f, 0.5f);
+        openingRect.anchorMax = new Vector2(0.5f, 0.5f);
+        openingRect.anchoredPosition = new Vector2(0f, 35f);
+        openingRect.sizeDelta = new Vector2(390f, 390f);
+        chestOpeningImage = openingObject.GetComponent<Image>();
+        chestOpeningImage.preserveAspect = true;
+        chestOpeningImage.raycastTarget = false;
+        openingObject.SetActive(false);
+
+        GameObject transitionObject = new GameObject("ChestOpeningFrameTransition", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        transitionObject.transform.SetParent(openingObject.transform, false);
+        RectTransform transitionRect = transitionObject.GetComponent<RectTransform>();
+        transitionRect.anchorMin = Vector2.zero;
+        transitionRect.anchorMax = Vector2.one;
+        transitionRect.offsetMin = Vector2.zero;
+        transitionRect.offsetMax = Vector2.zero;
+        chestOpeningTransitionImage = transitionObject.GetComponent<Image>();
+        chestOpeningTransitionImage.preserveAspect = true;
+        chestOpeningTransitionImage.raycastTarget = false;
+        transitionObject.SetActive(false);
+
+        GameObject layeredRootObject = new GameObject("ChestLayeredOpeningRoot", typeof(RectTransform));
+        layeredRootObject.transform.SetParent(chestRewardPanel.transform, false);
+        chestLayeredRootRect = layeredRootObject.GetComponent<RectTransform>();
+        chestLayeredRootRect.anchorMin = new Vector2(0.5f, 0.5f);
+        chestLayeredRootRect.anchorMax = new Vector2(0.5f, 0.5f);
+        chestLayeredRootRect.anchoredPosition = new Vector2(0f, 35f);
+        chestLayeredRootRect.sizeDelta = new Vector2(390f, 390f);
+
+        GameObject bodyLayerObject = new GameObject("ChestLayeredBody", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        bodyLayerObject.transform.SetParent(layeredRootObject.transform, false);
+        RectTransform bodyLayerRect = bodyLayerObject.GetComponent<RectTransform>();
+        bodyLayerRect.anchorMin = Vector2.zero;
+        bodyLayerRect.anchorMax = Vector2.one;
+        bodyLayerRect.offsetMin = Vector2.zero;
+        bodyLayerRect.offsetMax = Vector2.zero;
+        chestLayeredBodyImage = bodyLayerObject.GetComponent<Image>();
+        chestLayeredBodyImage.preserveAspect = true;
+        chestLayeredBodyImage.raycastTarget = false;
+
+        GameObject lidLayerObject = new GameObject("ChestLayeredLid", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        lidLayerObject.transform.SetParent(layeredRootObject.transform, false);
+        RectTransform lidLayerRect = lidLayerObject.GetComponent<RectTransform>();
+        lidLayerRect.anchorMin = Vector2.zero;
+        lidLayerRect.anchorMax = Vector2.one;
+        lidLayerRect.offsetMin = Vector2.zero;
+        lidLayerRect.offsetMax = Vector2.zero;
+        lidLayerRect.pivot = new Vector2(0.5f, 0.46f);
+        chestLayeredLidImage = lidLayerObject.GetComponent<Image>();
+        chestLayeredLidImage.preserveAspect = true;
+        chestLayeredLidImage.raycastTarget = false;
+        layeredRootObject.SetActive(false);
+
+        GameObject keyObject = new GameObject("ChestOpeningKeySeal", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        keyObject.transform.SetParent(chestRewardPanel.transform, false);
+        RectTransform keyRect = keyObject.GetComponent<RectTransform>();
+        keyRect.anchorMin = new Vector2(0.5f, 0.5f);
+        keyRect.anchorMax = new Vector2(0.5f, 0.5f);
+        keyRect.anchoredPosition = new Vector2(-360f, 100f);
+        keyRect.sizeDelta = new Vector2(92f, 92f);
+        chestOpeningKeyImage = keyObject.GetComponent<Image>();
+        chestOpeningKeyImage.sprite = CreateChestStarSprite();
+        chestOpeningKeyImage.preserveAspect = true;
+        chestOpeningKeyImage.raycastTarget = false;
+        keyObject.SetActive(false);
+
+        chestOpeningSparkleImages.Clear();
+        for (int i = 0; i < 24; i++)
+        {
+            float sparkleSize = 14f + ((i % 4) * 5f);
+            Image sparkle = CreateChestAnimationEffectImage(chestRewardPanel.transform, "ChestOpeningSparkle_" + i, new Vector2(0f, 25f), new Vector2(sparkleSize, sparkleSize));
+            sparkle.sprite = CreateChestStarSprite();
+            sparkle.gameObject.SetActive(false);
+            chestOpeningSparkleImages.Add(sparkle);
+        }
+
+        chestOpeningTapText = CreateText(chestRewardPanel.transform, "ChestOpeningTapText", "KİLİT AÇILIYOR", new Vector2(0f, -210f), new Vector2(420f, 44f), 24);
+        chestOpeningTapText.alignment = TextAlignmentOptions.Center;
+        chestOpeningTapText.color = new Color(1f, 0.88f, 0.48f, 1f);
+        chestOpeningTapText.gameObject.SetActive(false);
+
+        chestOpeningScreenFlashImage = CreateChestAnimationEffectImage(chestRewardPanel.transform, "ChestOpeningScreenFlash", Vector2.zero, panelRect.sizeDelta);
+        chestOpeningScreenFlashImage.sprite = null;
+        chestOpeningScreenFlashImage.gameObject.SetActive(false);
+
+        chestRewardText = CreateText(chestRewardPanel.transform, "ChestRewardText", "", new Vector2(0, -135), new Vector2(760, 110), 28);
         StylePopupBodyText(chestRewardText, 20, 27, TextAlignmentOptions.Center);
+        chestRewardTextCanvasGroup = chestRewardText.gameObject.AddComponent<CanvasGroup>();
 
-        StylePopupButton(CreateButton(chestRewardPanel.transform, "ChestRewardCloseButton", "Tamam", new Vector2(0, -210), new Vector2(260, 70), CloseChestRewardPanel, new Color(0.22f, 0.48f, 0.40f), 27), new Color(0.22f, 0.48f, 0.40f), 27);
+        TMP_Text closeButtonText = StylePopupButton(CreateButton(chestRewardPanel.transform, "ChestRewardCloseButton", "Tamam", new Vector2(0, -255), new Vector2(260, 70), CloseChestRewardPanel, new Color(0.22f, 0.48f, 0.40f), 27), new Color(0.22f, 0.48f, 0.40f), 27);
+        chestRewardCloseButtonObject = closeButtonText.transform.parent.gameObject;
+
+        chestOpeningAudioSource = chestRewardPanel.AddComponent<AudioSource>();
+        chestOpeningAudioSource.playOnAwake = false;
+        chestOpeningAudioSource.loop = false;
+        chestOpeningAudioSource.spatialBlend = 0f;
+        chestOpeningAudioSource.volume = 0.72f;
+        chestKeyImpactClip = CreateChestImpactSound();
+        chestOpenCommonClip = CreateChestOpenSound("ChestOpenCommon", 392f, 0.78f, 1861);
+        chestOpenRareClip = CreateChestOpenSound("ChestOpenRare", 523.25f, 0.88f, 2713);
+        chestOpenLuxuryClip = CreateChestOpenSound("ChestOpenLuxury", 659.25f, 1f, 3919);
+        chestRewardLaunchClip = CreateChestRewardLaunchSound();
+        chestRewardRevealClip = CreateChestRewardSound();
 
         chestRewardPanel.transform.SetAsLastSibling();
         chestRewardPanel.SetActive(false);
@@ -2714,6 +4358,40 @@ public class GameManager : MonoBehaviour
 
     public void CloseChestRewardPanel()
     {
+        if (chestOpeningCoroutine != null)
+        {
+            StopCoroutine(chestOpeningCoroutine);
+            chestOpeningCoroutine = null;
+        }
+        chestOpeningInProgress = false;
+        shouldAnimateChestReward = false;
+        if (chestOpeningImage != null) chestOpeningImage.gameObject.SetActive(false);
+        if (chestOpeningTransitionImage != null) chestOpeningTransitionImage.gameObject.SetActive(false);
+        if (chestLayeredRootRect != null) chestLayeredRootRect.gameObject.SetActive(false);
+        if (chestRewardCardFrameImage != null) chestRewardCardFrameImage.gameObject.SetActive(false);
+        if (chestOpeningGlowImage != null) chestOpeningGlowImage.gameObject.SetActive(false);
+        if (chestOpeningFlashImage != null) chestOpeningFlashImage.gameObject.SetActive(false);
+        if (chestOpeningPlatformImage != null) chestOpeningPlatformImage.gameObject.SetActive(false);
+        if (chestOpeningOrbitImage != null) chestOpeningOrbitImage.gameObject.SetActive(false);
+        if (chestOpeningShockwaveImage != null) chestOpeningShockwaveImage.gameObject.SetActive(false);
+        if (chestOpeningKeyImage != null) chestOpeningKeyImage.gameObject.SetActive(false);
+        if (chestOpeningScreenFlashImage != null) chestOpeningScreenFlashImage.gameObject.SetActive(false);
+        if (chestOpeningTapText != null) chestOpeningTapText.gameObject.SetActive(false);
+        for (int i = 0; i < chestOpeningRayImages.Count; i++)
+        {
+            if (chestOpeningRayImages[i] != null) chestOpeningRayImages[i].gameObject.SetActive(false);
+        }
+        for (int i = 0; i < chestOpeningSparkleImages.Count; i++)
+        {
+            if (chestOpeningSparkleImages[i] != null) chestOpeningSparkleImages[i].gameObject.SetActive(false);
+        }
+        if (chestRewardIconCanvasGroup != null) chestRewardIconCanvasGroup.alpha = 1f;
+        if (chestRewardTextCanvasGroup != null) chestRewardTextCanvasGroup.alpha = 1f;
+        for (int i = 0; i < chestRewardTrailImages.Count; i++)
+        {
+            if (chestRewardTrailImages[i] != null) chestRewardTrailImages[i].gameObject.SetActive(false);
+        }
+        if (chestOpeningAudioSource != null) chestOpeningAudioSource.Stop();
         if (chestRewardPanel != null)
         {
             chestRewardPanel.SetActive(false);
@@ -2729,6 +4407,15 @@ public class GameManager : MonoBehaviour
     {
         if (chestRewardPanel == null)
         {
+            chestOpeningInProgress = false;
+            shouldAnimateChestReward = false;
+            return;
+        }
+
+        if (shouldAnimateChestReward)
+        {
+            shouldAnimateChestReward = false;
+            chestOpeningCoroutine = StartCoroutine(PlayChestOpeningAnimationV3(rewardText, rewardSprite, panelColor, openingChestTier));
             return;
         }
 
@@ -2756,8 +4443,1191 @@ public class GameManager : MonoBehaviour
             chestRewardIconImage.gameObject.SetActive(rewardSprite != null);
         }
 
+        if (chestRewardCardFrameImage != null)
+        {
+            bool showCardFrame = rewardSprite != null && rewardSprite == GetGemIconSprite();
+            chestRewardCardFrameImage.sprite = GetChestRewardCardFrameSprite();
+            chestRewardCardFrameImage.rectTransform.anchoredPosition = new Vector2(0f, 55f);
+            chestRewardCardFrameImage.rectTransform.localScale = Vector3.one;
+            chestRewardCardFrameImage.rectTransform.localRotation = Quaternion.identity;
+            chestRewardCardFrameImage.color = Color.white;
+            chestRewardCardFrameImage.gameObject.SetActive(showCardFrame);
+            if (showCardFrame && chestRewardIconImage != null)
+                chestRewardCardFrameImage.transform.SetSiblingIndex(chestRewardIconImage.transform.GetSiblingIndex());
+        }
+
         chestRewardPanel.SetActive(true);
         chestRewardPanel.transform.SetAsLastSibling();
+    }
+
+    private IEnumerator PlayChestOpeningAnimationV3(string rewardText, Sprite rewardSprite, Color rewardPanelColor, ChestTier tier)
+    {
+        Sprite closedSprite = GetChestLayerSprite(tier, "closed");
+        Sprite bodySprite = GetChestLayerSprite(tier, "body");
+        Sprite lidSprite = GetChestLayerSprite(tier, "lid");
+        Sprite[] silhouettes = GetChestSilhouetteFrames(tier);
+        if (closedSprite == null || bodySprite == null || lidSprite == null || chestLayeredRootRect == null)
+        {
+            chestOpeningInProgress = false;
+            chestOpeningCoroutine = null;
+            ShowChestReward(rewardText, rewardSprite, rewardPanelColor);
+            yield break;
+        }
+
+        Image panelImage = chestRewardPanel.GetComponent<Image>();
+        RectTransform panelRect = chestRewardPanel.GetComponent<RectTransform>();
+        Vector2 panelRest = panelRect != null ? panelRect.anchoredPosition : Vector2.zero;
+        RectTransform closedRect = chestOpeningImage.rectTransform;
+        RectTransform lidRect = chestLayeredLidImage.rectTransform;
+        RectTransform bodyRect = chestLayeredBodyImage.rectTransform;
+        Vector2 stageCenter = new Vector2(0f, 4f);
+        Vector2 openStagePosition = new Vector2(0f, -72f);
+        Color primary = tier == ChestTier.Luxury
+            ? new Color(1f, 0.25f, 0.06f, 1f)
+            : tier == ChestTier.Rare ? new Color(0.08f, 0.92f, 1f, 1f) : new Color(1f, 0.64f, 0.10f, 1f);
+        Color accent = tier == ChestTier.Luxury
+            ? new Color(1f, 0.88f, 0.22f, 1f)
+            : tier == ChestTier.Rare ? new Color(0.72f, 1f, 0.96f, 1f) : new Color(1f, 0.94f, 0.62f, 1f);
+        Color darkStage = tier == ChestTier.Luxury
+            ? new Color(0.15f, 0.012f, 0.025f, 0.998f)
+            : tier == ChestTier.Rare ? new Color(0.008f, 0.09f, 0.16f, 0.998f) : new Color(0.14f, 0.048f, 0.008f, 0.998f);
+        int rayCount = tier == ChestTier.Luxury ? 11 : tier == ChestTier.Rare ? 9 : 7;
+        float raySpread = tier == ChestTier.Luxury ? 78f : tier == ChestTier.Rare ? 69f : 58f;
+        float strength = tier == ChestTier.Luxury ? 1.18f : tier == ChestTier.Rare ? 1.06f : 0.92f;
+
+        if (panelImage != null) panelImage.color = darkStage;
+        if (chestRewardTitleText != null) chestRewardTitleText.gameObject.SetActive(false);
+        if (chestRewardText != null) chestRewardText.gameObject.SetActive(false);
+        if (chestRewardCloseButtonObject != null) chestRewardCloseButtonObject.SetActive(false);
+        if (chestRewardIconImage != null) chestRewardIconImage.gameObject.SetActive(false);
+        if (chestRewardCardFrameImage != null) chestRewardCardFrameImage.gameObject.SetActive(false);
+        if (chestOpeningTransitionImage != null) chestOpeningTransitionImage.gameObject.SetActive(false);
+        if (chestLayeredRootRect != null) chestLayeredRootRect.gameObject.SetActive(false);
+        if (chestOpeningKeyImage != null) chestOpeningKeyImage.gameObject.SetActive(false);
+        if (chestOpeningOrbitImage != null) chestOpeningOrbitImage.gameObject.SetActive(false);
+        if (chestOpeningShockwaveImage != null) chestOpeningShockwaveImage.gameObject.SetActive(false);
+        if (chestOpeningTapText != null) chestOpeningTapText.gameObject.SetActive(false);
+        for (int i = 0; i < chestOpeningSparkleImages.Count; i++) chestOpeningSparkleImages[i].gameObject.SetActive(false);
+        for (int i = 0; i < chestRewardTrailImages.Count; i++) chestRewardTrailImages[i].gameObject.SetActive(false);
+
+        chestOpeningImage.sprite = closedSprite;
+        chestOpeningImage.color = Color.white;
+        closedRect.anchoredPosition = stageCenter + new Vector2(0f, 22f);
+        closedRect.localScale = Vector3.one * 0.72f;
+        closedRect.localRotation = Quaternion.identity;
+        chestOpeningImage.gameObject.SetActive(true);
+
+        chestLayeredBodyImage.sprite = bodySprite;
+        chestLayeredBodyImage.color = Color.white;
+        chestLayeredLidImage.sprite = lidSprite;
+        chestLayeredLidImage.color = Color.white;
+        chestLayeredRootRect.anchoredPosition = stageCenter;
+        chestLayeredRootRect.localScale = Vector3.one;
+        chestLayeredRootRect.localRotation = Quaternion.identity;
+        bodyRect.localScale = Vector3.one;
+        bodyRect.localRotation = Quaternion.identity;
+        lidRect.localScale = new Vector3(1f, 0.10f, 1f);
+        lidRect.localRotation = Quaternion.Euler(0f, 0f, -1.5f);
+
+        chestOpeningGlowImage.rectTransform.anchoredPosition = stageCenter + new Vector2(0f, -12f);
+        chestOpeningGlowImage.rectTransform.localScale = Vector3.one * 0.42f;
+        chestOpeningGlowImage.color = new Color(primary.r, primary.g, primary.b, 0f);
+        chestOpeningGlowImage.gameObject.SetActive(true);
+        if (chestOpeningPlatformImage != null)
+        {
+            chestOpeningPlatformImage.rectTransform.anchoredPosition = new Vector2(0f, -130f);
+            chestOpeningPlatformImage.rectTransform.localScale = new Vector3(0.52f, 0.36f, 1f);
+            chestOpeningPlatformImage.color = new Color(primary.r, primary.g, primary.b, 0f);
+            chestOpeningPlatformImage.gameObject.SetActive(true);
+        }
+        for (int i = 0; i < chestOpeningRayImages.Count; i++)
+        {
+            Image ray = chestOpeningRayImages[i];
+            bool active = i < rayCount;
+            ray.gameObject.SetActive(active);
+            if (!active) continue;
+            float normalized = rayCount <= 1 ? 0.5f : i / (rayCount - 1f);
+            float angle = Mathf.Lerp(-raySpread, raySpread, normalized);
+            ray.rectTransform.anchoredPosition = stageCenter + new Vector2(0f, 8f);
+            ray.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -angle);
+            ray.rectTransform.localScale = new Vector3(0.24f, 0.02f, 1f);
+            Color rayColor = i % 2 == 0 ? primary : accent;
+            ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, 0f);
+        }
+        if (chestOpeningScreenFlashImage != null)
+        {
+            chestOpeningScreenFlashImage.color = Color.clear;
+            chestOpeningScreenFlashImage.gameObject.SetActive(false);
+        }
+        chestRewardPanel.SetActive(true);
+        chestRewardPanel.transform.SetAsLastSibling();
+
+        float elapsed = 0f;
+        const float entranceDuration = 0.26f;
+        while (elapsed < entranceDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / entranceDuration);
+            float eased = EaseOutBack(t);
+            closedRect.anchoredPosition = Vector2.LerpUnclamped(stageCenter + new Vector2(0f, 22f), stageCenter, eased);
+            closedRect.localScale = Vector3.one * Mathf.LerpUnclamped(0.72f, 1f, eased);
+            yield return null;
+        }
+
+        elapsed = 0f;
+        const float anticipationDuration = 0.52f;
+        while (elapsed < anticipationDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / anticipationDuration);
+            float charge = EaseOutCubic(t);
+            float bounce = Mathf.Sin(t * Mathf.PI * 3f) * t;
+            closedRect.anchoredPosition = stageCenter + new Vector2(0f, Mathf.Lerp(0f, 20f, charge) + (bounce * 4f));
+            closedRect.localScale = new Vector3(1f + (bounce * 0.065f), 1f - (bounce * 0.048f), 1f);
+            chestOpeningGlowImage.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.42f, 1.04f, charge);
+            chestOpeningGlowImage.color = new Color(primary.r, primary.g, primary.b, Mathf.Lerp(0f, 0.40f * strength, charge));
+            if (chestOpeningPlatformImage != null)
+            {
+                chestOpeningPlatformImage.rectTransform.localScale = new Vector3(Mathf.Lerp(0.52f, 0.98f, charge), Mathf.Lerp(0.36f, 0.68f, charge), 1f);
+                chestOpeningPlatformImage.color = new Color(primary.r, primary.g, primary.b, Mathf.Lerp(0f, 0.46f, charge));
+            }
+            for (int i = 0; i < rayCount; i++)
+            {
+                float stagger = Mathf.Clamp01((t - ((i % 3) * 0.055f)) / 0.78f);
+                Image ray = chestOpeningRayImages[i];
+                Color rayColor = i % 2 == 0 ? primary : accent;
+                ray.rectTransform.localScale = new Vector3(0.30f + ((i % 3) * 0.13f), Mathf.Lerp(0.02f, 0.82f + ((i % 4) * 0.10f), EaseOutCubic(stagger)), 1f);
+                ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, stagger * 0.36f * strength);
+            }
+            yield return null;
+        }
+
+        if (chestOpeningAudioSource != null && chestKeyImpactClip != null)
+            chestOpeningAudioSource.PlayOneShot(chestKeyImpactClip, 0.66f);
+        if (chestOpeningTransitionImage != null && silhouettes != null && silhouettes.Length > 0)
+        {
+            chestOpeningTransitionImage.sprite = silhouettes[0];
+            chestOpeningTransitionImage.color = new Color(1f, 0.98f, 0.86f, 0f);
+            chestOpeningTransitionImage.gameObject.SetActive(true);
+        }
+        if (chestOpeningScreenFlashImage != null)
+        {
+            chestOpeningScreenFlashImage.gameObject.SetActive(true);
+            chestOpeningScreenFlashImage.color = Color.clear;
+        }
+        elapsed = 0f;
+        const float flashDuration = 0.20f;
+        while (elapsed < flashDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / flashDuration);
+            float pulse = Mathf.Sin(t * Mathf.PI);
+            closedRect.localScale = Vector3.one * (1f + (pulse * 0.17f));
+            if (chestOpeningTransitionImage != null)
+                chestOpeningTransitionImage.color = new Color(1f, 0.98f, 0.86f, Mathf.Clamp01(t * 3.6f));
+            if (chestOpeningScreenFlashImage != null)
+            {
+                float flashStrength = tier == ChestTier.Luxury ? 0.78f : tier == ChestTier.Rare ? 0.66f : 0.54f;
+                chestOpeningScreenFlashImage.color = new Color(1f, 0.97f, 0.82f, pulse * flashStrength);
+            }
+            if (panelRect != null)
+            {
+                float shake = (1f - t) * (tier == ChestTier.Luxury ? 8f : 5f);
+                panelRect.anchoredPosition = panelRest + new Vector2(Mathf.Sin(elapsed * 102f) * shake, Mathf.Cos(elapsed * 76f) * shake * 0.42f);
+            }
+            yield return null;
+        }
+        if (panelRect != null) panelRect.anchoredPosition = panelRest;
+
+        chestOpeningImage.gameObject.SetActive(false);
+        chestLayeredRootRect.anchoredPosition = stageCenter + new Vector2(0f, 20f);
+        chestLayeredRootRect.localScale = Vector3.one * 1.08f;
+        chestLayeredRootRect.gameObject.SetActive(true);
+        lidRect.localScale = new Vector3(1f, 0.10f, 1f);
+        lidRect.localRotation = Quaternion.Euler(0f, 0f, -1.5f);
+        bodyRect.localScale = new Vector3(1.05f, 0.93f, 1f);
+        if (chestOpeningTransitionImage != null) chestOpeningTransitionImage.gameObject.SetActive(false);
+
+        AudioClip openClip = tier == ChestTier.Luxury ? chestOpenLuxuryClip : tier == ChestTier.Rare ? chestOpenRareClip : chestOpenCommonClip;
+        if (chestOpeningAudioSource != null && openClip != null) chestOpeningAudioSource.PlayOneShot(openClip, 0.86f);
+        elapsed = 0f;
+        const float lidOpenDuration = 0.43f;
+        while (elapsed < lidOpenDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / lidOpenDuration);
+            float eased = EaseOutBack(t);
+            float lidProgress = Mathf.LerpUnclamped(0.10f, 1f, eased);
+            lidRect.localScale = new Vector3(1f, lidProgress, 1f);
+            lidRect.localRotation = Quaternion.Euler(0f, 0f, Mathf.LerpUnclamped(-1.5f, 0f, eased));
+            float bodyImpact = Mathf.Sin(t * Mathf.PI);
+            bodyRect.localScale = new Vector3(1f + (bodyImpact * 0.045f), Mathf.LerpUnclamped(0.93f, 1f, eased) - (bodyImpact * 0.025f), 1f);
+            chestLayeredRootRect.anchoredPosition = Vector2.LerpUnclamped(stageCenter + new Vector2(0f, 20f), openStagePosition, eased);
+            chestLayeredRootRect.localScale = Vector3.one * Mathf.LerpUnclamped(1.08f, 0.92f, eased);
+            for (int i = 0; i < rayCount; i++)
+            {
+                Image ray = chestOpeningRayImages[i];
+                Color rayColor = i % 2 == 0 ? primary : accent;
+                ray.rectTransform.localScale = new Vector3(0.42f + ((i % 3) * 0.13f), Mathf.Lerp(0.80f, 1.42f * strength, EaseOutCubic(t)), 1f);
+                ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, Mathf.Lerp(0.50f, 0.30f, t));
+            }
+            if (chestOpeningScreenFlashImage != null)
+                chestOpeningScreenFlashImage.color = new Color(1f, 0.97f, 0.82f, Mathf.Lerp(0.32f, 0f, t));
+            yield return null;
+        }
+        lidRect.localScale = Vector3.one;
+        lidRect.localRotation = Quaternion.identity;
+        bodyRect.localScale = Vector3.one;
+        if (chestOpeningScreenFlashImage != null) chestOpeningScreenFlashImage.gameObject.SetActive(false);
+
+        Vector2 rewardStart = openStagePosition + new Vector2(0f, 42f);
+        Vector2 rewardPeak = new Vector2(tier == ChestTier.Rare ? 24f : tier == ChestTier.Luxury ? -16f : 0f, 168f);
+        Vector2 rewardRest = new Vector2(0f, 55f);
+        bool showRewardCard = rewardSprite != null && rewardSprite == GetGemIconSprite() && chestRewardCardFrameImage != null;
+        if (rewardSprite != null && chestRewardIconImage != null)
+        {
+            for (int i = 0; i < chestRewardTrailImages.Count; i++)
+            {
+                Image trail = chestRewardTrailImages[i];
+                trail.sprite = CreateChestBeamSprite();
+                trail.preserveAspect = false;
+                trail.rectTransform.sizeDelta = new Vector2(14f + (i * 5f), 138f + (i * 24f));
+                trail.rectTransform.pivot = new Vector2(0.5f, 1f);
+                trail.rectTransform.anchoredPosition = rewardStart;
+                trail.rectTransform.localScale = Vector3.one;
+                trail.rectTransform.localRotation = Quaternion.identity;
+                trail.color = Color.clear;
+                trail.transform.SetAsLastSibling();
+                trail.gameObject.SetActive(true);
+            }
+            if (showRewardCard)
+            {
+                chestRewardCardFrameImage.sprite = GetChestRewardCardFrameSprite();
+                chestRewardCardFrameImage.rectTransform.anchoredPosition = rewardStart;
+                chestRewardCardFrameImage.rectTransform.localScale = Vector3.one * 0.18f;
+                chestRewardCardFrameImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -10f);
+                chestRewardCardFrameImage.color = new Color(1f, 1f, 1f, 0f);
+                chestRewardCardFrameImage.transform.SetAsLastSibling();
+                chestRewardCardFrameImage.gameObject.SetActive(true);
+            }
+            chestRewardIconImage.sprite = rewardSprite;
+            chestRewardIconImage.color = Color.white;
+            chestRewardIconImage.rectTransform.anchoredPosition = rewardStart;
+            chestRewardIconImage.rectTransform.localScale = Vector3.one * 0.18f;
+            chestRewardIconImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -10f);
+            if (chestRewardIconCanvasGroup != null) chestRewardIconCanvasGroup.alpha = 0f;
+            chestRewardIconImage.transform.SetAsLastSibling();
+            chestRewardIconImage.gameObject.SetActive(true);
+        }
+
+        if (chestOpeningAudioSource != null && chestRewardLaunchClip != null)
+            chestOpeningAudioSource.PlayOneShot(chestRewardLaunchClip, tier == ChestTier.Luxury ? 0.90f : tier == ChestTier.Rare ? 0.78f : 0.66f);
+
+        elapsed = 0f;
+        const float rewardLaunchDuration = 0.62f;
+        while (elapsed < rewardLaunchDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / rewardLaunchDuration);
+            float eased = EaseOutCubic(t);
+            float lateralArc = Mathf.Sin(t * Mathf.PI) * (tier == ChestTier.Rare ? 28f : tier == ChestTier.Luxury ? -20f : 0f);
+            Vector2 iconPosition = Vector2.Lerp(rewardStart, rewardPeak, eased) + new Vector2(lateralArc, 0f);
+            if (rewardSprite != null && chestRewardIconImage != null)
+            {
+                chestRewardIconImage.rectTransform.anchoredPosition = iconPosition;
+                chestRewardIconImage.rectTransform.localScale = Vector3.one * Mathf.LerpUnclamped(0.18f, 1.08f, EaseOutBack(t));
+                chestRewardIconImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(-10f, 4f, eased));
+                if (chestRewardIconCanvasGroup != null) chestRewardIconCanvasGroup.alpha = Mathf.Clamp01(t * 6f);
+                if (showRewardCard)
+                {
+                    chestRewardCardFrameImage.rectTransform.anchoredPosition = iconPosition;
+                    chestRewardCardFrameImage.rectTransform.localScale = chestRewardIconImage.rectTransform.localScale;
+                    chestRewardCardFrameImage.rectTransform.localRotation = chestRewardIconImage.rectTransform.localRotation;
+                    chestRewardCardFrameImage.color = new Color(1f, 1f, 1f, Mathf.Clamp01(t * 6f));
+                }
+                for (int i = 0; i < chestRewardTrailImages.Count; i++)
+                {
+                    Image trail = chestRewardTrailImages[i];
+                    float delay = (i + 1) * 0.045f;
+                    float delayedT = Mathf.Clamp01((t - delay) / (1f - delay));
+                    float delayedEase = EaseOutCubic(delayedT);
+                    float trailArc = Mathf.Sin(delayedT * Mathf.PI) * (tier == ChestTier.Rare ? 28f : tier == ChestTier.Luxury ? -20f : 0f);
+                    Vector2 trailTop = Vector2.Lerp(rewardStart, rewardPeak, delayedEase) + new Vector2(trailArc, -6f - (i * 8f));
+                    trail.rectTransform.anchoredPosition = trailTop;
+                    float alpha = Mathf.Sin(delayedT * Mathf.PI) * (0.52f - (i * 0.075f));
+                    Color trailColor = i % 2 == 0 ? accent : primary;
+                    trail.color = new Color(trailColor.r, trailColor.g, trailColor.b, alpha);
+                }
+            }
+            for (int i = 0; i < rayCount; i++)
+            {
+                Image ray = chestOpeningRayImages[i];
+                Color rayColor = i % 2 == 0 ? primary : accent;
+                ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, Mathf.Lerp(0.30f, 0f, t));
+            }
+            float luxuryPulse = tier == ChestTier.Luxury ? Mathf.Sin(Mathf.Clamp01((t - 0.34f) / 0.44f) * Mathf.PI) * 0.28f : 0f;
+            chestOpeningGlowImage.color = new Color(primary.r, primary.g, primary.b, Mathf.Lerp(0.50f, 0.08f, t) + luxuryPulse);
+            yield return null;
+        }
+
+        elapsed = 0f;
+        const float settleDuration = 0.34f;
+        while (elapsed < settleDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / settleDuration);
+            float eased = EaseOutBack(t);
+            if (rewardSprite != null && chestRewardIconImage != null)
+            {
+                chestRewardIconImage.rectTransform.anchoredPosition = Vector2.LerpUnclamped(rewardPeak, rewardRest, eased);
+                chestRewardIconImage.rectTransform.localScale = Vector3.one * Mathf.LerpUnclamped(1.08f, 1f, eased);
+                chestRewardIconImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, Mathf.LerpUnclamped(4f, 0f, eased));
+                if (showRewardCard)
+                {
+                    chestRewardCardFrameImage.rectTransform.anchoredPosition = chestRewardIconImage.rectTransform.anchoredPosition;
+                    chestRewardCardFrameImage.rectTransform.localScale = chestRewardIconImage.rectTransform.localScale;
+                    chestRewardCardFrameImage.rectTransform.localRotation = chestRewardIconImage.rectTransform.localRotation;
+                }
+            }
+            for (int i = 0; i < chestRewardTrailImages.Count; i++)
+            {
+                Color color = chestRewardTrailImages[i].color;
+                color.a = Mathf.Lerp(color.a, 0f, t);
+                chestRewardTrailImages[i].color = color;
+            }
+            chestLayeredRootRect.localScale = Vector3.one * Mathf.Lerp(0.92f, 0.86f, t);
+            if (panelImage != null && t > 0.38f)
+                panelImage.color = Color.Lerp(darkStage, rewardPanelColor, (t - 0.38f) / 0.62f);
+            yield return null;
+        }
+
+        for (int i = 0; i < chestRewardTrailImages.Count; i++) chestRewardTrailImages[i].gameObject.SetActive(false);
+        for (int i = 0; i < chestOpeningRayImages.Count; i++) chestOpeningRayImages[i].gameObject.SetActive(false);
+        if (chestOpeningPlatformImage != null) chestOpeningPlatformImage.gameObject.SetActive(false);
+        if (chestOpeningGlowImage != null) chestOpeningGlowImage.gameObject.SetActive(false);
+        chestLayeredRootRect.gameObject.SetActive(false);
+        if (chestRewardTitleText != null) chestRewardTitleText.gameObject.SetActive(false);
+        if (chestRewardText != null) chestRewardText.gameObject.SetActive(true);
+        ShowChestReward(rewardText, rewardSprite, rewardPanelColor);
+        if (chestRewardIconImage != null)
+        {
+            chestRewardIconImage.rectTransform.anchoredPosition = rewardRest;
+            chestRewardIconImage.rectTransform.localScale = Vector3.one;
+            chestRewardIconImage.rectTransform.localRotation = Quaternion.identity;
+            if (showRewardCard)
+            {
+                chestRewardCardFrameImage.rectTransform.anchoredPosition = rewardRest;
+                chestRewardCardFrameImage.rectTransform.localScale = Vector3.one;
+                chestRewardCardFrameImage.rectTransform.localRotation = Quaternion.identity;
+                chestRewardCardFrameImage.transform.SetAsLastSibling();
+                chestRewardIconImage.transform.SetAsLastSibling();
+            }
+        }
+        if (chestRewardTextCanvasGroup != null) chestRewardTextCanvasGroup.alpha = 0f;
+        if (chestRewardCloseButtonObject != null) chestRewardCloseButtonObject.SetActive(false);
+        if (chestOpeningAudioSource != null && chestRewardRevealClip != null)
+            chestOpeningAudioSource.PlayOneShot(chestRewardRevealClip, tier == ChestTier.Luxury ? 0.84f : 0.68f);
+        elapsed = 0f;
+        const float revealDuration = 0.18f;
+        while (elapsed < revealDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / revealDuration);
+            if (chestRewardTextCanvasGroup != null) chestRewardTextCanvasGroup.alpha = EaseOutCubic(t);
+            yield return null;
+        }
+        if (chestRewardTextCanvasGroup != null) chestRewardTextCanvasGroup.alpha = 1f;
+        if (chestRewardCloseButtonObject != null) chestRewardCloseButtonObject.SetActive(true);
+        chestOpeningInProgress = false;
+        chestOpeningCoroutine = null;
+    }
+
+    private IEnumerator PlayChestOpeningAnimationV2(string rewardText, Sprite rewardSprite, Color rewardPanelColor, ChestTier tier)
+    {
+        Sprite[] frames = GetChestAnimationFrames(tier);
+        Sprite[] silhouettes = GetChestSilhouetteFrames(tier);
+        if (frames == null || frames.Length < 4 || chestOpeningImage == null || chestOpeningGlowImage == null)
+        {
+            chestOpeningInProgress = false;
+            chestOpeningCoroutine = null;
+            ShowChestReward(rewardText, rewardSprite, rewardPanelColor);
+            yield break;
+        }
+
+        Image panelImage = chestRewardPanel.GetComponent<Image>();
+        RectTransform panelRect = chestRewardPanel.GetComponent<RectTransform>();
+        Vector2 panelRestPosition = panelRect != null ? panelRect.anchoredPosition : Vector2.zero;
+        RectTransform chestRect = chestOpeningImage.rectTransform;
+        RectTransform glowRect = chestOpeningGlowImage.rectTransform;
+        Vector2 chestCenter = new Vector2(0f, -5f);
+        Vector2 openChestPosition = new Vector2(0f, -92f);
+        Color primary = tier == ChestTier.Luxury
+            ? new Color(1f, 0.28f, 0.08f, 1f)
+            : tier == ChestTier.Rare ? new Color(0.10f, 0.90f, 1f, 1f) : new Color(1f, 0.67f, 0.12f, 1f);
+        Color accent = tier == ChestTier.Luxury
+            ? new Color(1f, 0.86f, 0.22f, 1f)
+            : tier == ChestTier.Rare ? new Color(0.72f, 1f, 0.96f, 1f) : new Color(1f, 0.93f, 0.62f, 1f);
+        Color openingPanelColor = tier == ChestTier.Luxury
+            ? new Color(0.19f, 0.025f, 0.035f, 0.995f)
+            : tier == ChestTier.Rare ? new Color(0.015f, 0.13f, 0.20f, 0.995f) : new Color(0.18f, 0.075f, 0.018f, 0.995f);
+        int activeRayCount = tier == ChestTier.Luxury ? 11 : tier == ChestTier.Rare ? 9 : 7;
+        float raySpread = tier == ChestTier.Luxury ? 76f : tier == ChestTier.Rare ? 68f : 56f;
+        float intensity = tier == ChestTier.Luxury ? 1.18f : tier == ChestTier.Rare ? 1.06f : 0.92f;
+
+        if (panelImage != null) panelImage.color = openingPanelColor;
+        if (chestRewardTitleText != null) chestRewardTitleText.gameObject.SetActive(false);
+        if (chestRewardText != null) chestRewardText.gameObject.SetActive(false);
+        if (chestRewardCloseButtonObject != null) chestRewardCloseButtonObject.SetActive(false);
+        if (chestRewardIconImage != null) chestRewardIconImage.gameObject.SetActive(false);
+        if (chestOpeningKeyImage != null) chestOpeningKeyImage.gameObject.SetActive(false);
+        if (chestOpeningOrbitImage != null) chestOpeningOrbitImage.gameObject.SetActive(false);
+        if (chestOpeningShockwaveImage != null) chestOpeningShockwaveImage.gameObject.SetActive(false);
+        if (chestOpeningFlashImage != null) chestOpeningFlashImage.gameObject.SetActive(false);
+        if (chestOpeningTapText != null) chestOpeningTapText.gameObject.SetActive(false);
+        for (int i = 0; i < chestOpeningSparkleImages.Count; i++) chestOpeningSparkleImages[i].gameObject.SetActive(false);
+        for (int i = 0; i < chestRewardTrailImages.Count; i++) chestRewardTrailImages[i].gameObject.SetActive(false);
+
+        chestOpeningImage.sprite = frames[0];
+        chestOpeningImage.color = Color.white;
+        chestRect.anchoredPosition = chestCenter + new Vector2(0f, 18f);
+        chestRect.localScale = Vector3.one * 0.74f;
+        chestRect.localRotation = Quaternion.identity;
+        chestOpeningImage.gameObject.SetActive(true);
+        if (chestOpeningTransitionImage != null) chestOpeningTransitionImage.gameObject.SetActive(false);
+
+        glowRect.anchoredPosition = chestCenter + new Vector2(0f, -8f);
+        glowRect.localScale = Vector3.one * 0.48f;
+        chestOpeningGlowImage.color = new Color(primary.r, primary.g, primary.b, 0f);
+        chestOpeningGlowImage.gameObject.SetActive(true);
+        if (chestOpeningPlatformImage != null)
+        {
+            chestOpeningPlatformImage.rectTransform.anchoredPosition = new Vector2(0f, -126f);
+            chestOpeningPlatformImage.rectTransform.localScale = new Vector3(0.62f, 0.42f, 1f);
+            chestOpeningPlatformImage.color = new Color(primary.r, primary.g, primary.b, 0f);
+            chestOpeningPlatformImage.gameObject.SetActive(true);
+        }
+        for (int i = 0; i < chestOpeningRayImages.Count; i++)
+        {
+            Image ray = chestOpeningRayImages[i];
+            bool active = i < activeRayCount;
+            ray.gameObject.SetActive(active);
+            if (!active) continue;
+            float normalized = activeRayCount <= 1 ? 0.5f : i / (activeRayCount - 1f);
+            float angle = Mathf.Lerp(-raySpread, raySpread, normalized);
+            ray.rectTransform.anchoredPosition = chestCenter + new Vector2(0f, 22f);
+            ray.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -angle);
+            ray.rectTransform.localScale = new Vector3(0.22f, 0.05f, 1f);
+            Color rayColor = i % 2 == 0 ? primary : accent;
+            ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, 0f);
+        }
+        if (chestOpeningScreenFlashImage != null)
+        {
+            chestOpeningScreenFlashImage.color = Color.clear;
+            chestOpeningScreenFlashImage.gameObject.SetActive(false);
+        }
+        chestRewardPanel.SetActive(true);
+        chestRewardPanel.transform.SetAsLastSibling();
+
+        float elapsed = 0f;
+        const float entranceDuration = 0.24f;
+        while (elapsed < entranceDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / entranceDuration);
+            float eased = EaseOutBack(t);
+            chestRect.anchoredPosition = Vector2.LerpUnclamped(chestCenter + new Vector2(0f, 18f), chestCenter, eased);
+            chestRect.localScale = Vector3.one * Mathf.LerpUnclamped(0.74f, 1f, eased);
+            yield return null;
+        }
+        yield return new WaitForSecondsRealtime(0.10f);
+
+        if (chestOpeningTransitionImage != null)
+        {
+            chestOpeningTransitionImage.sprite = frames[1];
+            chestOpeningTransitionImage.color = new Color(1f, 1f, 1f, 0f);
+            chestOpeningTransitionImage.gameObject.SetActive(true);
+        }
+        elapsed = 0f;
+        const float chargeDuration = 0.58f;
+        while (elapsed < chargeDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / chargeDuration);
+            float pulse = Mathf.Sin(t * Mathf.PI * 3f);
+            float charge = EaseOutCubic(t);
+            chestRect.anchoredPosition = chestCenter + new Vector2(0f, Mathf.Lerp(0f, 18f, charge) + (pulse * 3f * t));
+            chestRect.localScale = new Vector3(1f + (pulse * 0.055f * t), 1f - (pulse * 0.040f * t), 1f);
+            glowRect.localScale = Vector3.one * Mathf.Lerp(0.48f, 1.08f, charge);
+            chestOpeningGlowImage.color = new Color(primary.r, primary.g, primary.b, Mathf.Lerp(0f, 0.48f * intensity, charge));
+            if (chestOpeningTransitionImage != null)
+                chestOpeningTransitionImage.color = new Color(1f, 1f, 1f, Mathf.Clamp01((t - 0.32f) / 0.30f));
+            if (chestOpeningPlatformImage != null)
+            {
+                chestOpeningPlatformImage.rectTransform.localScale = new Vector3(Mathf.Lerp(0.62f, 1f, charge), Mathf.Lerp(0.42f, 0.72f, charge), 1f);
+                chestOpeningPlatformImage.color = new Color(primary.r, primary.g, primary.b, Mathf.Lerp(0f, 0.52f, charge));
+            }
+            for (int i = 0; i < activeRayCount; i++)
+            {
+                Image ray = chestOpeningRayImages[i];
+                float stagger = Mathf.Clamp01((t - ((i % 3) * 0.06f)) / 0.76f);
+                Color rayColor = i % 2 == 0 ? primary : accent;
+                ray.rectTransform.localScale = new Vector3(0.32f + ((i % 3) * 0.12f), Mathf.Lerp(0.05f, 0.88f + ((i % 4) * 0.11f), EaseOutCubic(stagger)), 1f);
+                ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, stagger * 0.42f * intensity);
+            }
+            yield return null;
+        }
+        chestOpeningImage.sprite = frames[1];
+        chestOpeningImage.color = Color.white;
+        if (chestOpeningTransitionImage != null) chestOpeningTransitionImage.gameObject.SetActive(false);
+
+        if (chestOpeningAudioSource != null && chestKeyImpactClip != null)
+            chestOpeningAudioSource.PlayOneShot(chestKeyImpactClip, 0.62f);
+        if (chestOpeningTransitionImage != null && silhouettes != null && silhouettes.Length > 1)
+        {
+            chestOpeningTransitionImage.sprite = silhouettes[1];
+            chestOpeningTransitionImage.color = new Color(1f, 1f, 1f, 0f);
+            chestOpeningTransitionImage.gameObject.SetActive(true);
+        }
+        if (chestOpeningScreenFlashImage != null)
+        {
+            chestOpeningScreenFlashImage.gameObject.SetActive(true);
+            chestOpeningScreenFlashImage.color = Color.clear;
+        }
+        elapsed = 0f;
+        const float whiteFlashDuration = 0.22f;
+        while (elapsed < whiteFlashDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / whiteFlashDuration);
+            float flashPulse = Mathf.Sin(t * Mathf.PI);
+            chestRect.localScale = Vector3.one * (1f + (flashPulse * 0.15f));
+            if (chestOpeningTransitionImage != null)
+                chestOpeningTransitionImage.color = new Color(1f, 0.98f, 0.88f, Mathf.Clamp01(t * 2.8f));
+            if (chestOpeningScreenFlashImage != null)
+            {
+                float maxFlash = tier == ChestTier.Luxury ? 0.78f : tier == ChestTier.Rare ? 0.68f : 0.58f;
+                chestOpeningScreenFlashImage.color = new Color(1f, 0.97f, 0.84f, flashPulse * maxFlash);
+            }
+            if (panelRect != null)
+            {
+                float shake = (1f - t) * (tier == ChestTier.Luxury ? 8f : 5f);
+                panelRect.anchoredPosition = panelRestPosition + new Vector2(Mathf.Sin(elapsed * 96f) * shake, Mathf.Cos(elapsed * 71f) * shake * 0.45f);
+            }
+            yield return null;
+        }
+        if (panelRect != null) panelRect.anchoredPosition = panelRestPosition;
+
+        AudioClip tierClip = tier == ChestTier.Luxury ? chestOpenLuxuryClip : tier == ChestTier.Rare ? chestOpenRareClip : chestOpenCommonClip;
+        if (chestOpeningAudioSource != null && tierClip != null) chestOpeningAudioSource.PlayOneShot(tierClip, 0.82f);
+        chestOpeningImage.sprite = frames[2];
+        if (chestOpeningTransitionImage != null && silhouettes != null && silhouettes.Length > 2)
+            chestOpeningTransitionImage.sprite = silhouettes[2];
+        elapsed = 0f;
+        const float openDropDuration = 0.28f;
+        while (elapsed < openDropDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / openDropDuration);
+            float eased = EaseOutBack(t);
+            if (t > 0.42f) chestOpeningImage.sprite = frames[3];
+            chestRect.anchoredPosition = Vector2.LerpUnclamped(chestCenter + new Vector2(0f, 18f), openChestPosition, eased);
+            chestRect.localScale = Vector3.one * Mathf.LerpUnclamped(1.12f, 0.90f, eased);
+            if (chestOpeningTransitionImage != null)
+                chestOpeningTransitionImage.color = new Color(1f, 0.98f, 0.88f, Mathf.Lerp(1f, 0f, EaseOutCubic(t)));
+            for (int i = 0; i < activeRayCount; i++)
+            {
+                Image ray = chestOpeningRayImages[i];
+                Color rayColor = i % 2 == 0 ? primary : accent;
+                ray.rectTransform.localScale = new Vector3(0.42f + ((i % 3) * 0.12f), Mathf.Lerp(0.9f, 1.38f * intensity, EaseOutCubic(t)), 1f);
+                ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, Mathf.Lerp(0.62f, 0.34f, t));
+            }
+            yield return null;
+        }
+        if (chestOpeningTransitionImage != null) chestOpeningTransitionImage.gameObject.SetActive(false);
+        if (chestOpeningScreenFlashImage != null) chestOpeningScreenFlashImage.gameObject.SetActive(false);
+
+        Vector2 rewardStart = openChestPosition + new Vector2(0f, 28f);
+        Vector2 rewardPeak = new Vector2(tier == ChestTier.Rare ? 26f : tier == ChestTier.Luxury ? -18f : 0f, 162f);
+        Vector2 rewardRest = new Vector2(0f, 55f);
+        if (rewardSprite != null && chestRewardIconImage != null)
+        {
+            chestRewardIconImage.sprite = rewardSprite;
+            chestRewardIconImage.color = Color.white;
+            chestRewardIconImage.rectTransform.anchoredPosition = rewardStart;
+            chestRewardIconImage.rectTransform.localScale = Vector3.one * 0.20f;
+            chestRewardIconImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -12f);
+            if (chestRewardIconCanvasGroup != null) chestRewardIconCanvasGroup.alpha = 0f;
+            chestRewardIconImage.gameObject.SetActive(true);
+            for (int i = 0; i < chestRewardTrailImages.Count; i++)
+            {
+                Image trail = chestRewardTrailImages[i];
+                trail.sprite = rewardSprite;
+                trail.rectTransform.anchoredPosition = rewardStart;
+                trail.rectTransform.localScale = Vector3.one * (0.16f + (i * 0.025f));
+                trail.color = Color.clear;
+                trail.gameObject.SetActive(true);
+            }
+        }
+
+        elapsed = 0f;
+        const float rewardLaunchDuration = 0.66f;
+        while (elapsed < rewardLaunchDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / rewardLaunchDuration);
+            float eased = EaseOutCubic(t);
+            float arc = Mathf.Sin(t * Mathf.PI) * (tier == ChestTier.Rare ? 34f : tier == ChestTier.Luxury ? -24f : 0f);
+            Vector2 rewardPosition = Vector2.Lerp(rewardStart, rewardPeak, eased) + new Vector2(arc, 0f);
+            if (chestRewardIconImage != null && rewardSprite != null)
+            {
+                chestRewardIconImage.rectTransform.anchoredPosition = rewardPosition;
+                chestRewardIconImage.rectTransform.localScale = Vector3.one * Mathf.LerpUnclamped(0.20f, 1.08f, EaseOutBack(t));
+                chestRewardIconImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(-12f, 5f, eased));
+                if (chestRewardIconCanvasGroup != null) chestRewardIconCanvasGroup.alpha = Mathf.Clamp01(t * 5f);
+                for (int i = 0; i < chestRewardTrailImages.Count; i++)
+                {
+                    float delayedT = Mathf.Clamp01(t - ((i + 1) * 0.055f));
+                    float delayedEase = EaseOutCubic(delayedT);
+                    float delayedArc = Mathf.Sin(delayedT * Mathf.PI) * (tier == ChestTier.Rare ? 34f : tier == ChestTier.Luxury ? -24f : 0f);
+                    Image trail = chestRewardTrailImages[i];
+                    trail.rectTransform.anchoredPosition = Vector2.Lerp(rewardStart, rewardPeak, delayedEase) + new Vector2(delayedArc, -8f - (i * 7f));
+                    trail.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.18f, 0.82f, delayedEase);
+                    float alpha = Mathf.Sin(Mathf.Clamp01(delayedT) * Mathf.PI) * (0.30f - (i * 0.045f));
+                    Color trailColor = i % 2 == 0 ? accent : primary;
+                    trail.color = new Color(trailColor.r, trailColor.g, trailColor.b, alpha);
+                }
+            }
+            for (int i = 0; i < activeRayCount; i++)
+            {
+                Image ray = chestOpeningRayImages[i];
+                Color rayColor = i % 2 == 0 ? primary : accent;
+                ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, Mathf.Lerp(0.38f, 0f, t));
+            }
+            if (chestOpeningGlowImage != null)
+            {
+                float secondPulse = tier == ChestTier.Luxury ? Mathf.Sin(Mathf.Clamp01((t - 0.36f) / 0.42f) * Mathf.PI) * 0.34f : 0f;
+                chestOpeningGlowImage.color = new Color(primary.r, primary.g, primary.b, Mathf.Lerp(0.56f, 0.10f, t) + secondPulse);
+            }
+            yield return null;
+        }
+
+        elapsed = 0f;
+        const float settleDuration = 0.36f;
+        while (elapsed < settleDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / settleDuration);
+            float eased = EaseOutBack(t);
+            if (chestRewardIconImage != null && rewardSprite != null)
+            {
+                chestRewardIconImage.rectTransform.anchoredPosition = Vector2.LerpUnclamped(rewardPeak, rewardRest, eased);
+                chestRewardIconImage.rectTransform.localScale = Vector3.one * Mathf.LerpUnclamped(1.08f, 1f, eased);
+                chestRewardIconImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, Mathf.LerpUnclamped(5f, 0f, eased));
+            }
+            for (int i = 0; i < chestRewardTrailImages.Count; i++)
+            {
+                Color current = chestRewardTrailImages[i].color;
+                current.a = Mathf.Lerp(current.a, 0f, t);
+                chestRewardTrailImages[i].color = current;
+            }
+            if (panelImage != null && t > 0.42f)
+                panelImage.color = Color.Lerp(openingPanelColor, rewardPanelColor, (t - 0.42f) / 0.58f);
+            yield return null;
+        }
+
+        for (int i = 0; i < chestRewardTrailImages.Count; i++) chestRewardTrailImages[i].gameObject.SetActive(false);
+        for (int i = 0; i < chestOpeningRayImages.Count; i++) chestOpeningRayImages[i].gameObject.SetActive(false);
+        if (chestOpeningPlatformImage != null) chestOpeningPlatformImage.gameObject.SetActive(false);
+        if (chestOpeningGlowImage != null) chestOpeningGlowImage.gameObject.SetActive(false);
+        chestOpeningImage.gameObject.SetActive(false);
+        if (chestRewardTitleText != null) chestRewardTitleText.gameObject.SetActive(false);
+        if (chestRewardText != null) chestRewardText.gameObject.SetActive(true);
+        ShowChestReward(rewardText, rewardSprite, rewardPanelColor);
+        if (chestRewardIconImage != null)
+        {
+            chestRewardIconImage.rectTransform.anchoredPosition = rewardRest;
+            chestRewardIconImage.rectTransform.localScale = Vector3.one;
+            chestRewardIconImage.rectTransform.localRotation = Quaternion.identity;
+        }
+        if (chestRewardTextCanvasGroup != null) chestRewardTextCanvasGroup.alpha = 0f;
+        if (chestRewardCloseButtonObject != null) chestRewardCloseButtonObject.SetActive(false);
+        if (chestOpeningAudioSource != null && chestRewardRevealClip != null)
+            chestOpeningAudioSource.PlayOneShot(chestRewardRevealClip, tier == ChestTier.Luxury ? 0.84f : 0.68f);
+        elapsed = 0f;
+        const float uiRevealDuration = 0.20f;
+        while (elapsed < uiRevealDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / uiRevealDuration);
+            if (chestRewardTextCanvasGroup != null) chestRewardTextCanvasGroup.alpha = EaseOutCubic(t);
+            yield return null;
+        }
+        if (chestRewardTextCanvasGroup != null) chestRewardTextCanvasGroup.alpha = 1f;
+        if (chestRewardCloseButtonObject != null) chestRewardCloseButtonObject.SetActive(true);
+        chestOpeningInProgress = false;
+        chestOpeningCoroutine = null;
+    }
+
+    private IEnumerator PlayChestOpeningAnimation(string rewardText, Sprite rewardSprite, Color rewardPanelColor, ChestTier tier)
+    {
+        Sprite[] frames = GetChestAnimationFrames(tier);
+        if (frames == null || frames.Length < 4 || chestOpeningImage == null || chestOpeningGlowImage == null)
+        {
+            chestOpeningInProgress = false;
+            chestOpeningCoroutine = null;
+            ShowChestReward(rewardText, rewardSprite, rewardPanelColor);
+            yield break;
+        }
+
+        Image panelImage = chestRewardPanel.GetComponent<Image>();
+        RectTransform rewardPanelRect = chestRewardPanel.GetComponent<RectTransform>();
+        Vector2 rewardPanelRestPosition = rewardPanelRect != null ? rewardPanelRect.anchoredPosition : Vector2.zero;
+        Color openingColor = tier == ChestTier.Luxury
+            ? new Color(0.40f, 0.08f, 0.08f, 0.99f)
+            : tier == ChestTier.Rare ? new Color(0.05f, 0.28f, 0.31f, 0.99f) : new Color(0.34f, 0.18f, 0.07f, 0.99f);
+        if (panelImage != null) panelImage.color = openingColor;
+        if (chestRewardTitleText != null)
+        {
+            chestRewardTitleText.text = tier == ChestTier.Luxury
+                ? "ÖZEL SANDIK"
+                : tier == ChestTier.Rare ? "NADİR SANDIK" : "SIRADAN SANDIK";
+            chestRewardTitleText.color = Color.white;
+        }
+        if (chestRewardText != null) chestRewardText.gameObject.SetActive(false);
+        if (chestRewardIconImage != null) chestRewardIconImage.gameObject.SetActive(false);
+        if (chestRewardCloseButtonObject != null) chestRewardCloseButtonObject.SetActive(false);
+
+        RectTransform openingRect = chestOpeningImage.rectTransform;
+        Vector2 basePosition = new Vector2(0f, 35f);
+        RectTransform glowRect = chestOpeningGlowImage.rectTransform;
+        RectTransform flashRect = chestOpeningFlashImage != null ? chestOpeningFlashImage.rectTransform : null;
+        Color tierGlowColor = tier == ChestTier.Luxury
+            ? new Color(1f, 0.32f, 0.08f, 1f)
+            : tier == ChestTier.Rare ? new Color(0.16f, 0.95f, 1f, 1f) : new Color(1f, 0.68f, 0.12f, 1f);
+        Color tierAccentColor = tier == ChestTier.Luxury
+            ? new Color(1f, 0.82f, 0.18f, 1f)
+            : tier == ChestTier.Rare ? new Color(0.76f, 1f, 0.96f, 1f) : new Color(1f, 0.92f, 0.58f, 1f);
+        float tierIntensity = tier == ChestTier.Luxury ? 1.28f : tier == ChestTier.Rare ? 1.10f : 0.92f;
+        float tierRaySpread = tier == ChestTier.Luxury ? 82f : tier == ChestTier.Rare ? 68f : 58f;
+        float tierParticleDistance = tier == ChestTier.Luxury ? 1.28f : tier == ChestTier.Rare ? 1.12f : 0.92f;
+
+        openingRect.anchoredPosition = basePosition + new Vector2(0f, -55f);
+        openingRect.localScale = Vector3.one * 0.55f;
+        openingRect.localRotation = Quaternion.Euler(0f, 0f, -4f);
+        chestOpeningImage.color = Color.white;
+        chestOpeningImage.sprite = frames[0];
+        chestOpeningImage.gameObject.SetActive(true);
+        if (chestOpeningTransitionImage != null) chestOpeningTransitionImage.gameObject.SetActive(false);
+        glowRect.anchoredPosition = new Vector2(0f, 32f);
+        glowRect.localScale = Vector3.one * 0.55f;
+        glowRect.localRotation = Quaternion.identity;
+        chestOpeningGlowImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, 0f);
+        chestOpeningGlowImage.gameObject.SetActive(true);
+        if (chestOpeningPlatformImage != null)
+        {
+            chestOpeningPlatformImage.rectTransform.anchoredPosition = new Vector2(0f, -105f);
+            chestOpeningPlatformImage.rectTransform.localScale = Vector3.one * 0.72f;
+            chestOpeningPlatformImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, 0f);
+            chestOpeningPlatformImage.gameObject.SetActive(true);
+        }
+        if (chestOpeningOrbitImage != null)
+        {
+            chestOpeningOrbitImage.rectTransform.anchoredPosition = new Vector2(0f, 25f);
+            chestOpeningOrbitImage.rectTransform.localScale = Vector3.one * 0.58f;
+            chestOpeningOrbitImage.rectTransform.localRotation = Quaternion.identity;
+            chestOpeningOrbitImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, 0f);
+            chestOpeningOrbitImage.gameObject.SetActive(true);
+        }
+        if (chestOpeningShockwaveImage != null)
+        {
+            chestOpeningShockwaveImage.rectTransform.anchoredPosition = new Vector2(0f, 25f);
+            chestOpeningShockwaveImage.rectTransform.localScale = Vector3.one * 0.35f;
+            chestOpeningShockwaveImage.rectTransform.localRotation = Quaternion.identity;
+            chestOpeningShockwaveImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, 0f);
+            chestOpeningShockwaveImage.gameObject.SetActive(false);
+        }
+        for (int i = 0; i < chestOpeningRayImages.Count; i++)
+        {
+            Image ray = chestOpeningRayImages[i];
+            float angle = Mathf.Lerp(-tierRaySpread, tierRaySpread, i / Mathf.Max(1f, chestOpeningRayImages.Count - 1f));
+            ray.rectTransform.anchoredPosition = new Vector2(0f, 35f);
+            ray.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -angle);
+            ray.rectTransform.localScale = new Vector3(0.25f, 0.18f, 1f);
+            Color rayColor = i % 2 == 0 ? tierGlowColor : tierAccentColor;
+            ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, 0f);
+            ray.gameObject.SetActive(true);
+        }
+        if (chestOpeningKeyImage != null)
+        {
+            chestOpeningKeyImage.rectTransform.anchoredPosition = new Vector2(-360f, 105f);
+            chestOpeningKeyImage.rectTransform.localScale = Vector3.one * 0.38f;
+            chestOpeningKeyImage.rectTransform.localRotation = Quaternion.identity;
+            chestOpeningKeyImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, 0f);
+            chestOpeningKeyImage.gameObject.SetActive(true);
+        }
+        if (chestOpeningTapText != null)
+        {
+            chestOpeningTapText.gameObject.SetActive(false);
+        }
+        if (chestOpeningScreenFlashImage != null)
+        {
+            chestOpeningScreenFlashImage.color = Color.clear;
+            chestOpeningScreenFlashImage.gameObject.SetActive(false);
+        }
+        if (chestOpeningFlashImage != null)
+        {
+            chestOpeningFlashImage.color = Color.clear;
+            chestOpeningFlashImage.gameObject.SetActive(false);
+        }
+        for (int i = 0; i < chestOpeningSparkleImages.Count; i++)
+        {
+            chestOpeningSparkleImages[i].gameObject.SetActive(false);
+        }
+        chestRewardPanel.SetActive(true);
+        chestRewardPanel.transform.SetAsLastSibling();
+
+        float elapsed = 0f;
+        const float entranceDuration = 0.52f;
+        while (elapsed < entranceDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / entranceDuration);
+            float eased = EaseOutBack(t);
+            openingRect.anchoredPosition = Vector2.LerpUnclamped(basePosition + new Vector2(0f, -55f), basePosition, eased);
+            openingRect.localScale = Vector3.one * Mathf.LerpUnclamped(0.55f, 1f, eased);
+            openingRect.localRotation = Quaternion.Euler(0f, 0f, Mathf.LerpUnclamped(-4f, 0f, eased));
+            glowRect.localScale = Vector3.one * Mathf.Lerp(0.55f, 0.92f, EaseOutCubic(t));
+            chestOpeningGlowImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, Mathf.Lerp(0f, 0.28f, t));
+            if (chestOpeningPlatformImage != null)
+            {
+                chestOpeningPlatformImage.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.72f, 1f, EaseOutCubic(t));
+                chestOpeningPlatformImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, Mathf.Lerp(0f, 0.62f, t));
+            }
+            for (int i = 0; i < chestOpeningRayImages.Count; i++)
+            {
+                Image ray = chestOpeningRayImages[i];
+                float stagger = Mathf.Clamp01((t - (i % 4) * 0.055f) / 0.82f);
+                float flicker = 0.78f + (Mathf.Sin((elapsed * (16f + i)) + i) * 0.22f);
+                ray.rectTransform.localScale = new Vector3(Mathf.Lerp(0.25f, 0.75f + ((i % 3) * 0.12f), stagger), Mathf.Lerp(0.18f, 0.82f, stagger), 1f);
+                Color rayColor = i % 2 == 0 ? tierGlowColor : tierAccentColor;
+                ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, stagger * 0.28f * flicker * tierIntensity);
+            }
+            if (chestOpeningKeyImage != null)
+            {
+                float keyT = Mathf.Clamp01((t - 0.18f) / 0.82f);
+                chestOpeningKeyImage.rectTransform.anchoredPosition = Vector2.Lerp(new Vector2(-360f, 105f), new Vector2(-190f, 120f), EaseOutBack(keyT));
+                chestOpeningKeyImage.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.38f, 0.92f, EaseOutBack(keyT));
+                chestOpeningKeyImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, keyT * 180f);
+                chestOpeningKeyImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, keyT);
+            }
+            yield return null;
+        }
+
+        yield return new WaitForSecondsRealtime(0.22f);
+
+        if (chestOpeningKeyImage != null)
+        {
+            Vector2 keyStart = chestOpeningKeyImage.rectTransform.anchoredPosition;
+            Vector2 keyControl = new Vector2(105f, 188f);
+            Vector2 keyEnd = new Vector2(0f, 48f);
+            elapsed = 0f;
+            const float keyFlightDuration = 0.52f;
+            while (elapsed < keyFlightDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / keyFlightDuration);
+                float eased = EaseOutCubic(t);
+                float inverse = 1f - eased;
+                chestOpeningKeyImage.rectTransform.anchoredPosition = (inverse * inverse * keyStart) + (2f * inverse * eased * keyControl) + (eased * eased * keyEnd);
+                chestOpeningKeyImage.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.92f, 0.42f, t);
+                chestOpeningKeyImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 180f + (t * 540f));
+                chestOpeningKeyImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, Mathf.Lerp(1f, 0.72f, t));
+                yield return null;
+            }
+            chestOpeningKeyImage.gameObject.SetActive(false);
+        }
+
+        if (chestOpeningAudioSource != null && chestKeyImpactClip != null)
+            chestOpeningAudioSource.PlayOneShot(chestKeyImpactClip, 0.82f);
+
+        // Anahtarın kilide çarpmasını kısa ama güçlü bir ezilme ve geri sekmeyle hissettir.
+        if (chestOpeningFlashImage != null)
+        {
+            chestOpeningFlashImage.rectTransform.anchoredPosition = new Vector2(0f, 42f);
+            chestOpeningFlashImage.rectTransform.localScale = Vector3.one * 0.22f;
+            chestOpeningFlashImage.color = new Color(1f, 0.95f, 0.72f, 1f);
+            chestOpeningFlashImage.gameObject.SetActive(true);
+        }
+        elapsed = 0f;
+        const float keyImpactDuration = 0.34f;
+        while (elapsed < keyImpactDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / keyImpactDuration);
+            float impact = Mathf.Sin(t * Mathf.PI);
+            openingRect.anchoredPosition = basePosition + new Vector2(Mathf.Sin(t * 38f) * 10f * (1f - t), -12f * impact);
+            openingRect.localScale = new Vector3(1f + (0.13f * impact), 1f - (0.16f * impact), 1f);
+            openingRect.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * 31f) * 3.5f * (1f - t));
+            if (chestOpeningFlashImage != null)
+            {
+                chestOpeningFlashImage.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.22f, 1.05f, EaseOutCubic(t));
+                chestOpeningFlashImage.color = new Color(1f, 0.95f, 0.72f, Mathf.Lerp(1f, 0f, t));
+            }
+            yield return null;
+        }
+        if (chestOpeningFlashImage != null) chestOpeningFlashImage.gameObject.SetActive(false);
+        openingRect.anchoredPosition = basePosition;
+        openingRect.localScale = Vector3.one;
+        openingRect.localRotation = Quaternion.identity;
+        yield return CrossfadeChestFrame(frames[1], 0.14f);
+        if (chestOpeningOrbitImage != null)
+        {
+            float orbitBaseAlpha = tier == ChestTier.Rare ? 0.30f : tier == ChestTier.Luxury ? 0.22f : 0.14f;
+            chestOpeningOrbitImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, orbitBaseAlpha);
+        }
+        elapsed = 0f;
+        const float anticipationDuration = 0.82f;
+        while (elapsed < anticipationDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / anticipationDuration);
+            float strength = 2.5f + (13.5f * t * t);
+            Vector2 liftedPosition = basePosition + new Vector2(0f, Mathf.Lerp(0f, 30f, EaseOutCubic(t)));
+            openingRect.anchoredPosition = liftedPosition + new Vector2(Mathf.Sin(elapsed * (52f + (40f * t))) * strength, Mathf.Sin(elapsed * 39f) * strength * 0.22f);
+            openingRect.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(elapsed * 70f) * 2.2f * t);
+            openingRect.localScale = Vector3.one * (1f + (t * 0.10f) + (Mathf.Sin(elapsed * 25f) * 0.035f));
+            float pulse = 0.46f + (Mathf.Sin(elapsed * 18f) * 0.13f);
+            glowRect.localScale = Vector3.one * (0.92f + (t * 0.16f));
+            chestOpeningGlowImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, pulse);
+            if (chestOpeningOrbitImage != null)
+            {
+                chestOpeningOrbitImage.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.58f, 0.96f, EaseOutCubic(t));
+                chestOpeningOrbitImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, t * 420f);
+                float orbitStartAlpha = tier == ChestTier.Rare ? 0.20f : 0.10f;
+                float orbitEndAlpha = tier == ChestTier.Rare ? 0.38f : tier == ChestTier.Luxury ? 0.26f : 0.18f;
+                chestOpeningOrbitImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, Mathf.Lerp(orbitStartAlpha, orbitEndAlpha, t));
+            }
+            if (chestOpeningPlatformImage != null)
+            {
+                chestOpeningPlatformImage.rectTransform.localScale = new Vector3(1f + (Mathf.Sin(elapsed * 14f) * 0.05f), 1f, 1f);
+                chestOpeningPlatformImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, 0.58f + (Mathf.Sin(elapsed * 16f) * 0.12f));
+            }
+            for (int i = 0; i < chestOpeningRayImages.Count; i++)
+            {
+                Image ray = chestOpeningRayImages[i];
+                float flicker = 0.76f + (Mathf.Sin((elapsed * (14f + i)) + (i * 0.7f)) * 0.24f);
+                ray.rectTransform.localScale = new Vector3(0.65f + ((i % 3) * 0.14f), Mathf.Lerp(0.75f, 1.12f, t), 1f);
+                Color rayColor = i % 2 == 0 ? tierGlowColor : tierAccentColor;
+                ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, Mathf.Lerp(0.20f, 0.58f, t) * flicker * tierIntensity);
+            }
+            int orbitParticleCount = tier == ChestTier.Luxury ? 12 : tier == ChestTier.Rare ? 8 : 0;
+            for (int i = 0; i < orbitParticleCount && i < chestOpeningSparkleImages.Count; i++)
+            {
+                Image sparkle = chestOpeningSparkleImages[i];
+                float directionSign = tier == ChestTier.Luxury && i % 2 == 0 ? -1f : 1f;
+                float angle = ((i / (float)orbitParticleCount) * Mathf.PI * 2f) + (t * Mathf.PI * 2.2f * directionSign);
+                float radius = Mathf.Lerp(175f + ((i % 3) * 16f), 72f, EaseOutCubic(t));
+                sparkle.rectTransform.anchoredPosition = new Vector2(Mathf.Cos(angle) * radius, 35f + (Mathf.Sin(angle) * radius * 0.62f));
+                sparkle.rectTransform.localScale = Vector3.one * (0.28f + ((i % 3) * 0.10f));
+                Color orbitColor = i % 2 == 0 ? tierAccentColor : tierGlowColor;
+                sparkle.color = new Color(orbitColor.r, orbitColor.g, orbitColor.b, Mathf.Sin(t * Mathf.PI) * 0.78f);
+                sparkle.gameObject.SetActive(true);
+            }
+            yield return null;
+        }
+
+        openingRect.anchoredPosition = basePosition + new Vector2(0f, 30f);
+        openingRect.localRotation = Quaternion.identity;
+        openingRect.localScale = Vector3.one * 1.04f;
+        yield return CrossfadeChestFrame(frames[2], 0.16f);
+        if (chestOpeningFlashImage != null)
+        {
+            flashRect.anchoredPosition = new Vector2(0f, 28f);
+            flashRect.localScale = Vector3.one * 0.52f;
+            chestOpeningFlashImage.color = new Color(1f, 0.94f, 0.70f, 0.92f);
+            chestOpeningFlashImage.gameObject.SetActive(true);
+        }
+
+        elapsed = 0f;
+        const float flashDuration = 0.30f;
+        while (elapsed < flashDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / flashDuration);
+            if (chestOpeningFlashImage != null)
+            {
+                flashRect.localScale = Vector3.one * Mathf.Lerp(0.52f, 1.30f, EaseOutCubic(t));
+                chestOpeningFlashImage.color = new Color(1f, 0.94f, 0.70f, Mathf.Lerp(0.92f, 0.12f, t));
+            }
+            glowRect.localScale = Vector3.one * Mathf.Lerp(1.05f, 1.28f, t);
+            chestOpeningGlowImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, Mathf.Lerp(0.72f, 0.92f, t));
+            yield return null;
+        }
+
+        AudioClip tierOpenClip = tier == ChestTier.Luxury
+            ? chestOpenLuxuryClip
+            : tier == ChestTier.Rare ? chestOpenRareClip : chestOpenCommonClip;
+        if (chestOpeningAudioSource != null && tierOpenClip != null)
+            chestOpeningAudioSource.PlayOneShot(tierOpenClip, 0.92f);
+        yield return CrossfadeChestFrame(frames[3], 0.18f);
+        openingRect.localScale = Vector3.one * 1.30f;
+        if (chestOpeningTapText != null) chestOpeningTapText.gameObject.SetActive(false);
+        if (chestOpeningScreenFlashImage != null)
+        {
+            chestOpeningScreenFlashImage.color = new Color(1f, 0.96f, 0.78f, 0f);
+            chestOpeningScreenFlashImage.gameObject.SetActive(true);
+        }
+        if (chestOpeningShockwaveImage != null)
+        {
+            chestOpeningShockwaveImage.rectTransform.localScale = Vector3.one * 0.35f;
+            chestOpeningShockwaveImage.rectTransform.localRotation = Quaternion.identity;
+            chestOpeningShockwaveImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, 0.78f);
+            chestOpeningShockwaveImage.gameObject.SetActive(true);
+        }
+
+        for (int i = 0; i < chestOpeningSparkleImages.Count; i++)
+        {
+            Image sparkle = chestOpeningSparkleImages[i];
+            sparkle.rectTransform.anchoredPosition = new Vector2(0f, 34f);
+            sparkle.rectTransform.localScale = Vector3.one * (0.55f + ((i % 3) * 0.18f));
+            sparkle.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, 0f);
+            sparkle.gameObject.SetActive(true);
+        }
+
+        elapsed = 0f;
+        const float burstDuration = 0.82f;
+        while (elapsed < burstDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / burstDuration);
+            float eased = EaseOutCubic(t);
+            openingRect.anchoredPosition = Vector2.Lerp(basePosition + new Vector2(0f, 30f), basePosition + new Vector2(0f, 6f), EaseOutBack(t));
+            openingRect.localScale = Vector3.one * Mathf.Lerp(1.30f, 1f, EaseOutBack(t));
+            glowRect.localScale = Vector3.one * (1.22f + (Mathf.Sin(t * Mathf.PI) * 0.16f));
+            glowRect.localRotation = Quaternion.Euler(0f, 0f, t * 28f);
+            chestOpeningGlowImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, Mathf.Lerp(0.88f, 0.24f, t));
+            if (chestOpeningFlashImage != null)
+            {
+                chestOpeningFlashImage.color = new Color(1f, 0.94f, 0.70f, Mathf.Lerp(0.12f, 0f, t));
+            }
+            if (chestOpeningOrbitImage != null)
+            {
+                chestOpeningOrbitImage.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.96f, 1.48f, EaseOutCubic(t));
+                chestOpeningOrbitImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 420f + (t * 500f));
+                chestOpeningOrbitImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, Mathf.Lerp(0.22f, 0f, t));
+            }
+            if (chestOpeningShockwaveImage != null)
+            {
+                float burstAlpha = Mathf.Pow(1f - t, 1.7f) * 0.72f * tierIntensity;
+                if (tier == ChestTier.Luxury)
+                    burstAlpha += Mathf.Sin(Mathf.Clamp01((t - 0.30f) / 0.44f) * Mathf.PI) * 0.32f;
+                chestOpeningShockwaveImage.rectTransform.localScale = new Vector3(Mathf.Lerp(0.35f, 1.45f, EaseOutCubic(t)), Mathf.Lerp(0.35f, 0.92f, EaseOutCubic(t)), 1f);
+                chestOpeningShockwaveImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, burstAlpha);
+            }
+            for (int i = 0; i < chestOpeningRayImages.Count; i++)
+            {
+                Image ray = chestOpeningRayImages[i];
+                float rayDelay = (i % 3) * 0.035f;
+                float rayT = Mathf.Clamp01((t - rayDelay) / (1f - rayDelay));
+                float rayAlpha = Mathf.Pow(1f - rayT, 1.25f) * (0.72f - ((i % 4) * 0.07f));
+                ray.rectTransform.localScale = new Vector3(0.55f + ((i % 3) * 0.16f), Mathf.Lerp(0.85f, 1.72f * tierIntensity, EaseOutCubic(rayT)), 1f);
+                float baseRayAngle = Mathf.Lerp(-tierRaySpread, tierRaySpread, i / Mathf.Max(1f, chestOpeningRayImages.Count - 1f));
+                float raySwirl = tier == ChestTier.Rare ? Mathf.Sin((t * Mathf.PI) + i) * 18f * (1f - t) : 0f;
+                ray.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -baseRayAngle + raySwirl);
+                Color rayColor = i % 2 == 0 ? tierGlowColor : tierAccentColor;
+                ray.color = new Color(rayColor.r, rayColor.g, rayColor.b, rayAlpha * tierIntensity);
+            }
+            if (chestOpeningPlatformImage != null)
+            {
+                chestOpeningPlatformImage.rectTransform.localScale = new Vector3(Mathf.Lerp(1f, 1.36f, t), Mathf.Lerp(1f, 0.65f, t), 1f);
+                chestOpeningPlatformImage.color = new Color(tierGlowColor.r, tierGlowColor.g, tierGlowColor.b, Mathf.Lerp(0.70f, 0f, t));
+            }
+            if (chestOpeningScreenFlashImage != null)
+            {
+                float screenFlashAlpha = t < 0.16f
+                    ? Mathf.Lerp(0f, 0.70f, EaseOutCubic(t / 0.16f))
+                    : Mathf.Lerp(0.70f, 0f, (t - 0.16f) / 0.84f);
+                chestOpeningScreenFlashImage.color = new Color(1f, 0.97f, 0.82f, screenFlashAlpha);
+            }
+            if (rewardPanelRect != null)
+            {
+                float shakeFade = Mathf.Clamp01(1f - (t / 0.42f));
+                float shakeStrength = tier == ChestTier.Luxury ? 10f : tier == ChestTier.Rare ? 7f : 5f;
+                rewardPanelRect.anchoredPosition = rewardPanelRestPosition + new Vector2(Mathf.Sin(elapsed * 93f) * shakeStrength * shakeFade, Mathf.Cos(elapsed * 71f) * shakeStrength * 0.55f * shakeFade);
+            }
+            for (int i = 0; i < chestOpeningSparkleImages.Count; i++)
+            {
+                float spiralOffset = tier == ChestTier.Rare ? t * 115f : tier == ChestTier.Luxury ? Mathf.Sin(t * Mathf.PI) * 24f : 0f;
+                float angle = ((360f / chestOpeningSparkleImages.Count) * i + ((i % 2) * 8f) + spiralOffset) * Mathf.Deg2Rad;
+                float distance = (115f + ((i % 5) * 24f)) * tierParticleDistance;
+                Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+                Image sparkle = chestOpeningSparkleImages[i];
+                sparkle.rectTransform.anchoredPosition = new Vector2(0f, 28f) + (direction * distance * eased);
+                float sparkleAlpha = Mathf.Sin(t * Mathf.PI) * (1f - (0.35f * t));
+                Color sparkleColor = i % 3 == 0 ? tierAccentColor : tierGlowColor;
+                sparkle.color = new Color(sparkleColor.r, sparkleColor.g, sparkleColor.b, sparkleAlpha * tierIntensity);
+                sparkle.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.45f + ((i % 3) * 0.15f), 0.12f, t);
+            }
+            yield return null;
+        }
+
+        if (rewardPanelRect != null) rewardPanelRect.anchoredPosition = rewardPanelRestPosition;
+
+        chestOpeningImage.gameObject.SetActive(false);
+        chestOpeningGlowImage.gameObject.SetActive(false);
+        if (chestOpeningFlashImage != null) chestOpeningFlashImage.gameObject.SetActive(false);
+        if (chestOpeningPlatformImage != null) chestOpeningPlatformImage.gameObject.SetActive(false);
+        if (chestOpeningOrbitImage != null) chestOpeningOrbitImage.gameObject.SetActive(false);
+        if (chestOpeningShockwaveImage != null) chestOpeningShockwaveImage.gameObject.SetActive(false);
+        if (chestOpeningKeyImage != null) chestOpeningKeyImage.gameObject.SetActive(false);
+        if (chestOpeningScreenFlashImage != null) chestOpeningScreenFlashImage.gameObject.SetActive(false);
+        if (chestOpeningTapText != null) chestOpeningTapText.gameObject.SetActive(false);
+        for (int i = 0; i < chestOpeningRayImages.Count; i++) chestOpeningRayImages[i].gameObject.SetActive(false);
+        for (int i = 0; i < chestOpeningSparkleImages.Count; i++) chestOpeningSparkleImages[i].gameObject.SetActive(false);
+        if (chestRewardText != null) chestRewardText.gameObject.SetActive(true);
+        if (chestRewardTitleText != null) chestRewardTitleText.text = "SANDIK ÖDÜLÜ";
+        ShowChestReward(rewardText, rewardSprite, rewardPanelColor);
+        if (chestOpeningAudioSource != null && chestRewardRevealClip != null)
+            chestOpeningAudioSource.PlayOneShot(chestRewardRevealClip, tier == ChestTier.Luxury ? 0.88f : 0.72f);
+
+        if (chestRewardIconCanvasGroup != null) chestRewardIconCanvasGroup.alpha = 0f;
+        if (chestRewardTextCanvasGroup != null) chestRewardTextCanvasGroup.alpha = 0f;
+        Vector2 rewardIconRestPosition = new Vector2(0f, 55f);
+        if (chestRewardIconImage != null)
+        {
+            chestRewardIconImage.rectTransform.anchoredPosition = rewardIconRestPosition + new Vector2(0f, -70f);
+            chestRewardIconImage.rectTransform.localScale = Vector3.one * 0.18f;
+            chestRewardIconImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -18f);
+        }
+        elapsed = 0f;
+        const float rewardRevealDuration = 0.62f;
+        while (elapsed < rewardRevealDuration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = Mathf.Clamp01(elapsed / rewardRevealDuration);
+            if (chestRewardIconCanvasGroup != null) chestRewardIconCanvasGroup.alpha = Mathf.Clamp01(t * 1.7f);
+            if (chestRewardIconImage != null)
+            {
+                float reveal = EaseOutBack(t);
+                chestRewardIconImage.rectTransform.anchoredPosition = Vector2.LerpUnclamped(rewardIconRestPosition + new Vector2(0f, -70f), rewardIconRestPosition, reveal);
+                chestRewardIconImage.rectTransform.localScale = Vector3.one * Mathf.LerpUnclamped(0.18f, 1f, reveal);
+                chestRewardIconImage.rectTransform.localRotation = Quaternion.Euler(0f, 0f, Mathf.LerpUnclamped(-18f, 0f, reveal));
+            }
+            if (chestRewardTextCanvasGroup != null) chestRewardTextCanvasGroup.alpha = Mathf.Clamp01((t - 0.28f) / 0.55f);
+            yield return null;
+        }
+
+        if (chestRewardIconCanvasGroup != null) chestRewardIconCanvasGroup.alpha = 1f;
+        if (chestRewardTextCanvasGroup != null) chestRewardTextCanvasGroup.alpha = 1f;
+        if (chestRewardIconImage != null)
+        {
+            chestRewardIconImage.rectTransform.anchoredPosition = rewardIconRestPosition;
+            chestRewardIconImage.rectTransform.localScale = Vector3.one;
+            chestRewardIconImage.rectTransform.localRotation = Quaternion.identity;
+        }
+        if (chestRewardCloseButtonObject != null) chestRewardCloseButtonObject.SetActive(true);
+        chestOpeningInProgress = false;
+        chestOpeningCoroutine = null;
     }
 
     private Color GetItemRarityPanelColor(ItemData item)
@@ -2781,6 +5651,12 @@ public class GameManager : MonoBehaviour
         if (item == null)
         {
             return null;
+        }
+
+        Sprite workshopPaintSprite = GetWorkshopMaterialSprite(WorkshopCraftMaterialType.Paint);
+        if (workshopPaintSprite != null)
+        {
+            return workshopPaintSprite;
         }
 
         if (!string.IsNullOrEmpty(item.Id))
@@ -2854,11 +5730,41 @@ public class GameManager : MonoBehaviour
         return gemIconSprite;
     }
 
+    private Sprite GetChestRewardCardFrameSprite()
+    {
+        if (chestRewardCardFrameSprite != null)
+        {
+            return chestRewardCardFrameSprite;
+        }
+
+        Texture2D atlas = Resources.Load<Texture2D>("Art/WorkshopCatalog/Atlases/workshop_material_icons_v2");
+        if (atlas == null)
+        {
+            return null;
+        }
+
+        float cellWidth = atlas.width / 4f;
+        float cellHeight = atlas.height / 2f;
+        chestRewardCardFrameSprite = Sprite.Create(
+            atlas,
+            new Rect(cellWidth * 3f, 0f, cellWidth, cellHeight),
+            new Vector2(0.5f, 0.5f),
+            100f,
+            0,
+            SpriteMeshType.FullRect);
+        chestRewardCardFrameSprite.name = "ChestRewardCardFrame";
+        return chestRewardCardFrameSprite;
+    }
+
     private Sprite GetWoodIconSprite()
     {
         if (woodIconSprite == null)
         {
-            woodIconSprite = LoadSpriteFromResources("Art/Items/wood_bundle_001");
+            woodIconSprite = GetWorkshopMaterialSprite(WorkshopCraftMaterialType.Wood);
+            if (woodIconSprite == null)
+            {
+                woodIconSprite = LoadSpriteFromResources("Art/Items/wood_bundle_001");
+            }
         }
 
         return woodIconSprite;
@@ -2868,10 +5774,69 @@ public class GameManager : MonoBehaviour
     {
         if (craftPaintIconSprite == null)
         {
-            craftPaintIconSprite = LoadSpriteFromResources("Art/Items/paint_can_white_001");
+            craftPaintIconSprite = GetWorkshopMaterialSprite(WorkshopCraftMaterialType.Paint);
+            if (craftPaintIconSprite == null)
+            {
+                craftPaintIconSprite = LoadSpriteFromResources("Art/Items/paint_can_white_001");
+            }
         }
 
         return craftPaintIconSprite;
+    }
+
+    private Sprite GetWorkshopMaterialSprite(WorkshopCraftMaterialType material)
+    {
+        if (workshopMaterialSprites.ContainsKey(material))
+        {
+            return workshopMaterialSprites[material];
+        }
+
+        WorkshopCraftMaterialDefinition definition = null;
+        IReadOnlyList<WorkshopCraftMaterialDefinition> materials = WorkshopDecorCatalog.CraftMaterials;
+        for (int i = 0; i < materials.Count; i++)
+        {
+            if (materials[i].Type == material)
+            {
+                definition = materials[i];
+                break;
+            }
+        }
+
+        if (definition == null)
+        {
+            workshopMaterialSprites[material] = null;
+            return null;
+        }
+
+        if (workshopMaterialAtlasTexture == null)
+        {
+            workshopMaterialAtlasTexture = Resources.Load<Texture2D>(definition.AtlasResourcePath);
+        }
+
+        if (workshopMaterialAtlasTexture == null)
+        {
+            workshopMaterialSprites[material] = null;
+            return null;
+        }
+
+        int cellWidth = workshopMaterialAtlasTexture.width / definition.AtlasColumns;
+        int cellHeight = workshopMaterialAtlasTexture.height / definition.AtlasRows;
+        int column = definition.AtlasCellIndex % definition.AtlasColumns;
+        int rowFromTop = definition.AtlasCellIndex / definition.AtlasColumns;
+        float x = column * cellWidth;
+        float y = workshopMaterialAtlasTexture.height - ((rowFromTop + 1) * cellHeight);
+        Rect cellRect = new Rect(x, y, cellWidth, cellHeight);
+
+        Sprite sprite = Sprite.Create(
+            workshopMaterialAtlasTexture,
+            cellRect,
+            new Vector2(0.5f, 0.5f),
+            100f,
+            0,
+            SpriteMeshType.FullRect);
+        sprite.name = "WorkshopMaterial_" + material;
+        workshopMaterialSprites[material] = sprite;
+        return sprite;
     }
 
     private Sprite GetDecorIconSprite(DecorItemData item)
@@ -2883,10 +5848,219 @@ public class GameManager : MonoBehaviour
 
         if (!decorIconSprites.ContainsKey(item.ItemId))
         {
-            decorIconSprites[item.ItemId] = LoadSpriteFromResources("Art/DecorIcons/" + item.ItemId);
+            string workshopProductId = "";
+            if (item.ItemId == "wall_pink_soft_001") workshopProductId = "wall_rose_001";
+            else if (item.ItemId == "wall_mint_soft_001") workshopProductId = "wall_mint_001";
+            else if (item.ItemId == "floor_cream_tile_001") workshopProductId = "floor_cream_marble_001";
+            else if (item.ItemId == "table_rose_round_001") workshopProductId = "table_rose_001";
+
+            Sprite sprite = GetWorkshopProductSprite(workshopProductId);
+            if (sprite == null)
+            {
+                sprite = LoadSpriteFromResources("Art/DecorIcons/" + item.ItemId);
+            }
+
+            decorIconSprites[item.ItemId] = sprite;
         }
 
         return decorIconSprites[item.ItemId];
+    }
+
+    private Sprite GetWorkshopProductSprite(string productId)
+    {
+        if (string.IsNullOrEmpty(productId))
+        {
+            return null;
+        }
+
+        if (workshopProductSprites.TryGetValue(productId, out Sprite cachedSprite))
+        {
+            return cachedSprite;
+        }
+
+        WorkshopDecorProduct product = null;
+        IReadOnlyList<WorkshopDecorProduct> products = WorkshopDecorCatalog.Products;
+        for (int i = 0; i < products.Count; i++)
+        {
+            if (products[i].Id == productId)
+            {
+                product = products[i];
+                break;
+            }
+        }
+
+        if (product == null)
+        {
+            return null;
+        }
+
+        Sprite legacyVariantSprite = GetWorkshopLegacyVariantSprite(product);
+        if (legacyVariantSprite != null)
+        {
+            workshopProductSprites[product.Id] = legacyVariantSprite;
+            return legacyVariantSprite;
+        }
+
+        Texture2D circleProductTexture = Resources.Load<Texture2D>(
+            "Art/WorkshopCatalog/CircleProducts/" + product.Id);
+        if (circleProductTexture != null)
+        {
+            Sprite circleProductSprite = Sprite.Create(
+                circleProductTexture,
+                new Rect(0f, 0f, circleProductTexture.width, circleProductTexture.height),
+                new Vector2(0.5f, 0.5f),
+                100f,
+                0,
+                SpriteMeshType.FullRect);
+            circleProductSprite.name = "WorkshopCircleProduct_" + product.Id;
+            workshopProductSprites[product.Id] = circleProductSprite;
+            return circleProductSprite;
+        }
+
+        if (!workshopProductAtlasTextures.ContainsKey(product.AtlasResourcePath))
+        {
+            workshopProductAtlasTextures[product.AtlasResourcePath] = Resources.Load<Texture2D>(product.AtlasResourcePath);
+        }
+
+        Texture2D atlas = workshopProductAtlasTextures[product.AtlasResourcePath];
+        if (atlas == null)
+        {
+            return null;
+        }
+
+        int column = product.AtlasCellIndex % product.AtlasColumns;
+        int rowFromTop = product.AtlasCellIndex / product.AtlasColumns;
+        float sourceCellWidth = atlas.width * 0.258f;
+        float sourceCellHeight = atlas.height * 0.365f;
+        float centerX = atlas.width * (0.195f + (column * 0.305f));
+        float centerY = atlas.height * (rowFromTop == 0 ? 0.705f : 0.215f);
+        // The source atlases contain their own legacy card border and number badge.
+        // Crop only the actual product artwork so it fits the new workshop cards.
+        centerX += sourceCellWidth * 0.06f;
+        centerY -= atlas.height * 0.035f;
+        float cellWidth = sourceCellWidth * 0.72f;
+        float cellHeight = sourceCellHeight * 0.72f;
+        Rect cellRect = new Rect(
+            Mathf.Clamp(centerX - (cellWidth * 0.5f), 0f, atlas.width - cellWidth),
+            Mathf.Clamp(centerY - (cellHeight * 0.5f), 0f, atlas.height - cellHeight),
+            cellWidth,
+            cellHeight);
+
+        Sprite sprite = Sprite.Create(atlas, cellRect, new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        sprite.name = "WorkshopProduct_" + product.Id;
+        workshopProductSprites[product.Id] = sprite;
+        return sprite;
+    }
+
+    private Sprite GetWorkshopLegacyVariantSprite(WorkshopDecorProduct product)
+    {
+        if (product == null || product.Category == WorkshopDecorCategory.Wall || product.Category == WorkshopDecorCategory.Floor)
+        {
+            return null;
+        }
+
+        string atlasName;
+        switch (product.Category)
+        {
+            case WorkshopDecorCategory.Table: atlasName = "legacy_table_variants"; break;
+            case WorkshopDecorCategory.Chair: atlasName = "legacy_chair_variants"; break;
+            case WorkshopDecorCategory.Rug: atlasName = "legacy_rug_variants"; break;
+            case WorkshopDecorCategory.Shelf: atlasName = "legacy_shelf_variants"; break;
+            case WorkshopDecorCategory.Counter: atlasName = "legacy_counter_variants"; break;
+            case WorkshopDecorCategory.Plant: atlasName = "legacy_plant_variants"; break;
+            case WorkshopDecorCategory.WallArt: atlasName = "legacy_wall_art_variants"; break;
+            default: return null;
+        }
+
+        string atlasPath = "Art/WorkshopCatalog/LegacyAtlases/" + atlasName;
+        if (!workshopProductAtlasTextures.TryGetValue(atlasPath, out Texture2D atlas))
+        {
+            atlas = Resources.Load<Texture2D>(atlasPath);
+            workshopProductAtlasTextures[atlasPath] = atlas;
+        }
+        if (atlas == null)
+        {
+            return null;
+        }
+
+        int cellIndex = GetWorkshopLegacyVariantCellIndex(product.Category, product.VariantKey);
+        Rect cellRect = GetWorkshopLegacyVariantContentRect(product.Category, cellIndex, atlas);
+
+        Sprite sprite = Sprite.Create(atlas, cellRect, new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
+        sprite.name = "WorkshopLegacyProduct_" + product.Id;
+        return sprite;
+    }
+
+    private int GetWorkshopLegacyVariantCellIndex(WorkshopDecorCategory category, string variantKey)
+    {
+        if (string.IsNullOrEmpty(variantKey)) return 0;
+        if (variantKey == "honey_oak" || variantKey == "olive" || variantKey == "walnut_sand" || variantKey == "terracotta" || variantKey == "walnut") return 0;
+        if (variantKey.Contains("cream") || variantKey == "gold_cream") return 1;
+        if (variantKey.Contains("rose")) return 2;
+        if (variantKey.Contains("mint")) return 3;
+        if (variantKey.Contains("burgundy") || variantKey == "dark_walnut") return 4;
+        if (variantKey.Contains("black") || variantKey.Contains("charcoal") || variantKey == "navy") return 5;
+        return 0;
+    }
+
+    private Rect GetWorkshopLegacyVariantContentRect(WorkshopDecorCategory category, int cellIndex, Texture2D atlas)
+    {
+        int column = Mathf.Clamp(cellIndex % 3, 0, 2);
+        int rowFromTop = Mathf.Clamp(cellIndex / 3, 0, 1);
+        float[] centersX;
+        float centerTopY;
+        float centerBottomY;
+        Vector2 contentSize;
+
+        switch (category)
+        {
+            case WorkshopDecorCategory.Table:
+                centersX = new[] { 304.5f, 256f, 208f };
+                centerTopY = 281.5f; centerBottomY = 217.5f; contentSize = new Vector2(380f, 380f);
+                break;
+            case WorkshopDecorCategory.Chair:
+                centersX = new[] { 331.5f, 267f, 202f };
+                centerTopY = 248f; centerBottomY = 242f; contentSize = new Vector2(270f, 460f);
+                break;
+            case WorkshopDecorCategory.Rug:
+                centersX = new[] { 283f, 254.5f, 228.5f };
+                centerTopY = 325f; centerBottomY = 186f; contentSize = new Vector2(450f, 240f);
+                break;
+            case WorkshopDecorCategory.Shelf:
+                centersX = new[] { 261.5f, 260f, 254.5f };
+                centerTopY = 275f; centerBottomY = 164f; contentSize = new Vector2(460f, 100f);
+                break;
+            case WorkshopDecorCategory.Counter:
+                centersX = new[] { 263f, 258f, 254f };
+                centerTopY = 305f; centerBottomY = 178f; contentSize = new Vector2(500f, 190f);
+                break;
+            case WorkshopDecorCategory.Plant:
+                centersX = new[] { 305f, 254f, 209f };
+                centerTopY = 259f; centerBottomY = 227.5f; contentSize = new Vector2(340f, 440f);
+                break;
+            case WorkshopDecorCategory.WallArt:
+                centersX = new[] { 323.5f, 256.5f, 188.5f };
+                centerTopY = 256f; centerBottomY = 249f; contentSize = new Vector2(310f, 460f);
+                break;
+            default:
+                float defaultCellWidth = atlas.width / 3f;
+                float defaultCellHeight = atlas.height / 2f;
+                return new Rect(
+                    column * defaultCellWidth,
+                    atlas.height - ((rowFromTop + 1) * defaultCellHeight),
+                    defaultCellWidth,
+                    defaultCellHeight);
+        }
+
+        float scaleX = atlas.width / 1536f;
+        float scaleY = atlas.height / 1024f;
+        float cellWidth = atlas.width / 3f;
+        float cellHeight = atlas.height / 2f;
+        float centerX = (column * cellWidth) + (centersX[column] * scaleX);
+        float centerFromTop = (rowFromTop * cellHeight) + ((rowFromTop == 0 ? centerTopY : centerBottomY) * scaleY);
+        float width = contentSize.x * scaleX;
+        float height = contentSize.y * scaleY;
+        return new Rect(centerX - (width * 0.5f), atlas.height - centerFromTop - (height * 0.5f), width, height);
     }
 
     private Sprite GetLevelBadgeSprite()
@@ -3332,6 +6506,62 @@ public class GameManager : MonoBehaviour
         return warmWoodCafeSceneNoMachineSprite != null ? warmWoodCafeSceneNoMachineSprite : GetWarmWoodCafeSceneSprite();
     }
 
+    private Sprite GetWorkshopWallSceneSprite(string variantKey)
+    {
+        if (string.IsNullOrEmpty(variantKey) || variantKey == "cream") return GetWarmWoodCafeSceneNoMachineSprite();
+        if (workshopWallSceneSprites.TryGetValue(variantKey, out Sprite cached)) return cached;
+
+        string path = "";
+        if (variantKey == "walnut") path = "Art/CafeScenes/warm_wood_cafe_scene_wall_walnut";
+        else if (variantKey == "rose") path = "Art/CafeScenes/warm_wood_cafe_scene_wall_rose";
+        else if (variantKey == "mint") path = "Art/CafeScenes/warm_wood_cafe_scene_wall_mint";
+        else if (variantKey == "burgundy") path = "Art/CafeScenes/warm_wood_cafe_scene_wall_burgundy";
+        else if (variantKey == "navy") path = "Art/CafeScenes/warm_wood_cafe_scene_wall_navy";
+
+        Sprite sprite = string.IsNullOrEmpty(path) ? null : LoadSpriteFromResources(path);
+        if (sprite == null) sprite = GetWarmWoodCafeSceneNoMachineSprite();
+        workshopWallSceneSprites[variantKey] = sprite;
+        return sprite;
+    }
+
+    private Sprite GetActiveWorkshopWallSceneSprite(bool includeWorkshopPreview)
+    {
+        WorkshopDecorProduct wall = null;
+        if (includeWorkshopPreview && decorPanel != null && decorPanel.activeSelf && selectedWorkshopCategory == WorkshopDecorCategory.Wall)
+        {
+            wall = GetWorkshopProduct(selectedWorkshopPreviewId);
+        }
+        if (wall == null && selectedWorkshopProducts.TryGetValue(WorkshopDecorCategory.Wall, out string selectedId))
+        {
+            wall = GetWorkshopProduct(selectedId);
+        }
+        return GetWorkshopWallSceneSprite(wall != null ? wall.VariantKey : "cream");
+    }
+
+    private Sprite GetActiveWorkshopEmptySceneSprite()
+    {
+        WorkshopDecorProduct wall = GetDisplayedWorkshopProduct(WorkshopDecorCategory.Wall);
+        string variantKey = wall != null && !string.IsNullOrEmpty(wall.VariantKey) ? wall.VariantKey : "cream";
+        if (workshopEmptySceneSprites.TryGetValue(variantKey, out Sprite cached))
+        {
+            return cached;
+        }
+
+        string path = "Art/CafeScenes/Modular/modular_empty_cafe_" + variantKey;
+        Sprite sprite = LoadSpriteFromResources(path);
+        if (sprite == null && variantKey != "cream")
+        {
+            sprite = LoadSpriteFromResources("Art/CafeScenes/Modular/modular_empty_cafe_cream");
+        }
+        if (sprite == null)
+        {
+            sprite = GetActiveWorkshopWallSceneSprite(true);
+        }
+
+        workshopEmptySceneSprites[variantKey] = sprite;
+        return sprite;
+    }
+
     private Sprite GetCoffeeMachineSceneSprite()
     {
         if (coffeeMachineSceneSprite == null)
@@ -3575,14 +6805,9 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (previewDecorItem <= 0)
-        {
-            previewDecorItem = 1;
-        }
-
         decorPanel.SetActive(true);
         decorPanel.transform.SetAsLastSibling();
-        UpdateUI();
+        RefreshWorkshopPanel();
     }
 
     public void CloseDecorPanel()
@@ -3592,7 +6817,6 @@ public class GameManager : MonoBehaviour
             decorPanel.SetActive(false);
         }
 
-        previewDecorItem = 0;
         UpdateUI();
     }
 
@@ -3622,8 +6846,27 @@ public class GameManager : MonoBehaviour
 
     public void ConfirmDecorPreview()
     {
-        DecorItemData item = GetPreviewDecorItem();
-        UnlockOrSelectDecorItem(item);
+        WorkshopDecorProduct product = GetWorkshopProduct(selectedWorkshopPreviewId);
+        if (product == null)
+        {
+            return;
+        }
+
+        if (!unlockedWorkshopProducts.Contains(product.Id))
+        {
+            if (!TrySpendWorkshopRecipe(product))
+            {
+                return;
+            }
+
+            unlockedWorkshopProducts.Add(product.Id);
+        }
+
+        selectedWorkshopProducts[product.Category] = product.Id;
+        RefreshWorkshopPanel();
+        ApplyDecorations();
+        UpdateUI();
+        SaveGame();
     }
 
     private void UnlockOrSelectDecorItem(DecorItemData item)
@@ -3715,6 +6958,732 @@ public class GameManager : MonoBehaviour
     }
 
     private void CreateDecorPanel(Transform parent)
+    {
+        WorkshopLayoutConfig layout = WorkshopLayoutConfig.Load();
+        decorPanel = new GameObject("DecorPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        decorPanel.transform.SetParent(parent, false);
+
+        RectTransform panelRect = decorPanel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.anchoredPosition = new Vector2(0f, layout.panelY);
+        panelRect.sizeDelta = new Vector2(layout.panelWidth, layout.panelHeight);
+        panelRect.localScale = Vector3.one;
+
+        Image panelImage = decorPanel.GetComponent<Image>();
+        panelImage.sprite = GetWorkshopUiSprite("workshop_outer_frame");
+        panelImage.color = Color.white;
+        panelImage.preserveAspect = false;
+
+        CreateWorkshopUiImage(decorPanel.transform, "WorkshopTitlePlaque", layout.title.Position, layout.title.Size, "workshop_title_plaque", false);
+        TMP_Text title = CreateText(decorPanel.transform, "WorkshopTitle", "ATÖLYE", layout.titleText.Position, layout.titleText.Size, 48);
+        title.color = new Color(1f, 0.82f, 0.36f, 1f);
+        title.fontStyle = FontStyles.Bold;
+        ApplyVipFont(title);
+
+        TMP_Text closeText = CreateButton(decorPanel.transform, "WorkshopClose", "", layout.closeButton.Position, layout.closeButton.Size, CloseDecorPanel, Color.white, 1);
+        Image closeImage = closeText.GetComponentInParent<Image>();
+        if (closeImage != null)
+        {
+            closeImage.sprite = GetFoodCloseButtonSprite();
+            closeImage.color = Color.white;
+            closeImage.preserveAspect = true;
+        }
+        closeText.gameObject.SetActive(false);
+
+        workshopCategoryTabTexts.Clear();
+        workshopCategoryTabImages.Clear();
+        workshopCategoryIconImages.Clear();
+        for (int i = 0; i < 9; i++)
+        {
+            int capturedSlot = i;
+            WorkshopDecorCategory category = (WorkshopDecorCategory)i;
+            WorkshopLayoutRect categoryRect = layout.categories[i];
+            TMP_Text tab = CreateButton(decorPanel.transform, "WorkshopTab_" + i, GetWorkshopCategoryName(category), categoryRect.Position, categoryRect.Size, () => SelectWorkshopCategorySlot(capturedSlot), Color.white, 21);
+            tab.fontStyle = FontStyles.Bold;
+            tab.enableAutoSizing = true;
+            tab.fontSizeMin = 13;
+            tab.fontSizeMax = 19;
+            tab.margin = new Vector4(4f, 0f, 4f, 0f);
+            ApplyVipFont(tab);
+            RectTransform tabTextRect = tab.GetComponent<RectTransform>();
+            tabTextRect.anchoredPosition = layout.categoryTexts[i].Position;
+            tabTextRect.sizeDelta = layout.categoryTexts[i].Size;
+            Image tabImage = tab.GetComponentInParent<Image>();
+            if (tabImage != null)
+            {
+                tabImage.sprite = GetWorkshopUiSprite("workshop_category_button_clean");
+                tabImage.color = Color.white;
+                tabImage.preserveAspect = false;
+                workshopCategoryTabImages.Add(tabImage);
+            }
+            Image categoryIcon = CreateWorkshopResourceIcon(tab.transform.parent, "CategoryIcon", layout.categoryIcons[i].Position, GetWorkshopCategoryIconSprite(category));
+            categoryIcon.GetComponent<RectTransform>().sizeDelta = layout.categoryIcons[i].Size;
+            categoryIcon.raycastTarget = false;
+            workshopCategoryIconImages.Add(categoryIcon);
+            workshopCategoryTabTexts.Add(tab);
+        }
+
+        workshopMaterialIconImages.Clear();
+        workshopMaterialCountTexts.Clear();
+        for (int i = 0; i < WorkshopDecorCatalog.CraftMaterials.Count; i++)
+        {
+            WorkshopCraftMaterialDefinition material = WorkshopDecorCatalog.CraftMaterials[i];
+            WorkshopLayoutRect materialRect = layout.materials[i];
+            Vector2 materialPosition = materialRect.Position;
+            CreateWorkshopUiImage(decorPanel.transform, "WorkshopMaterialCard_" + material.Type, materialPosition, materialRect.Size, "workshop_material_counter_clean", false);
+            Image icon = CreateWorkshopResourceIcon(decorPanel.transform, "WorkshopMaterialIcon_" + material.Type, layout.materialIcons[i].Position, GetWorkshopMaterialSprite(material.Type));
+            icon.GetComponent<RectTransform>().sizeDelta = layout.materialIcons[i].Size;
+            icon.raycastTarget = false;
+            TMP_Text materialName = CreateText(decorPanel.transform, "WorkshopMaterialName_" + material.Type, material.DisplayName.ToUpperInvariant(), layout.materialNames[i].Position, layout.materialNames[i].Size, 17);
+            materialName.color = new Color(1f, 0.82f, 0.38f, 1f);
+            materialName.fontStyle = FontStyles.Bold;
+            materialName.enableAutoSizing = true;
+            materialName.fontSizeMin = 11;
+            materialName.fontSizeMax = 16;
+            materialName.margin = new Vector4(2f, 0f, 2f, 0f);
+            ApplyVipFont(materialName);
+            materialName.raycastTarget = false;
+            TMP_Text count = CreateText(decorPanel.transform, "WorkshopMaterialCount_" + material.Type, "", layout.materialCounts[i].Position, layout.materialCounts[i].Size, 26);
+            count.color = new Color(1f, 0.92f, 0.70f, 1f);
+            count.fontStyle = FontStyles.Bold;
+            count.enableAutoSizing = true;
+            count.fontSizeMin = 18;
+            count.fontSizeMax = 25;
+            count.margin = Vector4.zero;
+            ApplyVipFont(count);
+            count.raycastTarget = false;
+            workshopMaterialIconImages.Add(icon);
+            workshopMaterialCountTexts.Add(count);
+        }
+
+        workshopCafePreviewImage = CreateWorkshopResourceIcon(decorPanel.transform, "WorkshopCafePreview", layout.preview.Position, GetActiveWorkshopEmptySceneSprite());
+        workshopCafePreviewImage.GetComponent<RectTransform>().sizeDelta = layout.preview.Size;
+        workshopCafePreviewImage.preserveAspect = false;
+        workshopCafePreviewImage.raycastTarget = false;
+        Mask workshopPreviewMask = workshopCafePreviewImage.gameObject.GetComponent<Mask>();
+        if (workshopPreviewMask == null)
+        {
+            workshopPreviewMask = workshopCafePreviewImage.gameObject.AddComponent<Mask>();
+        }
+        workshopPreviewMask.showMaskGraphic = true;
+        CreateWorkshopCafePreviewObjectLayers(workshopCafePreviewImage.transform);
+        CreateWorkshopUiImage(decorPanel.transform, "WorkshopCafePreviewFrame", layout.previewFrame.Position, layout.previewFrame.Size, "workshop_preview_frame_wide", false).raycastTarget = false;
+
+        CreateWorkshopUiImage(decorPanel.transform, "WorkshopDetailPanel", layout.detailPanel.Position, layout.detailPanel.Size, "workshop_detail_panel_clean", false);
+
+        workshopCategoryTitleText = CreateText(decorPanel.transform, "WorkshopDetailCategory", "", layout.detailCategory.Position, layout.detailCategory.Size, 20);
+        workshopCategoryTitleText.color = new Color(0.34f, 0.13f, 0.035f, 1f);
+        workshopCategoryTitleText.fontStyle = FontStyles.Bold;
+        workshopCategoryTitleText.margin = Vector4.zero;
+        ApplyVipFont(workshopCategoryTitleText);
+        workshopCategoryTitleText.gameObject.SetActive(true);
+
+        GameObject selectedProductMaskObject = new GameObject("WorkshopSelectedProductMask", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Mask));
+        selectedProductMaskObject.transform.SetParent(decorPanel.transform, false);
+        RectTransform selectedProductMaskRect = selectedProductMaskObject.GetComponent<RectTransform>();
+        selectedProductMaskRect.anchorMin = new Vector2(0.5f, 0.5f);
+        selectedProductMaskRect.anchorMax = new Vector2(0.5f, 0.5f);
+        selectedProductMaskRect.anchoredPosition = layout.selectedProduct.Position;
+        selectedProductMaskRect.sizeDelta = layout.selectedProduct.Size;
+        Image selectedProductMaskImage = selectedProductMaskObject.GetComponent<Image>();
+        selectedProductMaskImage.sprite = CreateRoundedRectSprite(
+            layout.selectedProduct.Size,
+            Color.white,
+            Color.white,
+            Mathf.RoundToInt(Mathf.Min(layout.selectedProduct.width, layout.selectedProduct.height) * 0.5f),
+            0);
+        selectedProductMaskImage.color = Color.white;
+        selectedProductMaskImage.raycastTarget = false;
+        selectedProductMaskObject.GetComponent<Mask>().showMaskGraphic = false;
+
+        workshopSelectedProductImage = CreateWorkshopResourceIcon(selectedProductMaskObject.transform, "WorkshopSelectedProduct", Vector2.zero, null);
+        workshopSelectedProductImage.GetComponent<RectTransform>().sizeDelta = layout.selectedProduct.Size;
+        workshopSelectedProductImage.preserveAspect = true;
+        CreateWorkshopUiImage(decorPanel.transform, "WorkshopSelectedProductFrame", layout.selectedProductFrame.Position, layout.selectedProductFrame.Size, "workshop_selected_product_frame", false).raycastTarget = false;
+        decorDetailTitleText = CreateText(decorPanel.transform, "WorkshopDetailTitle", "", layout.detailTitle.Position, layout.detailTitle.Size, 30);
+        decorDetailTitleText.color = new Color(0.34f, 0.13f, 0.035f, 1f);
+        decorDetailTitleText.fontStyle = FontStyles.Bold;
+        decorDetailTitleText.enableAutoSizing = true;
+        decorDetailTitleText.fontSizeMin = 18;
+        decorDetailTitleText.fontSizeMax = 27;
+        decorDetailTitleText.margin = new Vector4(8f, 0f, 8f, 0f);
+        ApplyVipFont(decorDetailTitleText);
+        decorDetailStatusText = CreateText(decorPanel.transform, "WorkshopRarity", "", layout.detailRarity.Position, layout.detailRarity.Size, 20);
+        decorDetailStatusText.fontStyle = FontStyles.Bold;
+        decorDetailStatusText.margin = Vector4.zero;
+        ApplyVipFont(decorDetailStatusText);
+        TMP_Text effectHeading = CreateText(decorPanel.transform, "WorkshopEffectHeading", "KAFE ETKİLERİ", layout.effectHeading.Position, layout.effectHeading.Size, 20);
+        effectHeading.color = new Color(0.34f, 0.13f, 0.035f, 1f);
+        effectHeading.fontStyle = FontStyles.Bold;
+        effectHeading.enableAutoSizing = true;
+        effectHeading.fontSizeMin = 14;
+        effectHeading.fontSizeMax = 18;
+        effectHeading.margin = Vector4.zero;
+        ApplyVipFont(effectHeading);
+        effectHeading.raycastTarget = false;
+        TMP_Text requirementHeading = CreateText(decorPanel.transform, "WorkshopRequirementHeading", "ÜRETİM GEREKSİNİMLERİ", layout.requirementHeading.Position, layout.requirementHeading.Size, 20);
+        requirementHeading.color = new Color(0.34f, 0.13f, 0.035f, 1f);
+        requirementHeading.fontStyle = FontStyles.Bold;
+        requirementHeading.enableAutoSizing = true;
+        requirementHeading.fontSizeMin = 14;
+        requirementHeading.fontSizeMax = 18;
+        requirementHeading.margin = Vector4.zero;
+        ApplyVipFont(requirementHeading);
+        requirementHeading.raycastTarget = false;
+        workshopEffectFrameImages.Clear();
+        workshopEffectTexts.Clear();
+        for (int i = 0; i < 2; i++)
+        {
+            WorkshopLayoutRect effectRect = layout.effectRows[i];
+            Image effectFrame = CreateWorkshopUiImage(decorPanel.transform, "WorkshopEffectFrame_" + i, effectRect.Position, effectRect.Size, "workshop_effect_row", false);
+            effectFrame.raycastTarget = false;
+            TMP_Text effectText = CreateText(decorPanel.transform, "WorkshopEffectText_" + i, "", layout.effectTexts[i].Position, layout.effectTexts[i].Size, 18);
+            effectText.color = new Color(0.28f, 0.12f, 0.035f, 1f);
+            effectText.fontStyle = FontStyles.Bold;
+            effectText.enableAutoSizing = true;
+            effectText.fontSizeMin = 14;
+            effectText.fontSizeMax = 17;
+            effectText.margin = new Vector4(8f, 0f, 8f, 0f);
+            ApplyVipFont(effectText);
+            effectText.raycastTarget = false;
+            workshopEffectFrameImages.Add(effectFrame);
+            workshopEffectTexts.Add(effectText);
+        }
+        workshopRequirementFrameImages.Clear();
+        workshopRequirementIconImages.Clear();
+        workshopRequirementTexts.Clear();
+        workshopRequirementCountTexts.Clear();
+        for (int i = 0; i < 2; i++)
+        {
+            WorkshopLayoutRect requirementRect = layout.requirementCards[i];
+            Vector2 requirementPosition = requirementRect.Position;
+            Image requirementFrame = CreateWorkshopUiImage(decorPanel.transform, "WorkshopRequirementFrame_" + i, requirementPosition, requirementRect.Size, "workshop_requirement_card_clean", false);
+            requirementFrame.raycastTarget = false;
+            Image requirementIcon = CreateWorkshopResourceIcon(decorPanel.transform, "WorkshopRequirementIcon_" + i, layout.requirementIcons[i].Position, null);
+            requirementIcon.GetComponent<RectTransform>().sizeDelta = layout.requirementIcons[i].Size;
+            requirementIcon.raycastTarget = false;
+            TMP_Text requirementText = CreateText(decorPanel.transform, "WorkshopRequirementText_" + i, "", layout.requirementNames[i].Position, layout.requirementNames[i].Size, 16);
+            requirementText.color = new Color(1f, 0.82f, 0.38f, 1f);
+            requirementText.fontStyle = FontStyles.Bold;
+            requirementText.enableAutoSizing = true;
+            requirementText.fontSizeMin = 12;
+            requirementText.fontSizeMax = 15;
+            requirementText.margin = Vector4.zero;
+            ApplyVipFont(requirementText);
+            requirementText.raycastTarget = false;
+            TMP_Text requirementCountText = CreateText(decorPanel.transform, "WorkshopRequirementCount_" + i, "", layout.requirementCounts[i].Position, layout.requirementCounts[i].Size, 25);
+            requirementCountText.color = new Color(0.38f, 0.85f, 0.35f, 1f);
+            requirementCountText.fontStyle = FontStyles.Bold;
+            requirementCountText.enableAutoSizing = true;
+            requirementCountText.fontSizeMin = 18;
+            requirementCountText.fontSizeMax = 24;
+            requirementCountText.margin = Vector4.zero;
+            ApplyVipFont(requirementCountText);
+            requirementCountText.raycastTarget = false;
+            workshopRequirementFrameImages.Add(requirementFrame);
+            workshopRequirementIconImages.Add(requirementIcon);
+            workshopRequirementTexts.Add(requirementText);
+            workshopRequirementCountTexts.Add(requirementCountText);
+        }
+        decorActionButtonText = CreateButton(decorPanel.transform, "WorkshopAction", "ÜRET", layout.actionButton.Position, layout.actionButton.Size, ConfirmDecorPreview, Color.white, 32);
+        decorActionButtonText.fontStyle = FontStyles.Bold;
+        decorActionButtonText.enableAutoSizing = true;
+        decorActionButtonText.fontSizeMin = 22;
+        decorActionButtonText.fontSizeMax = 30;
+        decorActionButtonText.margin = Vector4.zero;
+        ApplyVipFont(decorActionButtonText);
+        RectTransform actionTextRect = decorActionButtonText.GetComponent<RectTransform>();
+        actionTextRect.anchoredPosition = layout.actionText.Position;
+        actionTextRect.sizeDelta = layout.actionText.Size;
+        Image actionImage = decorActionButtonText.GetComponentInParent<Image>();
+        if (actionImage != null)
+        {
+            actionImage.sprite = GetWorkshopUiSprite("workshop_action_button");
+            actionImage.color = Color.white;
+            actionImage.preserveAspect = false;
+        }
+
+        workshopProductCards.Clear();
+        for (int i = 0; i < 6; i++)
+        {
+            int capturedIndex = i;
+            WorkshopLayoutRect productRect = layout.productCards[i];
+            TMP_Text buttonText = CreateButton(decorPanel.transform, "WorkshopProductCard_" + i, "", productRect.Position, productRect.Size, () => SelectWorkshopProduct(capturedIndex), Color.white, 1);
+            GameObject root = buttonText.transform.parent.gameObject;
+            Image rootImage = root.GetComponent<Image>();
+            rootImage.sprite = GetWorkshopUiSprite("workshop_product_card");
+            rootImage.color = Color.white;
+            rootImage.preserveAspect = false;
+            Image productImage = CreateWorkshopResourceIcon(root.transform, "ProductImage", layout.productImages[i].Position, null);
+            productImage.GetComponent<RectTransform>().sizeDelta = layout.productImages[i].Size;
+            TMP_Text nameText = CreateText(root.transform, "Name", "", layout.productNames[i].Position, layout.productNames[i].Size, 15);
+            nameText.color = new Color(1f, 0.88f, 0.58f, 1f);
+            nameText.fontStyle = FontStyles.Bold;
+            nameText.enableAutoSizing = true;
+            nameText.fontSizeMin = 11;
+            nameText.fontSizeMax = 14;
+            nameText.margin = new Vector4(3f, 0f, 3f, 0f);
+            ApplyVipFont(nameText);
+            TMP_Text rarityText = CreateText(root.transform, "Rarity", "", layout.productRarities[i].Position, layout.productRarities[i].Size, 12);
+            rarityText.fontStyle = FontStyles.Bold;
+            rarityText.enableAutoSizing = true;
+            rarityText.fontSizeMin = 9;
+            rarityText.fontSizeMax = 12;
+            rarityText.margin = Vector4.zero;
+            ApplyVipFont(rarityText);
+            TMP_Text statusText = CreateText(root.transform, "Status", "", layout.productStatuses[i].Position, layout.productStatuses[i].Size, 12);
+            statusText.fontStyle = FontStyles.Bold;
+            statusText.enableAutoSizing = true;
+            statusText.fontSizeMin = 9;
+            statusText.fontSizeMax = 12;
+            statusText.margin = Vector4.zero;
+            ApplyVipFont(statusText);
+            workshopProductCards.Add(new WorkshopProductCardUi
+            {
+                Root = root,
+                Background = root.GetComponent<Image>(),
+                ProductImage = productImage,
+                NameText = nameText,
+                RarityText = rarityText,
+                StatusText = statusText,
+                Button = root.GetComponent<Button>()
+            });
+        }
+
+        if (layout.referenceOverlayAlpha > 0.001f)
+        {
+            Image referenceOverlay = CreateWorkshopResourceIcon(decorPanel.transform, "WorkshopReferenceOverlay", Vector2.zero, LoadSpriteFromResources("Art/UI/Workshop/workshop_layout_reference"));
+            referenceOverlay.GetComponent<RectTransform>().sizeDelta = new Vector2(layout.panelWidth, layout.panelHeight);
+            referenceOverlay.preserveAspect = false;
+            referenceOverlay.raycastTarget = false;
+            referenceOverlay.color = new Color(1f, 1f, 1f, Mathf.Clamp01(layout.referenceOverlayAlpha));
+        }
+
+        decorPanel.transform.SetAsLastSibling();
+        decorPanel.SetActive(false);
+        RefreshWorkshopPanel();
+    }
+
+    private void SelectWorkshopCategory(WorkshopDecorCategory category)
+    {
+        selectedWorkshopCategory = category;
+        workshopCategoryPage = 0;
+        List<WorkshopDecorProduct> products = GetWorkshopProductsForCategory(category);
+        if (products.Count > 0)
+        {
+            selectedWorkshopPreviewId = products[0].Id;
+        }
+        RefreshWorkshopPanel();
+    }
+
+    private void SelectWorkshopCategorySlot(int slot)
+    {
+        int categoryIndex = slot;
+        if (!Enum.IsDefined(typeof(WorkshopDecorCategory), categoryIndex)) return;
+        SelectWorkshopCategory((WorkshopDecorCategory)categoryIndex);
+    }
+
+    private void CycleWorkshopCategoryPage()
+    {
+        workshopCategoryPage = workshopCategoryPage == 0 ? 1 : 0;
+        RefreshWorkshopPanel();
+    }
+
+    private void SelectWorkshopProduct(int index)
+    {
+        List<WorkshopDecorProduct> products = GetWorkshopProductsForCategory(selectedWorkshopCategory);
+        if (index < 0 || index >= products.Count)
+        {
+            return;
+        }
+
+        selectedWorkshopPreviewId = products[index].Id;
+        RefreshWorkshopPanel();
+    }
+
+    private void RefreshWorkshopPanel()
+    {
+        if (decorPanel == null)
+        {
+            return;
+        }
+
+        List<WorkshopDecorProduct> products = GetWorkshopProductsForCategory(selectedWorkshopCategory);
+        WorkshopDecorProduct selected = GetWorkshopProduct(selectedWorkshopPreviewId);
+        if (selected == null || selected.Category != selectedWorkshopCategory)
+        {
+            selected = products.Count > 0 ? products[0] : null;
+            selectedWorkshopPreviewId = selected != null ? selected.Id : "";
+        }
+
+        if (workshopCategoryTitleText != null)
+        {
+            workshopCategoryTitleText.text = GetWorkshopCategoryName(selectedWorkshopCategory).ToUpperInvariant();
+        }
+
+        for (int i = 0; i < workshopCategoryTabTexts.Count; i++)
+        {
+            TMP_Text tab = workshopCategoryTabTexts[i];
+            int categoryIndex = i;
+            bool valid = Enum.IsDefined(typeof(WorkshopDecorCategory), categoryIndex);
+            tab.transform.parent.gameObject.SetActive(valid);
+            if (!valid) continue;
+            WorkshopDecorCategory tabCategory = (WorkshopDecorCategory)categoryIndex;
+            tab.text = GetWorkshopCategoryName(tabCategory);
+            bool active = categoryIndex == (int)selectedWorkshopCategory;
+            tab.color = active ? new Color(1f, 0.90f, 0.58f, 1f) : new Color(0.30f, 0.13f, 0.025f, 1f);
+            if (i < workshopCategoryTabImages.Count && workshopCategoryTabImages[i] != null)
+            {
+                workshopCategoryTabImages[i].color = active ? new Color(0.10f, 0.72f, 0.66f, 1f) : Color.white;
+            }
+        }
+
+        for (int i = 0; i < workshopProductCards.Count; i++)
+        {
+            WorkshopProductCardUi card = workshopProductCards[i];
+            if (i >= products.Count)
+            {
+                card.Root.SetActive(false);
+                continue;
+            }
+
+            WorkshopDecorProduct product = products[i];
+            card.Root.SetActive(true);
+            card.Product = product;
+            card.ProductImage.sprite = GetWorkshopProductSprite(product.Id);
+            card.ProductImage.gameObject.SetActive(card.ProductImage.sprite != null);
+            card.NameText.text = GetWorkshopCardDisplayName(product);
+            card.RarityText.text = WorkshopDecorCatalog.GetRarityDisplayName(product.Rarity);
+            card.RarityText.color = GetWorkshopRarityTextColor(product.Rarity);
+            bool unlocked = unlockedWorkshopProducts.Contains(product.Id);
+            bool equipped = IsWorkshopProductSelected(product);
+            card.StatusText.text = equipped ? "KULLANILIYOR" : unlocked ? "ÜRETİLDİ" : "KİLİTLİ";
+            card.StatusText.color = equipped ? new Color(0.05f, 0.43f, 0.24f, 1f) : unlocked ? new Color(0.48f, 0.25f, 0.05f, 1f) : new Color(0.58f, 0.12f, 0.08f, 1f);
+            card.Background.color = product.Id == selectedWorkshopPreviewId ? new Color(0.78f, 1f, 0.94f, 1f) : Color.white;
+        }
+
+        if (selected == null)
+        {
+            return;
+        }
+
+        bool selectedUnlocked = unlockedWorkshopProducts.Contains(selected.Id);
+        bool selectedEquipped = IsWorkshopProductSelected(selected);
+        if (workshopSelectedProductImage != null)
+        {
+            workshopSelectedProductImage.sprite = GetWorkshopProductSprite(selected.Id);
+            workshopSelectedProductImage.gameObject.SetActive(workshopSelectedProductImage.sprite != null);
+        }
+        if (decorDetailTitleText != null) decorDetailTitleText.text = selected.DisplayName;
+        if (decorDetailStatusText != null)
+        {
+            decorDetailStatusText.text = WorkshopDecorCatalog.GetRarityDisplayName(selected.Rarity);
+            decorDetailStatusText.color = GetWorkshopRarityTextColor(selected.Rarity);
+        }
+        for (int i = 0; i < workshopEffectTexts.Count; i++)
+        {
+            bool visible = i == 0 || selected.HasSecondaryEffect;
+            workshopEffectTexts[i].gameObject.SetActive(visible);
+            if (i < workshopEffectFrameImages.Count) workshopEffectFrameImages[i].gameObject.SetActive(visible);
+            if (visible)
+            {
+                WorkshopCafeEffectType effect = i == 0 ? selected.PrimaryEffect : selected.SecondaryEffect;
+                int value = i == 0 ? selected.PrimaryEffectValue : selected.SecondaryEffectValue;
+                workshopEffectTexts[i].text = WorkshopDecorCatalog.GetEffectDisplayName(effect) + "  " + WorkshopDecorCatalog.GetEffectValueText(effect, value);
+            }
+        }
+        for (int i = 0; i < workshopRequirementTexts.Count; i++)
+        {
+            bool hasRequirement = selected.Recipe != null && i < selected.Recipe.Length;
+            workshopRequirementTexts[i].gameObject.SetActive(hasRequirement);
+            if (i < workshopRequirementFrameImages.Count) workshopRequirementFrameImages[i].gameObject.SetActive(hasRequirement);
+            workshopRequirementIconImages[i].gameObject.SetActive(hasRequirement);
+            workshopRequirementCountTexts[i].gameObject.SetActive(hasRequirement);
+            if (hasRequirement)
+            {
+                WorkshopCraftRequirement requirement = selected.Recipe[i];
+                workshopRequirementIconImages[i].sprite = GetWorkshopMaterialSprite(requirement.Material);
+                workshopRequirementTexts[i].text = GetWorkshopMaterialName(requirement.Material).ToUpperInvariant();
+                workshopRequirementCountTexts[i].text = GetWorkshopCraftMaterialCount(requirement.Material) + " / " + requirement.Amount;
+                Color requirementColor = GetWorkshopCraftMaterialCount(requirement.Material) >= requirement.Amount
+                    ? new Color(0.08f, 0.40f, 0.22f, 1f)
+                    : new Color(0.58f, 0.12f, 0.07f, 1f);
+                workshopRequirementTexts[i].color = requirementColor;
+                workshopRequirementCountTexts[i].color = requirementColor;
+            }
+        }
+        if (decorActionButtonText != null)
+        {
+            decorActionButtonText.text = selectedEquipped ? "KULLANILIYOR" : selectedUnlocked ? "KULLAN" : "ÜRET";
+            Button action = decorActionButtonText.GetComponentInParent<Button>();
+            if (action != null) action.interactable = !selectedEquipped && (selectedUnlocked || CanCraftWorkshopProduct(selected));
+        }
+        for (int i = 0; i < workshopMaterialCountTexts.Count; i++)
+        {
+            bool validMaterial = i < WorkshopDecorCatalog.CraftMaterials.Count;
+            workshopMaterialCountTexts[i].gameObject.SetActive(validMaterial);
+            if (i < workshopMaterialIconImages.Count) workshopMaterialIconImages[i].gameObject.SetActive(validMaterial);
+            if (validMaterial)
+            {
+                WorkshopCraftMaterialDefinition material = WorkshopDecorCatalog.CraftMaterials[i];
+                workshopMaterialCountTexts[i].text = GetWorkshopCraftMaterialCount(material.Type).ToString();
+                if (i < workshopMaterialIconImages.Count)
+                {
+                    workshopMaterialIconImages[i].sprite = GetWorkshopMaterialSprite(material.Type);
+                }
+            }
+        }
+        if (decorPreviewBackWallImage != null) decorPreviewBackWallImage.color = GetWallColor();
+        if (decorPreviewLeftWallImage != null) decorPreviewLeftWallImage.color = ShadeColor(GetWallColor(), 0.84f);
+        if (decorPreviewRightWallImage != null) decorPreviewRightWallImage.color = ShadeColor(GetWallColor(), 0.78f);
+        if (decorPreviewFloorImage != null) decorPreviewFloorImage.color = GetFloorColor();
+        if (decorPreviewTableTopImage != null) decorPreviewTableTopImage.color = GetTableColor();
+        if (workshopCafePreviewImage != null) workshopCafePreviewImage.sprite = GetActiveWorkshopEmptySceneSprite();
+        UpdateWorkshopCafePreviewObjectLayers();
+    }
+
+    private void CreateWorkshopCafePreviewObjectLayers(Transform previewParent)
+    {
+        workshopCafePreviewObjectImages.Clear();
+        CreateWorkshopCafePreviewFloorLayer(previewParent);
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Rug, new Vector2(0f, -115f), new Vector2(355f, 175f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Counter, new Vector2(0f, -18f), new Vector2(335f, 210f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Shelf, new Vector2(-155f, 88f), new Vector2(165f, 112f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Shelf, new Vector2(125f, 82f), new Vector2(165f, 112f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.WallArt, new Vector2(-120f, 112f), new Vector2(88f, 112f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.WallArt, new Vector2(190f, 114f), new Vector2(82f, 106f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Table, new Vector2(-145f, -126f), new Vector2(150f, 125f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Table, new Vector2(150f, -126f), new Vector2(150f, 125f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Chair, new Vector2(-265f, -118f), new Vector2(82f, 122f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Chair, new Vector2(-55f, -120f), new Vector2(82f, 122f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Chair, new Vector2(60f, -120f), new Vector2(82f, 122f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Chair, new Vector2(270f, -118f), new Vector2(82f, 122f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Plant, new Vector2(-350f, -82f), new Vector2(105f, 142f));
+        CreateWorkshopCafePreviewObjectLayer(previewParent, WorkshopDecorCategory.Plant, new Vector2(350f, -82f), new Vector2(105f, 142f));
+    }
+
+    private void CreateWorkshopCafePreviewFloorLayer(Transform parent)
+    {
+        GameObject floorObject = new GameObject("WorkshopCafePreview_FloorPerspective", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextureQuadGraphic));
+        floorObject.transform.SetParent(parent, false);
+
+        RectTransform rect = floorObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = new Vector2(760f, 360f);
+
+        workshopCafePreviewFloorGraphic = floorObject.GetComponent<TextureQuadGraphic>();
+        workshopCafePreviewFloorGraphic.SetCorners(
+            new Vector2(-290f, -28f),
+            new Vector2(290f, -28f),
+            new Vector2(348f, -188f),
+            new Vector2(-348f, -188f));
+        workshopCafePreviewFloorGraphic.color = Color.white;
+        workshopCafePreviewFloorGraphic.raycastTarget = false;
+        floorObject.SetActive(false);
+    }
+
+    private void CreateWorkshopCafePreviewObjectLayer(Transform parent, WorkshopDecorCategory category, Vector2 position, Vector2 size)
+    {
+        GameObject layerObject = new GameObject("WorkshopCafePreview_" + category, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        layerObject.transform.SetParent(parent, false);
+
+        RectTransform rect = layerObject.GetComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = position;
+        rect.sizeDelta = size;
+
+        Image image = layerObject.GetComponent<Image>();
+        image.color = Color.white;
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+        layerObject.SetActive(false);
+        if (!workshopCafePreviewObjectImages.TryGetValue(category, out List<Image> categoryImages))
+        {
+            categoryImages = new List<Image>();
+            workshopCafePreviewObjectImages[category] = categoryImages;
+        }
+        categoryImages.Add(image);
+    }
+
+    private void UpdateWorkshopCafePreviewObjectLayers()
+    {
+        if (workshopCafePreviewFloorGraphic != null)
+        {
+            WorkshopDecorProduct floorProduct = GetDisplayedWorkshopProduct(WorkshopDecorCategory.Floor);
+            Sprite floorSprite = floorProduct != null ? GetWorkshopProductSprite(floorProduct.Id) : null;
+            workshopCafePreviewFloorGraphic.SetSprite(floorSprite);
+            workshopCafePreviewFloorGraphic.gameObject.SetActive(floorSprite != null);
+        }
+
+        foreach (KeyValuePair<WorkshopDecorCategory, List<Image>> pair in workshopCafePreviewObjectImages)
+        {
+            WorkshopDecorProduct product = GetDisplayedWorkshopProduct(pair.Key);
+            Sprite sprite = product != null ? GetWorkshopProductSprite(product.Id) : null;
+            List<Image> images = pair.Value;
+            for (int i = 0; i < images.Count; i++)
+            {
+                Image image = images[i];
+                if (image == null) continue;
+                image.sprite = sprite;
+                image.gameObject.SetActive(sprite != null);
+            }
+        }
+    }
+
+    private List<WorkshopDecorProduct> GetWorkshopProductsForCategory(WorkshopDecorCategory category)
+    {
+        List<WorkshopDecorProduct> result = new List<WorkshopDecorProduct>(6);
+        for (int i = 0; i < WorkshopDecorCatalog.Products.Count; i++)
+        {
+            WorkshopDecorProduct product = WorkshopDecorCatalog.Products[i];
+            if (product.Category == category) result.Add(product);
+        }
+        return result;
+    }
+
+    private WorkshopDecorProduct GetWorkshopProduct(string id)
+    {
+        for (int i = 0; i < WorkshopDecorCatalog.Products.Count; i++)
+        {
+            WorkshopDecorProduct product = WorkshopDecorCatalog.Products[i];
+            if (string.Equals(product.Id, id, StringComparison.Ordinal)) return product;
+        }
+        return null;
+    }
+
+    private bool IsWorkshopProductSelected(WorkshopDecorProduct product)
+    {
+        return product != null && selectedWorkshopProducts.TryGetValue(product.Category, out string selectedId) && selectedId == product.Id;
+    }
+
+    private bool CanCraftWorkshopProduct(WorkshopDecorProduct product)
+    {
+        if (product == null || product.Recipe == null) return false;
+        for (int i = 0; i < product.Recipe.Length; i++)
+        {
+            WorkshopCraftRequirement requirement = product.Recipe[i];
+            if (GetWorkshopCraftMaterialCount(requirement.Material) < requirement.Amount) return false;
+        }
+        return true;
+    }
+
+    private bool TrySpendWorkshopRecipe(WorkshopDecorProduct product)
+    {
+        if (!CanCraftWorkshopProduct(product)) return false;
+        for (int i = 0; i < product.Recipe.Length; i++)
+        {
+            WorkshopCraftRequirement requirement = product.Recipe[i];
+            if (requirement.Material == WorkshopCraftMaterialType.Paint)
+            {
+                TrySpendPaintCans(requirement.Amount);
+            }
+            else if (requirement.Material == WorkshopCraftMaterialType.Wood)
+            {
+                woodPieces -= requirement.Amount;
+            }
+            else
+            {
+                string itemId = GetWorkshopMaterialInventoryId(requirement.Material);
+                itemInventory[itemId] = Mathf.Max(0, GetInventoryItemCount(itemId) - requirement.Amount);
+            }
+        }
+        return true;
+    }
+
+    private string BuildWorkshopRecipeText(WorkshopDecorProduct product)
+    {
+        if (product == null || product.Recipe == null) return "";
+        string text = "GEREKEN: ";
+        for (int i = 0; i < product.Recipe.Length; i++)
+        {
+            WorkshopCraftRequirement requirement = product.Recipe[i];
+            if (i > 0) text += "  •  ";
+            text += GetWorkshopMaterialName(requirement.Material) + " " + GetWorkshopCraftMaterialCount(requirement.Material) + "/" + requirement.Amount;
+        }
+        return text;
+    }
+
+    private string BuildWorkshopMaterialSummary()
+    {
+        string text = "MALZEMELER   ";
+        for (int i = 0; i < WorkshopDecorCatalog.CraftMaterials.Count; i++)
+        {
+            WorkshopCraftMaterialDefinition material = WorkshopDecorCatalog.CraftMaterials[i];
+            if (i > 0) text += "   ";
+            text += material.DisplayName + " " + GetWorkshopCraftMaterialCount(material.Type);
+        }
+        return text;
+    }
+
+    private string GetWorkshopMaterialName(WorkshopCraftMaterialType material)
+    {
+        for (int i = 0; i < WorkshopDecorCatalog.CraftMaterials.Count; i++)
+        {
+            if (WorkshopDecorCatalog.CraftMaterials[i].Type == material) return WorkshopDecorCatalog.CraftMaterials[i].DisplayName;
+        }
+        return material.ToString();
+    }
+
+    private static string GetWorkshopCategoryName(WorkshopDecorCategory category)
+    {
+        switch (category)
+        {
+            case WorkshopDecorCategory.Wall: return "DUVAR";
+            case WorkshopDecorCategory.Floor: return "ZEMİN";
+            case WorkshopDecorCategory.Table: return "MASA";
+            case WorkshopDecorCategory.Chair: return "SANDALYE";
+            case WorkshopDecorCategory.Rug: return "HALI";
+            case WorkshopDecorCategory.Shelf: return "RAF";
+            case WorkshopDecorCategory.Counter: return "TEZGÂH";
+            case WorkshopDecorCategory.Plant: return "BİTKİ";
+            case WorkshopDecorCategory.WallArt: return "TABLO";
+            default: return "DEKOR";
+        }
+    }
+
+    private static string GetWorkshopCardDisplayName(WorkshopDecorProduct product)
+    {
+        if (product == null) return "";
+        string suffix = "";
+        switch (product.Category)
+        {
+            case WorkshopDecorCategory.Wall: suffix = " Duvar"; break;
+            case WorkshopDecorCategory.Floor: suffix = " Zemin"; break;
+            case WorkshopDecorCategory.Table: suffix = " Masa"; break;
+            case WorkshopDecorCategory.Chair: suffix = " Sandalye"; break;
+            case WorkshopDecorCategory.Rug: suffix = " Halı"; break;
+            case WorkshopDecorCategory.Shelf: suffix = " Raf"; break;
+            case WorkshopDecorCategory.Counter: suffix = " Tezgâh"; break;
+            case WorkshopDecorCategory.Plant: suffix = " Saksı Bitkisi"; break;
+            case WorkshopDecorCategory.WallArt: suffix = " Duvar Tablosu"; break;
+        }
+        return !string.IsNullOrEmpty(suffix) && product.DisplayName.EndsWith(suffix, StringComparison.Ordinal)
+            ? product.DisplayName.Substring(0, product.DisplayName.Length - suffix.Length)
+            : product.DisplayName;
+    }
+
+    private static Color GetWorkshopRarityTextColor(WorkshopDecorRarity rarity)
+    {
+        if (rarity == WorkshopDecorRarity.Rare) return new Color(0.02f, 0.42f, 0.43f, 1f);
+        if (rarity == WorkshopDecorRarity.Luxury) return new Color(0.48f, 0.10f, 0.50f, 1f);
+        return new Color(0.43f, 0.22f, 0.07f, 1f);
+    }
+
+    private static Color GetWorkshopRarityCardColor(WorkshopDecorRarity rarity, bool selected)
+    {
+        Color color = rarity == WorkshopDecorRarity.Rare
+            ? new Color(0.05f, 0.32f, 0.34f, 1f)
+            : rarity == WorkshopDecorRarity.Luxury
+                ? new Color(0.35f, 0.08f, 0.38f, 1f)
+                : new Color(0.38f, 0.20f, 0.08f, 1f);
+        return selected ? Color.Lerp(color, new Color(0.95f, 0.58f, 0.08f, 1f), 0.45f) : color;
+    }
+
+    private void CreateLegacyDecorPanel(Transform parent)
     {
         decorPanel = new GameObject("DecorPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         decorPanel.transform.SetParent(parent, false);
@@ -3948,8 +7917,7 @@ public class GameManager : MonoBehaviour
         CreateButton(contentObject.transform, "TestLuxuryChestButton", "TEST +1 Ozel Sandik", new Vector2(0, -210), new Vector2(440, 70), AddTestLuxuryChest, new Color(0.72f, 0.54f, 0.22f), 25);
         CreateButton(contentObject.transform, "ResetButton", "RESET", new Vector2(0, -295), new Vector2(440, 70), ResetSave, new Color(0.20f, 0.20f, 0.20f), 25);
         CreateButton(contentObject.transform, "TestVipButton", "TEST +1 VIP", new Vector2(0, -380), new Vector2(440, 70), AddTestVipLevel, new Color(0.72f, 0.54f, 0.18f), 25);
-        TMP_Text futureText = CreateText(contentObject.transform, "FutureTestText", "Yeni testler buraya eklenecek", new Vector2(0, -465), new Vector2(440, 70), 22);
-        futureText.color = Color.black;
+        CreateButton(contentObject.transform, "TestWorkshopMaterialsButton", "TEST +20 Atölye Malzemesi", new Vector2(0, -465), new Vector2(440, 70), AddTestWorkshopMaterials, new Color(0.18f, 0.48f, 0.36f), 23);
 
         GameObject scrollbarObject = new GameObject("TestScrollbar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Scrollbar));
         scrollbarObject.transform.SetParent(testPanel.transform, false);
@@ -5353,6 +9321,53 @@ public class GameManager : MonoBehaviour
         return image;
     }
 
+    private Sprite GetWorkshopUiSprite(string assetName)
+    {
+        if (string.IsNullOrEmpty(assetName)) return null;
+        if (workshopUiSprites.TryGetValue(assetName, out Sprite cached)) return cached;
+
+        string resourcePath = "Art/UI/Workshop/Modular/" + assetName;
+        Texture2D texture = Resources.Load<Texture2D>(resourcePath);
+        if (texture == null)
+        {
+            workshopUiSprites[assetName] = null;
+            return null;
+        }
+
+        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
+        sprite.name = assetName;
+        workshopUiSprites[assetName] = sprite;
+        return sprite;
+    }
+
+    private Sprite GetWorkshopCategoryIconSprite(WorkshopDecorCategory category)
+    {
+        string suffix;
+        switch (category)
+        {
+            case WorkshopDecorCategory.Wall: suffix = "wall"; break;
+            case WorkshopDecorCategory.Floor: suffix = "floor"; break;
+            case WorkshopDecorCategory.Table: suffix = "table"; break;
+            case WorkshopDecorCategory.Chair: suffix = "chair"; break;
+            case WorkshopDecorCategory.Rug: suffix = "rug"; break;
+            case WorkshopDecorCategory.Shelf: suffix = "shelf"; break;
+            case WorkshopDecorCategory.Counter: suffix = "counter"; break;
+            case WorkshopDecorCategory.Plant: suffix = "plant"; break;
+            case WorkshopDecorCategory.WallArt: suffix = "wall_art"; break;
+            default: return null;
+        }
+        return GetWorkshopUiSprite("workshop_category_" + suffix);
+    }
+
+    private Image CreateWorkshopUiImage(Transform parent, string name, Vector2 position, Vector2 size, string assetName, bool preserveAspect)
+    {
+        Image image = CreateWorkshopResourceIcon(parent, name, position, GetWorkshopUiSprite(assetName));
+        image.GetComponent<RectTransform>().sizeDelta = size;
+        image.preserveAspect = preserveAspect;
+        image.raycastTarget = false;
+        return image;
+    }
+
     private Image CreateWorkshopPanelBox(Transform parent, string name, Vector2 position, Vector2 size, Color color)
     {
         GameObject boxObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -6667,17 +10682,30 @@ public class GameManager : MonoBehaviour
         if (dailyRewardPanelText != null)
             dailyRewardPanelText.text = GetDailyRewardText();
 
+        RefreshDailyRewardLiveOverlay();
+
         if (dailyRewardButtonText != null)
         {
             Button dailyButton = dailyRewardButtonText.GetComponentInParent<Button>();
             bool canClaimDaily = CanClaimDailyReward();
-            dailyRewardButtonText.text = canClaimDaily ? "Ödülü Al" : "Bekle";
+            dailyRewardButtonText.text = canClaimDaily ? "Ödülü Al" : "";
             if (dailyButton != null)
                 dailyButton.interactable = canClaimDaily;
         }
 
         if (dailyRewardPanel != null && dailyRewardPanel.activeSelf && lastOfflineCoins <= 0)
+        {
+            if (dailyRewardDimmer != null)
+            {
+                dailyRewardDimmer.SetActive(true);
+                dailyRewardDimmer.transform.SetAsLastSibling();
+            }
             dailyRewardPanel.transform.SetAsLastSibling();
+        }
+        else if (dailyRewardDimmer != null && (dailyRewardPanel == null || !dailyRewardPanel.activeSelf))
+        {
+            dailyRewardDimmer.SetActive(false);
+        }
 
         if (chestPanelText != null)
         {
@@ -6687,11 +10715,14 @@ public class GameManager : MonoBehaviour
                 + "\nTahta: " + woodPieces
                 + GetPaintInventorySummary();
         }
+        if (commonChestCountText != null) commonChestCountText.text = "SIRADAN  ×" + chests;
+        if (rareChestCountText != null) rareChestCountText.text = "NADIR  ×" + rareChests;
+        if (luxuryChestCountText != null) luxuryChestCountText.text = "ÖZEL  ×" + luxuryChests;
 
         if (chestOpenButtonText != null)
         {
             Button chestButton = chestOpenButtonText.GetComponentInParent<Button>();
-            chestOpenButtonText.text = chests > 0 ? "Siradan\nAc" : "Siradan\nYok";
+            chestOpenButtonText.text = chests > 0 ? "SIRADAN AÇ" : "SANDIK YOK";
             if (chestButton != null)
                 chestButton.interactable = chests > 0;
         }
@@ -6699,7 +10730,7 @@ public class GameManager : MonoBehaviour
         if (rareChestOpenButtonText != null)
         {
             Button rareButton = rareChestOpenButtonText.GetComponentInParent<Button>();
-            rareChestOpenButtonText.text = rareChests > 0 ? "Nadir\nAc" : "Nadir\nYok";
+            rareChestOpenButtonText.text = rareChests > 0 ? "NADIR AÇ" : "SANDIK YOK";
             if (rareButton != null)
                 rareButton.interactable = rareChests > 0;
         }
@@ -6707,7 +10738,7 @@ public class GameManager : MonoBehaviour
         if (luxuryChestOpenButtonText != null)
         {
             Button luxuryButton = luxuryChestOpenButtonText.GetComponentInParent<Button>();
-            luxuryChestOpenButtonText.text = luxuryChests > 0 ? "Ozel\nAc" : "Ozel\nYok";
+            luxuryChestOpenButtonText.text = luxuryChests > 0 ? "ÖZEL AÇ" : "SANDIK YOK";
             if (luxuryButton != null)
                 luxuryButton.interactable = luxuryChests > 0;
         }
@@ -6753,21 +10784,21 @@ public class GameManager : MonoBehaviour
         }
 
         bool vipAtMaximum = vipLevel >= MaxVipLevel;
-        int nextVipLevel = Mathf.Clamp(vipLevel + 1, 1, MaxVipLevel);
+        int nextVipLevel = GetVipPurchaseTargetLevel();
         if (vipProfessionalUpgradeText != null)
             vipProfessionalUpgradeText.text = vipAtMaximum ? "EN YÜKSEK VIP" : GetVipTierName(nextVipLevel).ToUpperInvariant() + "'E GEÇ";
 
         if (vipProfessionalUpgradeCostText != null)
-            vipProfessionalUpgradeCostText.text = vipAtMaximum ? "MAX" : GetVipUpgradeCost().ToString();
+            vipProfessionalUpgradeCostText.text = vipAtMaximum ? "MAX" : GetVipPurchaseCost().ToString();
 
         if (vipProfessionalUpgradeGemImage != null)
             vipProfessionalUpgradeGemImage.gameObject.SetActive(!vipAtMaximum);
 
         if (vipProfessionalUpgradeButton != null)
-            vipProfessionalUpgradeButton.interactable = !vipAtMaximum && gems >= GetVipUpgradeCost();
+            vipProfessionalUpgradeButton.interactable = !vipAtMaximum && gems >= GetVipPurchaseCost();
 
         if (vipProfessionalClaimButton != null)
-            vipProfessionalClaimButton.interactable = true;
+            vipProfessionalClaimButton.interactable = CanClaimVipDailyReward();
 
         bool shownVipIsLocked = shownVipLevel <= 0;
 
@@ -6838,13 +10869,13 @@ public class GameManager : MonoBehaviour
         }
 
         if (vipLeftClaimButtonText != null)
-            vipLeftClaimButtonText.text = "AL";
+            vipLeftClaimButtonText.text = vipLevel <= 0 ? "KİLİTLİ" : CanClaimVipDailyReward() ? "AL" : "BEKLE";
 
         if (vipUpgradeButtonText != null)
         {
             Button vipButton = vipUpgradeButtonText.GetComponentInParent<Button>();
             bool maxed = vipLevel >= MaxVipLevel;
-            int cost = GetVipUpgradeCost();
+            int cost = GetVipPurchaseCost();
             vipUpgradeButtonText.text = maxed ? "VIP MAX" : "AÇ: " + cost;
             if (vipUpgradeGemIconImage != null)
                 vipUpgradeGemIconImage.gameObject.SetActive(!maxed);
@@ -6978,7 +11009,7 @@ public class GameManager : MonoBehaviour
         UpdateDecorButton(creamFloorButtonText, GetDecorItemData(3));
         UpdateDecorButton(roseTableButtonText, GetDecorItemData(4));
 
-        if (decorActionButtonText != null)
+        if (decorActionButtonText != null && decorPanelText != null)
         {
             Button actionButton = decorActionButtonText.GetComponentInParent<Button>();
             bool unlocked = IsPreviewDecorUnlocked();
@@ -7013,6 +11044,9 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+
+        if (decorPanel != null && decorPanel.activeSelf && workshopMaterialCountTexts.Count > 0)
+            RefreshWorkshopPanel();
 
         if (decorPanel != null && decorPanel.activeSelf && lastOfflineCoins <= 0)
             decorPanel.transform.SetAsLastSibling();
@@ -7740,6 +11774,8 @@ public class GameManager : MonoBehaviour
 
     private Color GetWallColor()
     {
+        WorkshopDecorProduct workshopProduct = GetDisplayedWorkshopProduct(WorkshopDecorCategory.Wall);
+        if (workshopProduct != null) return GetWorkshopVariantColor(workshopProduct.VariantKey, new Color(0.88f, 0.95f, 1f, 1f));
         int wallStyle = selectedWallStyle;
         DecorItemData previewItem = GetPreviewDecorItem();
         if (IsPreviewingDecor() && previewItem != null && previewItem.Slot == DecorSlot.Wall)
@@ -7782,6 +11818,8 @@ public class GameManager : MonoBehaviour
 
     private Color GetFloorColor()
     {
+        WorkshopDecorProduct workshopProduct = GetDisplayedWorkshopProduct(WorkshopDecorCategory.Floor);
+        if (workshopProduct != null) return GetWorkshopVariantColor(workshopProduct.VariantKey, new Color(0.64f, 0.50f, 0.38f, 1f));
         int floorStyle = selectedFloorStyle;
         DecorItemData previewItem = GetPreviewDecorItem();
         if (IsPreviewingDecor() && previewItem != null && previewItem.Slot == DecorSlot.Floor)
@@ -7818,6 +11856,8 @@ public class GameManager : MonoBehaviour
 
     private Color GetTableColor()
     {
+        WorkshopDecorProduct workshopProduct = GetDisplayedWorkshopProduct(WorkshopDecorCategory.Table);
+        if (workshopProduct != null) return GetWorkshopVariantColor(workshopProduct.VariantKey, new Color(0.45f, 0.25f, 0.14f, 1f));
         int tableStyle = selectedTableStyle;
         DecorItemData previewItem = GetPreviewDecorItem();
         if (IsPreviewingDecor() && previewItem != null && previewItem.Slot == DecorSlot.Table)
@@ -7852,6 +11892,37 @@ public class GameManager : MonoBehaviour
         return new Color(0.45f, 0.25f, 0.14f, 1f);
     }
 
+    private WorkshopDecorProduct GetDisplayedWorkshopProduct(WorkshopDecorCategory category)
+    {
+        if (decorPanel != null && decorPanel.activeSelf && selectedWorkshopCategory == category)
+        {
+            WorkshopDecorProduct preview = GetWorkshopProduct(selectedWorkshopPreviewId);
+            if (preview != null && preview.Category == category) return preview;
+        }
+
+        if (selectedWorkshopProducts.TryGetValue(category, out string selectedId))
+        {
+            WorkshopDecorProduct product = GetWorkshopProduct(selectedId);
+            if (product != null && unlockedWorkshopProducts.Contains(product.Id)) return product;
+        }
+        return null;
+    }
+
+    private static Color GetWorkshopVariantColor(string variantKey, Color fallback)
+    {
+        if (string.IsNullOrEmpty(variantKey)) return fallback;
+        if (variantKey.Contains("mint")) return new Color(0.52f, 0.78f, 0.70f, 1f);
+        if (variantKey.Contains("rose")) return new Color(0.78f, 0.48f, 0.54f, 1f);
+        if (variantKey.Contains("burgundy")) return new Color(0.40f, 0.10f, 0.14f, 1f);
+        if (variantKey.Contains("navy")) return new Color(0.12f, 0.20f, 0.34f, 1f);
+        if (variantKey.Contains("charcoal") || variantKey.Contains("black")) return new Color(0.22f, 0.22f, 0.23f, 1f);
+        if (variantKey.Contains("cream") || variantKey.Contains("marble")) return new Color(0.90f, 0.82f, 0.66f, 1f);
+        if (variantKey.Contains("olive")) return new Color(0.46f, 0.48f, 0.26f, 1f);
+        if (variantKey.Contains("terracotta")) return new Color(0.66f, 0.31f, 0.18f, 1f);
+        if (variantKey.Contains("walnut") || variantKey.Contains("oak")) return new Color(0.48f, 0.27f, 0.12f, 1f);
+        return fallback;
+    }
+
     private Color GetRoomAccentColor()
     {
         if (currentRoomIndex == 1)
@@ -7867,6 +11938,10 @@ public class GameManager : MonoBehaviour
     {
         bool unlocked = IsCurrentRoomUnlocked();
         bool showStartingRoom = currentRoomIndex == 0;
+        if (cafeSceneImage != null)
+        {
+            cafeSceneImage.sprite = GetActiveWorkshopWallSceneSprite(false);
+        }
         bool useCafeSceneImage = showStartingRoom && cafeSceneImage != null && cafeSceneImage.sprite != null;
         for (int i = 0; i < startingRoomVisuals.Count; i++)
         {
@@ -8220,6 +12295,22 @@ public class GameManager : MonoBehaviour
         return (DateTime.UtcNow - lastRewardTime).TotalHours >= DailyRewardCooldownHours;
     }
 
+    private bool CanClaimVipDailyReward()
+    {
+        if (vipLevel <= 0)
+        {
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(lastVipDailyRewardUtc) || !long.TryParse(lastVipDailyRewardUtc, out long ticks))
+        {
+            return true;
+        }
+
+        DateTime lastRewardTime = new DateTime(ticks, DateTimeKind.Utc);
+        return (DateTime.UtcNow - lastRewardTime).TotalHours >= DailyRewardCooldownHours;
+    }
+
     private string GetDailyRewardText()
     {
         string text = "";
@@ -8238,17 +12329,151 @@ public class GameManager : MonoBehaviour
         return text + "\nSiradaki odul: " + GetDailyRewardWaitText();
     }
 
+    private void RefreshDailyRewardLiveOverlay()
+    {
+        bool canClaim = CanClaimDailyReward();
+        int currentDay = Mathf.Clamp(dailyRewardDay, 0, DailyRewardCycleDays - 1);
+
+        for (int i = 0; i < dailyRewardDayHighlightImages.Count; i++)
+        {
+            Image highlight = dailyRewardDayHighlightImages[i];
+            if (highlight == null) continue;
+            bool active = i == currentDay;
+            highlight.gameObject.SetActive(active);
+            if (active)
+            {
+                float pulse = 0.18f + Mathf.PingPong(Time.time * 1.6f, 0.10f);
+                highlight.color = canClaim
+                    ? new Color(1f, 0.82f, 0.22f, pulse)
+                    : new Color(0.15f, 0.78f, 0.72f, pulse * 0.85f);
+            }
+        }
+
+        if (dailyRewardClaimTextImage != null)
+        {
+            dailyRewardClaimTextImage.gameObject.SetActive(canClaim);
+            if (canClaim)
+            {
+                dailyRewardClaimTextImage.sprite = dailyRewardClaimSprite;
+            }
+        }
+
+        for (int i = 0; i < dailyRewardStepStatusImages.Count; i++)
+        {
+            Image statusImage = dailyRewardStepStatusImages[i];
+            if (statusImage == null) continue;
+            bool isLockedStatus = false;
+
+            if (i < currentDay)
+            {
+                statusImage.sprite = dailyRewardStatusClaimedSprite;
+            }
+            else if (i == currentDay)
+            {
+                if (canClaim)
+                {
+                    statusImage.sprite = dailyRewardStatusAvailableSprite;
+                }
+                else
+                {
+                    statusImage.sprite = i == DailyRewardCycleDays - 1 ? dailyRewardStatusLockedLongSprite : dailyRewardStatusLockedSprite;
+                    isLockedStatus = true;
+                }
+            }
+            else
+            {
+                statusImage.sprite = i == DailyRewardCycleDays - 1 ? dailyRewardStatusLockedLongSprite : dailyRewardStatusLockedSprite;
+                isLockedStatus = true;
+            }
+
+            RectTransform statusRect = statusImage.GetComponent<RectTransform>();
+            if (statusRect != null && i < dailyRewardStepStatusReferencePositions.Count)
+            {
+                Vector2 referencePosition = dailyRewardStepStatusReferencePositions[i];
+                if (isLockedStatus)
+                {
+                    referencePosition.y -= 5f;
+                }
+                statusRect.anchoredPosition = DailyRewardLayoutPosition(referencePosition);
+            }
+
+            statusImage.gameObject.SetActive(true);
+        }
+
+        for (int i = 0; i < dailyRewardStepStatusTexts.Count; i++)
+        {
+            TMP_Text statusText = dailyRewardStepStatusTexts[i];
+            Image badgeImage = i < dailyRewardStepBadgeImages.Count ? dailyRewardStepBadgeImages[i] : null;
+            if (statusText == null) continue;
+            statusText.gameObject.SetActive(true);
+            if (badgeImage != null) badgeImage.gameObject.SetActive(false);
+
+            string status;
+            Color textColor;
+
+            if (i < currentDay)
+            {
+                status = "AL";
+                textColor = new Color(1f, 0.96f, 0.72f, 1f);
+            }
+            else if (i == currentDay)
+            {
+                status = canClaim ? "BUGÜN" : "KİLİT";
+                textColor = new Color(1f, 0.92f, 0.58f, 1f);
+            }
+            else
+            {
+                status = i == DailyRewardCycleDays - 1 ? "KİLİTLİ" : "KİLİT";
+                textColor = new Color(0.86f, 0.72f, 0.52f, 1f);
+            }
+
+            statusText.text = status;
+            statusText.color = textColor;
+        }
+
+        if (dailyRewardTodayAmountText != null)
+        {
+            dailyRewardTodayAmountText.text = GetDailyRewardShortLine(currentDay).ToUpperInvariant();
+        }
+
+        if (dailyRewardClaimStateText != null)
+        {
+            dailyRewardClaimStateText.text = canClaim ? "ÖDÜLÜ AL" : "";
+            dailyRewardClaimStateText.color = canClaim ? new Color(1f, 0.86f, 0.48f, 1f) : new Color(0.75f, 0.62f, 0.44f, 1f);
+        }
+
+        if (dailyRewardTimerText != null)
+        {
+            dailyRewardTimerText.text = canClaim ? "Bugünün ödülü hazır" : "Sonraki ödül: " + GetDailyRewardWaitText();
+        }
+    }
+
     private string GetDailyRewardLine(int dayIndex)
     {
         int gemReward = GetDailyGemReward(dayIndex);
-        int chestReward = GetDailyChestReward(dayIndex);
+        int commonChestReward = GetDailyCommonChestReward(dayIndex);
+        int rareChestReward = GetDailyRareChestReward(dayIndex);
+        int luxuryChestReward = GetDailyLuxuryChestReward(dayIndex);
+        string reward = gemReward + " Elmas";
+        if (commonChestReward > 0) reward += " + " + commonChestReward + " Sıradan Sandık";
+        if (rareChestReward > 0) reward += " + " + rareChestReward + " Nadir Sandık";
+        if (luxuryChestReward > 0) reward += " + " + luxuryChestReward + " Özel Sandık";
+        return reward;
+    }
 
-        if (chestReward <= 0)
-        {
-            return gemReward + " Elmas";
-        }
+    private string GetDailyRewardShortLine(int dayIndex)
+    {
+        int gemReward = GetDailyGemReward(dayIndex);
+        int commonChestReward = GetDailyCommonChestReward(dayIndex);
+        int rareChestReward = GetDailyRareChestReward(dayIndex);
+        int luxuryChestReward = GetDailyLuxuryChestReward(dayIndex);
 
-        return gemReward + " Elmas + " + chestReward + " Sandik";
+        List<string> parts = new List<string>();
+        if (gemReward > 0) parts.Add(gemReward + " Elmas");
+        if (commonChestReward > 0) parts.Add(commonChestReward + " Sandık");
+        if (rareChestReward > 0) parts.Add(rareChestReward + " Nadir");
+        if (luxuryChestReward > 0) parts.Add(luxuryChestReward + " Özel");
+        return string.Join("\n", parts.ToArray());
     }
 
     private string GetDailyRewardWaitText()
@@ -8277,17 +12502,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private int GetDailyChestReward(int dayIndex)
+    private int GetDailyCommonChestReward(int dayIndex)
     {
         switch (dayIndex)
         {
             case 1: return 1;
             case 3: return 1;
             case 4: return 1;
-            case 5: return 1;
-            case 6: return 2;
             default: return 0;
         }
+    }
+
+    private int GetDailyRareChestReward(int dayIndex)
+    {
+        return dayIndex == 5 ? 1 : 0;
+    }
+
+    private int GetDailyLuxuryChestReward(int dayIndex)
+    {
+        return dayIndex == 6 ? 1 : 0;
     }
 
     private string FormatTime(float seconds)
@@ -8380,6 +12613,52 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private string SerializeWorkshopUnlockedProducts()
+    {
+        List<string> ids = new List<string>(unlockedWorkshopProducts);
+        ids.Sort(StringComparer.Ordinal);
+        return string.Join("|", ids.ToArray());
+    }
+
+    private void LoadWorkshopUnlockedProducts(string value)
+    {
+        unlockedWorkshopProducts.Clear();
+        if (string.IsNullOrEmpty(value)) return;
+        string[] ids = value.Split('|');
+        for (int i = 0; i < ids.Length; i++)
+        {
+            if (GetWorkshopProduct(ids[i]) != null) unlockedWorkshopProducts.Add(ids[i]);
+        }
+    }
+
+    private string SerializeWorkshopSelectedProducts()
+    {
+        List<string> entries = new List<string>();
+        foreach (KeyValuePair<WorkshopDecorCategory, string> pair in selectedWorkshopProducts)
+        {
+            entries.Add(((int)pair.Key) + "=" + pair.Value);
+        }
+        entries.Sort(StringComparer.Ordinal);
+        return string.Join("|", entries.ToArray());
+    }
+
+    private void LoadWorkshopSelectedProducts(string value)
+    {
+        selectedWorkshopProducts.Clear();
+        if (string.IsNullOrEmpty(value)) return;
+        string[] entries = value.Split('|');
+        for (int i = 0; i < entries.Length; i++)
+        {
+            string[] pair = entries[i].Split('=');
+            if (pair.Length != 2 || !int.TryParse(pair[0], out int categoryValue)) continue;
+            if (!Enum.IsDefined(typeof(WorkshopDecorCategory), categoryValue)) continue;
+            WorkshopDecorProduct product = GetWorkshopProduct(pair[1]);
+            if (product == null || !unlockedWorkshopProducts.Contains(product.Id)) continue;
+            WorkshopDecorCategory category = (WorkshopDecorCategory)categoryValue;
+            if (product.Category == category) selectedWorkshopProducts[category] = product.Id;
+        }
+    }
+
     private void SaveGame()
     {
         PlayerPrefs.SetFloat("coins", coins);
@@ -8415,6 +12694,8 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("paintPieces", paintPieces);
         PlayerPrefs.SetInt("woodPieces", woodPieces);
         PlayerPrefs.SetString("itemInventory", SerializeItemInventory());
+        PlayerPrefs.SetString("workshopUnlockedProducts", SerializeWorkshopUnlockedProducts());
+        PlayerPrefs.SetString("workshopSelectedProducts", SerializeWorkshopSelectedProducts());
         PlayerPrefs.SetString("lastChestRewardText", lastChestRewardText);
         PlayerPrefs.SetInt("pinkWallUnlocked", pinkWallUnlocked ? 1 : 0);
         PlayerPrefs.SetInt("mintWallUnlocked", mintWallUnlocked ? 1 : 0);
@@ -8427,6 +12708,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("productionRoomUnlocked", productionRoomUnlocked ? 1 : 0);
         PlayerPrefs.SetInt("vipRoomUnlocked", vipRoomUnlocked ? 1 : 0);
         PlayerPrefs.SetInt("vipLevel", vipLevel);
+        PlayerPrefs.SetString("lastVipDailyRewardUtc", lastVipDailyRewardUtc);
         PlayerPrefs.SetInt("vipInfoSeen", vipInfoSeen ? 1 : 0);
         PlayerPrefs.SetInt("xp", xp);
         PlayerPrefs.SetInt("playerLevel", playerLevel);
@@ -8491,6 +12773,8 @@ public class GameManager : MonoBehaviour
         paintPieces = PlayerPrefs.GetInt("paintPieces", PlayerPrefs.GetInt("decorPieces", 0));
         woodPieces = PlayerPrefs.GetInt("woodPieces", PlayerPrefs.GetInt("premiumDecorPieces", 0));
         LoadItemInventory(PlayerPrefs.GetString("itemInventory", ""));
+        LoadWorkshopUnlockedProducts(PlayerPrefs.GetString("workshopUnlockedProducts", ""));
+        LoadWorkshopSelectedProducts(PlayerPrefs.GetString("workshopSelectedProducts", ""));
         lastChestRewardText = PlayerPrefs.GetString("lastChestRewardText", "Henuz sandik acilmadi.");
         pinkWallUnlocked = PlayerPrefs.GetInt("pinkWallUnlocked", 0) == 1;
         mintWallUnlocked = PlayerPrefs.GetInt("mintWallUnlocked", 0) == 1;
@@ -8503,6 +12787,7 @@ public class GameManager : MonoBehaviour
         productionRoomUnlocked = PlayerPrefs.GetInt("productionRoomUnlocked", 0) == 1;
         vipRoomUnlocked = PlayerPrefs.GetInt("vipRoomUnlocked", 0) == 1;
         vipLevel = Mathf.Clamp(PlayerPrefs.GetInt("vipLevel", 0), 0, MaxVipLevel);
+        lastVipDailyRewardUtc = PlayerPrefs.GetString("lastVipDailyRewardUtc", "");
         vipInfoSeen = PlayerPrefs.GetInt("vipInfoSeen", 0) == 1;
         if (selectedWallStyle == 1 && !pinkWallUnlocked) selectedWallStyle = 0;
         if (selectedWallStyle == 2 && !mintWallUnlocked) selectedWallStyle = 0;
@@ -8658,6 +12943,88 @@ public class IsoQuadGraphic : MaskableGraphic
         vh.AddVert(vertex);
 
         vertex.position = bottomLeft;
+        vh.AddVert(vertex);
+
+        vh.AddTriangle(0, 1, 2);
+        vh.AddTriangle(2, 3, 0);
+    }
+}
+
+public class TextureQuadGraphic : MaskableGraphic
+{
+    private Vector2 topLeft;
+    private Vector2 topRight;
+    private Vector2 bottomRight;
+    private Vector2 bottomLeft;
+    private Sprite sprite;
+
+    public override Texture mainTexture
+    {
+        get
+        {
+            if (sprite != null && sprite.texture != null)
+            {
+                return sprite.texture;
+            }
+
+            return s_WhiteTexture;
+        }
+    }
+
+    public void SetCorners(Vector2 newTopLeft, Vector2 newTopRight, Vector2 newBottomRight, Vector2 newBottomLeft)
+    {
+        topLeft = newTopLeft;
+        topRight = newTopRight;
+        bottomRight = newBottomRight;
+        bottomLeft = newBottomLeft;
+        SetVerticesDirty();
+    }
+
+    public void SetSprite(Sprite newSprite)
+    {
+        if (sprite == newSprite)
+        {
+            return;
+        }
+
+        sprite = newSprite;
+        SetMaterialDirty();
+        SetVerticesDirty();
+    }
+
+    protected override void OnPopulateMesh(VertexHelper vh)
+    {
+        vh.Clear();
+
+        Rect uvRect = new Rect(0f, 0f, 1f, 1f);
+        if (sprite != null && sprite.texture != null)
+        {
+            Rect textureRect = sprite.textureRect;
+            Texture2D texture = sprite.texture;
+            uvRect = new Rect(
+                textureRect.x / texture.width,
+                textureRect.y / texture.height,
+                textureRect.width / texture.width,
+                textureRect.height / texture.height);
+        }
+
+        UIVertex vertex = UIVertex.simpleVert;
+        vertex.color = color;
+
+        vertex.position = topLeft;
+        vertex.uv0 = new Vector2(uvRect.xMin, uvRect.yMax);
+        vh.AddVert(vertex);
+
+        vertex.position = topRight;
+        vertex.uv0 = new Vector2(uvRect.xMax, uvRect.yMax);
+        vh.AddVert(vertex);
+
+        vertex.position = bottomRight;
+        vertex.uv0 = new Vector2(uvRect.xMax, uvRect.yMin);
+        vh.AddVert(vertex);
+
+        vertex.position = bottomLeft;
+        vertex.uv0 = new Vector2(uvRect.xMin, uvRect.yMin);
         vh.AddVert(vertex);
 
         vh.AddTriangle(0, 1, 2);
